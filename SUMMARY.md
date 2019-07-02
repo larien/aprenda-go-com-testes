@@ -1,42 +1,43 @@
 # Table of contents
 
-* [Learn Go with Tests](gb-readme.md)
+-   [Aprenda Go com Testes](gb-readme.md)
 
 ## Go fundamentals
 
-* [Install Go](install-go.md)
-* [Hello, World](hello-world.md)
-* [Integers](integers.md)
-* [Iteration](iteration.md)
-* [Arrays and slices](arrays-and-slices.md)
-* [Structs, methods & interfaces](structs-methods-and-interfaces.md)
-* [Pointers & errors](pointers-and-errors.md)
-* [Maps](maps.md)
-* [Dependency Injection](dependency-injection.md)
-* [Mocking](mocking.md)
-* [Concurrency](concurrency.md)
-* [Select](select.md)
-* [Reflection](reflection.md)
-* [Sync](sync.md)
-* [Context](context.md)
+-   [Instalar o Go](install-go.md)
+-   [Olá, mundo](hello-world.md)
+-   [Inteiros](integers.md)
+-   [Iteração](iteration.md)
+-   [Arrays e slices](arrays-and-slices.md)
+-   [Structs, métodos & interfaces](structs-methods-and-interfaces.md)
+-   [Ponteiros & errors](pointers-and-errors.md)
+-   [Maps](maps.md)
+-   [Injeção de dependência](dependency-injection.md)
+-   [Mocking](mocking.md)
+-   [Concorrência](concurrency.md)
+-   [Select](select.md)
+-   [Reflection](reflection.md)
+-   [Sync](sync.md)
+-   [Context](context.md)
 
 ## Build an application
 
-* [Intro](app-intro.md)
-* [HTTP server](http-server.md)
-* [JSON, routing and embedding](json.md)
-* [IO and sorting](io.md)
-* [Command line & package structure](command-line.md)
-* [Time](time.md)
-* [WebSockets](websockets.md)
+-   [Introdução](app-intro.md)
+-   [Servidor HTTP](http-server.md)
+-   [JSON, roteamento and embedding](json.md)
+-   [IO e sorting](io.md)
+-   [Linha de comando e estrutura de pacotes](command-line.md)
+-   [Tempo](time.md)
+-   [Websockets](websockets.md)
 
 ## Questions and answers
 
-* [OS Exec](os-exec.md)
-* [Error types](error-types.md)
+-   [OS Exec](os-exec.md)
+-   [Tipos de erro](error-types.md)
 
 ## Meta
 
-* [Why unit tests and how to make them work for you](why.md)
-* [Contributing](contributing.md)
-* [Chapter Template](template.md)
+-   [Por que testes unitários e como fazê-los dar certo](why.md)
+-   [Como contribuir](contributing.md)
+-   [Como traduzir](translating.md)
+-   [Template de capítulo](template.md)
