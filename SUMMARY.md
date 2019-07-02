@@ -1,6 +1,6 @@
 # Table of contents
 
--   [Aprenda Go com Testes](gb-readme.md)
+-   [Aprenda Go com Testes](pt-br-readme.md)
 
 ## Fundamentos de Go
 
