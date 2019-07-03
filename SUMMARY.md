@@ -4,7 +4,7 @@
 
 ## Fundamentos de Go
 
--   [Instalar o Go](install-go.md)
+-   [Instalação do Go](install-go.md)
 -   [Olá, mundo](hello-world.md)
 -   [Inteiros](integers.md)
 -   [Iteração](iteration.md)
