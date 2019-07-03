@@ -2,7 +2,7 @@
 
 set -e
 
-docker run -v `pwd`:/source jagregory/pandoc -o learn-go-with-tests.pdf --variable urlcolor=blue --toc --toc-depth=1 pdf-cover.md \
+docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --latex-engine=xelatex --variable urlcolor=blue --toc --toc-depth=1 pdf-cover.md \
     gb-readme.md \
     why.md \
     hello-world.md \
@@ -28,7 +28,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o learn-go-with-tests.pdf --variab
     os-exec.md \
     error-types.md \
 
-docker run -v `pwd`:/source jagregory/pandoc -o learn-go-with-tests.epub --toc --toc-depth=1 title.txt \
+docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --latex-engine=xelatex --toc --toc-depth=1 title.txt \
     gb-readme.md \
     why.md \
     hello-world.md \
