@@ -1,4 +1,4 @@
-# Instalar o Go
+# Instalação do Go
 
 The official installation instructions for Go are available [here](https://golang.org/doc/install).
 
