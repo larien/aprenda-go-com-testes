@@ -1,74 +1,98 @@
-# Learn Go with Tests
+# Aprenda Go com Testes
 
 <p align="center">
   <img src="red-green-blue-gophers-smaller.png" />
 </p>
 
-[Art by Denise](https://twitter.com/deniseyu21)
+[Arte por Denise](https://twitter.com/deniseyu21)
 
-_Learn test-driven development with Go_
+-   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB or PDF](https://github.com/larien/learn-go-with-tests/releases)
+-   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
+-   Traduções: [Chinese](https://studygolang.gitbook.io/learn-go-with-tests)
 
-Translations: [中文](https://studygolang.gitbook.io/learn-go-with-tests)
+## Motivação
 
-* Explore the Go language by writing tests
-* **Get a grounding with TDD**. Go is a good language for learning TDD because it is a simple language to learn and testing is built-in
-* Be confident that you'll be able to start writing robust, well-tested systems in Go
+-   Explore a linguagem Go escrevendo testes
+-   **Tenha uma base com TDD**. O Go é uma boa linguagem para aprender TDD por ser simples de aprender e ter testes nativamente
+-   Tenha confiança de que você será capaz de escrever sistemas robustos e bem testados em Go
+-   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](why.md)
 
-## Background
+## Explicação
 
-I have some experience introducing Go to development teams and have tried different approaches as to how to grow a team from some people curious about Go into highly effective writers of Go systems.
+Tenho experiência em apresentar Go a equipes de desenvolvimento e tenho testado abordagens diferentes sobre como evoluir um grupo de pessoas que têm curiosidade sobre Go para criadores extremamente eficazes de sistemas em Go.
 
-### What didn't work
+### O que não funcionou
 
-#### Read _the_ book
+#### Ler _o_ livro
 
-An approach we tried was to take [the blue book](https://www.amazon.co.uk/Programming-Language-Addison-Wesley-Professional-Computing/dp/0134190440) and every week discuss the next chapter along with the exercises.
+Uma abordagem que tentamos foi pegar [o livro azul](https://www.amazon.com.br/Linguagem-Programa%C3%A7%C3%A3o-Go-Alan-Donovan/dp/8575225464) e toda semana discutir um capítulo junto de exercícios.
 
-I love this book but it requires a high level of commitment. The book is very detailed in explaining concepts, which is obviously great but it means that the progress is slow and steady - this is not for everyone.
+Amo esse livro, mas ele exige muito comprometimento. O livro é bem detalhado na explicação de conceitos, o que obviamente é ótimo, mas significa que o progresso é lento e uniforme - não é para todo mundo.
 
-I found that whilst a small number of people would read chapter X and do the exercises, many people didn't.
+Descobri que apenas um pequeno número de pessoas pegaria o capítulo X para ler e faria os exercícios, enquanto que a maioria não.
 
-#### Solve some problems
+#### Resolver alguns problemas
 
-Katas are fun but they are usually limited in their scope for learning a language; you're unlikely to use goroutines to solve a kata.
+Katas são divertidos, mas geralmente se limitam ao escopo de aprender uma linguagem; é improvável que você use goroutines para resolver um kata.
 
-Another problem is when you have varying levels of enthusiasm. Some people just learn way more of the language than others and when demonstrating what they have done end up confusing people with features the others are not familiar with.
+Outro problema é quando você tem níveis diferentes de entusiasmo. Algumas pessoas aprendem mais da linguagem que outras e, quando demonstram o que já fizeram, confundem essas pessoas apresentando funcionalidades que as outras ainda não conhecem.
 
-This ends up making the learning feel quite _unstructured_ and _ad hoc_.
+Isso acaba tornando o aprendizado bem _desestruturado_ e _específico_.
 
-### What did work
+### O que funcionou
 
-By far the most effective way was by slowly introducing the fundamentals of the language by reading through [go by example](https://gobyexample.com/), exploring them with examples and discussing them as a group. This was a more interactive approach than "read chapter x for homework".
+De longe, a forma mais eficaz foi apresentar os conceitos da linguagem aos poucos lendo o [go by example](https://gobyexample.com/), explorando-o com exemplos e discutindo-o como um grupo. Essa abordagem foi bem mais interativa do que "leia o capítulo X como lição de casa".
 
-Over time the team gained a solid foundation of the _grammar_ of the language so we could then start to build systems.
+Com o tempo, a equipe ganhou uma base sólida da _gramática_ da linguagem para que conseguíssemos começar a desenvolver sistemas.
 
-This to me seems analogous to practicing scales when trying to learn guitar.
+Para mim, é semelhante à ideia de praticar escalas quando se tenta aprender a tocar violão.
 
-It doesn't matter how artistic you think you are, you are unlikely to write good music without understanding the fundamentals and practicing the mechanics.
+Não importa quão artístico você seja; é improvável que você crie músicas boas sem entender os fundamentos e praticando os mecanismos.
 
-### What works for me
+### O que funcionou para mim
 
-When _I_ learn a new programming language I usually start by messing around in a REPL but eventually, I need more structure.
+Quando _eu_ aprendo uma nova linguagem de programação, costumo começar brincando em um REPL, mas hora ou outra preciso de mais estrutura.
 
-What I like to do is explore concepts and then solidify the ideas with tests. Tests verify the code I write is correct and documents the feature I have learned.
+O que eu gosto de fazer é explorar conceitos e então solidificar as ideias com testes. Testes certificam de que o código que escrevi está correto e documentam a funcionalidade que aprendi.
 
-Taking my experience of learning with a group and my own personal way I am going to try and create something that hopefully proves useful to other teams. Learning the fundamentals by writing small tests so that you can then take your existing software design skills and ship some great systems.
+Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar criar algo que seja útil para outras equipes. Aprender os conceitos escrevendo testes pequenos para que você possa usar suas habilidades de desenvolvimento de software e entregar sistemas ótimos.
 
-## Who this is for
+## Para quem isso foi feito
 
-* People who are interested in picking up Go
-* People who already know some Go, but want to explore testing more
+-   Pessoas que se interessam em aprender Go.
+-   Pessoas que já sabem Go, mas querem explorar testes com TDD.
 
-## What you'll need
+## O que vamos precisar
 
-* A computer!
-* [Installed Go](https://golang.org/)
-* A text editor
-* Some experience with programming. Understanding of concepts like `if`, variables, functions etc.
-* Comfortable with using the terminal
+-   Um computador!
+-   [Go instalado](https://golang.org/)
+-   Um editor de texto
+-   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
+-   Se sentir confortável com o terminal
 
 ## Feedback
 
-* Add issues/submit PRs [here](https://github.com/quii/learn-go-with-tests) or [tweet me @quii](https://twitter.com/quii)
+-   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
+-   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
 
 [MIT license](LICENSE.md)
+
+[Logo criado por egonelbre](https://github.com/egonelbre) Que estrela!
+
+## Traduzido com :blue_heart: por
+
+-   [Diego Nascimento](https://github.com/diegonvs)
+
+[twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
+
+-   [Jéssica Paz](https://github.com/jessicapaz)
+
+[site](https://jessicapaz.me) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
+
+-   [Lauren Ferreira](https://github.com/larien)
+
+[site](https://larien.dev) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
+
+-   [Rafael Acioly](https://github.com/rafa-acioly)
+
+[twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
