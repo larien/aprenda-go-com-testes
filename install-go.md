@@ -1,131 +1,131 @@
-# Install Go, set up environment for productivity
+# Instalação do Go: defina seu ambiente para produtividade
 
-The official installation instructions for Go are available [here](https://golang.org/doc/install).
+As instruções oficiais de instalação do Go estão disponíveis [aqui](http://www.golangbr.org/doc/instalacao).
 
-This guide will assume that you are using a package manager for e.g. [Homebrew](https://brew.sh), [Chocolatey](https://chocolatey.org), [Apt](https://help.ubuntu.com/community/AptGet/Howto) or [yum](https://access.redhat.com/solutions/9934).
+Esse guia vai presumir que você está usando um gerenciador de pacotes como [Homebrew](https://brew.sh), [Chocolatey](https://chocolatey.org), [Apt](https://help.ubuntu.com/community/AptGet/Howto) ou [yum](https://access.redhat.com/solutions/9934).
 
-For demonstration purposes we will show the installation procedure for OSX using Homebrew.
+Para propósitos de demonstração, vamos te mostrar o procedimento de instalação para o OSX usando Homebrew.
 
-## Installation
+## Instalação
 
-The process of installation is very easy. First, what you have to do is to run this command to install homebrew (brew). Brew has a dependency on Xcode so you should ensure this is installed first.
+O processo de instalação é bem simples. Primeiro, o que você precisa fazer é executar o comando abaixo pra instalar o homebrew (brew). O Brew depende do Xcode, então você deve se certificar de instalá-lo primeiro.
 
 ```sh
 xcode-select --install
 ```
 
-Then you run the following to install homebrew:
+Depois, execute o comando a seguir para instalar o homebrew:
 
 ```sh
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
-At this point you can now install Go:
+Agora você consegue instalar o Go:
 
 ```sh
 brew install go
 ```
 
-*You should follow any instructions recommended by your package manager. **Note** these may be host os specific*.
+_Siga todas as instruções recomendadas pelo seu gerenciador de pacotes. **Nota** cada grupo de instruções varia de sistema operacional para sistema operacional._
 
-You can verify the installation with:
+Você pode verificar a instalação com:
 
 ```sh
 $ go version
 go version go1.10 darwin/amd64
 ```
 
-## Go Environment
+## O Ambiente Go
 
-Go is opinionated.
+O Go divide opiniões.
 
-By convention, all Go code lives within a single workspace (folder). This workspace could be anywhere in your machine. If you don't specify, Go will assume $HOME/go as the default workspace. The workspace is identified (and modified) by the environment variable [GOPATH](https://golang.org/cmd/go/#hdr-GOPATH_environment_variable).
+Por convenção, todo o código Go é colocado dentro de apenas um workspace (pasta). Esse workspace pode estar em qualquer lugar da sua máquina. Se você não especificar, o Go vai definir o \$HOME/go como workspace padrão. Ele é identificado (e modificado) pela variável de ambiente [GOPATH](https://golang.org/cmd/go/#hdr-GOPATH_environment_variable).
 
-You should set the environment variable so that you can use it later in scripts, shells, etc.
+Você precisa definir a variável de ambiente para que possa utilizar futuramente em scripts, shells etc.
 
-Update your .bash_profile to contain the following exports:
+Atualize seu .bash_profile para conter os seguintes `exports`:
 
 ```sh
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 ```
 
-*Note* you should open a new shell to pickup these environment variables.
+_Nota_ você deve abrir um novo terminal para definir essas variáveis de ambiente.
 
-Go assumes that your workspace contains a specific directory structure.
+O Go presume que seu workspace contenha uma estrutura de diretórios específica.
 
-Go places its files in three directories: All source code lives in src, package objects lives in pkg, and the compiled programs live in bin. You can create these directories as follows.
+Ele coloca seus arquivos em três diretórios: todo o código-fonte fica em `src`, os objetos dos pacotes ficam em `pkg` e os programas compilados são colocados em `bin`. É possível criar esses diretórios com o comando a seguir:
 
 ```sh
 mkdir -p $GOPATH/src $GOPATH/pkg $GOPATH/bin
 ```
 
-At this point you can _go get_ and the src/package/bin will be installed correctly in the appropriate $GOPATH/xxx directory.
+Agora você é capaz de usar o _go get_ para que o `src/package/bin` seja instalado corretamente no diretório \$GOPATH/xxx apropriado.
 
-## Go Editor
+## Editor Go
 
-Editor preference is very individualistic, you may already have a preference that supports Go. If you don't you should consider an Editor such as [Visual Studio Code](https://code.visualstudio.com), which has exceptional Go support.
+A escolha de editor é bem pessoal. Você pode já ter um de sua preferência que tem suporte a Go. Se não tiver, leve em consideração um Editor como o [Visual Studio Code](https://code.visualstudio.com), que tem um suporte exceptional à linguagem.
 
-You can install it using the following command:
+Você pode instalá-lo com o comando a seguir:
 
 ```sh
 brew cask install visual-studio-code
 ```
 
-You can confirm VS Code installed correctly you can run the following in your shell.
+Confirme que o VS Code foi instalado corretamente executando o seguinte comando:
 
 ```sh
 code .
 ```
 
-VS Code is shipped with very little software enabled, you can enable new software by installing extensions. To add Go support you must install an extension, there are a variety available for VS Code, an exceptional one is [Luke Hoban's package](https://github.com/Microsoft/vscode-go). This can be installed as follows:
+O VS Code é lançado com poucos softwares habilidados. Você pode habilitar novos softwares instalando extensões. Para adicionar o suporte a Go, você deve instalar uma extensão. Existem várias disponíveis para o VS Code, mas uma excepcional é a do [Luke Hoban](https://github.com/Microsoft/vscode-go). Instale-a da forma a seguir:
 
 ```sh
 code --install-extension ms-vscode.go
 ```
 
-When you open a Go file for the first time in VS Code, it will indicate that the Analysis tools are missing, you should click the button to install these. The list of tools that gets installed (and used) by VS Code are available [here](https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on).
+Quando abrir um arquivo Go pela primeira vez no VS Code, ele vai indicar que ferramentas de análises estão faltando. Clique no botão para instalá-las. A lista de ferramentas que são instaladas (e usadas) pelo VS Code estão disponíveis [aqui](https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on).
 
-## Go Debugger
+## Debugger do Go
 
-A good option for debugging Go (that's integrated with VS Code) is Delve. This can be installed as follows using go get:
+Uma boa opção para debugar seus programas em Go (que é integrado com o VS Code) é o Delve. Ele pode ser instalado da seguinte maneira usando `go get`:
 
 ```sh
 go get -u github.com/go-delve/delve/cmd/dlv
 ```
 
-## Go Linting
+## Linter do Go
 
-An improvement over the default linter can be configured using [GolangCI-Lint](https://github.com/golangci/golangci-lint).
+Uma melhoria sob o linter padrão pode ser configurada usando o [GolangCI-Lint](https://github.com/golangci/golangci-lint).
 
-This can be installed as follows:
+Que pode ser instalada da seguinte forma:
 
 ```sh
 go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 ```
 
-## Refactoring and your tooling
+## Refatoração e suas ferramentas
 
-A big emphasis of this book is around the importance of refactoring.
+Uma grande ênfase nesse livro é dada na importância da refatoração.
 
-Your tools can help you do bigger refactoring with confidence.
+Suas ferramentas podem te ajudar a fazer uma refatoração com maior confiança.
 
-You should be familiar enough with your editor to perform the following with a simple key combination:
+Você deve ter familiaridade o suficiente com seu editor para performar as ações a seguir com uma simples combinação de teclas:
 
-- **Extract/Inline variable**. Being able to take magic values and give them a name lets you simplify your code quickly
-- **Extract method/function**. It is vital to be able to take a section of code and extract functions/methods
-- **Rename**. You should be able to confidently rename symbols across files.
-- **go fmt**. Go has an opinioned formatter called `go fmt`. Your editor should be running this on every file save.
-- **Run tests**. It goes without saying that you should be able to do any of the above and then quickly re-run your tests to ensure your refactoring hasn't broken anything
+-   **Extrair/alinhar variável**. Ser capaz de pegar valores mágicos e dar um nome a eles vai simplificar seu código rapidamente.
+-   **Extrair método/função**. É crucial ser capaz de tirar uma seção do código e extrair funções/métodos.
+-   **Renomear**. Você deve se sentir capaz de renomear símbolos no decorrer dos arquivos com confiança.
+-   **go fmt**. O Go tem um formatador nativo chamado `go fmt`. Seu editor deve executar esse comando a cada vez que salvar o arquivo.
+-   **Executar testes**. Não precisa nem dizer que você deve ser capaz de fazer todos os pontos acima e então re-executar seus testes rapidamente para certificar que sua refatoração não quebrou nada.
 
-In addition, to help you work with your code you should be able to:
+Além disso, para te ajudar a trabalhar cm seu código, você deve ser capaz de:
 
-- **View function signature** - You should never be unsure how to call a function in Go. Your IDE should describe a function in terms of its documentation, its parameters and what it returns.
-- **View function definition** - If it's still not clear what a function does, you should be able to jump to the source code and try and figure it out yourself.
-- **Find usages of a symbol** - Being able to see the context of a function being called can help your decision process when refactoring.
+-   **Verificar a assinatura da função**. Nunca tenha dúvida sobre a forma de chamar uma função em Go. Sua IDE deve descrever uma função em termos de sua documentação, seus parâmetros e o que ela retorna.
+-   **Ver a definição da função**. Se não tiver certeza sobre como uma função funciona, você deve ser capaz de ir para o código fonte de descobrir por si facilmente.
+-   **Encontrar usos de um símbolo**. Ser capaz de ver o contexto de uma função sendo chamada pode te ajudar com o processo de refatoração.
 
-Mastering your tools will help you concentrate on the code and reduce context switching.
+Dominar suas ferramentas vai te ajudar a concentrar no código e reduzir a troca de contexto.
 
-## Wrapping up
+## Resumindo
 
-At this point you should have Go installed, an editor available and some basic tooling in place. Go has a very large ecosystem of third party products. We have identified a few useful components here, for a more complete list see https://awesome-go.com.
+Nesse ponto você já deve ter o Go instalado, um editor disponível e algumas ferramentas básicas configuradas. O Go tem um ecossistema enorme de produtos feitos por outras pessoas. Identificamos alguns componentes úteis aqui, mas você pode encontrar uma lista mais completa no [Awesome Go](ttps://awesome-go.com).
