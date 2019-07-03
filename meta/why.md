@@ -1,79 +1,83 @@
-# Por que testes unitários e como fazê-los dar certo
+# Por que criar testes unitários e como fazê-los dar certo
 
-[Here's a link to a video of me chatting about this topic](https://www.youtube.com/watch?v=Kwtit8ZEK7U)
+[Vejam um vídeo meu falando sobre esse assunto](https://www.youtube.com/watch?v=Kwtit8ZEK7U)
 
-If you're not into videos, here's wordy version of it.
+Se não gostar muito de vídeos, aqui vai o artigo relacionado a isso.
 
 ## Software
 
-The promise of software is that it can change. This is why it is called _soft_ ware, it is malleable compared to hardware. A great engineering team should be an amazing asset to a company, writing systems that can evolve with a business to keep delivering value.
+A promessa do software é que ele pode mudar. É por isso que é chamado de \_soft_ware: é mais maleável se comparado ao hardware. Uma boa equipe de engenharia deve ser um componente incrível para uma empresa, criando sistemas que podem evoluir com um negócio para manter seu valor de entrega.
 
-So why are we so bad at it? How many projects do you hear about that outright fail? Or become "legacy" and have to be entirely re-written \(and the re-writes often fail too!\)
+Então por que somos tão ruins nisso? Quantos projetos que você ouve falar sobre que ultrapassam o nível da falha? Ou viram "legado" e precisam ser totalmente recriados (e a reescrita também acaba falhando)!
 
-How does a software system "fail" anyway? Can't it just be changed until it's correct? That's what we're promised!
+Mas como é que um software "falha"? Não dá para ele apenas ser modificado até estar correto? É isso que prometemos!
 
-A lot of people are choosing Go to build systems because it has made a number of choices which one hopes will make it more legacy-proof.
+Muita gente costuma escolher o Go para criar sistemas porque a linguagem teve várias decisões que evitam que o software vire legado.
 
-* Compared to my previous life of Scala where [I described how it has enough rope to hang yourself](http://www.quii.co.uk/Scala_-_Just_enough_rope_to_hang_yourself), Go has only 25 keywords and _a lot_ of systems can be built from the standard library and a few other small libraries. The hope is that with Go you can write code and come back to it in 6 months time and it'll still make sense.
-* The tooling in respect to testing, benchmarking, linting & shipping is first class compared to most alternatives.
-* The standard library is brilliant.
-* Very fast compilation speed for tight feedback loops
-* The Go backward compatibility promise. It looks like Go will get generics and other features in the future but the designers have promised that even Go code you wrote 5 years ago will still build. I literally spent weeks upgrading a project from Scala 2.8 to 2.10. 
+-   Comparado à minha antiga vida de Scala onde [descrevi como é fácil acabar se dando mal com a linguagem](http://www.quii.co.uk/Scala_-_Just_enough_rope_to_hang_yourself), o Go tem apenas 25 palavras-chave. _Muitos_ sistemas podem ser criados a partir da biblioteca padrão e alguns outros pacotes pequenos. O que se espera é que com Go você possa escrever código, voltar a vê-lo 6 meses depois e ele ainda fazer sentido.
+-   As ferramentas relacionadas a testes, benchmarking, linting e shipping são incríveis se comparadas à maioria das alternativas.
+-   A biblioteca padrão é brilhante.
+-   Velocidade de compilação muito rápida para loops de feedback mais frequentes.
+-   A famigerada promessa da compatibilidade. Parece que Go vai receber `generics` e outras funcionalidades no futuro, mas os mantenedores prometeram que mesmo o código Go que você escreveram cinco anos atrás ainda vai compilar e funcionar. Eu literalmente passei semanas atualizando um projeto em Scala da versão 2.8 para a 2.10.
 
-Even with all these great properties we can still make terrible systems, so we should look to the past and understand lessons in software engineering that apply no matter how shiny \(or not\) your language is.
+Com todas essas propriedades ótimas, ainda podemos acabar criando sistemas terríveis. Por isso, precisamos aplicar lições de engenharia de software que se aplicam independente do quão maravilhosa (ou não) sua linguagem seja.
 
-In 1974 a clever software engineer called \[Manny Lehman\]\([https://en.wikipedia.org/wiki/Manny\_Lehman\_\(computer\_scientist](https://en.wikipedia.org/wiki/Manny_Lehman_%28computer_scientist)\)\) wrote [Lehman's laws of software evolution](https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution).
+Em 1974, um engenheiro de software esperto chamado [Manny Lehman](https://pt.wikipedia.org/wiki/Meir_M._Lehman) escreveu as [leis de Lehman para a evolução do software](https://www.baguete.com.br/colunas/jorge-horacio-audy/17/04/2014/as-8-leis-de-lehman-foram-o-manifesto-do-seculo-xx).
 
-> The laws describe a balance between forces driving new developments on one hand, and forces that slow down progress on the other hand.
+> As leis descrevem um equilíbrio entre o desenvolvimento de software em uma ponta e a diminuição do progresso em outra.
 
-These forces seem like important things to understand if we have any hope of not being in an endless cycle of shipping systems that turn into legacy and then get re-written over and over again.
+É importante entender esses extremos para não acabar em um ciclo infinito de entregar sistemas que se tornam em legado e precisam ser reescritos novamente.
 
-## The Law of Continuous Change
+## Lei da Mudança Contínua
 
-> Any software system used in the real-world must change or become less and less useful in the environment
+> Qualquer software utilizado no mundo real precisa se adaptar ou vai se tornar cada vez mais obsoleto.
 
-It feels obvious that a system _has_ to change or it becomes less useful but how often is this ignored?
+Parece óbvio que um software _precisa_ mudar ou acaba se tornando menos útil, mas quantas vezes isso é ignorado?
 
-Many teams are incentivised to deliver a project on a particular date and then moved on to the next project. If the software is "lucky" there is at least some kind of hand-off to another set of individuals to maintain it, but they didn't write it of course.
+Muitas equipes são incentivadas a entregar um projeto em uma data específica e passar para o próximo projeto. Se o software tiver "sorte", vai acabar na mão de outro grupo de pessoas para mantê-lo, mas é claro que nenhuma dessas pessoas o escreveu.
 
-People often concern themselves with trying to pick a framework which will help them "deliver quickly" but not focusing on the longevity of the system in terms of how it needs to evolve.
+As pessoas se preocupam em escolher uma framework que vai ajudá-las a "entregar rapidamente", mas não focam na longevidade do sistema em termos de como precisa ser evoluído.
 
-Even if you're an incredible software engineer, you will still fall victim to not knowing the future needs of your system. As the business changes some of the brilliant code you wrote is now no longer relevant.
+Mesmo se você for um engenheiro de software incrível, ainda vai cair na armadilha de não saber que futuro aguarda seu software. Já que o negócio muda, o código brilhante que você escreveu já não vai mais ser relevante.
 
-Lehman was on a roll in the 70s because he gave us another law to chew on.
+Lehman estava contudo nos anos 70, porque nos deu outra lei para quebrarmos a cabeça.
 
-## The Law of Increasing Complexity
+## Lei da Complexidade Crescente
 
-> As a system evolves, its complexity increases unless work is done to reduce it
+> Enquanto o softwate evolui, sua complexidade aumenta. A não ser que um esforço seja investido para reduzi-la.
 
-What he's saying here is we can't have software teams as blind feature factories, piling more and more features on to software in the hope it will survive in the long run.
+O que ele diz aqui é que não podemos ter equipes de software para funcionar apenas como fábricas de funcionalidades, inserindo mais e mais funcionalidades no software para que ele possa sobreviver a longo prazo.
 
-We **have** to keep managing the complexity of the system as the knowledge of our domain changes.
+Nós **temos** que lidar com a complexidade do sistema conforme o conhecimento do nosso domínio muda.
 
-## Refactoring
+## Refatoração
+
+Existem _diversas_ facetas na engenharia de software que mantêm um software maleável, como:
+
+-
 
 There are _many_ facets of software engineering that keeps software malleable, such as:
 
-* Developer empowerment
-* Generally "good" code. Sensible separation of concerns, etc etc
-* Communication skills
-* Architecture
-* Observability
-* Deployability
-* Automated tests
-* Feedback loops
+-   Capacitação do desenvolvimento
+-   Em termos gerais, código "bom". Separação sensível de responsabilidades, etc
+-   Habilidades de comunicação
+-   Arquitetura
+-   Observabilidade
+-   Implantabilidade
+-   Testes automatizados
+-   Retornos de feedback
 
-I am going to focus on refactoring. It's a phrase that gets thrown around a lot "we need to refactor this" - said to a developer on their first day of programming without a second thought.
+Vou focar na refatoração. Quantas vezes você já ouviu a frase "precisamos refatorar isso"? Provavelmente dita para uma pessoa desenvolvedora em seu primeiro dia de programação sem pensar duas vezes.
 
-Where does the phrase come from? How is refactoring just different from writing code?
+De onde essa frase vem? Por que refatorar é diferente de escrever código?
 
-I know that I and many others have _thought_ we were doing refactoring but we were mistaken
+Sei que eu e muitas outras pessoas só _pensaram_ que estavam refatorando, mas estávamos cometendo um erro.
 
-[Martin Fowler describes how people are getting it wrong](https://martinfowler.com/bliki/RefactoringMalapropism.html)
+[Martin Fowler descreve como as pessoas entendem a refatoração errada aqui.](https://martinfowler.com/bliki/RefactoringMalapropism.html)
 
-> However the term "refactoring" is often used when it's not appropriate. If somebody talks about a system being broken for a couple of days while they are refactoring, you can be pretty sure they are not refactoring.
+> No entanto, o termo "refatoração" costuma ser utilizado de forma inapropriada. Se alguém fala que um sistema ficará quebrado por alguns dais enquanto está sendo refatorado, pode ter certeza que eles não estão refatorando.
 
-So what is it?
+Então o que é refatoração?
 
 ### Factorisation
 
@@ -154,9 +158,9 @@ Those who choose not to write tests will typically be reliant on manual testing.
 
 **In order to safely refactor you need unit tests** because they provide
 
-* Confidence you can reshape code without worrying about changing behaviour
-* Documentation for humans as to how the system should behave
-* Much faster and more reliable feedback than manual testing
+-   Confidence you can reshape code without worrying about changing behaviour
+-   Documentation for humans as to how the system should behave
+-   Much faster and more reliable feedback than manual testing
 
 #### An example in Go
 
@@ -177,9 +181,9 @@ At the command line I can run `go test` and get immediate feedback as to whether
 
 You want to get in to a state where you are doing
 
-* Small refactor
-* Run tests
-* Repeat
+-   Small refactor
+-   Run tests
+-   Repeat
 
 All within a very tight feedback loop so you don't go down rabbit holes and make mistakes.
 
@@ -239,26 +243,26 @@ If you have these units that follow these properties you can write unit tests ag
 
 We've covered
 
-* Refactoring
-* Unit tests
-* Unit design
+-   Refactoring
+-   Unit tests
+-   Unit design
 
 What we can start to see is that these facets of software design reinforce each other.
 
 ### Refactoring
 
-* Gives us signals about our unit tests. If we have to do manual checks, we need more tests. If tests are wrongly failing then our tests are at the wrong abstraction level \(or have no value and should be deleted\).
-* Helps us handle the complexities within and between our units.
+-   Gives us signals about our unit tests. If we have to do manual checks, we need more tests. If tests are wrongly failing then our tests are at the wrong abstraction level \(or have no value and should be deleted\).
+-   Helps us handle the complexities within and between our units.
 
 ### Unit tests
 
-* Give a safety net to refactor.
-* Verify and document the behaviour of our units.
+-   Give a safety net to refactor.
+-   Verify and document the behaviour of our units.
 
 ### \(Well designed\) units
 
-* Easy to write _meaningful_ unit tests.
-* Easy to refactor.
+-   Easy to write _meaningful_ unit tests.
+-   Easy to refactor.
 
 Is there a process to help us arrive at a point where we can constantly refactor our code to manage complexity and keep our systems malleable?
 
@@ -276,11 +280,11 @@ TDD addresses the laws that Lehman talks about and other lessons hard learned th
 
 ### Small steps
 
-* Write a small test for a small amount of desired behaviour
-* Check the test fails with a clear error \(red\)
-* Write the minimal amount of code to make the test pass \(green\)
-* Refactor
-* Repeat
+-   Write a small test for a small amount of desired behaviour
+-   Check the test fails with a clear error \(red\)
+-   Write the minimal amount of code to make the test pass \(green\)
+-   Refactor
+-   Repeat
 
 As you become proficient, this way of working will become natural and fast.
 
@@ -290,9 +294,8 @@ You'll always be driving small & useful functionality comfortably backed by the 
 
 ## Wrapping up
 
-* The strength of software is that we can change it. _Most_ software will require change over time in unpredictable ways; but dont try and over-engineer because it's too hard to predict the future.
-* Instead we need to make it so we can keep our software malleable. In order to change software we have to refactor it as it evolves or it will turn into a mess
-* A good test suite can help you refactor quicker and in a less stressful manner
-* Writing good unit tests is a design problem so think about structuring your code so you have meaningful units that you can integrate together like Lego bricks.
-* TDD can help and force you to design well factored software iteratively, backed by tests to help future work as it arrives.
-
+-   The strength of software is that we can change it. _Most_ software will require change over time in unpredictable ways; but dont try and over-engineer because it's too hard to predict the future.
+-   Instead we need to make it so we can keep our software malleable. In order to change software we have to refactor it as it evolves or it will turn into a mess
+-   A good test suite can help you refactor quicker and in a less stressful manner
+-   Writing good unit tests is a design problem so think about structuring your code so you have meaningful units that you can integrate together like Lego bricks.
+-   TDD can help and force you to design well factored software iteratively, backed by tests to help future work as it arrives.
