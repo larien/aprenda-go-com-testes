@@ -28,11 +28,11 @@
 2. [Olá, mundo](hello-world.md) - Declarando variáveis, constantes, declarações `if`/`else`, switch, escreva seu primeiro programa em Go e seu primeiro teste. Sintaxe de subteste e closures.
 3. [Inteiros](integers.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
 4. [Iteração](iteration.md) - Aprenda sobre `for` e benchmarking.
-5. [Arrays e Slices](arrays-and-slices.md) - Aprenda sobre arrays, slices, `len`, varargs, `range` e cobertura de testes.
-6. [Structs, Métodos e Interfaces](structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela (table driven tests).
-7. [Ponteiros e Erros](pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
+5. [Arrays e slices](arrays-and-slices.md) - Aprenda sobre arrays, slices, `len`, varargs, `range` e cobertura de testes.
+6. [Estruturas, métodos e interfaces](structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela (table driven tests).
+7. [Ponteiros e erros](pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
 8. [Maps](maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
-9. [Injeção de Dependência](dependency-injection.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a io.
+9. [Injeção de dependência](dependency-injection.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a io.
 10. [Mocking](mocking.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
 11. [Concorrência](concurrency.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
 12. [Select](select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
@@ -53,9 +53,9 @@ Novos conceitos serão apresentados para ajudar a escrever código de qualidade,
 No final desse capítulo, você deverá ter uma boa ideia de como escrever uma aplicação em Go testada.
 
 -   [Servidor HTTP](http-server.md) - Vamos criar uma aplicação que espera por requisições HTTP e as responde.
--   [JSON, Routing e Embedding](json.md) - Vamos fazer nossos endpoints retornarem JSON e explorar como trabalhar com rotas.
--   [IO e Classificação](io.md) - Vamos persistir e ler nossos dados do disco e falar sobre classificação de dados.
--   [Linha de Comando e Estrutura do Projeto](command-line.md) - Suportar diversas aplicações em uma base de código e ler entradas da linha de comando.
+-   [JSON, routing e embedding](json.md) - Vamos fazer nossos endpoints retornarem JSON e explorar como trabalhar com rotas.
+-   [IO e classificação](io.md) - Vamos persistir e ler nossos dados do disco e falar sobre classificação de dados.
+-   [Linha de comando e estrutura do projeto](command-line.md) - Suportar diversas aplicações em uma base de código e ler entradas da linha de comando.
 -   [Tempo](time.md) - Usar o pacote `time` para programar atividades.
 -   [Websockets](websockets.md) - Aprender a escrever e testar um servidor que usa websockets.
 
@@ -130,15 +130,6 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 -   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
 -   Se sentir confortável com o terminal
 
-## Feedback
-
--   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
--   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
-
-[MIT license](LICENSE.md)
-
-[Logo criado por egonelbre](https://github.com/egonelbre) Que estrela!
-
 ## Traduzido com :blue_heart: por
 
 -   [Diego Nascimento](https://github.com/diegonvs)
@@ -156,3 +147,12 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 -   [Rafael Acioly](https://github.com/rafa-acioly)
 
 [twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
+
+## Feedback
+
+-   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
+-   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
+
+[MIT license](LICENSE.md)
+
+[Logo criado por egonelbre](https://github.com/egonelbre) Que estrela!
