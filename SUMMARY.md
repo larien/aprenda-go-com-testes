@@ -1,16 +1,16 @@
-# Table of contents
+# Índice
 
 -   [Aprenda Go com Testes](gb-readme.md)
 
-## Fundamentos de Go
+## Primeiros Passos com Go
 
 -   [Instalar o Go](install-go.md)
 -   [Olá, mundo](hello-world.md)
 -   [Inteiros](integers.md)
 -   [Iteração](iteration.md)
 -   [Arrays e slices](arrays-and-slices.md)
--   [Structs, métodos & interfaces](structs-methods-and-interfaces.md)
--   [Ponteiros & errors](pointers-and-errors.md)
+-   [Estruturas, métodos e interfaces](structs-methods-and-interfaces.md)
+-   [Ponteiros e erros](pointers-and-errors.md)
 -   [Maps](maps.md)
 -   [Injeção de dependência](dependency-injection.md)
 -   [Mocking](mocking.md)
