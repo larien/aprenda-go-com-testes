@@ -1,6 +1,6 @@
-# Structs, methods & interfaces
+# Estruturas, métodos e interfaces
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/structs)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/structs)
 
 Suppose that we need some geometry code to calculate the perimeter of a rectangle given a height and width. We can write a `Perimeter(width float64, height float64)` function, where `float64` is for floating-point numbers like `123.45`.
 
@@ -589,3 +589,4 @@ This was an important chapter because we are now starting to define our own type
 Interfaces are a great tool for hiding complexity away from other parts of the system. In our case our test helper _code_ did not need to know the exact shape it was asserting on, only how to "ask" for it's area.
 
 As you become more familiar with Go you start to see the real strength of interfaces and the standard library. You'll learn about interfaces defined in the standard library that are used _everywhere_ and by implementing them against your own types you can very quickly re-use a lot of great functionality.
+

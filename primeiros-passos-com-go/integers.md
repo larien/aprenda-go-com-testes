@@ -1,6 +1,6 @@
-# Integers
+# Inteiros
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/integers)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/integers)
 
 Integers work as you would expect. Let's write an add function to try things out. Create a test file called `adder_test.go` and write this code.
 
@@ -118,7 +118,7 @@ func ExampleAdd() {
 }
 ```
 
-(If your editor doesn't automatically import packages for you, the compilation step will fail because you will be missing `import "fmt"` in `adder_test.go`. It is strongly recommended you research how to have these kind of errors fixed for you automatically in whatever editor you are using.)
+\(If your editor doesn't automatically import packages for you, the compilation step will fail because you will be missing `import "fmt"` in `adder_test.go`. It is strongly recommended you research how to have these kind of errors fixed for you automatically in whatever editor you are using.\)
 
 If your code changes so that the example is no longer valid, your build will fail.
 
@@ -150,3 +150,4 @@ What we have covered:
 * Integers, addition
 * Writing better documentation so users of our code can understand its usage quickly
 * Examples of how to use our code, which are checked as part of our tests
+

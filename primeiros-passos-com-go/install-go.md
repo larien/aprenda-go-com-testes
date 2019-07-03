@@ -1,4 +1,4 @@
-# Install Go, set up environment for productivity
+# Instalar o Go
 
 The official installation instructions for Go are available [here](https://golang.org/doc/install).
 
@@ -8,29 +8,29 @@ For demonstration purposes we will show the installation procedure for OSX using
 
 ## Installation
 
-The process of installation is very easy. First, what you have to do is to run this command to install homebrew (brew). Brew has a dependency on Xcode so you should ensure this is installed first.
+The process of installation is very easy. First, what you have to do is to run this command to install homebrew \(brew\). Brew has a dependency on Xcode so you should ensure this is installed first.
 
-```sh
+```bash
 xcode-select --install
 ```
 
 Then you run the following to install homebrew:
 
-```sh
+```bash
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
 At this point you can now install Go:
 
-```sh
+```bash
 brew install go
 ```
 
-*You should follow any instructions recommended by your package manager. **Note** these may be host os specific*.
+_You should follow any instructions recommended by your package manager. **Note** these may be host os specific_.
 
 You can verify the installation with:
 
-```sh
+```bash
 $ go version
 go version go1.10 darwin/amd64
 ```
@@ -39,24 +39,24 @@ go version go1.10 darwin/amd64
 
 Go is opinionated.
 
-By convention, all Go code lives within a single workspace (folder). This workspace could be anywhere in your machine. If you don't specify, Go will assume $HOME/go as the default workspace. The workspace is identified (and modified) by the environment variable [GOPATH](https://golang.org/cmd/go/#hdr-GOPATH_environment_variable).
+By convention, all Go code lives within a single workspace \(folder\). This workspace could be anywhere in your machine. If you don't specify, Go will assume $HOME/go as the default workspace. The workspace is identified \(and modified\) by the environment variable [GOPATH](https://golang.org/cmd/go/#hdr-GOPATH_environment_variable).
 
 You should set the environment variable so that you can use it later in scripts, shells, etc.
 
-Update your .bash_profile to contain the following exports:
+Update your .bash\_profile to contain the following exports:
 
-```sh
+```bash
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 ```
 
-*Note* you should open a new shell to pickup these environment variables.
+_Note_ you should open a new shell to pickup these environment variables.
 
 Go assumes that your workspace contains a specific directory structure.
 
 Go places its files in three directories: All source code lives in src, package objects lives in pkg, and the compiled programs live in bin. You can create these directories as follows.
 
-```sh
+```bash
 mkdir -p $GOPATH/src $GOPATH/pkg $GOPATH/bin
 ```
 
@@ -68,29 +68,29 @@ Editor preference is very individualistic, you may already have a preference tha
 
 You can install it using the following command:
 
-```sh
+```bash
 brew cask install visual-studio-code
 ```
 
 You can confirm VS Code installed correctly you can run the following in your shell.
 
-```sh
+```bash
 code .
 ```
 
 VS Code is shipped with very little software enabled, you can enable new software by installing extensions. To add Go support you must install an extension, there are a variety available for VS Code, an exceptional one is [Luke Hoban's package](https://github.com/Microsoft/vscode-go). This can be installed as follows:
 
-```sh
+```bash
 code --install-extension ms-vscode.go
 ```
 
-When you open a Go file for the first time in VS Code, it will indicate that the Analysis tools are missing, you should click the button to install these. The list of tools that gets installed (and used) by VS Code are available [here](https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on).
+When you open a Go file for the first time in VS Code, it will indicate that the Analysis tools are missing, you should click the button to install these. The list of tools that gets installed \(and used\) by VS Code are available [here](https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on).
 
 ## Go Debugger
 
-A good option for debugging Go (that's integrated with VS Code) is Delve. This can be installed as follows using go get:
+A good option for debugging Go \(that's integrated with VS Code\) is Delve. This can be installed as follows using go get:
 
-```sh
+```bash
 go get -u github.com/go-delve/delve/cmd/dlv
 ```
 
@@ -100,7 +100,7 @@ An improvement over the default linter can be configured using [GolangCI-Lint](h
 
 This can be installed as follows:
 
-```sh
+```bash
 go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 ```
 
@@ -112,20 +112,21 @@ Your tools can help you do bigger refactoring with confidence.
 
 You should be familiar enough with your editor to perform the following with a simple key combination:
 
-- **Extract/Inline variable**. Being able to take magic values and give them a name lets you simplify your code quickly
-- **Extract method/function**. It is vital to be able to take a section of code and extract functions/methods
-- **Rename**. You should be able to confidently rename symbols across files.
-- **go fmt**. Go has an opinioned formatter called `go fmt`. Your editor should be running this on every file save.
-- **Run tests**. It goes without saying that you should be able to do any of the above and then quickly re-run your tests to ensure your refactoring hasn't broken anything
+* **Extract/Inline variable**. Being able to take magic values and give them a name lets you simplify your code quickly
+* **Extract method/function**. It is vital to be able to take a section of code and extract functions/methods
+* **Rename**. You should be able to confidently rename symbols across files.
+* **go fmt**. Go has an opinioned formatter called `go fmt`. Your editor should be running this on every file save.
+* **Run tests**. It goes without saying that you should be able to do any of the above and then quickly re-run your tests to ensure your refactoring hasn't broken anything
 
 In addition, to help you work with your code you should be able to:
 
-- **View function signature** - You should never be unsure how to call a function in Go. Your IDE should describe a function in terms of its documentation, its parameters and what it returns.
-- **View function definition** - If it's still not clear what a function does, you should be able to jump to the source code and try and figure it out yourself.
-- **Find usages of a symbol** - Being able to see the context of a function being called can help your decision process when refactoring.
+* **View function signature** - You should never be unsure how to call a function in Go. Your IDE should describe a function in terms of its documentation, its parameters and what it returns.
+* **View function definition** - If it's still not clear what a function does, you should be able to jump to the source code and try and figure it out yourself.
+* **Find usages of a symbol** - Being able to see the context of a function being called can help your decision process when refactoring.
 
 Mastering your tools will help you concentrate on the code and reduce context switching.
 
 ## Wrapping up
 
-At this point you should have Go installed, an editor available and some basic tooling in place. Go has a very large ecosystem of third party products. We have identified a few useful components here, for a more complete list see https://awesome-go.com.
+At this point you should have Go installed, an editor available and some basic tooling in place. Go has a very large ecosystem of third party products. We have identified a few useful components here, for a more complete list see [https://awesome-go.com](https://awesome-go.com).
+

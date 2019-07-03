@@ -1,6 +1,6 @@
-# IO and sorting
+# IO e sorting
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/io)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/io)
 
 [In the previous chapter](json.md) we continued iterating on our application by adding a new endpoint `/league`. Along the way we learned about how to deal with JSON, embedding types and routing.
 
@@ -148,7 +148,7 @@ We will keep the `InMemoryPlayerStore` for now so that the integration tests kee
 
 ## Write the test first
 
-By now you should be familiar with the interfaces around the standard library for reading data (`io.Reader`), writing data (`io.Writer`) and how we can use the standard library to test these functions without having to use real files.
+By now you should be familiar with the interfaces around the standard library for reading data \(`io.Reader`\), writing data \(`io.Writer`\) and how we can use the standard library to test these functions without having to use real files.
 
 For this work to be complete we'll need to implement `PlayerStore` so we'll write tests for our store calling the methods we need to implement. We'll start with `GetLeague`.
 
@@ -178,7 +178,7 @@ We're using `strings.NewReader` which will return us a `Reader`, which is what o
 
 ## Try to run the test
 
-```
+```text
 # github.com/quii/learn-go-with-tests/json-and-io/v7
 ./FileSystemStore_test.go:15:12: undefined: FileSystemPlayerStore
 ```
@@ -193,7 +193,7 @@ type FileSystemPlayerStore struct {}
 
 Try again
 
-```
+```text
 # github.com/quii/learn-go-with-tests/json-and-io/v7
 ./FileSystemStore_test.go:15:28: too many values in struct initializer
 ./FileSystemStore_test.go:17:15: store.GetLeague undefined (type FileSystemPlayerStore has no field or method GetLeague)
@@ -213,7 +213,7 @@ func (f *FileSystemPlayerStore) GetLeague() []Player {
 
 One more try...
 
-```
+```text
 === RUN   TestFileSystemStore//league_from_a_reader
     --- FAIL: TestFileSystemStore//league_from_a_reader (0.00s)
         FileSystemStore_test.go:24: got [] want [{Cleo 10} {Chris 33}]
@@ -359,7 +359,7 @@ func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
 
 Now it compiles and the test fails
 
-```
+```text
 === RUN   TestFileSystemStore/get_player_score
     --- FAIL: TestFileSystemStore//get_player_score (0.00s)
         FileSystemStore_test.go:43: got 0 want 33
@@ -407,7 +407,7 @@ Finally, we need to start recording scores with `RecordWin`.
 
 ## Write the test first
 
-Our approach is fairly short-sighted for writes. We can't (easily) just update one "row" of JSON in a file. We'll need to store the _whole_ new representation of our database on every write.
+Our approach is fairly short-sighted for writes. We can't \(easily\) just update one "row" of JSON in a file. We'll need to store the _whole_ new representation of our database on every write.
 
 How do we write? We'd normally use a `Writer` but we already have our `ReadSeeker`. Potentially we could have two dependencies but the standard library already has an interface for us `ReadWriteSeeker` which lets us do all the things we'll need to do with a file.
 
@@ -432,8 +432,8 @@ It's not too surprising that `strings.Reader` does not implement `ReadWriteSeeke
 
 We have two choices
 
-- Create a temporary file for each test. `*os.File` implements `ReadWriteSeeker`. The pro of this is it becomes more of an integration test, we're really reading and writing from the file system so it will give us a very high level of confidence. The cons are we prefer unit tests because they are faster and generally simpler. We will also need to do more work around creating temporary files and then making sure they're removed after the test.
-- We could use a third party library. [Mattetti](https://github.com/mattetti) has written a library [filebuffer](https://github.com/mattetti/filebuffer) which implements the interface we need and doesn't touch the file system.
+* Create a temporary file for each test. `*os.File` implements `ReadWriteSeeker`. The pro of this is it becomes more of an integration test, we're really reading and writing from the file system so it will give us a very high level of confidence. The cons are we prefer unit tests because they are faster and generally simpler. We will also need to do more work around creating temporary files and then making sure they're removed after the test.
+* We could use a third party library. [Mattetti](https://github.com/mattetti) has written a library [filebuffer](https://github.com/mattetti/filebuffer) which implements the interface we need and doesn't touch the file system.
 
 I don't think there's an especially wrong answer here, but by choosing to use a third party library I would have to explain dependency management! So we will use files instead.
 
@@ -454,7 +454,7 @@ func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func(
     tmpfile.Write([]byte(initialData))
 
     removeFile := func() {
-    	tmpfile.Close()
+        tmpfile.Close()
         os.Remove(tmpfile.Name())
     }
 
@@ -464,7 +464,7 @@ func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func(
 
 [TempFile](https://golang.org/pkg/io/ioutil/#TempDir) creates a temporary file for us to use. The `"db"` value we've passed in is a prefix put on a random file name it will create. This is to ensure it won't clash with other files by accident.
 
-You'll notice we're not only returning our `ReadWriteSeeker` (the file) but also a function. We need to make sure that the file is removed once the test is finished. We don't want to leak details of the files into the test as it's prone to error and uninteresting for the reader. By returning a `removeFile` function, we can take care of the details in our helper and all the caller has to do is run `defer cleanDatabase()`.
+You'll notice we're not only returning our `ReadWriteSeeker` \(the file\) but also a function. We need to make sure that the file is removed once the test is finished. We don't want to leak details of the files into the test as it's prone to error and uninteresting for the reader. By returning a `removeFile` function, we can take care of the details in our helper and all the caller has to do is run `defer cleanDatabase()`.
 
 ```go
 func TestFileSystemStore(t *testing.T) {
@@ -541,7 +541,7 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 }
 ```
 
-```
+```text
 === RUN   TestFileSystemStore/store_wins_for_existing_players
     --- FAIL: TestFileSystemStore/store_wins_for_existing_players (0.00s)
         FileSystemStore_test.go:71: got 33 want 34
@@ -568,7 +568,7 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 
 You may be asking yourself why I am doing `league[i].Wins++` rather than `player.Wins++`.
 
-When you `range` over a slice you are returned the current index of the loop (in our case `i`) and a _copy_ of the element at that index. Changing the `Wins` value of a copy won't have any effect on the `league` slice that we iterate on. For that reason, we need to get the reference to the actual value by doing `league[i]` and then changing that value instead.
+When you `range` over a slice you are returned the current index of the loop \(in our case `i`\) and a _copy_ of the element at that index. Changing the `Wins` value of a copy won't have any effect on the `league` slice that we iterate on. For that reason, we need to get the reference to the actual value by doing `league[i]` and then changing that value instead.
 
 If you run the tests, they should now be passing.
 
@@ -649,7 +649,7 @@ t.Run("store wins for new players", func(t *testing.T) {
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestFileSystemStore/store_wins_for_new_players#01
     --- FAIL: TestFileSystemStore/store_wins_for_new_players#01 (0.00s)
         FileSystemStore_test.go:86: got 0 want 1
@@ -714,9 +714,9 @@ func main() {
 }
 ```
 
-- We create a file for our database.
-- The 2nd argument to `os.OpenFile` lets you define the permissions for opening the file, in our case `O_RDWR` means we want to read and write _and_ `os.O_CREATE` means create the file if it doesn't exist.
-- The 3rd argument means sets permissions for the file, in our case, all users can read and write the file. [(See superuser.com for a more detailed explanation)](https://superuser.com/questions/295591/what-is-the-meaning-of-chmod-666).
+* We create a file for our database.
+* The 2nd argument to `os.OpenFile` lets you define the permissions for opening the file, in our case `O_RDWR` means we want to read and write _and_ `os.O_CREATE` means create the file if it doesn't exist.
+* The 3rd argument means sets permissions for the file, in our case, all users can read and write the file. [\(See superuser.com for a more detailed explanation\)](https://superuser.com/questions/295591/what-is-the-meaning-of-chmod-666).
 
 Running the program now persists the data in a file in between restarts, hooray!
 
@@ -857,7 +857,7 @@ func TestTape_Write(t *testing.T) {
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestTape_Write
 --- FAIL: TestTape_Write (0.00s)
     tape_test.go:23: got 'abc45' want 'abc'
@@ -949,7 +949,7 @@ Don't be afraid to chop and change types and experiment like we have here. The g
 
 ## Error handling
 
-Before we start working on sorting we should make sure we're happy with our current code and remove any technical debt we may have. It's an important principle to get to working software as quickly as possible (stay out of the red state) but that doesn't mean we should ignore error cases!
+Before we start working on sorting we should make sure we're happy with our current code and remove any technical debt we may have. It's an important principle to get to working software as quickly as possible \(stay out of the red state\) but that doesn't mean we should ignore error cases!
 
 If we go back to `FileSystemStore.go` we have `league, _ := NewLeague(f.database)` in our constructor.
 
@@ -975,7 +975,7 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 }
 ```
 
-Remember it is very important to give helpful error messages (just like your tests). People jokingly on the internet say most Go code is
+Remember it is very important to give helpful error messages \(just like your tests\). People jokingly on the internet say most Go code is
 
 ```go
 if err != nil {
@@ -983,11 +983,11 @@ if err != nil {
 }
 ```
 
-**That is 100% not idiomatic.** Adding contextual information (i.e what you were doing to cause the error) to your error messages makes operating your software far easier.
+**That is 100% not idiomatic.** Adding contextual information \(i.e what you were doing to cause the error\) to your error messages makes operating your software far easier.
 
 If you try and compile you'll get some errors.
 
-```
+```text
 ./main.go:18:35: multiple-value NewFileSystemPlayerStore() in single-value context
 ./FileSystemStore_test.go:35:36: multiple-value NewFileSystemPlayerStore() in single-value context
 ./FileSystemStore_test.go:57:36: multiple-value NewFileSystemPlayerStore() in single-value context
@@ -1019,7 +1019,7 @@ func assertNoError(t *testing.T, err error) {
 
 Work through the other compilation problems using this helper. Finally, you should have a failing test
 
-```
+```text
 === RUN   TestRecordingWinsAndRetrievingThem
 --- FAIL: TestRecordingWinsAndRetrievingThem (0.00s)
     server_integration_test.go:14: didnt expect an error but got one, problem loading player store from file /var/folders/nj/r_ccbj5d7flds0sf63yy4vb80000gn/T/db841037437, problem parsing league, EOF
@@ -1052,7 +1052,7 @@ t.Run("works with an empty file", func(t *testing.T) {
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestFileSystemStore/works_with_an_empty_file
     --- FAIL: TestFileSystemStore/works_with_an_empty_file (0.00s)
         FileSystemStore_test.go:108: didnt expect an error but got one, problem loading player store from file /var/folders/nj/r_ccbj5d7flds0sf63yy4vb80000gn/T/db019548018, problem parsing league, EOF
@@ -1176,7 +1176,7 @@ The order of the JSON coming in is in the wrong order and our `want` will check 
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestFileSystemStore/league_from_a_reader,_sorted
     --- FAIL: TestFileSystemStore/league_from_a_reader,_sorted (0.00s)
         FileSystemStore_test.go:46: got [{Cleo 10} {Chris 33}] want [{Chris 33} {Cleo 10}]
@@ -1204,21 +1204,22 @@ Easy!
 
 ### What we've covered
 
-- The `Seeker` interface and its relation with `Reader` and `Writer`.
-- Working with files.
-- Creating an easy to use helper for testing with files that hides all the messy stuff.
-- `sort.Slice` for sorting slices.
-- Using the compiler to help us make structural changes to the application safely.
+* The `Seeker` interface and its relation with `Reader` and `Writer`.
+* Working with files.
+* Creating an easy to use helper for testing with files that hides all the messy stuff.
+* `sort.Slice` for sorting slices.
+* Using the compiler to help us make structural changes to the application safely.
 
 ### Breaking rules
 
-- Most rules in software engineering aren't really rules, just best practices that work 80% of the time.
-- We discovered a scenario where one of our previous "rules" of not testing internal functions was not helpful for us so we broke the rule.
-- It's important when breaking rules to understand the trade-off you are making. In our case, we were ok with it because it was just one test and would've been very difficult to exercise the scenario otherwise.
-- In order to be able to break the rules **you must understand them first**. An analogy is with learning guitar. It doesn't matter how creative you think you are, you must understand and practice the fundamentals.
+* Most rules in software engineering aren't really rules, just best practices that work 80% of the time.
+* We discovered a scenario where one of our previous "rules" of not testing internal functions was not helpful for us so we broke the rule.
+* It's important when breaking rules to understand the trade-off you are making. In our case, we were ok with it because it was just one test and would've been very difficult to exercise the scenario otherwise.
+* In order to be able to break the rules **you must understand them first**. An analogy is with learning guitar. It doesn't matter how creative you think you are, you must understand and practice the fundamentals.
 
 ### Where our software is at
 
-- We have an HTTP API where you can create players and increment their score.
-- We can return a league of everyone's scores as JSON.
-- The data is persisted as a JSON file.
+* We have an HTTP API where you can create players and increment their score.
+* We can return a league of everyone's scores as JSON.
+* The data is persisted as a JSON file.
+

@@ -1,4 +1,4 @@
-# Contributing
+# Como contribuir
 
 Contributions are very welcome. I hope for this to become a great home for guides of how to learn Go by writing tests. Consider submitting a PR or creating an issue which you can do [here](https://github.com/quii/learn-go-with-tests).
 
@@ -26,3 +26,4 @@ If you don't feel confident to submit your own guide, submitting an issue for so
 * Your section should have a runnable application at the end \(e.g `package main` with a `main` func\) so users can see it in action and play with it.
 * All tests should pass.
 * Run `./build.sh` before raising PR.
+

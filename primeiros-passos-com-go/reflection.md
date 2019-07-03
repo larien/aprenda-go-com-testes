@@ -24,18 +24,18 @@ So `walk(x interface{}, fn func(string))` will accept any value for `x`.
 
 ### So why not use `interface` for everything and have really flexible functions?
 
-- As a user of a function that takes `interface` you lose type safety. What if you meant to pass `Foo.bar` of type `string` into a function but instead did `Foo.baz` which is an `int`? The compiler won't be able to inform you of your mistake. You also have no idea _what_ you're allowed to pass to a function. Knowing that a function takes a `UserService` for instance is very useful.
-- As a writer of such a function, you have to be able to inspect _anything_ that has been passed to you and try and figure out what the type is and what you can do with it. This is done using _reflection_. This can be quite clumsy and difficult to read and is generally less performant (as you have to do checks at runtime).
+* As a user of a function that takes `interface` you lose type safety. What if you meant to pass `Foo.bar` of type `string` into a function but instead did `Foo.baz` which is an `int`? The compiler won't be able to inform you of your mistake. You also have no idea _what_ you're allowed to pass to a function. Knowing that a function takes a `UserService` for instance is very useful.
+* As a writer of such a function, you have to be able to inspect _anything_ that has been passed to you and try and figure out what the type is and what you can do with it. This is done using _reflection_. This can be quite clumsy and difficult to read and is generally less performant \(as you have to do checks at runtime\).
 
 In short only use reflection if you really need to.
 
-If you want polymorphic functions, consider if you could design it around an interface (not `interface`, confusingly) so that users can use your function with multiple types if they implement whatever methods you need for your function to work.
+If you want polymorphic functions, consider if you could design it around an interface \(not `interface`, confusingly\) so that users can use your function with multiple types if they implement whatever methods you need for your function to work.
 
 Our function will need to be able to work with lots of different things. As always we'll take an iterative approach, writing tests for each new thing we want to support and refactoring along the way until we're done.
 
 ## Write the test first
 
-We'll want to call our function with a struct that has a string field in it (`x`). Then we can spy on the function (`fn`) passed in to see if it is called.
+We'll want to call our function with a struct that has a string field in it \(`x`\). Then we can spy on the function \(`fn`\) passed in to see if it is called.
 
 ```go
 func TestWalk(t *testing.T) {
@@ -57,13 +57,13 @@ func TestWalk(t *testing.T) {
 }
 ```
 
-- We want to store a slice of strings (`got`) which stores which strings were passed into `fn` by `walk`. Often in previous chapters, we have made dedicated types for this to spy on function/method invocations but in this case, we can just pass in an anonymous function for `fn` that closes over `got`.
-- We use an anonymous `struct` with a `Name` field of type string to go for the simplest "happy" path.
-- Finally, call `walk` with `x` and the spy and for now just check the length of `got`, we'll be more specific with our assertions once we've got something very basic working.
+* We want to store a slice of strings \(`got`\) which stores which strings were passed into `fn` by `walk`. Often in previous chapters, we have made dedicated types for this to spy on function/method invocations but in this case, we can just pass in an anonymous function for `fn` that closes over `got`.
+* We use an anonymous `struct` with a `Name` field of type string to go for the simplest "happy" path.
+* Finally, call `walk` with `x` and the spy and for now just check the length of `got`, we'll be more specific with our assertions once we've got something very basic working.
 
 ## Try to run the test
 
-```
+```text
 ./reflection_test.go:21:2: undefined: walk
 ```
 
@@ -79,7 +79,7 @@ func walk(x interface{}, fn func(input string)) {
 
 Try and run the test again
 
-```
+```text
 === RUN   TestWalk
 --- FAIL: TestWalk (0.00s)
     reflection_test.go:19: wrong number of function calls, got 0 want 1
@@ -110,7 +110,7 @@ if got[0] != expected {
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestWalk
 --- FAIL: TestWalk (0.00s)
     reflection_test.go:23: got 'I still can't believe South Korea beat Germany 2-0 to put them last in their group', want 'Chris'
@@ -127,7 +127,7 @@ func walk(x interface{}, fn func(input string)) {
 }
 ```
 
-This code is _very unsafe and very naive_ but remembers our goal when we are in "red" (the tests failing) is to write the smallest amount of code possible. We then write more tests to address our concerns.
+This code is _very unsafe and very naive_ but remembers our goal when we are in "red" \(the tests failing\) is to write the smallest amount of code possible. We then write more tests to address our concerns.
 
 We need to use reflection to have a look at `x` and try and look at its properties.
 
@@ -135,8 +135,8 @@ The [reflect package](https://godoc.org/reflect) has a function `ValueOf` which 
 
 We then make some very optimistic assumptions about the value passed in
 
-- We look at the first and only field, there may be no fields at all which would cause a panic
-- We then call `String()` which returns the underlying value as a string but we know it would be wrong if the field was something other than a string.
+* We look at the first and only field, there may be no fields at all which would cause a panic
+* We then call `String()` which returns the underlying value as a string but we know it would be wrong if the field was something other than a string.
 
 ## Refactor
 
@@ -197,7 +197,7 @@ Add the following scenario to the `cases`.
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestWalk/Struct_with_two_string_fields
     --- FAIL: TestWalk/Struct_with_two_string_fields (0.00s)
         reflection_test.go:40: got [Chris], want [Chris London]
@@ -241,7 +241,7 @@ Add the following case
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestWalk/Struct_with_non_string_field
     --- FAIL: TestWalk/Struct_with_non_string_field (0.00s)
         reflection_test.go:46: got [Chris <int Value>], want [Chris]
@@ -327,7 +327,7 @@ Now we can add this to our cases which reads a lot clearer than before
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestWalk/Nested_fields
     --- FAIL: TestWalk/Nested_fields (0.00s)
         reflection_test.go:54: got [Chris], want [Chris London]
@@ -397,7 +397,7 @@ Add this case
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestWalk/Pointers_to_things
 panic: reflect: call of reflect.Value.NumField on ptr Value [recovered]
     panic: reflect: call of reflect.Value.NumField on ptr Value
@@ -461,8 +461,8 @@ func getValue(x interface{}) reflect.Value {
 
 This actually adds _more_ code but I feel the abstraction level is right.
 
-- Get the `reflect.Value` of `x` so I can inspect it, I don't care how.
-- Iterate over the fields, doing whatever needs to be done depending on its type.
+* Get the `reflect.Value` of `x` so I can inspect it, I don't care how.
+* Iterate over the fields, doing whatever needs to be done depending on its type.
 
 Next, we need to cover slices.
 
@@ -481,7 +481,7 @@ Next, we need to cover slices.
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestWalk/Slices
 panic: reflect: call of reflect.Value.NumField on slice Value [recovered]
     panic: reflect: call of reflect.Value.NumField on slice Value
@@ -523,10 +523,10 @@ This works but it's yucky. No worries, we have working code backed by tests so w
 
 If you think a little abstractly, we want to call `walk` on either
 
-- Each field in a struct
-- Each _thing_ in a slice
+* Each field in a struct
+* Each _thing_ in a slice
 
-Our code at the moment does this but doesn't reflect it very well. We just have a check at the start to see if it's a slice (with a `return` to stop the rest of the code executing) and if it's not we just assume it's a struct.
+Our code at the moment does this but doesn't reflect it very well. We just have a check at the start to see if it's a slice \(with a `return` to stop the rest of the code executing\) and if it's not we just assume it's a struct.
 
 Let's rework the code so instead we check the type _first_ and then do our work.
 
@@ -581,8 +581,8 @@ If the `value` is a `reflect.String` then we just call `fn` like normal.
 
 Otherwise, our `switch` will extract out two things depending on the type
 
-- How many fields there are
-- How to extract the `Value` (`Field` or `Index`)
+* How many fields there are
+* How to extract the `Value` \(`Field` or `Index`\)
 
 Once we've determined those things we can iterate through `numberOfValues` calling `walk` with the result of the `getField` function.
 
@@ -605,7 +605,7 @@ Add to the cases
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestWalk/Arrays
     --- FAIL: TestWalk/Arrays (0.00s)
         reflection_test.go:78: got [], want [London Reykjavík]
@@ -656,7 +656,7 @@ The final type we want to handle is `map`.
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestWalk/Maps
     --- FAIL: TestWalk/Maps (0.00s)
         reflection_test.go:86: got [], want [Bar Boz]
@@ -774,8 +774,9 @@ func assertContains(t *testing.T, haystack []string, needle string)  {
 
 ## Wrapping up
 
-- Introduced some of the concepts from the `reflect` package.
-- Used recursion to traverse arbitrary data structures.
-- Did an in retrospect bad refactor but didn't get too upset about it. By working iteratively with tests it's not such a big deal.
-- This only covered a small aspect of reflection. [The Go blog has an excellent post covering more details](https://blog.golang.org/laws-of-reflection).
-- Now that you know about reflection, do your best to avoid using it.
+* Introduced some of the concepts from the `reflect` package.
+* Used recursion to traverse arbitrary data structures.
+* Did an in retrospect bad refactor but didn't get too upset about it. By working iteratively with tests it's not such a big deal.
+* This only covered a small aspect of reflection. [The Go blog has an excellent post covering more details](https://blog.golang.org/laws-of-reflection).
+* Now that you know about reflection, do your best to avoid using it.
+

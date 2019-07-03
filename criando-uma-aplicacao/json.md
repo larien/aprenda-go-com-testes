@@ -1,6 +1,6 @@
-# JSON, routing & embedding
+# JSON, roteamento and embedding
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/json)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/json)
 
 [In the previous chapter](http-server.md) we created a web server to store how many games players have won.
 
@@ -72,7 +72,6 @@ func (i *InMemoryPlayerStore) RecordWin(name string) {
 func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
     return i.store[name]
 }
-
 ```
 
 ```go
@@ -121,7 +120,7 @@ Before worrying about actual scores and JSON we will try and keep the changes sm
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestLeague/it_returns_200_on_/league
 panic: runtime error: slice bounds out of range [recovered]
     panic: runtime error: slice bounds out of range
@@ -145,7 +144,7 @@ In the previous chapter, we mentioned this was a fairly naive way of doing our r
 
 ## Write enough code to make it pass
 
-Go has a built-in routing mechanism called [`ServeMux`](https://golang.org/pkg/net/http/#ServeMux) (request multiplexer) which lets you attach `http.Handler`s to particular request paths.
+Go has a built-in routing mechanism called [`ServeMux`](https://golang.org/pkg/net/http/#ServeMux) \(request multiplexer\) which lets you attach `http.Handler`s to particular request paths.
 
 Let's commit some sins and get the tests passing in the quickest way we can, knowing we can refactor it with safety once we know the tests are passing.
 
@@ -173,10 +172,10 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-- When the request starts we create a router and then we tell it for `x` path use `y` handler.
-- So for our new endpoint, we use `http.HandlerFunc` and an _anonymous function_ to `w.WriteHeader(http.StatusOK)` when `/league` is requested to make our new test pass.
-- For the `/players/` route we just cut and paste our code into another `http.HandlerFunc`.
-- Finally, we handle the request that came in by calling our new router's `ServeHTTP` (notice how `ServeMux` is _also_ an `http.Handler`?)
+* When the request starts we create a router and then we tell it for `x` path use `y` handler.
+* So for our new endpoint, we use `http.HandlerFunc` and an _anonymous function_ to `w.WriteHeader(http.StatusOK)` when `/league` is requested to make our new test pass.
+* For the `/players/` route we just cut and paste our code into another `http.HandlerFunc`.
+* Finally, we handle the request that came in by calling our new router's `ServeHTTP` \(notice how `ServeMux` is _also_ an `http.Handler`?\)
 
 The tests should now pass.
 
@@ -210,7 +209,7 @@ func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-It's quite odd (and inefficient) to be setting up a router as a request comes in and then calling it. What we ideally want to do is have some kind of `NewPlayerServer` function which will take our dependencies and do the one-time setup of creating the router. Each request can then just use that one instance of the router.
+It's quite odd \(and inefficient\) to be setting up a router as a request comes in and then calling it. What we ideally want to do is have some kind of `NewPlayerServer` function which will take our dependencies and do the one-time setup of creating the router. Each request can then just use that one instance of the router.
 
 ```go
 type PlayerServer struct {
@@ -235,9 +234,9 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-- `PlayerServer` now needs to store a router.
-- We have moved the routing creation out of `ServeHTTP` and into our `NewPlayerServer` so this only has to be done once, not per request.
-- You will need to update all the test and production code where we used to do `PlayerServer{&store}` with `NewPlayerServer(&store)`.
+* `PlayerServer` now needs to store a router.
+* We have moved the routing creation out of `ServeHTTP` and into our `NewPlayerServer` so this only has to be done once, not per request.
+* You will need to update all the test and production code where we used to do `PlayerServer{&store}` with `NewPlayerServer(&store)`.
 
 ### One final refactor
 
@@ -293,9 +292,9 @@ And you can use it with concrete types too, not just interfaces. As you'd expect
 
 ### Any downsides?
 
-You must be careful with embedding types because you will expose all public methods and fields of the type you embed. In our case, it is ok because we embedded just the _interface_ that we wanted to expose (`http.Handler`).
+You must be careful with embedding types because you will expose all public methods and fields of the type you embed. In our case, it is ok because we embedded just the _interface_ that we wanted to expose \(`http.Handler`\).
 
-If we had been lazy and embedded `http.ServeMux` instead (the concrete type) it would still work _but_ users of `PlayerServer` would be able to add new routes to our server because `Handle(path, handler)` would be public.
+If we had been lazy and embedded `http.ServeMux` instead \(the concrete type\) it would still work _but_ users of `PlayerServer` would be able to add new routes to our server because `Handle(path, handler)` would be public.
 
 **When embedding types, really think about what impact that has on your public API.**
 
@@ -305,7 +304,7 @@ Now we've restructured our application we can easily add new routes and have the
 
 We should return some JSON that looks something like this.
 
-```json
+```javascript
 [
    {
       "Name":"Bill",
@@ -352,10 +351,10 @@ You could argue a simpler initial step would be just to assert that the response
 
 In my experience tests that assert against JSON strings have the following problems.
 
-- *Brittleness*. If you change the data-model your tests will fail.
-- *Hard to debug*. It can be tricky to understand what the actual problem is when comparing two JSON strings.
-- *Poor intention*. Whilst the output should be JSON, what's really important is exactly what the data is, rather than how it's encoded.
-- *Re-testing the standard library*. There is no need to test how the standard library outputs JSON, it is already tested. Don't test other people's code.
+* _Brittleness_. If you change the data-model your tests will fail.
+* _Hard to debug_. It can be tricky to understand what the actual problem is when comparing two JSON strings.
+* _Poor intention_. Whilst the output should be JSON, what's really important is exactly what the data is, rather than how it's encoded.
+* _Re-testing the standard library_. There is no need to test how the standard library outputs JSON, it is already tested. Don't test other people's code.
 
 Instead, we should look to parse the JSON into data structures that are relevant for us to test with.
 
@@ -385,7 +384,7 @@ Parsing JSON can fail so `Decode` can return an `error`. There's no point contin
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestLeague/it_returns_200_on_/league
     --- FAIL: TestLeague/it_returns_200_on_/league (0.00s)
         server_test.go:107: Unable to parse response from server '' into slice of Player, 'unexpected end of JSON input'
@@ -413,8 +412,8 @@ The test now passes.
 
 Notice the lovely symmetry in the standard library.
 
-- To create an `Encoder` you need an `io.Writer` which is what `http.ResponseWriter` implements.
-- To create a `Decoder` you need an `io.Reader` which the `Body` field of our response spy implements.
+* To create an `Encoder` you need an `io.Writer` which is what `http.ResponseWriter` implements.
+* To create a `Decoder` you need an `io.Reader` which the `Body` field of our response spy implements.
 
 Throughout this book, we have used `io.Writer` and this is another demonstration of its prevalence in the standard library and how a lot of libraries easily work with it.
 
@@ -490,7 +489,7 @@ func TestLeague(t *testing.T) {
 
 ## Try to run the test
 
-```
+```text
 ./server_test.go:33:3: too few values in struct initializer
 ./server_test.go:70:3: too few values in struct initializer
 ```
@@ -501,7 +500,7 @@ You'll need to update the other tests as we have a new field in `StubPlayerStore
 
 Try running the tests again and you should get
 
-```
+```text
 === RUN   TestLeague/it_returns_the_league_table_as_JSON
     --- FAIL: TestLeague/it_returns_the_league_table_as_JSON (0.00s)
         server_test.go:124: got [{Chris 20}] want [{Cleo 32} {Chris 20} {Tiest 14}]
@@ -530,7 +529,7 @@ func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 
 Try and run the tests.
 
-```
+```text
 # github.com/quii/learn-go-with-tests/json-and-io/v4
 ./main.go:9:50: cannot use NewInMemoryPlayerStore() (type *InMemoryPlayerStore) as type PlayerStore in argument to NewPlayerServer:
     *InMemoryPlayerStore does not implement PlayerStore (missing GetLeague method)
@@ -643,7 +642,7 @@ if response.Result().Header.Get("content-type") != "application/json" {
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestLeague/it_returns_the_league_table_as_JSON
     --- FAIL: TestLeague/it_returns_the_league_table_as_JSON (0.00s)
         server_test.go:124: response did not have content-type of application/json, got map[Content-Type:[text/plain; charset=utf-8]]
@@ -725,7 +724,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 ## Try to run the test
 
-```
+```text
 === RUN   TestRecordingWinsAndRetrievingThem/get_league
     --- FAIL: TestRecordingWinsAndRetrievingThem/get_league (0.00s)
         server_integration_test.go:35: got [] want [{Pepper 3}]
@@ -755,6 +754,7 @@ We've continued to safely iterate on our program using TDD, making it support ne
 
 What we've covered:
 
-- **Routing**. The standard library offers you an easy to use type to do routing. It fully embraces the `http.Handler` interface in that you assign routes to `Handler`s and the router itself is also a `Handler`. It does not have some features you might expect though such as path variables (e.g `/users/{id}`). You can easily parse this information yourself but you might want to consider looking at other routing libraries if it becomes a burden. Most of the popular ones stick to the standard library's philosophy of also implementing `http.Handler`.
-- **Type embedding**. We touched a little on this technique but you can [learn more about it from Effective Go](https://golang.org/doc/effective_go.html#embedding). If there is one thing you should take away from this is that it can be extremely useful but _always thinking about your public API, only expose what's appropriate_.
-- **JSON deserializing and serializing**. The standard library makes it very trivial to serialise and deserialise your data. It is also open to configuration and you can customise how these data transformations work if necessary.
+* **Routing**. The standard library offers you an easy to use type to do routing. It fully embraces the `http.Handler` interface in that you assign routes to `Handler`s and the router itself is also a `Handler`. It does not have some features you might expect though such as path variables \(e.g `/users/{id}`\). You can easily parse this information yourself but you might want to consider looking at other routing libraries if it becomes a burden. Most of the popular ones stick to the standard library's philosophy of also implementing `http.Handler`.
+* **Type embedding**. We touched a little on this technique but you can [learn more about it from Effective Go](https://golang.org/doc/effective_go.html#embedding). If there is one thing you should take away from this is that it can be extremely useful but _always thinking about your public API, only expose what's appropriate_.
+* **JSON deserializing and serializing**. The standard library makes it very trivial to serialise and deserialise your data. It is also open to configuration and you can customise how these data transformations work if necessary.
+
