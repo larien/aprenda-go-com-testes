@@ -1,8 +1,8 @@
-# Table of contents
+# Índice
 
 -   [Aprenda Go com Testes](gb-readme.md)
 
-## Fundamentos de Go
+## Primeiros Passos com Go
 
 -   [Instalar o Go](install-go.md)
 -   [Olá, mundo](hello-world.md)
