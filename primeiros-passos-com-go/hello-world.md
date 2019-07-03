@@ -1,6 +1,6 @@
-# Hello, World
+# Olá, mundo
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/hello-world)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/hello-world)
 
 It is traditional for your first program in a new language to be Hello, world.
 
@@ -8,7 +8,7 @@ In the [previous chapter](install-go.md#go-environment) we discussed how Go is o
 
 Make a directory in the following path `$GOPATH/src/github.com/{your-user-id}/hello`.
 
-So if you're on a unix based OS and your username is "bob" and you are happy to stick with Go's conventions about `$GOPATH` (which is the easiest way of setting up) you could run `mkdir -p $GOPATH/src/github.com/bob/hello`.
+So if you're on a unix based OS and your username is "bob" and you are happy to stick with Go's conventions about `$GOPATH` \(which is the easiest way of setting up\) you could run `mkdir -p $GOPATH/src/github.com/bob/hello`.
 
 Create a file in this directory called `hello.go` and write this code. To run it type `go run hello.go`.
 
@@ -86,6 +86,7 @@ For now it's enough to know that your `t` of type `*testing.T` is your "hook" in
 We've covered some new topics:
 
 #### `if`
+
 If statements in Go are very much like other programming languages.
 
 #### Declaring variables
@@ -177,11 +178,9 @@ When you run the tests they should now pass. Normally as part of the TDD cycle w
 
 ### A note on source control
 
-At this point, if you are using source control \(which you should!\) I would
-`commit` the code as it is. We have working software backed by a test.
+At this point, if you are using source control \(which you should!\) I would `commit` the code as it is. We have working software backed by a test.
 
-I _wouldn't_ push to master though, because I plan to refactor next. It is nice
-to commit at this point in case you somehow get into a mess with refactoring - you can always go back to the working version.
+I _wouldn't_ push to master though, because I plan to refactor next. It is nice to commit at this point in case you somehow get into a mess with refactoring - you can always go back to the working version.
 
 There's not a lot to refactor here, but we can introduce another language feature _constants_.
 
@@ -299,8 +298,7 @@ If we run our tests we should see it satisfies the new requirement and we haven'
 
 ### Back to source control
 
-Now we are happy with the code I would amend the previous commit so we only
-check in the lovely version of our code with its test.
+Now we are happy with the code I would amend the previous commit so we only check in the lovely version of our code with its test.
 
 ### Discipline
 
@@ -518,3 +516,4 @@ By now you should have some understanding of:
 In our case we've gone from `Hello()` to `Hello("name")`, to `Hello("name", "French")` in small, easy to understand steps.
 
 This is of course trivial compared to "real world" software but the principles still stand. TDD is a skill that needs practice to develop but by being able to break problems down into smaller components that you can test you will have a much easier time writing software.
+

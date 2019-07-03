@@ -1,6 +1,6 @@
-# Iteration
+# Iteração
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/for)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/for)
 
 To do stuff repeatedly in Go, you'll need `for`. In Go there are no `while`, `do`, `until` keywords, you can only use `for`. Which is a good thing!
 
@@ -105,7 +105,7 @@ When the benchmark code is executed, it runs `b.N` times and measures how long i
 
 The amount of times the code is run shouldn't matter to you, the framework will determine what is a "good" value for that to let you have some decent results.
 
-To run the benchmarks do `go test -bench=.` (or if you're in Windows Powershell `go test -bench="."`)
+To run the benchmarks do `go test -bench=.` \(or if you're in Windows Powershell `go test -bench="."`\)
 
 ```text
 goos: darwin
@@ -130,3 +130,4 @@ _NOTE_ by default Benchmarks are run sequentially.
 * More TDD practice
 * Learned `for`
 * Learned how to write benchmarks
+

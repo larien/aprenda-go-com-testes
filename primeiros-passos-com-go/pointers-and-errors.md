@@ -1,6 +1,6 @@
-# Pointers & errors
+# Ponteiros e erros
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/pointers)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/pointers)
 
 We learned about structs in the last section which let us capture a number of values related around a concept.
 
@@ -28,7 +28,7 @@ func TestWallet(t *testing.T) {
 }
 ```
 
-In the [previous example](./structs-methods-and-interfaces.md) we accessed fields directly with the field name, however in our _very secure wallet_ we don't want to expose our inner state to the rest of the world. We want to control access via methods.
+In the [previous example](structs-methods-and-interfaces.md) we accessed fields directly with the field name, however in our _very secure wallet_ we don't want to expose our inner state to the rest of the world. We want to control access via methods.
 
 ## Try to run the test
 
@@ -79,7 +79,7 @@ type Wallet struct {
 }
 ```
 
-In Go if a symbol (so variables, types, functions et al) starts with a lowercase symbol then it is private _outside the package it's defined in_.
+In Go if a symbol \(so variables, types, functions et al\) starts with a lowercase symbol then it is private _outside the package it's defined in_.
 
 In our case we want our methods to be able to manipulate this value but no one else.
 
@@ -659,3 +659,4 @@ func assertError(t *testing.T, got error, want error) {
 * Can let you implement interfaces
 
 Pointers and errors are a big part of writing Go that you need to get comfortable with. Thankfully the compiler will _usually_ help you out if you do something wrong, just take your time and read the error.
+

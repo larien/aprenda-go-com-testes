@@ -10,19 +10,19 @@ Para propósitos de demonstração, vamos te mostrar o procedimento de instalaç
 
 O processo de instalação é bem simples. Primeiro, o que você precisa fazer é executar o comando abaixo pra instalar o homebrew (brew). O Brew depende do Xcode, então você deve se certificar de instalá-lo primeiro.
 
-```sh
+```bash
 xcode-select --install
 ```
 
 Depois, execute o comando a seguir para instalar o homebrew:
 
-```sh
+```bash
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
 Agora você consegue instalar o Go:
 
-```sh
+```bash
 brew install go
 ```
 
@@ -30,7 +30,7 @@ _Siga todas as instruções recomendadas pelo seu gerenciador de pacotes. **Nota
 
 Você pode verificar a instalação com:
 
-```sh
+```bash
 $ go version
 go version go1.10 darwin/amd64
 ```
@@ -45,7 +45,7 @@ Você precisa definir a variável de ambiente para que possa utilizar futurament
 
 Atualize seu .bash_profile para conter os seguintes `exports`:
 
-```sh
+```bash
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 ```
@@ -56,7 +56,7 @@ O Go presume que seu workspace contenha uma estrutura de diretórios específica
 
 Ele coloca seus arquivos em três diretórios: todo o código-fonte fica em `src`, os objetos dos pacotes ficam em `pkg` e os programas compilados são colocados em `bin`. É possível criar esses diretórios com o comando a seguir:
 
-```sh
+```bash
 mkdir -p $GOPATH/src $GOPATH/pkg $GOPATH/bin
 ```
 
@@ -68,19 +68,19 @@ A escolha de editor é bem pessoal. Você pode já ter um de sua preferência qu
 
 Você pode instalá-lo com o comando a seguir:
 
-```sh
+```bash
 brew cask install visual-studio-code
 ```
 
 Confirme que o VS Code foi instalado corretamente executando o seguinte comando:
 
-```sh
+```bash
 code .
 ```
 
 O VS Code é lançado com poucos softwares habilidados. Você pode habilitar novos softwares instalando extensões. Para adicionar o suporte a Go, você deve instalar uma extensão. Existem várias disponíveis para o VS Code, mas uma excepcional é a do [Luke Hoban](https://github.com/Microsoft/vscode-go). Instale-a da forma a seguir:
 
-```sh
+```bash
 code --install-extension ms-vscode.go
 ```
 
@@ -90,7 +90,7 @@ Quando abrir um arquivo Go pela primeira vez no VS Code, ele vai indicar que fer
 
 Uma boa opção para debugar seus programas em Go (que é integrado com o VS Code) é o Delve. Ele pode ser instalado da seguinte maneira usando `go get`:
 
-```sh
+```bash
 go get -u github.com/go-delve/delve/cmd/dlv
 ```
 
@@ -100,7 +100,7 @@ Uma melhoria sob o linter padrão pode ser configurada usando o [GolangCI-Lint](
 
 Que pode ser instalada da seguinte forma:
 
-```sh
+```bash
 go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 ```
 

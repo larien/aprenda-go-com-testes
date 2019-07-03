@@ -5,4 +5,4 @@ structure:
   summary: SUMMARY.md
 
 redirects:
-  translation: ./translating.md
+  translation: ./meta/translating.md
