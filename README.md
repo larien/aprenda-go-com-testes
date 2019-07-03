@@ -141,14 +141,18 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 
 ## Traduzido com :blue_heart: por
 
--   Diego Nascimento
+-   [Diego Nascimento](https://github.com/diegonvs)
 
 [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
 
--   Jéssica Paz
+-   [Jéssica Paz](https://github.com/jessicapaz)
 
 [site](https://jessicapaz.me) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
 
--   Lauren Ferreira
+-   [Lauren Ferreira](https://github.com/larien)
 
 [site](https://larien.dev) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
+
+-   [Rafael Acioly](https://github.com/rafa-acioly)
+
+[twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
