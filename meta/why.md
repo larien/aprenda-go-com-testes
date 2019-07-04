@@ -223,77 +223,77 @@ Se estou apenas testando o comportamento, não deveríamos apenas escrever teste
 
 Logo, _qual_ é o nível de abstração correto?
 
-## Writing effective unit tests is a design problem
+## Escrevendo testes unitários de forma efetiva é um problema de design
 
-Forgetting about tests for a moment, it is desirable to have within your system self-contained, decoupled "units" centered around key concepts in your domain.
+Deixando testes de lado por um momento, é desejável "unidades" independentes e desacopladas dentro do seu sistema, centradas em torno de conceitos essenciais do seu domínio.
 
-I like to imagine these units as simple Lego bricks which have coherent APIs that I can combine with other bricks to make bigger systems. Underneath these APIs there could be dozens of things \(types, functions et al\) collaborating to make them work how they need to.
+Gosto de imaginar essas unidades tão simples quanto blocos de Lego que têm APIs coerentes e que eu possa combinar com outros blocos para criar sistemas maiores. Por baixo dessas APIs pode haver várisas coisas (tipos, funções etc) colaborando para fazê-las funcionar conforme esperado.
 
-For instance if you were writing a bank in Go, you might have an "account" package. It will present an API that does not leak implementation detail and is easy to integrate with.
+Por exemplo: se estiver escrevendo um banco em Go, você deve ter um pacote "conta". Ele vai te apresentar uma API que não vaza detalhes da implementação e é fácil de ser integrado.
 
-If you have these units that follow these properties you can write unit tests against their public APIs. _By definition_ these tests can only be testing useful behaviour. Underneath these units I am free to refactor the implementation as much as I need to and the tests for the most part should not get in the way.
+Se tiver essas unidades que seguem essas propriedades, você consegue escrever testes unitários para suas APIs públicas. _Por definição_, esses testes só podem testar os comportamentos importantes. Por baixo dos panos dessas unidades, fico livre para refatorar a implementação o quanto eu precisar e os testes para a maior parte dela não deve me atrapalhar.
 
-### Are these unit tests?
+### Mas são testes unitários, mesmo?
 
-**YES**. Unit tests are against "units" like I described. They were _never_ about only being against a single class/function/whatever.
+**SIM**. Testes unitários são feitos para "unidades", como já descrevi. Eles _nunca_ devem ser feitos para uma classe/função/seja lá o que for.
 
-## Bringing these concepts together
+## Conclusão
 
-We've covered
+Falamos sobre
 
--   Refactoring
--   Unit tests
--   Unit design
+-   Refatoração
+-   Testes unitários
+-   Desenvolvimento de unidade
 
-What we can start to see is that these facets of software design reinforce each other.
+O que podemos começar a ver é que essas facetas do desenvolvimento de software reforçam uma à outra.
 
-### Refactoring
+### Refatoração
 
--   Gives us signals about our unit tests. If we have to do manual checks, we need more tests. If tests are wrongly failing then our tests are at the wrong abstraction level \(or have no value and should be deleted\).
--   Helps us handle the complexities within and between our units.
+-   Nos dá sinais sobre nossos testes unitários. Se precisamos fazer validações manuais, precisamos de mais testes. Se testes estão falhando incorretamente, então nossos testes estão no nível errado de abstração (ou não têm valor e precisam ser deletados).
+-   Nos ajuda a lidar com as complexidades dentro e entre nossas unidades.
 
-### Unit tests
+### Testes unitários
 
--   Give a safety net to refactor.
--   Verify and document the behaviour of our units.
+-   Nos dá a garantia para refatoração.
+-   Verificam e documentam o comportamento de nossas unidades.
 
-### \(Well designed\) units
+### Unidades (bem definidas)
 
--   Easy to write _meaningful_ unit tests.
--   Easy to refactor.
+-   Facilitam a escrita de testes unitários _significativos_.
+-   Facilitam a refatoração.
 
-Is there a process to help us arrive at a point where we can constantly refactor our code to manage complexity and keep our systems malleable?
+Há um processo que nos ajuda a alcançar um ponto onde podemos refatorar nosso código para lidaar com a complexidade e manter nossos sistemas maleáveis?
 
-## Why Test Driven Development \(TDD\)
+## Por que Desenvolvimento Orientado a Testes (TDD)
 
-Some people might take Lehman's quotes about how software has to change and overthink elaborate designs, wasting lots of time upfront trying to create the "perfect" extensible system and end up getting it wrong and going nowhere.
+Algumas pessoas levam as citações de Lehman sobre como o software deve mudar a sério demais e elaboram sistemas complexos demais, gastando muito tempo tentando prever o impossível para criar o sistema extensível "perfeito" e acabam entendendo da forma errada e chegando a lugar nenhum.
 
-This is the bad old days of software where an analyst team would spend 6 months writing a requirements document and an architect team would spend another 6 months coming up with a design and a few years later the whole project fails.
+Isso vem da época das trevas do software onde um time de analistas costumava perder seis meses escrevendo um documento de requerimentos e a equipe de arquitetura perdia outros seis meses para desenvolvê-lo e alguns anos depois o projeto inteiro falhava.
 
-I say bad old days but this still happens!
+Eu disse que era uma época das trevas, mas isso ainda acontece!
 
-Agile teaches us that we need to work iteratively, starting small and evolving the software so that we get fast feedback on the design of our software and how it works with real users; TDD enforces this approach.
+O movimento ágil nos ensina que precisamos trabalhar de forma iterativa, começando com pouca coisa e evoluindo o software para que tenhamos retorno rápido do design do nosso software e como ele trabalha com usuários reais; o TDD reforça essa abordagem.
 
-TDD addresses the laws that Lehman talks about and other lessons hard learned through history by encouraging a methodology of constantly refactoring and delivering iteratively.
+O TDD aborda as leis que Lehman fala sobre e outras lições difíceis aprendidas no decorrer da história encorajando uma metodologia de refatoração constante e entrega contínua.
 
-### Small steps
+### Etapas pequenas
 
--   Write a small test for a small amount of desired behaviour
--   Check the test fails with a clear error \(red\)
--   Write the minimal amount of code to make the test pass \(green\)
--   Refactor
--   Repeat
+-   Escrever um teste pequeno para uma unidade do comportamento desejado
+-   Verificar que o teste falha com um erro claro (vermelho)
+-   Escrever o mínimo de código para fazer o teste passar (verde)
+-   Refatorar
+-   Repetir
 
-As you become proficient, this way of working will become natural and fast.
+Conforme você pratica, essa mentalidade vai se tornar natural e rápida.
 
-You'll come to expect this feedback loop to not take very long and feel uneasy if you're in a state where the system isn't "green" because it indicates you may be down a rabbit hole.
+Você vai esperar que esse ciclo de feedback não leve muito tempo e se sentir desconfortável se estiver em um estado em que seu sistema não está "verde" por isso poder indicar que você pode ter deixado algo passar.
 
-You'll always be driving small & useful functionality comfortably backed by the feedback from your tests.
+Você sempre vai desenvolver de forma a criar funcionalidades pequenas & úteis confortavelmente reforçadas pelo feedback dos seus testes.
 
-## Wrapping up
+## Resumindo
 
--   The strength of software is that we can change it. _Most_ software will require change over time in unpredictable ways; but dont try and over-engineer because it's too hard to predict the future.
--   Instead we need to make it so we can keep our software malleable. In order to change software we have to refactor it as it evolves or it will turn into a mess
--   A good test suite can help you refactor quicker and in a less stressful manner
--   Writing good unit tests is a design problem so think about structuring your code so you have meaningful units that you can integrate together like Lego bricks.
--   TDD can help and force you to design well factored software iteratively, backed by tests to help future work as it arrives.
+-   O ponto forte do software é que podemos mudá-lo. A _maioria_ dos software requer mudança com o tempo de formas imprevisíveis; não tente pensar muito à frente porque é difícil prever o futuro.
+-   Ao invés disso, precisamos criar nosso software de forma que ele possa se manter maleável. Para mudar o software precisamos refatorá-lo conforme ele evolui, ou vai acabar virando uma bagunça.
+-   Um bom conjunto de testes pode te ajudar a refatorar mais rápido e de forma menos estressante.
+-   Escrever bons testes unitários é um problema de design. Logo, pense em estruturar seu código de forma que ele tenha unidades significativas que possam ser unidas como blocos de Lego.
+-   O TDD pode ajudar e te forçar a desenvolver softwares bem fatorados continuamente, reforçados por testes para te ajudar com futuros trabalhos que podem chegar.
