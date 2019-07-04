@@ -79,151 +79,149 @@ Sei que eu e muitas outras pessoas só _pensaram_ que estavam refatorando, mas e
 
 Então o que é refatoração?
 
-### Factorisation
+### Fatoração
 
-When learning maths at school you probably learned about factorisation. Here's a very simple example
+Quando estudava matemática na escola, você provavelmente aprendeu fatoração. Aqui vai um exemplo bem simples:
 
-Calculate `1/2 + 1/4`
+-   Calcule `1/2 + 1/4`
 
-To do this you _factorise_ the denominators, turning the expression into
+Para fazer isso você `fatora` os denominadores (você também pode conhecer como MMC, mínimo múltiplo comum), transformando a expressão em `2/4 + 1/4` que então pode se transformar em `3/4`.
 
-`2/4 + 1/4` which you can then turn into `3/4`.
+Podemos tirar algumas lições importantes disso. Quando `fatoramos a expressão`, `não mudamos o que ela faz`. Ambas as expreções são iguais a `3/4`, mas facilitamos a forma como trabalhamos com esse resultado; trocar `1/2` por `2/4` torna nosso "domínio" mais fácil.
 
-We can take some important lessons from this. When we _factorise the expression_ we have **not changed the meaning of the expression**. Both of them equal `3/4` but we have made it easier for us to work with; by changing `1/2` to `2/4` it fits into our "domain" easier.
+Quando refatora seu código, você tenta encontrar formar de tornar seu código mais fácil de entender e "encaixar" no seu entendimento atual do que o sistema precisa fazer. Mas é extremamente importante que **o comportamento do código não seja alterado**.
 
-When you refactor your code, you are trying to find ways of making your code easier to understand and "fit" into your current understanding of what the system needs to do. Crucially **you should not be changing behaviour**.
+#### Exemplo em Go
 
-#### An example in Go
+Aqui está uma função que cumprimenta `nome` em uma `linguagem` específica:
 
-Here is a function which greets `name` in a particular `language`
+```go
+func Ola(nome, linguagem string) string {
 
-```text
-func Hello(name, language string) string {
-
-  if language == "es" {
-     return "Hola, " + name
+  if linguagem == "br" {
+     return "Olá, " + nome
   }
 
-  if language == "fr" {
-     return "Bonjour, " + name
+  if linguagem == "fr" {
+     return "Bonjour, " + nome
   }
 
-  // imagine dozens more languages
+  // e mais várias linguagens
 
-  return "Hello, " + name
+  return "Hello, " + nome
 }
 ```
 
-Having dozens of `if` statements doesn't feel good and we have a duplication of concatenating a language specific greeting with `,` and the `name.` So I'll refactor the code.
+Não é bom ter várias condicionais `if` e temos uma duplicação que concatena um cumprimento específico da linguagem com `,` e o `nome`. Logo, vou refatorar o código.
 
-```text
-func Hello(name, language string) string {
+```go
+func Ola(nome, linguagem string) string {
       return fmt.Sprintf(
           "%s, %s",
-          greeting(language),
-          name,
+          cumprimento(linguagem),
+          nome,
       )
 }
 
-var greetings = map[string]string {
-  es: "Hola",
+var cumprimentos = map[string]string {
+  br: "Olá",
   fr: "Bonjour",
-  //etc..
+  // etc..
 }
 
-func greeting(language string) string {
-  greeting, exists := greetings[language]
+func cumprimento(linguagem string) string {
+  cumprimento, existe := cumprimentos[linguagem]
 
-  if exists {
-     return greeting
+  if existe {
+     return cumprimento
   }
 
   return "Hello"
 }
 ```
 
-The nature of this refactor isn't actually important, what's important is I haven't changed behaviour.
+A natureza dessa refatoração não é tão importante. O que importa é que não mudei o comportamento do código.
 
-When refactoring you can do whatever you like, add interfaces, new types, functions, methods etc. The only rule is you don't change behaviour
+Quando estiver refatorando, você pode fazer o que quiser: adicionar interfaces, tipos novos, funções, métodos etc. A única regra é que você não mude o comportamento do software.
 
-### When refactoring code you must not be changing behaviour
+### Quando estiver refatorando o código, seu comportamento não deve ser modificado
 
-This is very important. If you are changing behaviour at the same time you are doing _two_ things at once. As software engineers we learn to break systems up into different files/packages/functions/etc because we know trying to understand a big blob of stuff is hard.
+Isso é muito importante. Se estiver mudando o comportamento enquanto refatora, você vai estar fazendo _duas_ coisas de uma vez. Como engenheiros de software, aprendemos a dividir o sistema em diferentes arquivos/pacotes/funções/etc porque sabemos que tentar entender algo enorme e acoplado é difícil.
 
-We don't want to have to be thinking about lots of things at once because that's when we make mistakes. I've witnessed so many refactoring endeavours fail because the developers are biting off more than they can chew.
+Não queremos ter que pensar sobre muitas coisas ao mesmo tempo porque é aí que cometemos erros. Já vi tantos esforços de refatoração falharem pelas pessoas que estavam desenvolvendo darem um passo maior que a perna.
 
-When I was doing factorisations in maths classes with pen and paper I would have to manually check that I hadn't changed the meaning of the expressions in my head. How do we know we aren't changing behaviour when refactoring when working with code, especially on a system that is non-trivial?
+Quando fazia fatorações nas aulas de matemática com papel e caneta, eu precisava verificar manualmente que não havia mudado o significado das expressões na minha cabeça. Como sabemos que não estamos mudando o comportamento quando refatoramos as coisas no código, especialmente em um sistema que não é tão simples?
 
-Those who choose not to write tests will typically be reliant on manual testing. For anything other than a small project this will be a tremendous time-sink and does not scale in the long run.
+As pessoas que escolhem não escrever testes vão depender do teste manual. Para quem não trabalha em um projeto pequeno, isso vai ser uma tremenda perda de tempo e não vai escalar a longo prazo.
 
-**In order to safely refactor you need unit tests** because they provide
+**Para ter uma refatoração segura, você precisa escrever testes unitários**, porque eles te dão:
 
--   Confidence you can reshape code without worrying about changing behaviour
--   Documentation for humans as to how the system should behave
--   Much faster and more reliable feedback than manual testing
+-   Confiança de que você pode mudar o código sem se preocupar com mudar seu comportamento
+-   Documentação para humanos sobre como o sistema deve se comportar
+-   Feedback mais rápido e confiável que o teste manual
 
-#### An example in Go
+#### Exemplo em Go
 
-A unit test for our `Hello` function could look like this
+Um teste unitário para a nossa função `Ola` pode ser feito assim:
 
-```text
-func TestHello(t *testing.T) {
-  got := Hello(“Chris”, es)
-  want := "Hola, Chris"
+```go
+func TestOla(t *testing.T) {
+  obtido := Ola(“Chris”, br)
+  esperado := "Olá, Chris"
 
-  if got != want {
-     t.Errorf("got '%s' want '%s'", got, want)
+  if obtido != esperado {
+     t.Errorf("obtido '%s' esperado '%s'", obtido, esperado)
   }
 }
 ```
 
-At the command line I can run `go test` and get immediate feedback as to whether my refactoring efforts have altered behaviour. In practice it's best to learn the magic button to run your tests within your editor/IDE.
+Na linha de comando, posso executar `go test` e obter feedback imediato se minha refatoração alterou o comportamento da função. Na prática, é melhor aprender aonde fica o botão mágico que vai executar seus testes dentro do seu editor/IDE (ou rodar os testes sempre que salvar o arquivo).
 
-You want to get in to a state where you are doing
+Você deve entrar em uma rotina em que acaba fazendo:
 
--   Small refactor
--   Run tests
--   Repeat
+-   Refatorar uma parte pequena
+-   Executar testes
+-   Repetir
 
-All within a very tight feedback loop so you don't go down rabbit holes and make mistakes.
+Tudo dentro de um ciclo de feedback contínuo para que você não caia em uma cilada e cometa erros.
 
-Having a project where all your key behaviours are unit tested and give you feedback well under a second is a very empowering safety net to do bold refactoring when you need to. This helps us manage the incoming force of complexity that Lehman describes.
+Ter um projeto onde os seus principais comportamentos são testados unicamente e te dão feedback em menos de um segundo traz uma relação forte de segurança para refatorar sempre que for necessário. Isso nos ajuda a gerenciar a complexidade crescente que Lehman descreve.
 
-## If unit tests are so great, why is there sometimes resistance to writing them?
+## Se testes unitários são tão bons, por que há resistência em escrevê-los?
 
-On the one hand you have people \(like me\) saying that unit tests are important for the long term health of your system because they ensure you can keep refactoring with confidence.
+De um lado, é possível ver pessoas (como eu) dizendo que testes unitários são importantes para a saúda do seu sistema a longo prazo, porque eles certificam que você possa continuar refatorando com confiança.
 
-On the other you have people describing experiences of unit tests actually _hindering_ refactoring.
+Do outro lado, é possível ver pessoas descrevendo experiências com testes unitários que na verdade _dificultaram_ a refatoração.
 
-Ask yourself, how often do you have to change your tests when refactoring? Over the years I have been on many projects with very good test coverage and yet the engineers are reluctant to refactor because of the perceived effort of changing tests.
+Se pergunte o seguinte: com qual frequência você precisa mudar seus testes quando refatora? Estive em diversos projetos com boa cobertura de testes e mesmo assim os engenheiros estavam relutantes em refatorar por causa do esforço perceptível de alterar testes.
 
-This is the opposite of what we are promised!
+Esse é o oposto do que prometemos!
 
-### Why is this happening?
+### Por que isso acontece?
 
-Imagine you were asked to develop a square and we thought the best way to accomplish that would be stick two triangles together.
+Imagine que te pediram para desenvolver um quadrado e você chegou à conclusão que seria necessário unir dois triângulos.
 
-![Two right-angled triangles to form a square](https://i.imgur.com/ela7SVf.jpg)
+![Dois triângulos retângulos formando um quadrado](https://i.imgur.com/ela7SVf.jpg)
 
-We write our unit tests around our square to make sure the sides are equal and then we write some tests around our triangles. We want to make sure our triangles render correctly so we assert that the angles sum up to 180 degrees, perhaps check we make 2 of them, etc etc. Test coverage is really important and writing these tests is pretty easy so why not?
+Escrevemos nossos testes unitários nos baseando no nosso quadrado para ter certeza de que os lados são iguais e depois escrevemos alguns testes em relação aos nossos triângulos. Queremos ter certeza de que nossos triângulos são renderizados corretamente, então afirmamos que os ângulos somados dos triângulos dão 180 graus, ou verificamos que os dois são criados, etc etc. A cobertura de testes é muito importante e escrever esses testes é bem fácil, então por que não?
 
-A few weeks later The Law of Continuous Change strikes our system and a new developer makes some changes. She now believes it would be better if squares were formed with 2 rectangles instead of 2 triangles.
+Algumas semanas depois, a Lei da Mudança Contínua bate no seu sistema e uma nova pessoa desenvolvedora faz algumas mudanças. Ela acredita que seria melhor se os quadrados fossem formados por dois retângulos ao invés dos dois triângulos.
 
-![Two rectangles to form a square](https://i.imgur.com/1G6rYqD.jpg)
+![Dois retângulos formando um quadrado](https://i.imgur.com/1G6rYqD.jpg)
 
-She tries to do this refactor and gets mixed signals from a number of failing tests. Has she actually broken important behaviours here? She now has to dig through these triangle tests and try and understand what's going on.
+Ela tenta fazer essa refatoração e percebe que alguns testes falharam. Ela quebrou algum comportamento realmente importante aqui? Agora ela tem que investigar esses testes de triângulo e entender o que está acontecendo.
 
-_It's not actually important that the square was formed out of triangles_ but **our tests have falsely elevated the importance of our implementation details**.
+_Na verdade, não é tão importante que o quadrado seja formado por triângulo_, mas **nossos testes fizeram com que isso parecesse mais importante do que deveria em relação aos detalhes da nossa implementação**
 
-## Favour testing behaviour rather than implementation detail
+## Favorecer o comportamento do teste ao invés do detalhe da implementação
 
-When I hear people complaining about unit tests it is often because the tests are at the wrong abstraction level. They're testing implementation details, overly spying on collaborators and mocking too much.
+Quando ouço pessoas reclamando sobre testes unitários, frequentemente o motivo é que eles estão em um nível errado de abstração. Eles testam detalhes da implementação, testando coisas muito específicas ou fazendo muitos mocks.
 
-I believe it stems from a misunderstanding of what unit tests are and chasing vanity metrics \(test coverage\).
+Acredito que isso deriva de uma falta de entendimento do que testes unitários são e perseguem métricas vaidosas (cobertura de testes).
 
-If I am saying just test behaviour, should we not just only write system/black-box tests? These kind of tests do have lots of value in terms of verifying key user journeys but they are typically expensive to write and slow to run. For that reason they're not too helpful for _refactoring_ because the feedback loop is slow. In addition black box tests don't tend to help you very much with root causes compared to unit tests.
+Se estou apenas testando o comportamento, não deveríamos apenas escrever testes de sistema/caixa preta? Esses tipos de testes geram muito valor em termos de verificar as principais jornadas do usuário, mas costumam ser difíceis de escrever e lentos para rodar. Por esse motivos, eles não são muito úteis para a _refatoração_ porque o ciclo de feedback é lento. Além disso, os testes de caixa preta tendem a não te ajudar muito com as causas de origem comparados aos testes unitários.
 
-So what _is_ the right abstraction level?
+Logo, _qual_ é o nível de abstração correto?
 
 ## Writing effective unit tests is a design problem
 
