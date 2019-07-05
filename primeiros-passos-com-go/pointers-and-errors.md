@@ -1,103 +1,107 @@
 # Ponteiros e erros
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/pointers)
+[**Você pode encontrar todos os códigos deste capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/pointers)
 
-We learned about structs in the last section which let us capture a number of values related around a concept.
 
-At some point you may wish to use structs to manage state, exposing methods to let users change the state in a way that you can control.
+Nós aprendemos sobre estruturas na última seção, o que nos possibilitou capturar valores com conceito relacionado.
 
-**Fintech loves Go** and uhhh bitcoins? So let's show what an amazing banking system we can make.
+Em algum momento talvez você deseje utilizar estruturas para gerenciar valores, expondo métodos que permitam usuários muda-los de um jeito que você possa controlar.
 
-Let's make a `Wallet` struct which let's us deposit `Bitcoin`.
+**[Fintechs](https://www.infowester.com/fintech.php) amam Go** e uhh bitcoins? Então vamos mostrar um sistema bancário incrível que podemos construir.
 
-## Write the test first
+Vamos construir uma estrutura de `Carteira` que possamos depositar `Bitcoin`.
+
+## Escreva o primeiro teste
 
 ```go
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-    wallet := Wallet{}
+    carteira := Carteira{}
 
-    wallet.Deposit(10)
+    carteira.Depositar(10)
 
-    got := wallet.Balance()
-    want := 10
+    valor := carteira.Saldo()
+    valorEsperado := 10
 
-    if got != want {
-        t.Errorf("got %d want %d", got, want)
+    if valor != valorEsperado {
+        t.Errorf("valor %d valorEsperado %d", valor, valorEsperado)
     }
 }
 ```
 
-In the [previous example](structs-methods-and-interfaces.md) we accessed fields directly with the field name, however in our _very secure wallet_ we don't want to expose our inner state to the rest of the world. We want to control access via methods.
+No [exemplo anterior](structs-methods-and-interfaces.md) nós acessamos campos diretamente pelo nome, entretanto na nossa _carteira super protegida_, nós não queremos expor o valor interno para o resto do mundo. Queremos controlar o acesso por meio de métodos.
 
-## Try to run the test
+## Tente rodar o teste
 
-`./wallet_test.go:7:12: undefined: Wallet`
+`./carteira_test.go:7:12: undefined: Carteira`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código para o código executar e verifique a saída de erro do teste
 
-The compiler doesn't know what a `Wallet` is so let's tell it.
+O compilador não sabe o que uma `Carteira` é, então vamos declara-la.
 
 ```go
-type Wallet struct { }
+type Carteira struct { }
 ```
 
-Now we've made our wallet, try and run the test again
+Agora que declaramos nossa carteira, tente rodar o teste novamente
 
 ```go
-./wallet_test.go:9:8: wallet.Deposit undefined (type Wallet has no field or method Deposit)
-./wallet_test.go:11:15: wallet.Balance undefined (type Wallet has no field or method Balance)
+./carteira_test.go:9:8: carteira.Depositar undefined (type Carteira has no field or method Depositar)
+./carteira_test.go:11:15: carteira.Saldo undefined (type Carteira has no field or method Saldo)
 ```
+Nós precisamos definir estes métodos.
 
-We need to define these methods.
-
-Remember to only do enough to make the tests run. We need to make sure our test fails correctly with a clear error message.
+Lembre-se de apenas fazer o necessário para fazer os testes rodarem. Nós precisamos ter certeza que nossos testes falhem corretamente com uma mensagem de erro clara.
 
 ```go
-func (w Wallet) Deposit(amount int) {
+func (c Carteira) Depositar(quantidade int) {
 
 }
 
-func (w Wallet) Balance() int {
+func (c Carteira) Saldo() int {
     return 0
 }
 ```
 
-If this syntax is unfamiliar go back and read the structs section.
+Se essa sintaxe não é familiar, dê uma lida na seção de structs.
 
-The tests should now compile and run
+Os testes agora devem compilar e rodar
 
-`wallet_test.go:15: got 0 want 10`
+`carteira_test.go:15: valor 0 valorEsperado 10`
 
-## Write enough code to make it pass
+## Codifique o suficiente para fazer passar
 
-We will need some kind of _balance_ variable in our struct to store the state
+Precisaremos de algum tipo de variável de _saldo_ em nossa estrutura para guardar o valor
 
 ```go
-type Wallet struct {
-    balance int
+type Carteira struct {
+    saldo int
 }
 ```
 
-In Go if a symbol \(so variables, types, functions et al\) starts with a lowercase symbol then it is private _outside the package it's defined in_.
+Em Go, se uma variável, tipo, função e etc, começam com um símbolo minúsculo, então esta será privada para _outros pacotes que não seja o que a definiu_.
 
-In our case we want our methods to be able to manipulate this value but no one else.
+No nosso caso, noś queremos que apenas nossos métodos sejam capazes de manipular os valores.
 
 Remember we can access the internal `balance` field in the struct using the "receiver" variable.
 
+Lembre-se, podemos acessar o valor interno do campo `saldo` usando a variável "receptora".
+
 ```go
-func (w Wallet) Deposit(amount int) {
-    w.balance += amount
+func (c Carteira) Depositar(quantidade int) {
+    c.saldo += quantidade
 }
 
-func (w Wallet) Balance() int {
-    return w.balance
+func (c Carteira) Saldo() int {
+    return c.saldo
 }
 ```
 
 With our career in fintech secured, run our tests and bask in the passing test
 
-`wallet_test.go:15: got 0 want 10`
+Com a nossa carreira em Fintechs segura, rode os testes para nos aquecermos para passarmos no teste.
+
+`carteira_test.go:15: valor 0 valorEsperado 10`
 
 ### ????
 
