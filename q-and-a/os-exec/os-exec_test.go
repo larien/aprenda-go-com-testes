@@ -33,7 +33,7 @@ func getXMLFromCommand() io.Reader {
 
 func TestGetDataIntegration(t *testing.T) {
 	got := GetData(getXMLFromCommand())
-	want := "HAPPY NEW YEAR!"
+	want := "FELIZ ANO NOVO!"
 
 	if got != want {
 		t.Errorf("got '%s', want '%s'", got, want)
@@ -43,11 +43,11 @@ func TestGetDataIntegration(t *testing.T) {
 func TestGetData(t *testing.T) {
 	input := strings.NewReader(`
 <payload>
-    <message>Cats are the best animal</message>
+    <message>Gatos são os melhores animais</message>
 </payload>`)
 
 	got := GetData(input)
-	want := "CATS ARE THE BEST ANIMAL"
+	want := "GATOS SÃO OS MELHORES ANIMAIS"
 
 	if got != want {
 		t.Errorf("got '%s', want '%s'", got, want)
