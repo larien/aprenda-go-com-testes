@@ -1,12 +1,12 @@
 # Estruturas, métodos e interfaces
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/structs)
+[**Você pode encontrar todo o código deste capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/structs)
 
-Suppose that we need some geometry code to calculate the perimeter of a rectangle given a height and width. We can write a `Perimeter(width float64, height float64)` function, where `float64` is for floating-point numbers like `123.45`.
+Suponha que precisamos de algum código de geometria para calcular o perímetro de um retângulo dado uma altura e largura. Nós podemos escrever uma função `Perimeter(width float64, height float64)`, onde `float64` é para números em ponto flutuante como `123.45`.
 
-The TDD cycle should be pretty familiar to you by now.
+O ciclo de TDD deve ser bem familiar para você agora.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
 func TestPerimeter(t *testing.T) {
@@ -19,13 +19,13 @@ func TestPerimeter(t *testing.T) {
 }
 ```
 
-Notice the new format string? The `f` is for our `float64` and the `.2` means print 2 decimal places.
+Percebe o novo formatador de string? O `f` é para nosso `float64` e o `.2` significa imprima 2 casas decimais.
 
-## Try to run the test
+## Tente executar o teste
 
 `./shapes_test.go:6:9: undefined: Perimeter`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva a mínima quantidade de código para executar o teste e verifique a saída de teste com falha
 
 ```go
 func Perimeter(width float64, height float64) float64 {
@@ -33,7 +33,7 @@ func Perimeter(width float64, height float64) float64 {
 }
 ```
 
-Results in `shapes_test.go:10: got 0 want 40`.
+Resulta em `shapes_test.go:10: got 0 want 40`.
 
 ## Write enough code to make it pass
 
