@@ -1,12 +1,12 @@
-# Integers
+# Inteiros
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/integers)**
+**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larienmf/learn-go-with-tests/tree/master/integers)**
 
-Integers work as you would expect. Let's write an add function to try things out. Create a test file called `adder_test.go` and write this code.
+Inteiros funcionam como é de se esperar. Vamos escrever uma função de soma para testar algumas coisas. Crie um arquivo de teste chamado `adder_test.go` e escreva o seguinte código.
 
-**note:** Go source files can only have one `package` per directory, make sure that your files are organised separately. [Here is a good explanation on this.](https://dave.cheney.net/2014/12/01/five-suggestions-for-setting-up-a-go-project)
+**nota****: Os arquivos-fonte de Go devem ter apenas um `package`(pacote) por diretório, verifique se os arquivos estão organizados separadamente. [Aqui tem uma boa explicação sobre isso.](https://dave.cheney.net/2014/12/01/five-suggestions-for-setting-up-a-go-project)
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
 package integers
@@ -23,21 +23,20 @@ func TestAdder(t *testing.T) {
 }
 ```
 
-You will notice that we're using `%d` as our format strings rather than `%s`. That's because we want it to print an integer rather than a string.
+Você deve ter notado que estamos usando `%d` como string de formatação, em vez de `%s`. Isso porque queremos que ele imprima um valor inteiro e não uma string.
+Observe também que não estamos mais usando o pacote main, em vez disso, definimos um pacote chamado integers, pois o nome sugere que ele agrupará funções para trabalhar com números inteiros, como Add.
 
-Also note that we are no longer using the main package, instead we've defined a package named integers, as the name suggests this will group functions for working with integers such as Add.
+## Tente e execute o teste
 
-## Try and run the test
+Execute o test com `go test`
 
-Run the test `go test`
-
-Inspect the compilation error
+Inspecione o erro de compilação
 
 `./adder_test.go:6:9: undefined: Add`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva a quantidade mínima de código para o teste rodar e verifique o erro na saída do teste
 
-Write enough code to satisfy the compiler _and that's all_ - remember we want to check that our tests fail for the correct reason.
+Escreva apenas o suficiente de código para satisfazer o compilador - lembre-se de que queremos verificar se nossos testes falham pelo motivo certo.
 
 ```go
 package integers
@@ -46,32 +45,30 @@ func Add(x, y int) int {
     return 0
 }
 ```
+Quando você tem mais de um argumento do mesmo tipo (no nosso caso dois inteiros) ao invés de ter `(x int e int)` você pode encurtá-lo para `(x, y int)`.
 
-When you have more than one argument of the same type \(in our case two integers\) rather than having `(x int, y int)` you can shorten it to `(x, y int)`.
-
-Now run the tests and we should be happy that the test is correctly reporting what is wrong.
+Agora execute os testes, devemos ficar felizes que o teste esteja relatando corretamente o que está errado.
 
 `adder_test.go:10: expected '4' but got '0'`
 
-If you have noticed we learnt about _named return value_ in the [last](hello-world.md#one...last...refactor?) section but aren't using the same here. It should generally be used when the meaning of the result isn't clear from context, in our case it's pretty much clear that `Add` function will add the parameters. You can refer [this](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki for more details.
+Você deve ter percebido que nós aprendemos sobre o _valor de retorno nomeado_ na [última](hello-world.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto, no nosso caso, é muito claro que a função `Add` irá adicionar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
-In the strictest sense of TDD we should now write the _minimal amount of code to make the test pass_. A pedantic programmer may do this
+No sentido estrito de TDD, devemos escrever a _quantidade mínima de código para fazer o teste passar_. Uma pessoa pedante pode fazer isso
 
 ```go
 func Add(x, y int) int {
     return 4
 }
 ```
+Ah hah! Frustração mais uma vez, TDD é uma farsa né?
 
-Ah hah! Foiled again, TDD is a sham right?
+Poderíamos escrever outro teste, com números diferentes para forçar o teste a falhar, mas isso parece um jogo de gato e rato.
 
-We could write another test, with some different numbers to force that test to fail but that feels like a game of cat and mouse.
+Quando estivermos mais familiarizados com a sintaxe do Go, apresentarei uma técnica chamada Testes Baseados em Propriedade, que interromperia desenvolvedores irritantes e ajudaria a encontrar bugs.
 
-Once we're more familiar with Go's syntax I will introduce a technique called Property Based Testing, which would stop annoying developers and help you find bugs.
-
-For now, let's fix it properly
+Por enquanto, vamos corrigi-lo corretamente
 
 ```go
 func Add(x, y int) int {
@@ -79,36 +76,35 @@ func Add(x, y int) int {
 }
 ```
 
-If you re-run the tests they should pass.
+Se você executar os testes novamente, eles devem passar.
 
-## Refactor
+## Refatoração
 
-There's not a lot in the _actual_ code we can really improve on here.
+Não há muitas melhorias que possamos fazer aqui.
 
-We explored earlier how by naming the return argument it appears in the documentation but also in most developer's text editors.
+Anteriormente, vimos como nomear o argumento de retorno que aparece na documentação e também na maioria dos editores de código.
 
-This is great because it aids the usability of code you are writing. It is preferable that a user can understand the usage of your code by just looking at the type signature and documentation.
+Isso é ótimo porque ajuda na usabilidade do código que você está escrevendo. É preferível que um usuário possa entender o uso de seu código apenas observando a assinatura de tipo e a documentação.
 
-You can add documentation to functions with comments, and these will appear in Go Doc just like when you look at the standard library's documentation.
+Você pode adicionar documentação em funções escrevendo comentários, e elas aparecerão no Go Doc como quando você olha a documentação da biblioteca padrão.
 
 ```go
-// Add takes two integers and returns the sum of them
+// Add recebe dois inteiros e retorna a soma deles
 func Add(x, y int) int {
     return x + y
 }
 ```
 
-### Examples
+### Exemplos
 
-If you really want to go the extra mile you can make [examples](https://blog.golang.org/examples). You will find a lot of examples in the documentation of the standard library.
+Se você realmente quer ir além, você pode fazer [exemplos](https://blog.golang.org/examples). Você encontrará muitos exemplos na documentação da biblioteca padrão.
 
-Often code examples that can be found outside the codebase, such as a readme file often become out of date and incorrect compared to the actual code because they don't get checked.
+Muitas vezes, exemplos de código que podem ser encontrados fora da base de código, como um arquivo readme, ficam desatualizados e incorretos em comparação com o código real, porque eles não são verificados.
 
-Go examples are executed just like tests so you can be confident examples reflect what the code actually does.
+Os exemplos de Go são executados da mesma forma que os testes, para que você possa ter certeza de que eles refletem o que o código realmente faz.
+Exemplos são compilados \(e opcionalmente executados\) como parte do conjunto de testes de um pacote.
 
-Examples are compiled \(and optionally executed\) as part of a package's test suite.
-
-As with typical tests, examples are functions that reside in a package's \_test.go files. Add the following ExampleAdd function to the `adder_test.go` file.
+Como nos testes comuns, os exemplos são funções que residem nos arquivos \_test.go de um pacote. Adicione a seguinte função ExampleAdd no arquivo `adder_test.go`.
 
 ```go
 func ExampleAdd() {
@@ -117,12 +113,11 @@ func ExampleAdd() {
     // Output: 6
 }
 ```
+(Se o seu editor não importar os pacotes automaticamente para você, a etapa de compilação irá falhar porque você não colocou o `import "fmt"` no adder_test.go. É altamente recomendável que você pesquise como ter esses tipos de erros corrigidos automaticamente em qualquer editor que você esteja usando.)
 
-(If your editor doesn't automatically import packages for you, the compilation step will fail because you will be missing `import "fmt"` in `adder_test.go`. It is strongly recommended you research how to have these kind of errors fixed for you automatically in whatever editor you are using.)
+Se o seu código mudar fazendo com que o exemplo não seja mais válido, você vai ter um erro de compilação.
 
-If your code changes so that the example is no longer valid, your build will fail.
-
-Running the package's test suite, we can see the example function is executed with no further arrangement from us:
+Executando os testes do pacote, podemos ver que a função de exemplo é executada sem a necessidade de ajustes:
 
 ```bash
 $ go test -v
@@ -132,21 +127,21 @@ $ go test -v
 --- PASS: ExampleAdd (0.00s)
 ```
 
-Please note that the example function will not be executed if you remove the comment "//Output: 6". Although the function will be compiled, it won't be executed.
+Note que a função de exemplo não será executada se você remover o comentário "// Output: 6". Embora a função seja compilada, ela não será executada.
 
-By adding this code the example will appear in the documentation inside `godoc`, making your code even more accessible.
+Ao adicionar este trecho de código, o exemplo aparecerá na documentação dentro do `godoc`, tornando seu código ainda mais acessível.
 
-To try this out, run `godoc -http=:6060` and navigate to `http://localhost:6060/pkg/`
+Para ver como isso funciona, execute `godoc -http=:6060` e navegue para `http://localhost:6060/pkg/`
 
-Inside here you'll see a list of all the packages in your `$GOPATH`, so assuming you wrote this code in somewhere like `$GOPATH/src/github.com/{your_id}` you'll be able to find your example documentation.
+Aqui você vai ver uma lista de todos os pacotes em seu `$GOPATH`, então, supondo que você tenha escrito esse código em algum lugar como `$GOPATH/src/github.com/{seu_id}`, você poderá encontrar uma documentação com seus exemplos.
 
-If you publish your code with examples to a public URL, you can share the documentation of your code at [godoc.org](https://godoc.org). For example, here is the finalised API for this chapter [https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2](https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2).
+Se você publicar seu código com exemplos em uma URL pública, poderá compartilhar a documentação do seu código em [godoc.org](https://godoc.org). Por exemplo, aqui está a API finalizada deste capítulo [https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2 ](https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2).
 
-## Wrapping up
+## Resumindo
 
-What we have covered:
+O que nós cobrimos:
 
-* More practice of the TDD workflow
-* Integers, addition
-* Writing better documentation so users of our code can understand its usage quickly
-* Examples of how to use our code, which are checked as part of our tests
+* Mais práticas do fluxo de trabalho de TDD
+* Inteiros, adição
+* Escrevendo melhores documentações para que os usuários do nosso código possam entender seu uso rapidamente
+* Exemplos de como usar nosso código, que são verificados como parte de nossos testes
