@@ -83,8 +83,6 @@ Em Go, se uma variável, tipo, função e etc, começam com um símbolo minúscu
 
 No nosso caso, noś queremos que apenas nossos métodos sejam capazes de manipular os valores.
 
-Remember we can access the internal `balance` field in the struct using the "receiver" variable.
-
 Lembre-se, podemos acessar o valor interno do campo `saldo` usando a variável "receptora".
 
 ```go
@@ -97,125 +95,123 @@ func (c Carteira) Saldo() int {
 }
 ```
 
-With our career in fintech secured, run our tests and bask in the passing test
-
 Com a nossa carreira em Fintechs segura, rode os testes para nos aquecermos para passarmos no teste.
 
 `carteira_test.go:15: valor 0 valorEsperado 10`
 
 ### ????
 
-Well this is confusing, our code looks like it should work, we add the new amount onto our balance and then the balance method should return the current state of it.
+Ok, isso é confuso. Parece que nosso código deveria funcionar, nós adicionamos nosso novo valor ao saldo e então o método saldo deveria retornar o valor atual.
 
-In Go, **when you call a function or a method the arguments are** _**copied**_.
+Em Go, **quando uma função ou um método é invocado, os argumentos são** _**copiados**_.
 
-When calling `func (w Wallet) Deposit(amount int)` the `w` is a copy of whatever we called the method from.
+Quando `func (c Carteira) Depositar(quantidade int)` é chamado, o `c` é uma cópia do valor de qualquer lugar que o método tenha sido chamado.
 
-Without getting too computer-sciency, when you create a value - like a wallet, it is stored somewhere in memory. You can find out what the _address_ of that bit of memory with `&myVal`.
+Não focando tanto em Ciências da Computação, quando criamos um valor - como uma carteira, este é alocado em algum lugar da memória. Você pode descobrir o _endereço_ desse bit de memória com `&meuValor`.
 
-Experiment by adding some prints to your code
+Experimente isso adicionando alguns prints no código
 
 ```go
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-    wallet := Wallet{}
+    carteira := Carteira{}
 
-    wallet.Deposit(10)
+    carteira.Depositar(10)
 
-    got := wallet.Balance()
+    valor := carteira.Saldo()
 
-    fmt.Printf("address of balance in test is %v \n", &wallet.balance)
+    fmt.Printf("endereço do saldo no teste é %v \n", &carteira.saldo)
 
-    want := 10
+    valorEsperado := 10
 
-    if got != want {
-        t.Errorf("got %d want %d", got, want)
+    if valor != valorEsperado {
+        t.Errorf("valor %d valorEsperado %d", valor, valorEsperado)
     }
 }
 ```
 
 ```go
-func (w Wallet) Deposit(amount int) {
-    fmt.Printf("address of balance in Deposit is %v \n", &w.balance)
-    w.balance += amount
+func (c Carteira) Depositar(quantidade int) {
+    fmt.Printf("endereço do saldo no Depositar é %v \n", &c.saldo)
+    c.saldo += quantidade
 }
 ```
 
-The `\n` escape character, prints new line after outputting the memory address. We get the pointer to a thing with the address of symbol; `&`.
+O `\n` é um caractere de escape, adiciona uma nova linha após imprimir o endereço de memória. Nós obtemos o ponteiro para algo com o símbolo de endereço: `&`.
 
-Now re-run the test
+Agora rode novamente o teste
 
 ```text
-address of balance in Deposit is 0xc420012268
-address of balance in test is 0xc420012260
+endereço do saldo no Depositar é 0xc420012268
+endereço do saldo no teste é is 0xc420012260
 ```
 
-You can see that the addresses of the two balances are different. So when we change the value of the balance inside the code, we are working on a copy of what came from the test. Therefore the balance in the test is unchanged.
+Você pode ver que os endereços dos dois saldos são diferentes. Então, quando mudamos o valor de um dos saldos dentro do código, estamos trabalhando em uma cópia do que veio do teste. Portanto, o saldo no teste não é alterado.
 
-We can fix this with _pointers_. [Pointers](https://gobyexample.com/pointers) let us _point_ to some values and then let us change them. So rather than taking a copy of the Wallet, we take a pointer to the wallet so we can change it.
+Podemos consertar isso com _ponteiros_. [Ponteiros](https://gobyexample.com/pointers) nos permite _apontar_ para alguns valores e então mudá-los. Então, em vez de termos uma cópia da Carteira, nós pegamos um ponteiro para a carteira para que possamos alterá-la.
 
 ```go
-func (w *Wallet) Deposit(amount int) {
-    w.balance += amount
+func (c *Carteira) Depositar(quantidade int) {
+    c.saldo += quantidade
 }
 
-func (w *Wallet) Balance() int {
-    return w.balance
+func (c *Carteira) Saldo() int {
+    return c.saldo
 }
 ```
 
-The difference is the receiver type is `*Wallet` rather than `Wallet` which you can read as "a pointer to a wallet".
+A diferença é que o tipo do argumento é `*Carteira` em vez de `Carteira` que você pode ler como "um ponteiro para uma carteira".
 
-Try and re-run the tests and they should pass.
+Rode novamente os testes e eles devem passar.
 
-## Refactor
+## Refatorar
 
-We said we were making a Bitcoin wallet but we have not mentioned them so far. We've been using `int` because they're a good type for counting things!
+Dissemos que estávamos fazendo uma carteira Bitcoin, mas até agora nós não os mecionamos. Estamos usando `int` porque é um bom tipo para contar coisas!
 
-It seems a bit overkill to create a `struct` for this. `int` is fine in terms of the way it works but it's not descriptive.
+Parece um pouco exagerado criar uma `struct` para isso. `int` é o suficiente em termos de como funciona, mas não é descritivo o suficiente.
 
-Go lets you create new types from existing ones.
+Go permite criarmos novos tipos a partir de tipos existentes.
 
-The syntax is `type MyName OriginalType`
+A sintaxe é `type MeuNome TipoOriginal`
 
 ```go
 type Bitcoin int
 
-type Wallet struct {
-    balance Bitcoin
+type Carteira struct {
+    saldo Bitcoin
 }
 
-func (w *Wallet) Deposit(amount Bitcoin) {
-    w.balance += amount
+func (c *Carteira) Depositar(quantidade Bitcoin) {
+    c.saldo += quantidade
 }
 
-func (w *Wallet) Balance() Bitcoin {
-    return w.balance
+func (c *Carteira) Saldo() Bitcoin {
+    return c.saldo
 }
 ```
 
 ```go
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-    wallet := Wallet{}
+    carteira := Carteira{}
 
-    wallet.Deposit(Bitcoin(10))
+    carteira.Depositar(Bitcoin(10))
 
-    got := wallet.Balance()
+    valor := carteira.Saldo()
 
-    want := Bitcoin(10)
+    valorEsperado := Bitcoin(10)
 
-    if got != want {
-        t.Errorf("got %d want %d", got, want)
+    if valor != valorEsperado {
+        t.Errorf("valor %d valorEsperado %d", valor, valorEsperado)
     }
 }
 ```
 
-To make `Bitcoin` you just use the syntax `Bitcoin(999)`.
+Para criarmos `Bitcoin` basta usar a sintaxe `Bitcoin(999)`.
 
-By doing this we're making a new type and we can declare _methods_ on them. This can be very useful when you want to add some domain specific functionality on top of existing types.
+Ao fazermos isso, estamos criando um novo tipo e podemos declarar _métodos_ nele. Isto pode ser muito útil quando queremos adicionar funcionalidades de domínios específicos à tipos já existentes.
 
-Let's implement [Stringer](https://golang.org/pkg/fmt/#Stringer) on Bitcoin
+Vamos implementar [Stringer](https://golang.org/pkg/fmt/#Stringer) no Bitcoin
 
 ```go
 type Stringer interface {
@@ -223,7 +219,7 @@ type Stringer interface {
 }
 ```
 
-This interface is defined in the `fmt` package and lets you define how your type is printed when used with the `%s` format string in prints.
+Essa interface é definida no pacote `fmt` e permite definir como seu tipo é impresso quando utilizado com o operador de string `%s` em prints.
 
 ```go
 func (b Bitcoin) String() string {
@@ -231,23 +227,27 @@ func (b Bitcoin) String() string {
 }
 ```
 
-As you can see, the syntax for creating a method on a type alias is the same as it is on a struct.
+Como podemos ver, a sintaxe para criar um método em um tipo definido por nós é a mesma que a utilizada em uma struct.
 
-Next we need to update our test format strings so they will use `String()` instead.
+Agora precisamos atualizar nossas impressões de strings no teste para que usem `String()`.
 
 ```go
-    if got != want {
-        t.Errorf("got %s want %s", got, want)
+    if valor != valorEsperado {
+        t.Errorf("valor %s valorEsperado %s", valor, valorEsperado)
     }
 ```
 
-To see this in action, deliberately break the test so we can see it
+Para ver funcionando, quebre o teste de propósito para que possamos ver
 
-`wallet_test.go:18: got 10 BTC want 20 BTC`
+`carteira_test.go:18: valor 10 BTC valorEsperado 20 BTC`
 
 This makes it clearer what's going on in our test.
 
+Isto deixa mais claro o que está acontecendo em nossos testes.
+
 The next requirement is for a `Withdraw` function.
+
+O próximo requisito é para a função `Retirar`.
 
 ## Write the test first
 
