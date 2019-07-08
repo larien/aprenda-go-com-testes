@@ -71,7 +71,7 @@ Se tiver esse tipo de dúvida, crie uma Issue no GitHub e vou tentar achar tempo
 
 -   _Esse projeto está em desenvolvimento_, tanto seu conteúdo original quanto sua tradução. Se tiver interesse em contribuir, por favor entre em contato.
 -   Leia [contributing.md](meta/contributing.md) para algumas diretrizes.
--   Quer ajudar com a tradução para o português? Leia [translating.md](meta/translating.md) e entenda como o processo de tradução está organizado.
+-   Quer ajudar com a tradução para o português? Leia [traduzindo.md](meta/traduzindo.md) e entenda como o processo de tradução está organizado.
 -   Tem ideias? Crie uma issue!
 
 ## Explicação

@@ -40,5 +40,5 @@
 
 -   [Por que testes unitários e como fazê-los dar certo](meta/motivacao.md)
 -   [Como contribuir](meta/contributing.md)
--   [Como traduzir](meta/translating.md)
+-   [Como traduzir](meta/traduzindo.md)
 -   [Exemplo de capítulo](meta/exemplo.md)
