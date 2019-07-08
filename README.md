@@ -6,22 +6,22 @@
 
 ![Build Status](https://travis-ci.org/larien/learn-go-with-tests.svg?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/larien/learn-go-with-tests)](https://goreportcard.com/report/github.com/quii/learn-go-with-tests)
 
-* Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB or PDF](https://github.com/larien/learn-go-with-tests/releases)
-* Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
-* Traduções: [中文](https://studygolang.gitbook.io/learn-go-with-tests)
+-   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB or PDF](https://github.com/larien/learn-go-with-tests/releases)
+-   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
+-   Traduções: [中文](https://studygolang.gitbook.io/learn-go-with-tests)
 
 ## Motivação
 
-* Explore a linguagem Go escrevendo testes
-* **Tenha uma base com TDD**. O Go é uma boa linguagem para aprender TDD por ser simples de aprender e ter testes nativamente
-* Tenha confiança de que você será capaz de escrever sistemas robustos e bem testados em Go
-* [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/why.md)
+-   Explore a linguagem Go escrevendo testes
+-   **Tenha uma base com TDD**. O Go é uma boa linguagem para aprender TDD por ser simples de aprender e ter testes nativamente
+-   Tenha confiança de que você será capaz de escrever sistemas robustos e bem testados em Go
+-   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/why.md)
 
 ## Índice
 
 ### Primeiros Passos com Go
 
-1. [Instale Go](primeiros-passos-com-go/install-go.md) - Prepare o ambiente para produtividade.
+1. [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md) - Prepare o ambiente para produtividade.
 2. [Olá, mundo](primeiros-passos-com-go/hello-world.md) - Declarando variáveis, constantes, declarações `if`/`else`, switch, escreva seu primeiro programa em Go e seu primeiro teste. Sintaxe de subteste e closures.
 3. [Inteiros](primeiros-passos-com-go/integers.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
 4. [Iteração](primeiros-passos-com-go/iteration.md) - Aprenda sobre `for` e benchmarking.
@@ -49,12 +49,12 @@ Novos conceitos serão apresentados para ajudar a escrever código de qualidade,
 
 No final desse capítulo, você deverá ter uma boa ideia de como escrever uma aplicação em Go testada.
 
-* [Servidor HTTP](criando-uma-aplicacao/http-server.md) - Vamos criar uma aplicação que espera por requisições HTTP e as responde.
-* [JSON, routing e embedding](criando-uma-aplicacao/json.md) - Vamos fazer nossos endpoints retornarem JSON e explorar como trabalhar com rotas.
-* [IO e classificação](criando-uma-aplicacao/io.md) - Vamos persistir e ler nossos dados do disco e falar sobre classificação de dados.
-* [Linha de comando e estrutura do projeto](criando-uma-aplicacao/command-line.md) - Suportar diversas aplicações em uma base de código e ler entradas da linha de comando.
-* [Tempo](criando-uma-aplicacao/time.md) - Usar o pacote `time` para programar atividades.
-* [Websockets](criando-uma-aplicacao/websockets.md) - Aprender a escrever e testar um servidor que usa websockets.
+-   [Servidor HTTP](criando-uma-aplicacao/http-server.md) - Vamos criar uma aplicação que espera por requisições HTTP e as responde.
+-   [JSON, routing e embedding](criando-uma-aplicacao/json.md) - Vamos fazer nossos endpoints retornarem JSON e explorar como trabalhar com rotas.
+-   [IO e classificação](criando-uma-aplicacao/io.md) - Vamos persistir e ler nossos dados do disco e falar sobre classificação de dados.
+-   [Linha de comando e estrutura do projeto](criando-uma-aplicacao/command-line.md) - Suportar diversas aplicações em uma base de código e ler entradas da linha de comando.
+-   [Tempo](criando-uma-aplicacao/time.md) - Usar o pacote `time` para programar atividades.
+-   [Websockets](criando-uma-aplicacao/websockets.md) - Aprender a escrever e testar um servidor que usa websockets.
 
 ### Dúvidas e respostas
 
@@ -64,15 +64,15 @@ Costumo ver perguntas nas Interwebs como:
 
 Se tiver esse tipo de dúvida, crie uma Issue no GitHub e vou tentar achar tempo para escrever um pequeno capítulo para resolver o problema. Acho que conteúdo como esse é valioso, já que está resolvendo problemas `reais` envolvendo testes que as pessoas têm.
 
-* [OS exec](perguntas-e-respostas/os-exec.md) - Um exemplo de como podemos usar o sistema operacional para executar comandos para buscar dados e manter nossa lógica de negócio testável.
-* [Tipos de erro](perguntas-e-respostas/error-types.md) - Exemplo de como criar seus próprios tipos de erro para melhorar seus testes e tornar seu código mais fácil de se trabalhar.
+-   [OS exec](perguntas-e-respostas/os-exec.md) - Um exemplo de como podemos usar o sistema operacional para executar comandos para buscar dados e manter nossa lógica de negócio testável.
+-   [Tipos de erro](perguntas-e-respostas/error-types.md) - Exemplo de como criar seus próprios tipos de erro para melhorar seus testes e tornar seu código mais fácil de se trabalhar.
 
 ## Contribuição
 
-* _Esse projeto está em desenvolvimento_, tanto seu conteúdo original quanto sua tradução. Se tiver interesse em contribuir, por favor entre em contato.
-* Leia [contributing.md](meta/contributing.md) para algumas diretrizes.
-* Quer ajudar com a tradução para o português? Leia [translating.md](meta/translating.md) e entenda como o processo de tradução está organizado.
-* Tem ideias? Crie uma issue!
+-   _Esse projeto está em desenvolvimento_, tanto seu conteúdo original quanto sua tradução. Se tiver interesse em contribuir, por favor entre em contato.
+-   Leia [contributing.md](meta/contributing.md) para algumas diretrizes.
+-   Quer ajudar com a tradução para o português? Leia [translating.md](meta/translating.md) e entenda como o processo de tradução está organizado.
+-   Tem ideias? Crie uma issue!
 
 ## Explicação
 
@@ -116,41 +116,40 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 
 ## Para quem isso foi feito
 
-* Pessoas que se interessam em aprender Go.
-* Pessoas que já sabem Go, mas querem explorar testes com TDD.
+-   Pessoas que se interessam em aprender Go.
+-   Pessoas que já sabem Go, mas querem explorar testes com TDD.
 
 ## O que vamos precisar
 
-* Um computador!
-* [Go instalado](https://golang.org/)
-* Um editor de texto
-* Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
-* Se sentir confortável com o terminal
+-   Um computador!
+-   [Go instalado](https://golang.org/)
+-   Um editor de texto
+-   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
+-   Se sentir confortável com o terminal
 
-## Traduzido com :blue\_heart: por
+## Traduzido com :blue_heart: por
 
-* [Diego Nascimento](https://github.com/diegonvs)
+-   [Diego Nascimento](https://github.com/diegonvs)
 
 [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
 
-* [Jéssica Paz](https://github.com/jessicapaz)
+-   [Jéssica Paz](https://github.com/jessicapaz)
 
 [site](https://jessicapaz.me) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
 
-* [Lauren Ferreira](https://github.com/larien)
+-   [Lauren Ferreira](https://github.com/larien)
 
 [site](https://larien.dev) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
 
-* [Rafael Acioly](https://github.com/rafa-acioly)
+-   [Rafael Acioly](https://github.com/rafa-acioly)
 
 [twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
 
 ## Feedback
 
-* Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
-* Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
+-   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
+-   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
 
 [MIT license](https://github.com/larien/learn-go-with-tests/tree/09aafaeebaef4443e80a6216cc46fa3d7bfdabbb/LICENSE.md)
 
 [Logo criado por egonelbre](https://github.com/egonelbre) Que estrela!
-
