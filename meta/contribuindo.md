@@ -20,7 +20,7 @@ Se não se sentir confiante para submeter seu próprio guia, criar uma issue par
     -   `Hello(name, language string)` &lt;- `switch`.
 -   Tente diminuir a barreira do conhecimento com explicações claras e simples.
     -   Pensar em exemplos que demonstrem o que você está tentando ensinar sem confundir a leitura com outras funcionalidades é importante.
-    -   Por exemplo: você pode aprender `estruturas` sem entender ponteiros.
+    -   Por exemplo: você pode aprender `structs` sem entender ponteiros.
     -   Seja breve.
 -   Siga o [guia de estilo para Comentários de Revisão de Código](https://github.com/golang/go/wiki/CodeReviewComments). É importante ter um estilo consistente em todas as seções.
 -   Sua seção deve ter uma aplicação executável no final (como um `package main` com uma função `main`) para que as pessoas possam vê-la em ação e brincar com ela.
