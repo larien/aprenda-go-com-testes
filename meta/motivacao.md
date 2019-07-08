@@ -54,10 +54,6 @@ Nós **temos** que lidar com a complexidade do sistema conforme o conhecimento d
 
 Existem _diversas_ facetas na engenharia de software que mantêm um software maleável, como:
 
--
-
-There are _many_ facets of software engineering that keeps software malleable, such as:
-
 -   Capacitação do desenvolvimento
 -   Em termos gerais, código "bom". Separação sensível de responsabilidades, etc
 -   Habilidades de comunicação
