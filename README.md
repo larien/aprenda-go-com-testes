@@ -21,7 +21,7 @@
 
 ### Primeiros Passos com Go
 
-1. [Instale Go](primeiros-passos-com-go/install-go.md) - Prepare o ambiente para produtividade.
+1. [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md) - Prepare o ambiente para produtividade.
 2. [Olá, mundo](primeiros-passos-com-go/hello-world.md) - Declarando variáveis, constantes, declarações `if`/`else`, switch, escreva seu primeiro programa em Go e seu primeiro teste. Sintaxe de subteste e closures.
 3. [Inteiros](primeiros-passos-com-go/integers.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
 4. [Iteração](primeiros-passos-com-go/iteration.md) - Aprenda sobre `for` e benchmarking.

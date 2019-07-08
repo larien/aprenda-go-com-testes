@@ -5,12 +5,12 @@
 
 ## Primeiros Passos com Go
 
--   [Instalação do Go](primeiros-passos-com-go/install-go.md)
+-   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
 -   [Olá, mundo](primeiros-passos-com-go/hello-world.md)
 -   [Inteiros](primeiros-passos-com-go/integers.md)
 -   [Iteração](primeiros-passos-com-go/iteration.md)
 -   [Arrays e slices](primeiros-passos-com-go/arrays-and-slices.md)
--   [Structs, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md)
+-   [Structs, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces.md)
 -   [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md)
 -   [Maps](primeiros-passos-com-go/maps.md)
 -   [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md)
@@ -41,4 +41,4 @@
 -   [Por que testes unitários e como fazê-los dar certo](meta/why.md)
 -   [Como contribuir](meta/contribuindo.md)
 -   [Como traduzir](meta/translating.md)
--   [Modelo de capítulo](meta/template.md)
+-   [Exemplo de capítulo](meta/exemplo.md)
