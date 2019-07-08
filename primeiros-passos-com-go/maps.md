@@ -1,6 +1,6 @@
 # Maps
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/maps)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/maps)
 
 In [arrays & slices](arrays-and-slices.md), you saw how to store values in order. Now, we will look at a way to store items by a `key` and look them up quickly.
 
@@ -53,7 +53,7 @@ func Search(dictionary map[string]string, word string) string {
 }
 ```
 
-Your test should now fail with a *clear error message*
+Your test should now fail with a _clear error message_
 
 `dictionary_test.go:12: got '' want 'this is just a test' given, 'test'`.
 
@@ -127,7 +127,7 @@ Here we created a `Dictionary` type which acts as a thin wrapper around `map`. W
 
 The basic search was very easy to implement, but what will happen if we supply a word that's not in our dictionary?
 
-We actually get nothing back. This is good because the program can continue to run, but there is a better approach. The function can report that the word is not in the dictionary. This way, the user isn't left wondering if the word doesn't exist or if there is just no definition (this might not seem very useful for a dictionary. However, it's a scenario that could be key in other usecases).
+We actually get nothing back. This is good because the program can continue to run, but there is a better approach. The function can report that the word is not in the dictionary. This way, the user isn't left wondering if the word doesn't exist or if there is just no definition \(this might not seem very useful for a dictionary. However, it's a scenario that could be key in other usecases\).
 
 ```go
 func TestSearch(t *testing.T) {
@@ -161,7 +161,7 @@ The way to handle this scenario in Go is to return a second argument which is an
 
 This does not compile
 
-```
+```text
 ./dictionary_test.go:18:10: assignment mismatch: 2 variables but 1 values
 ```
 
@@ -263,7 +263,7 @@ func (d Dictionary) Add(word, definition string) {
 
 Your test should now fail
 
-```
+```text
 dictionary_test.go:31: should find added word: could not find the word you were looking for
 ```
 
@@ -371,7 +371,7 @@ For this test, we modified `Add` to return an error, which we are validating aga
 
 The compiler will fail because we are not returning a value for `Add`.
 
-```
+```text
 ./dictionary_test.go:30:13: dictionary.Add(word, definition) used as value
 ./dictionary_test.go:41:13: dictionary.Add(word, "new test") used as value
 ```
@@ -394,7 +394,7 @@ func (d Dictionary) Add(word, definition string) error {
 
 Now we get two more errors. We are still modifying the value, and returning a `nil` error.
 
-```
+```text
 dictionary_test.go:43: got error '%!s(<nil>)' want 'cannot add word because it already exists'
 dictionary_test.go:44: got 'new test' want 'this is just a test'
 ```
@@ -460,7 +460,7 @@ func TestUpdate(t *testing.T) {
 
 ## Try and run the test
 
-```
+```text
 ./dictionary_test.go:53:2: dictionary.Update undefined (type Dictionary has no field or method Update)
 ```
 
@@ -474,7 +474,7 @@ func (d Dictionary) Update(word, definition string) {}
 
 With that in place, we are able to see that we need to change the definition of the word.
 
-```
+```text
 dictionary_test.go:55: got 'this is just a test' want 'new definition'
 ```
 
@@ -520,7 +520,7 @@ We added yet another error type for when the word does not exist. We also modifi
 
 ## Try and run the test
 
-```
+```text
 ./dictionary_test.go:53:16: dictionary.Update(word, "new test") used as value
 ./dictionary_test.go:64:16: dictionary.Update(word, definition) used as value
 ./dictionary_test.go:66:23: undefined: ErrWordDoesNotExists
@@ -547,7 +547,7 @@ We added our own error type and are returning a `nil` error.
 
 With these changes, we now get a very clear error:
 
-```
+```text
 dictionary_test.go:66: got error '%!s(<nil>)' want 'cannot update word because it does not exist'
 ```
 
@@ -604,7 +604,7 @@ Our test creates a `Dictionary` with a word and then checks if the word has been
 
 By running `go test` we get:
 
-```
+```text
 ./dictionary_test.go:74:6: dictionary.Delete undefined (type Dictionary has no field or method Delete)
 ```
 
@@ -618,7 +618,7 @@ func (d Dictionary) Delete(word string) {
 
 After we add this, the test tells us we are not deleting the word.
 
-```
+```text
 dictionary_test.go:78: Expected 'test' to be deleted
 ```
 
@@ -636,7 +636,7 @@ The `delete` function returns nothing, and we based our `Delete` method on the s
 
 ## Wrapping up
 
-In this section, we covered a lot. We made a full CRUD (Create, Read, Update and Delete) API for our dictionary. Throughout the process we learned how to:
+In this section, we covered a lot. We made a full CRUD \(Create, Read, Update and Delete\) API for our dictionary. Throughout the process we learned how to:
 
 * Create maps
 * Search for items in maps
@@ -646,3 +646,4 @@ In this section, we covered a lot. We made a full CRUD (Create, Read, Update and
 * Learned more about errors
   * How to create errors that are constants
   * Writing error wrappers
+

@@ -1,15 +1,15 @@
 # Select
 
-**[You can find all the code for this chapter here](https://github.com/quii/learn-go-with-tests/tree/master/select)**
+[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/select)
 
 You have been asked to make a function called `WebsiteRacer` which takes two URLs and "races" them by hitting them with an HTTP GET and returning the URL which returned first. If none of them return within 10 seconds then it should return an `error`.
 
 For this, we will be using
 
-- `net/http` to make the HTTP calls.
-- `net/http/httptest` to help us test them.
-- goroutines.
-- `select` to synchronise processes.
+* `net/http` to make the HTTP calls.
+* `net/http/httptest` to help us test them.
+* goroutines.
+* `select` to synchronise processes.
 
 ## Write the test first
 
@@ -68,8 +68,8 @@ func Racer(a, b string) (winner string) {
 For each URL:
 
 1. We use `time.Now()` to record just before we try and get the `URL`.
-1. Then we use [`http.Get`](https://golang.org/pkg/net/http/#Client.Get) to try and get the contents of the `URL`. This function returns an [`http.Response`](https://golang.org/pkg/net/http/#Response) and an `error` but so far we are not interested in these values.
-1. `time.Since` takes the start time and returns a `time.Duration` of the difference.
+2. Then we use [`http.Get`](https://golang.org/pkg/net/http/#Client.Get) to try and get the contents of the `URL`. This function returns an [`http.Response`](https://golang.org/pkg/net/http/#Response) and an `error` but so far we are not interested in these values.
+3. `time.Since` takes the start time and returns a `time.Duration` of the difference.
 
 Once we have done this we simply compare the durations to see which is the quickest.
 
@@ -81,9 +81,9 @@ Testing code that uses HTTP is so common that Go has tools in the standard libra
 
 In the mocking and dependency injection chapters, we covered how ideally we don't want to be relying on external services to test our code because they can be
 
-- Slow
-- Flaky
-- Can't test edge cases
+* Slow
+* Flaky
+* Can't test edge cases
 
 In the standard library, there is a package called [`net/http/httptest`](https://golang.org/pkg/net/http/httptest/) where you can easily create a mock HTTP server.
 
@@ -124,7 +124,7 @@ The syntax may look a bit busy but just take your time.
 
 All it's really saying is it needs a function that takes a `ResponseWriter` and a `Request`, which is not too surprising for an HTTP server.
 
-It turns out there's really no extra magic here, **this is also how you would write a _real_ HTTP server in Go**. The only difference is we are wrapping it in an `httptest.NewServer` which makes it easier to use with testing, as it finds an open port to listen on and then you can close it when you're done with your test.
+It turns out there's really no extra magic here, **this is also how you would write a** _**real**_ **HTTP server in Go**. The only difference is we are wrapping it in an `httptest.NewServer` which makes it easier to use with testing, as it finds an open port to listen on and then you can close it when you're done with your test.
 
 Inside our two servers, we make the slow one have a short `time.Sleep` when we get a request to make it slower than the other one. Both servers then write an `OK` response with `w.WriteHeader(http.StatusOK)` back to the caller.
 
@@ -197,8 +197,8 @@ Our refactoring is an improvement and is a reasonable solution given the Go feat
 
 ### Synchronising processes
 
-- Why are we testing the speeds of the websites one after another when Go is great at concurrency? We should be able to check both at the same time.
-- We don't really care about _the exact response times_ of the requests, we just want to know which one comes back first.
+* Why are we testing the speeds of the websites one after another when Go is great at concurrency? We should be able to check both at the same time.
+* We don't really care about _the exact response times_ of the requests, we just want to know which one comes back first.
 
 To do this, we're going to introduce a new construct called `select` which helps us synchronise processes really easily and clearly.
 
@@ -236,7 +236,7 @@ If you recall from the concurrency chapter, you can wait for values to be sent t
 
 What `select` lets you do is wait on _multiple_ channels. The first one to send a value "wins" and the code underneath the `case` is executed.
 
-We use `ping` in our `select` to set up two channels for each of our `URL`s. Whichever one writes to its channel first will have its code executed in the `select`, which results in its `URL` being returned (and being the winner).
+We use `ping` in our `select` to set up two channels for each of our `URL`s. Whichever one writes to its channel first will have its code executed in the `select`, which results in its `URL` being returned \(and being the winner\).
 
 After these changes, the intent behind our code is very clear and the implementation is actually simpler.
 
@@ -262,7 +262,7 @@ t.Run("returns an error if a server doesn't respond within 10s", func(t *testing
 })
 ```
 
-We've made our test servers take longer than 10s to return to exercise this scenario and we are expecting `Racer` to return two values now, the winning URL (which we ignore in this test with `_`) and an `error`.
+We've made our test servers take longer than 10s to return to exercise this scenario and we are expecting `Racer` to return two values now, the winning URL \(which we ignore in this test with `_`\) and an `error`.
 
 ## Try to run the test
 
@@ -287,7 +287,7 @@ The compiler will complain about your _first test_ only looking for one value so
 
 If you run it now after 11 seconds it will fail.
 
-```
+```text
 --- FAIL: TestRacer (12.00s)
     --- FAIL: TestRacer/returns_an_error_if_a_server_doesn't_respond_within_10s (12.00s)
         racer_test.go:40: expected an error but didn't get one
@@ -308,7 +308,7 @@ func Racer(a, b string) (winner string, error error) {
 }
 ```
 
-`time.After` is a very handy function when using `select`. Although it didn't happen in our case you can potentially write code that blocks forever if the channels you're listening on never return a value. `time.After` returns a `chan` (like `ping`) and will send a signal down it after the amount of time you define.
+`time.After` is a very handy function when using `select`. Although it didn't happen in our case you can potentially write code that blocks forever if the channels you're listening on never return a value. `time.After` returns a `chan` \(like `ping`\) and will send a signal down it after the amount of time you define.
 
 For us this is perfect; if `a` or `b` manage to return they win, but if we get to 10 seconds then our `time.After` will send a signal and we'll return an `error`.
 
@@ -335,8 +335,8 @@ Our tests now won't compile because we're not supplying a timeout.
 
 Before rushing in to add this default value to both our tests let's _listen to them_.
 
-- Do we care about the timeout in the "happy" test?
-- The requirements were explicit about the timeout.
+* Do we care about the timeout in the "happy" test?
+* The requirements were explicit about the timeout.
 
 Given this knowledge, let's do a little refactoring to be sympathetic to both our tests and the users of our code.
 
@@ -359,7 +359,7 @@ func ConfigurableRacer(a, b string, timeout time.Duration) (winner string, error
 }
 ```
 
-Our users and our first test can use `Racer` (which uses `ConfigurableRacer` under the hood) and our sad path test can use `ConfigurableRacer`.
+Our users and our first test can use `Racer` \(which uses `ConfigurableRacer` under the hood\) and our sad path test can use `ConfigurableRacer`.
 
 ```go
 func TestRacer(t *testing.T) {
@@ -406,10 +406,11 @@ I added one final check on the first test to verify we don't get an `error`.
 
 ### `select`
 
-- Helps you wait on multiple channels.
-- Sometimes you'll want to include `time.After` in one of your `cases` to prevent your system blocking forever.
+* Helps you wait on multiple channels.
+* Sometimes you'll want to include `time.After` in one of your `cases` to prevent your system blocking forever.
 
 ### `httptest`
 
-- A convenient way of creating test servers so you can have reliable and controllable tests.
-- Using the same interfaces as the "real" `net/http` servers which is consistent and less for you to learn.
+* A convenient way of creating test servers so you can have reliable and controllable tests.
+* Using the same interfaces as the "real" `net/http` servers which is consistent and less for you to learn.
+

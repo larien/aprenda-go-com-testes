@@ -123,12 +123,12 @@ _NOTE_ por padrão o benchmark é executado sequencialmente.
 
 ## Exercicios para praticar
 
-* Altere o teste para que a função aceite quantas vezes o caracter deve ser repetido.
-* Escreve `ExampleRepeat` para documentar sua função
-* Veja também o pacote [strings](https://golang.org/pkg/strings). Encontre funções que você acha serem uteis e experimente elas escrevendo testes como nós fizemos aqui. Investir tempo aprendendo os pacotes nativos irá te recompensar com o tempo.
+-   Altere o teste para que a função aceite quantas vezes o caracter deve ser repetido.
+-   Escreve `ExampleRepeat` para documentar sua função
+-   Veja também o pacote [strings](https://golang.org/pkg/strings). Encontre funções que você acha serem uteis e experimente elas escrevendo testes como nós fizemos aqui. Investir tempo aprendendo os pacotes nativos irá te recompensar com o tempo.
 
 ## Resumindo
 
-* Mais praticas de TDD
-* Aprendemos `for`
-* Aprendemos como escrever benchmarks
+-   Mais praticas de TDD
+-   Aprendemos `for`
+-   Aprendemos como escrever benchmarks
