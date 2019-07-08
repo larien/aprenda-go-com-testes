@@ -1,8 +1,8 @@
 # Iteração
 
-**[Você pode encontrar todo o código desse capitulo aqui](https://github.com/quii/learn-go-with-tests/tree/master/for)**
+**[Você pode encontrar todo o código desse capítulo aqui](https://github.com/larien/learn-go-with-tests/tree/master/for)**
 
-Para fazer coisas repetidamente em Go, você precisara do `for`. Go não possui nenhuma palavra chave do tipo `while`, `do`, `until`, você pode usar apenas `for`, o que é uma coisa boa!
+Para fazer coisas repetidamente em Go, você precisará do `for`. Go não possui nenhuma palavra chave do tipo `while`, `do` ou `until`. Você pode usar apenas `for`, o que é uma coisa boa!
 
 Vamos escrever um teste para uma função que repete um caracter 5 vezes.
 
@@ -25,15 +25,15 @@ func TestRepeat(t *testing.T) {
 }
 ```
 
-## Tente e execute o teste
+## Execute o teste
 
 `./repeat_test.go:6:14: undefined: Repeat`
 
-## Escreva a quantidade minima de código para o teste rodar e verifique a saida de errors
+## Escreva a quantidade mínima de código para o teste rodar e verifique o erro na saída
 
-_Mantenha a disciplina!_ Você não precisa saber nada de diferente para fazer o teste falhar apropriadamente.
+_Mantenha a disciplina!_ Você não precisa saber nada de diferente agora para fazer o teste falhar apropriadamente.
 
-Tudo que você fez até agora é o suficiente para compilar, verifique se você escreveu o teste corretamente.
+Tudo o que foi feito até agora é o suficiente para compilar, para que você possa verificar se escreveu o teste corretamente.
 
 ```go
 package iteration
@@ -43,13 +43,13 @@ func Repeat(character string) string {
 }
 ```
 
-Não é legal saber que você já sabe o bastante em Go para escrever testes para problemas simples? Isso significa que agora você pode mexer no código de produção o quanto quiser sabendo que ele se comportara da maneira que você desejar.
+Não é legal saber que você já conhece o bastante em Go para escrever testes para problemas simples? Isso significa que agora você pode mexer no código de produção o quanto quiser sabendo que ele se comportará da maneira que você desejar.
 
 `repeat_test.go:10: expected 'aaaaa' but got ''`
 
-## Escreva código o suficiente para fazer passar
+## Escreva código o suficiente para fazer o teste passar
 
-A sintaxe do `for` é muito facil de memorar e segue quase igual as linguagens baseadas em `C`
+A sintaxe do `for` é muito fácil de lembrar e segue a maioria das linguagens baseadas em `C`:
 
 ```go
 func Repeat(character string) string {
@@ -61,15 +61,15 @@ func Repeat(character string) string {
 }
 ```
 
-Ao contrario de outras linguagens como C, Java ou Javascript, não há parenteses ao redor dos três componentes do `for` mas as chaves `{ }` são obrigatórias
+Ao contrário de outras linguagens como `C`, `Java` ou `Javascript`, não há parênteses ao redor dos três componentes do `for`. No entanto, as chaves `{ }` são obrigatórias.
 
-Execute o teste e ele devera passar.
+Execute o teste e ele deverá passar.
 
 Variação adicionais do loop `for` estão descritas [aqui](https://gobyexample.com/for).
 
 ## Refatoração
 
-Agora é hora de refatorarmos e apresentarmos outro operador de atribuição o `+=`
+Agora é hora de refatorarmos e apresentarmos outro operador de atribuição: o `+=`.
 
 ```go
 const repeatCount = 5
@@ -83,11 +83,11 @@ func Repeat(character string) string {
 }
 ```
 
-O operador adicionar & atribuir `+=` adiciona o valor que esta na direita no valor que esta a esquerda e atribui o resultado ao valor da esquerda, também funciona com outros tipos como por exemplo inteiros (integer).
+O operador adicionar & atribuir `+=` adiciona o valor que está à direita no valor que esta à esquerda e atribui o resultado ao valor da esquerda. Também funciona com outros tipos, como por exemplo, inteiros (`integer`).
 
 ### Benchmarking
 
-Escrever [benchmarks](https://golang.org/pkg/testing/#hdr-Benchmarks) em Go é outro recurso disponivel diretamente na linguagem e é tão facil quanto escrever tests.
+Escrever [benchmarks](https://golang.org/pkg/testing/#hdr-Benchmarks) em Go é outro recurso disponível nativamente na linguagem e é tão facil quanto escrever testes.
 
 ```go
 func BenchmarkRepeat(b *testing.B) {
@@ -97,19 +97,17 @@ func BenchmarkRepeat(b *testing.B) {
 }
 ```
 
-Você ira notar que o código é muito parecido com um teste.
+Você notará que o código é muito parecido com um teste.
 
-O `testing.B` dara a você acesso a `b.N`
+O `testing.B` dará a você acesso a `b.N`.
 
-When the benchmark code is executed, it runs `b.N` times and measures how long it takes.
+Quando o benchmark é rodado, ele executa `b.N` vezes e mede quanto tempo leva.
 
-Quando o benchmark é executado, ele executara `b.N` vezes e medira quanto tempo levou.
+A quantidade de vezes que o código é executado não deve importar para você. O framework irá determinar qual valor é "bom" para que você consiga ter resultados decentes.
 
-A quantidade de vezes que o código não deve importar para você, o framework irá determinar qual é um valor "bom" para que você consiga ter resultados decentes.
+Para executar o benchmark, digite `go test -bench=.` no terminal (ou se estiver executando do PowerShell do Windows, `go test-bench="."`)
 
-Para executar o benchmark faça `go test -bench=.` (ou se você estiver executando do PowerShell do Windows `go test-bench="."`)
-
-```text
+```bash
 goos: darwin
 goarch: amd64
 pkg: github.com/quii/learn-go-with-tests/for/v4
@@ -117,18 +115,18 @@ pkg: github.com/quii/learn-go-with-tests/for/v4
 PASS
 ```
 
-`136 ns/op` significa que nossa função demora cerca de 136 nano segundos para ser executada \(no meu computador). E isso é ótimo! para chegar a esse resultado ela foi executada 10000000 vezes.
+`136 ns/op` significa que nossa função demora cerca de 136 nanossegundos para ser executada (no meu computador). E isso é ótimo! Para chegar a esse resultado ela foi executada 10000000 (10 milhões de vezes) vezes.
 
-_NOTE_ por padrão o benchmark é executado sequencialmente.
+_NOTA_ por padrão, o benchmark é executado sequencialmente.
 
-## Exercicios para praticar
+## Exercícios para praticar
 
--   Altere o teste para que a função aceite quantas vezes o caracter deve ser repetido.
--   Escreve `ExampleRepeat` para documentar sua função
--   Veja também o pacote [strings](https://golang.org/pkg/strings). Encontre funções que você acha serem uteis e experimente elas escrevendo testes como nós fizemos aqui. Investir tempo aprendendo os pacotes nativos irá te recompensar com o tempo.
+-   Altere o teste para que a função possa especificar quantas vezes o caracter deve ser repetido e então corrija o código para passar no teste.
+-   Escreva `ExampleRepeat` para documentar sua função.
+-   Veja também o pacote [strings](https://golang.org/pkg/strings). Encontre funções que você considera serem úteis e experimente-as escrevendo testes como fizemos aqui. Investir tempo aprendendo a biblioteca padrão irá te recompensar com o tempo.
 
 ## Resumindo
 
--   Mais praticas de TDD
--   Aprendemos `for`
+-   Mais praticás de TDD
+-   Aprendemos o `for`
 -   Aprendemos como escrever benchmarks
