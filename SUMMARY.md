@@ -1,4 +1,4 @@
-# Table of contents
+# Índice
 
 -   [Introdução](README.md)
 -   [Aprenda Go com Testes](gb-readme.md)
@@ -8,7 +8,7 @@
 -   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
 -   [Olá, mundo](primeiros-passos-com-go/hello-world.md)
 -   [Inteiros](primeiros-passos-com-go/integers.md)
--   [Iteração](primeiros-passos-com-go/iteration.md)
+-   [Iteração](primeiros-passos-com-go/iteracao.md)
 -   [Arrays e slices](primeiros-passos-com-go/arrays-and-slices.md)
 -   [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md)
 -   [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md)
