@@ -4,7 +4,7 @@
 
 Arrays allow you to store multiple elements of the same type in a variable in a particular order.
 
-When you have an array, it is very common to have to iterate over them. So let's use [our new-found knowledge of `for`](iteration.md) to make a `Sum` function. `Sum` will take an array of numbers and return the total.
+When you have an array, it is very common to have to iterate over them. So let's use [our new-found knowledge of `for`](iteracao.md) to make a `Sum` function. `Sum` will take an array of numbers and return the total.
 
 Let's use our TDD skills
 
@@ -32,8 +32,8 @@ func TestSum(t *testing.T) {
 
 Arrays have a _fixed capacity_ which you define when you declare the variable. We can initialize an array in two ways:
 
-* \[N\]type{value1, value2, ..., valueN} e.g. `numbers := [5]int{1, 2, 3, 4, 5}`
-* \[...\]type{value1, value2, ..., valueN} e.g. `numbers := [...]int{1, 2, 3, 4, 5}`
+-   \[N\]type{value1, value2, ..., valueN} e.g. `numbers := [5]int{1, 2, 3, 4, 5}`
+-   \[...\]type{value1, value2, ..., valueN} e.g. `numbers := [...]int{1, 2, 3, 4, 5}`
 
 It is sometimes useful to also print the inputs to the function in the error message and we are using the `%v` placeholder which is the "default" format, which works well for arrays.
 
@@ -143,13 +143,13 @@ This does not compile
 
 The problem here is we can either
 
-* Break the existing API by changing the argument to `Sum` to be a slice rather
+-   Break the existing API by changing the argument to `Sum` to be a slice rather
 
-  than an array. When we do this we will know we have potentially ruined
+    than an array. When we do this we will know we have potentially ruined
 
-  someone's day because our _other_ test will not compile!
+    someone's day because our _other_ test will not compile!
 
-* Create a new function
+-   Create a new function
 
 In our case, no-one else is using our function so rather than having two functions to maintain let's just have one.
 
@@ -486,21 +486,22 @@ $ go test
 
 We have covered
 
-* Arrays
-* Slices
-  * The various ways to make them
-  * How they have a _fixed_ capacity but you can create new slices from old ones
+-   Arrays
+-   Slices
 
-    using `append`
+    -   The various ways to make them
+    -   How they have a _fixed_ capacity but you can create new slices from old ones
 
-  * How to slice, slices!
-* `len` to get the length of an array or slice
-* Test coverage tool
-* `reflect.DeepEqual` and why it's useful but can reduce the type-safety of your code
+        using `append`
+
+    -   How to slice, slices!
+
+-   `len` to get the length of an array or slice
+-   Test coverage tool
+-   `reflect.DeepEqual` and why it's useful but can reduce the type-safety of your code
 
 We've used slices and arrays with integers but they work with any other type too, including arrays/slices themselves. So you can declare a variable of `[][]string` if you need to.
 
 [Check out the Go blog post on slices](https://blog.golang.org/go-slices-usage-and-internals) for an in-depth look into slices. Try writing more tests to demonstrate what you learn from reading it.
 
 Another handy way to experiment with Go other than writing tests is the Go playground. You can try most things out and you can easily share your code if you need to ask questions. [I have made a go playground with a slice in it for you to experiment with.](https://play.golang.org/p/ICCWcRGIO68)
-
