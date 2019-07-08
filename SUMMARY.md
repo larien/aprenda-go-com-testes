@@ -5,7 +5,7 @@
 
 ## Primeiros Passos com Go
 
--   [Instalação do Go](primeiros-passos-com-go/install-go.md)
+-   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
 -   [Olá, mundo](primeiros-passos-com-go/hello-world.md)
 -   [Inteiros](primeiros-passos-com-go/integers.md)
 -   [Iteração](primeiros-passos-com-go/iteration.md)
