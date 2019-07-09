@@ -25,7 +25,7 @@
 2. [Olá, mundo](primeiros-passos-com-go/hello-world.md) - Declarando variáveis, constantes, declarações `if`/`else`, switch, escreva seu primeiro programa em Go e seu primeiro teste. Sintaxe de subteste e closures.
 3. [Inteiros](primeiros-passos-com-go/integers.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
 4. [Iteração](primeiros-passos-com-go/iteration.md) - Aprenda sobre `for` e benchmarking.
-5. [Arrays e slices](primeiros-passos-com-go/arrays-and-slices.md) - Aprenda sobre arrays, slices, `len`, varargs, `range` e cobertura de testes.
+5. [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md) - Aprenda sobre arrays, slices, `len`, variáveis recebidas como argumentos, `range` e cobertura de testes.
 6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
 7. [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
 8. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
