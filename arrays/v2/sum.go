@@ -1,10 +1,10 @@
 package main
 
-// Sum calculates the total from an array of numbers
-func Sum(numbers [5]int) int {
-	sum := 0
-	for _, number := range numbers {
-		sum += number
+// Soma calcula o valor total dos números em um array
+func Soma(numeros [5]int) int {
+	soma := 0
+	for _, numero := range numeros {
+		soma += numero
 	}
-	return sum
+	return soma
 }

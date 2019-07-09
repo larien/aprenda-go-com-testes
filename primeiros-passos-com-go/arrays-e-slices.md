@@ -367,7 +367,7 @@ func TestSomaTodoOResto(t *testing.T) {
 
 Renomeie a função para `SomaTodoOResto` e volte a executar o teste.
 
-`sum_test.go:30: resultado [3 9], esperado [2 9]`
+`soma_test.go:30: resultado [3 9], esperado [2 9]`
 
 ## Escreva código o suficiente para fazer o teste passar
 
@@ -438,7 +438,7 @@ func SomaTodoOResto(numerosParaSomar ...[]int) []int {
             somas = append(somas, 0)
         } else {
             final := numeros[1:]
-            somas = append(somas, Sum(final))
+            somas = append(somas, Soma(final))
         }
     }
 

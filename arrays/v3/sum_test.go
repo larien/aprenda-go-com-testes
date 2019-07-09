@@ -3,17 +3,15 @@ package main
 import "testing"
 
 func TestSum(t *testing.T) {
+	t.Run("coleção de qualquer tamanho", func(t *testing.T) {
 
-	t.Run("collections of any size", func(t *testing.T) {
+		numeros := []int{1, 2, 3}
 
-		numbers := []int{1, 2, 3}
+		resultado := Soma(numeros)
+		esperado := 6
 
-		got := Sum(numbers)
-		want := 6
-
-		if got != want {
-			t.Errorf("got %d want %d given, %v", got, want, numbers)
+		if resultado != esperado {
+			t.Errorf("resultado %d, esperado %d, dado, %v", resultado, esperado, numeros)
 		}
 	})
-
 }

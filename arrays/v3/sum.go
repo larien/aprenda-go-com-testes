@@ -1,10 +1,10 @@
 package main
 
-// Sum calculates the total from a slice of numbers
-func Sum(numbers []int) int {
-	sum := 0
-	for _, number := range numbers {
-		sum += number
+// Soma calcula o valor total dos números em um slice
+func Soma(numeros []int) int {
+	soma := 0
+	for _, numero := range numeros {
+		soma += numero
 	}
-	return sum
+	return soma
 }

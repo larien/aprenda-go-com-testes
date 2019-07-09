@@ -2,14 +2,14 @@ package main
 
 import "testing"
 
-func TestSum(t *testing.T) {
+func TestSoma(t *testing.T) {
 
-	numbers := [5]int{1, 2, 3, 4, 5}
+	numeros := [5]int{1, 2, 3, 4, 5}
 
-	got := Sum(numbers)
-	want := 15
+	resultado := Soma(numeros)
+	esperado := 15
 
-	if got != want {
-		t.Errorf("got %d want %d given, %v", got, want, numbers)
+	if resultado != esperado {
+		t.Errorf("resultado %d, esperado %d, dado, %v", resultado, esperado, numeros)
 	}
 }

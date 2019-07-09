@@ -1,22 +1,22 @@
 package main
 
-// Sum calculates the total from a slice of numbers
-func Sum(numbers []int) int {
-	sum := 0
-	for _, number := range numbers {
-		sum += number
+// Soma calcula o valor total dos números em um slice
+func Soma(numeros []int) int {
+	soma := 0
+	for _, numero := range numeros {
+		soma += numero
 	}
-	return sum
+	return soma
 }
 
-// SumAll calculates the respective sums of every slice passed in
-func SumAll(numbersToSum ...[]int) []int {
-	lengthOfNumbers := len(numbersToSum)
-	sums := make([]int, lengthOfNumbers)
+// SomaTudo calcula as respectivas somas de cada slice recebido
+func SomaTudo(numerosParaSomar ...[]int) []int {
+	quantidadeDeNumeros := len(numerosParaSomar)
+	somas := make([]int, quantidadeDeNumeros)
 
-	for i, numbers := range numbersToSum {
-		sums[i] = Sum(numbers)
+	for i, numeros := range numerosParaSomar {
+		somas[i] = Soma(numeros)
 	}
 
-	return sums
+	return somas
 }
