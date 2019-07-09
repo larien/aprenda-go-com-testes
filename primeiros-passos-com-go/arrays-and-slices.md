@@ -1,105 +1,105 @@
 # Arrays e slices
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/arrays)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/arrays)
 
-Arrays allow you to store multiple elements of the same type in a variable in a particular order.
+Arrays te permitem armazenar diversos elementos do mesmo tipo em uma variável em uma ordem específica.
 
-When you have an array, it is very common to have to iterate over them. So let's use [our new-found knowledge of `for`](iteration.md) to make a `Sum` function. `Sum` will take an array of numbers and return the total.
+Quando você tem um array, é muito comum ter que percorrer sobre ele. Logo, vamos usar nosso [recém adquirido conhecimento de `for`](primeiros-passos-com-go/iteracao.md) para criar uma função `Soma`. `Soma` vai receber um array de números e retornar o total.
 
-Let's use our TDD skills
+Também vamos praticar nossas habilidades em TDD.
 
-## Write the test first
+## Escreva o teste primeiro
 
-In `sum_test.go`
+Em `soma_test.go`:
 
 ```go
 package main
 
 import "testing"
 
-func TestSum(t *testing.T) {
+func TestSoma(t *testing.T) {
 
-    numbers := [5]int{1, 2, 3, 4, 5}
+    numeros := [5]int{1, 2, 3, 4, 5}
 
-    got := Sum(numbers)
-    want := 15
+    resultado := Sum(numeros)
+    esperado := 15
 
-    if want != got {
-        t.Errorf("got %d want %d given, %v", got, want, numbers)
+    if esperado != recebido {
+        t.Errorf("resultado %d, esperado %d, dado %v", resultado, esperado, numeros)
     }
 }
 ```
 
-Arrays have a _fixed capacity_ which you define when you declare the variable. We can initialize an array in two ways:
+Arrays têm uma _capacidade fixa_ que é definida quando você declara a variável. Podemos inicializar um array de duas formas:
 
-* \[N\]type{value1, value2, ..., valueN} e.g. `numbers := [5]int{1, 2, 3, 4, 5}`
-* \[...\]type{value1, value2, ..., valueN} e.g. `numbers := [...]int{1, 2, 3, 4, 5}`
+-   [N]tipo{valor1, valor2, ..., valorN}, como `numeros := [5]int{1, 2, 3, 4, 5}`
+-   [...]tipo{valor1, valor2, ..., valorN}, como `numbers := [...]int{1, 2, 3, 4, 5}`
 
-It is sometimes useful to also print the inputs to the function in the error message and we are using the `%v` placeholder which is the "default" format, which works well for arrays.
+Às vezes é útil também mostrarmos as entradas da função na mensagem de erro. Para isso estamos usando o formatador `%v`, que é o formato "padrão" e funciona bem com arrays.
 
-[Read more about the format strings](https://golang.org/pkg/fmt/)
+[Leia mais sobre formatação de strings aqui](https://golang.org/pkg/fmt/)
 
-## Try to run the test
+## Execute o teste
 
-By running `go test` the compiler will fail with `./sum_test.go:10:15: undefined: Sum`
+Ao executar `go test`, o compilador vai falhar com `./soma_test.go:10:15: undefined: Soma`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
 
-In `sum.go`
+Em `soma.go`:
 
 ```go
 package main
 
-func Sum(numbers [5]int) int {
+func Soma(numeros [5]int) int {
     return 0
 }
 ```
 
-Your test should now fail with _a clear error message_
+Agora seu teste deve falhar com uma _mensagem clara de erro_:
 
-`sum_test.go:13: got 0 want 15 given, [1 2 3 4 5]`
+`soma_test.go:13: resultado 0, esperado 15, dado [1 2 3 4 5]`
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func Sum(numbers [5]int) int {
-    sum := 0
+func Soma(numeros [5]int) int {
+    soma := 0
     for i := 0; i < 5; i++ {
-        sum += numbers[i]
+        soma += numeros[i]
     }
-    return sum
+    return soma
 }
 ```
 
-To get the value out of an array at a particular index, just use `array[index]` syntax. In this case, we are using `for` to iterate 5 times to work through the array and add each item onto `sum`.
+Para receber o valor de um array em uma posição específica, basta usar a sintaxe `array[índice]`. Nesse caso, estamos usando o `for` para percorrer cada posição do array (que tem 5 posições) e somar cada valor na variável `soma`.
 
-## Refactor
+## Refatoração
 
-Let's introduce [`range`](https://gobyexample.com/range) to help clean up our code
+Vamos apresentar o [`range`](https://gobyexample.com/range) para nos ajudar a limpar o código:
 
 ```go
-func Sum(numbers [5]int) int {
-    sum := 0
-    for _, number := range numbers {
-        sum += number
+func Soma(numeros [5]int) int {
+    soma := 0
+    for _, numero := range numeros {
+        soma += numero
     }
-    return sum
+    return soma
 }
 ```
 
-`range` lets you iterate over an array. Every time it is called it returns two values, the index and the value. We are choosing to ignore the index value by using `_` [blank identifier](https://golang.org/doc/effective_go.html#blank).
+O `range` permite que você percorra um array. Sempre que é chamado, retorna dois valores: o índice e o valor. Decidimos ignorar o valor índice usando `_` [_blank identifier_](https://golang.org/doc/effective_go.html#blank).
 
-### Arrays and their type
+### Arrays e seu tipo
 
-An interesting property of arrays is the size is encoded in its type. If you try to pass an `[4]int` into a function that expects `[5]int`, it won't compile. They are different types so it's just the same as trying to pass a `string` into a function that wants an `int`.
+Uma propriedade interessante dos arrays é que seu tamanho é relacionado ao seu tipo. Se tentar passar um `[4]int` dentro da função que espera `[5]int`, ela não vai compilar. Elas são de tipos diferentes e é a mesma coisa que tentar passar uma `string` para uma função que espera um `int`.
 
-You may be thinking it's quite cumbersome that arrays have a fixed length, and most of the time you probably won't be using them!
+Você pode estar pensando que é bastante complicado que arrays tenham tamanho fixo, não é? Só que na maioria das vezes, você provavelmente não vai usá-los!
 
-Go has _slices_ which do not encode the size of the collection and instead can have any size.
+O Go tem _slices_, em que você não define o tamanho da coleção e, graças a isso, pode ter qualquer tamanho.
 
-The next requirement will be to sum collections of varying sizes.
+O próprio requerimento será somar coleções de tamanhos variados.
 
-## Write the test first
+## Escreva o teste primeiro
 
 We will now use the [slice type](https://golang.org/doc/effective_go.html#slices) which allows us to have collections of any size. The syntax is very similar to arrays, you just omit the size when declaring them
 
@@ -143,13 +143,13 @@ This does not compile
 
 The problem here is we can either
 
-* Break the existing API by changing the argument to `Sum` to be a slice rather
+-   Break the existing API by changing the argument to `Sum` to be a slice rather
 
-  than an array. When we do this we will know we have potentially ruined
+    than an array. When we do this we will know we have potentially ruined
 
-  someone's day because our _other_ test will not compile!
+    someone's day because our _other_ test will not compile!
 
-* Create a new function
+-   Create a new function
 
 In our case, no-one else is using our function so rather than having two functions to maintain let's just have one.
 
@@ -486,21 +486,22 @@ $ go test
 
 We have covered
 
-* Arrays
-* Slices
-  * The various ways to make them
-  * How they have a _fixed_ capacity but you can create new slices from old ones
+-   Arrays
+-   Slices
 
-    using `append`
+    -   The various ways to make them
+    -   How they have a _fixed_ capacity but you can create new slices from old ones
 
-  * How to slice, slices!
-* `len` to get the length of an array or slice
-* Test coverage tool
-* `reflect.DeepEqual` and why it's useful but can reduce the type-safety of your code
+        using `append`
+
+    -   How to slice, slices!
+
+-   `len` to get the length of an array or slice
+-   Test coverage tool
+-   `reflect.DeepEqual` and why it's useful but can reduce the type-safety of your code
 
 We've used slices and arrays with integers but they work with any other type too, including arrays/slices themselves. So you can declare a variable of `[][]string` if you need to.
 
 [Check out the Go blog post on slices](https://blog.golang.org/go-slices-usage-and-internals) for an in-depth look into slices. Try writing more tests to demonstrate what you learn from reading it.
 
 Another handy way to experiment with Go other than writing tests is the Go playground. You can try most things out and you can easily share your code if you need to ask questions. [I have made a go playground with a slice in it for you to experiment with.](https://play.golang.org/p/ICCWcRGIO68)
-
