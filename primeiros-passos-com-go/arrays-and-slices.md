@@ -344,13 +344,13 @@ func SomaTudo(numerosParaSomar ...[]int) []int {
 
 Nessa implementação, nos preocupamos menos sobre capacidade. Começamos com um slice vazio `somas` e o anexamos ao resultado de `Soma` enquanto percorremos as variáveis recebidas como argumento.
 
-Nosso próprio requisito é alterar o `SomaTudo` para `SomaTodosOsFinais`, onde agora calcula os totais de todos os "finais" de cada slice. O final de uma coleção é todos os itens com exceção do primeiro (a "cabeça").
+Nosso próprio requisito é alterar o `SomaTudo` para `SomaTodoOResto`, onde agora calcula os totais de todos os "finais" de cada slice. O final de uma coleção é todos os itens com exceção do primeiro (a "cabeça").
 
 ## Escreva o teste primeiro
 
 ```go
-func TestSomaTodosOsFinais(t *testing.T) {
-    resultado := SomaTodosOsFinais([]int{1,2}, []int{0,9})
+func TestSomaTodoOResto(t *testing.T) {
+    resultado := SomaTodoOResto([]int{1,2}, []int{0,9})
     esperado := []int{2, 9}
 
     if !reflect.DeepEqual(resultado, esperado) {
@@ -361,20 +361,18 @@ func TestSomaTodosOsFinais(t *testing.T) {
 
 ## Execute o teste
 
-`./soma_test.go:26:9: undefined: SomaTodosOsFinais`
+`./soma_test.go:26:9: undefined: SomaTodoOResto`
 
 ## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
 
-Renomeie a função para `` e reexecute o teste.
-
-Rename the function to `SomaTodosOsFinais` and re-run the test
+Renomeie a função para `SomaTodoOResto` e volte a executar o teste.
 
 `sum_test.go:30: resultado [3 9], esperado [2 9]`
 
 ## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func SomaTodosOsFinais(numerosParaSomar ...[]int) []int {
+func SomaTodoOResto(numerosParaSomar ...[]int) []int {
     var somas []int
     for _, numeros := range numerosParaSomar {
         final := numeros[1:]
@@ -396,10 +394,10 @@ O que acha que aconteceria se você passar um slice vazio para a nossa função?
 ## Escreva o teste primeiro
 
 ```go
-func TestSomaTodosOsFinais(t *testing.T) {
+func TestSomaTodoOResto(t *testing.T) {
 
     t.Run("faz as somas de alguns slices", func(t *testing.T) {
-        resultado := SomaTodosOsFinais([]int{1,2}, []int{0,9})
+        resultado := SomaTodoOResto([]int{1,2}, []int{0,9})
         esperado := []int{2, 9}
 
         if !reflect.DeepEqual(resultado, esperado) {
@@ -408,7 +406,7 @@ func TestSomaTodosOsFinais(t *testing.T) {
     })
 
     t.Run("soma slices vazios de forma segura", func(t *testing.T) {
-        resultado := SomaTodosOsFinais([]int{}, []int{3, 4, 5})
+        resultado := SomaTodoOResto([]int{}, []int{3, 4, 5})
         esperado := []int{0, 9}
 
         if !reflect.DeepEqual(resultado, esperado) {
@@ -433,7 +431,7 @@ Oh, não! É importante perceber que o test _foi compilado_, esse é um erro em 
 ## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func SomaTodosOsFinais(numerosParaSomar ...[]int) []int {
+func SomaTodoOResto(numerosParaSomar ...[]int) []int {
     var somas []int
     for _, numeros := range numerosParaSomar {
         if len(numeros) == 0 {
@@ -450,60 +448,57 @@ func SomaTodosOsFinais(numerosParaSomar ...[]int) []int {
 
 ## Refatoração
 
-Our tests have some repeated code around assertion again, let's extract that into a function
+Nossos testes têm código repetido em relação à asserção de novo. Vamos encapsular isso em uma função:
 
 ```go
-func TestSomaAllTails(t *testing.T) {
+func TestSomaTodoOResto(t *testing.T) {
 
-    checkSums := func(t *testing.T, got, want []int) {
+    verificaSomas := func(t *testing.T, resultado, esperado []int) {
         t.Helper()
-        if !reflect.DeepEqual(got, want) {
-            t.Errorf("got %v want %v", got, want)
+        if !reflect.DeepEqual(resultado, esperado) {
+            t.Errorf("resultado %v, esperado %v", resultado, esperado)
         }
     }
 
-    t.Run("make the sums of tails of", func(t *testing.T) {
-        got := SumAllTails([]int{1, 2}, []int{0, 9})
-        want := []int{2, 9}
-        checkSums(t, got, want)
+    t.Run("faz a soma do resto", func(t *testing.T) {
+        resultado := SomaTodoOResto([]int{1, 2}, []int{0, 9})
+        esperado := []int{2, 9}
+        verificaSomas(t, resultado, esperado)
     })
 
-    t.Run("safely sum empty slices", func(t *testing.T) {
-        got := SumAllTails([]int{}, []int{3, 4, 5})
-        want := []int{0, 9}
-        checkSums(t, got, want)
+    t.Run("soma slices vazios de forma segura", func(t *testing.T) {
+        resultado := SomaTodoOResto([]int{}, []int{3, 4, 5})
+        esperado := []int{0, 9}
+        verificaSomas(t, resultado, esperado)
     })
 
 }
 ```
 
-A handy side-effect of this is this adds a little type-safety to our code. If a silly developer adds a new test with `checkSums(t, got, "dave")` the compiler will stop them in their tracks.
+Um efeito colateral útil disso é que adiciona um pouco de segurança de tipos no nosso código. Se uma pessoa espertinha adicionar um novo teste com `verificaSomas(t, resultado, "luisa")` o compilador vai pará-lo antes que algo errado aconteça.
 
 ```bash
 $ go test
-./sum_test.go:52:21: cannot use "dave" (type string) as type []int in argument to checkSums
+./soma_test.go:52:21: cannot use "luisa" (type string) as type []int in argument to verificaSomas
 ```
 
-## Wrapping up
+`não é possível usar "luisa" (tipo string) como tipo []int no argumento para verificaSomas`
 
-We have covered
+## Resumindo
+
+Falamos sobre:
 
 -   Arrays
 -   Slices
+-   Várias formas de criá-las
+-   Como eles têm uma capacidade _fixa_, mas é posível criar novos slices de antigos usando `append`
+-   Como "fatiar" slices!
+-   `len` obtém o tamanho de um array ou slice
+-   Ferramenta de cobertura de testes
+-   `reflect.DeepEqual` e por que é útil, mas pode diminuir a segurança de tipos do seu código
 
-    -   The various ways to make them
-    -   How they have a _fixed_ capacity but you can create new slices from old ones
+Usamos slices e arrays com inteiros, mas eles também funcionam com qualquer outro tipo, incluindo até os próprios arrays/slices. Logo, você pode declarar uma variável de `[][]string` se precisar.
 
-        using `append`
+[Dê uma olhada no post sobre slices no blog de Go](https://blog.golang.org/go-slices-usage-and-internals) para saber mais sobre slices. Tente escrever mais testes para demonstrar o que você aprendeu com a leitura.
 
-    -   How to slice, slices!
-
--   `len` to get the length of an array or slice
--   Test coverage tool
--   `reflect.DeepEqual` and why it's useful but can reduce the type-safety of your code
-
-We've used slices and arrays with integers but they work with any other type too, including arrays/slices themselves. So you can declare a variable of `[][]string` if you need to.
-
-[Check out the Go blog post on slices](https://blog.golang.org/go-slices-usage-and-internals) for an in-depth look into slices. Try writing more tests to demonstrate what you learn from reading it.
-
-Another handy way to experiment with Go other than writing tests is the Go playground. You can try most things out and you can easily share your code if you need to ask questions. [I have made a go playground with a slice in it for you to experiment with.](https://play.golang.org/p/ICCWcRGIO68)
+Outra forma útil de brincar com Go ao invés de escrever testes é o Go playground. Você pode testar mais coisas lá e você pode compartilhar seu código facilmente se precisar tirar dúvidas. [Criei um exemplo com um slice para testar lá.](https://play.golang.org/p/ICCWcRGIO68)
