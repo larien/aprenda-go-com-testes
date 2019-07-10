@@ -26,7 +26,7 @@
 3. [Inteiros](primeiros-passos-com-go/integers.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
 4. [Iteração](primeiros-passos-com-go/iteration.md) - Aprenda sobre `for` e benchmarking.
 5. [Arrays e slices](primeiros-passos-com-go/arrays-and-slices.md) - Aprenda sobre arrays, slices, `len`, varargs, `range` e cobertura de testes.
-6. [Structs, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
+6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
 7. [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
 8. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
 9. [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a io.
@@ -127,23 +127,26 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 -   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
 -   Se sentir confortável com o terminal
 
-## Traduzido com :blue_heart: por
+## Traduzido com <3 por
 
--   [Diego Nascimento](https://github.com/diegonvs)
+-   Davi Marcondes Moreira
+    [github](http://github.com/devdrops) [twitter](https://twitter.com/devdrops)
 
-[twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
+-   Diego Nascimento
 
--   [Jéssica Paz](https://github.com/jessicapaz)
+[github](https://github.com/diegonvs) [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
 
-[site](https://jessicapaz.me) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
+-   Jéssica Paz
 
--   [Lauren Ferreira](https://github.com/larien)
+[site](https://jessicapaz.me) [github](https://github.com/jessicapaz) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
 
-[site](https://larien.dev) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
+-   Lauren Ferreira
 
--   [Rafael Acioly](https://github.com/rafa-acioly)
+[site](https://larien.dev) [github](https://github.com/larien) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
 
-[twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
+-   Rafael Acioly
+
+[github](https://github.com/rafa-acioly) [twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
 
 ## Feedback
 

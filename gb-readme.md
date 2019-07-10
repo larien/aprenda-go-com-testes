@@ -68,6 +68,28 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 -   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
 -   Se sentir confortável com o terminal
 
+## Traduzido com <3 por
+
+-   Davi Marcondes Moreira
+
+[github](http://github.com/devdrops) [twitter](https://twitter.com/devdrops)
+
+-   Diego Nascimento
+
+[github](https://github.com/diegonvs) [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
+
+-   Jéssica Paz
+
+[site](https://jessicapaz.me) [github](https://github.com/jessicapaz) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
+
+-   Lauren Ferreira
+
+[site](https://larien.dev) [github](https://github.com/larien) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
+
+-   Rafael Acioly
+
+[github](https://github.com/rafa-acioly) [twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
+
 ## Feedback
 
 -   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
@@ -76,21 +98,3 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 [MIT license](https://github.com/larien/learn-go-with-tests/tree/35d0dbb8c6467128a4b4637742b4c2fe563c0a88/LICENSE.md)
 
 [Logo criado por egonelbre](https://github.com/egonelbre) Que estrela!
-
-## Traduzido com :blue_heart: por
-
--   [Diego Nascimento](https://github.com/diegonvs)
-
-[twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
-
--   [Jéssica Paz](https://github.com/jessicapaz)
-
-[site](https://jessicapaz.me) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
-
--   [Lauren Ferreira](https://github.com/larien)
-
-[site](https://larien.dev) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
-
--   [Rafael Acioly](https://github.com/rafa-acioly)
-
-[twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
