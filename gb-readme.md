@@ -4,16 +4,16 @@
 
 [Arte por Denise](https://twitter.com/deniseyu21)
 
-* Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB or PDF](https://github.com/larien/learn-go-with-tests/releases)
-* Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
-* Traduções: [Chinese](https://studygolang.gitbook.io/learn-go-with-tests)
+-   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB or PDF](https://github.com/larien/learn-go-with-tests/releases)
+-   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
+-   Traduções: [Chinese](https://studygolang.gitbook.io/learn-go-with-tests)
 
 ## Motivação
 
-* Explore a linguagem Go escrevendo testes
-* **Tenha uma base com TDD**. O Go é uma boa linguagem para aprender TDD por ser simples de aprender e ter testes nativamente
-* Tenha confiança de que você será capaz de escrever sistemas robustos e bem testados em Go
-* [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/why.md)
+-   Explore a linguagem Go escrevendo testes
+-   **Tenha uma base com TDD**. O Go é uma boa linguagem para aprender TDD por ser simples de aprender e ter testes nativamente
+-   Tenha confiança de que você será capaz de escrever sistemas robustos e bem testados em Go
+-   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/why.md)
 
 ## Explicação
 
@@ -57,41 +57,44 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 
 ## Para quem isso foi feito
 
-* Pessoas que se interessam em aprender Go.
-* Pessoas que já sabem Go, mas querem explorar testes com TDD.
+-   Pessoas que se interessam em aprender Go.
+-   Pessoas que já sabem Go, mas querem explorar testes com TDD.
 
 ## O que vamos precisar
 
-* Um computador!
-* [Go instalado](https://golang.org/)
-* Um editor de texto
-* Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
-* Se sentir confortável com o terminal
+-   Um computador!
+-   [Go instalado](https://golang.org/)
+-   Um editor de texto
+-   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
+-   Se sentir confortável com o terminal
+
+## Traduzido com <3 por
+
+-   Davi Marcondes Moreira
+
+[github](http://github.com/devdrops) [twitter](https://twitter.com/devdrops)
+
+-   Diego Nascimento
+
+[github](https://github.com/diegonvs) [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
+
+-   [Jéssica Paz]
+
+[site](https://jessicapaz.me) [github](https://github.com/jessicapaz) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
+
+-   [Lauren Ferreira]
+
+[site](https://larien.dev) [github](https://github.com/larien) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
+
+-   [Rafael Acioly]
+
+[github](https://github.com/rafa-acioly) [twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
 
 ## Feedback
 
-* Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
-* Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
+-   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
+-   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
 
 [MIT license](https://github.com/larien/learn-go-with-tests/tree/35d0dbb8c6467128a4b4637742b4c2fe563c0a88/LICENSE.md)
 
 [Logo criado por egonelbre](https://github.com/egonelbre) Que estrela!
-
-## Traduzido com :blue\_heart: por
-
-* [Diego Nascimento](https://github.com/diegonvs)
-
-[twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
-
-* [Jéssica Paz](https://github.com/jessicapaz)
-
-[site](https://jessicapaz.me) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
-
-* [Lauren Ferreira](https://github.com/larien)
-
-[site](https://larien.dev) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
-
-* [Rafael Acioly](https://github.com/rafa-acioly)
-
-[twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
-

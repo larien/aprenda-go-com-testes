@@ -127,23 +127,26 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 -   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
 -   Se sentir confortável com o terminal
 
-## Traduzido com :blue_heart: por
+## Traduzido com <3 por
 
--   [Diego Nascimento](https://github.com/diegonvs)
+-   Davi Marcondes Moreira
+    [github](http://github.com/devdrops) [twitter](https://twitter.com/devdrops)
 
-[twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
+-   Diego Nascimento
 
--   [Jéssica Paz](https://github.com/jessicapaz)
+[github](https://github.com/diegonvs) [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
 
-[site](https://jessicapaz.me) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
+-   [Jéssica Paz]
 
--   [Lauren Ferreira](https://github.com/larien)
+[site](https://jessicapaz.me) [github](https://github.com/jessicapaz) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
 
-[site](https://larien.dev) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
+-   [Lauren Ferreira]
 
--   [Rafael Acioly](https://github.com/rafa-acioly)
+[site](https://larien.dev) [github](https://github.com/larien) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
 
-[twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
+-   [Rafael Acioly]
+
+[github](https://github.com/rafa-acioly) [twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
 
 ## Feedback
 
