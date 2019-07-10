@@ -71,7 +71,7 @@ Sei que eu e muitas outras pessoas só _pensaram_ que estavam refatorando, mas e
 
 [Martin Fowler descreve como as pessoas entendem a refatoração errada aqui.](https://martinfowler.com/bliki/RefactoringMalapropism.html)
 
-> No entanto, o termo "refatoração" costuma ser utilizado de forma inapropriada. Se alguém fala que um sistema ficará quebrado por alguns dais enquanto está sendo refatorado, pode ter certeza que eles não estão refatorando.
+> No entanto, o termo "refatoração" costuma ser utilizado de forma inapropriada. Se alguém fala que um sistema ficará quebrado por alguns dias enquanto está sendo refatorado, pode ter certeza que eles não estão refatorando.
 
 Então o que é refatoração?
 
@@ -83,9 +83,9 @@ Quando estudava matemática na escola, você provavelmente aprendeu fatoração.
 
 Para fazer isso você `fatora` os denominadores (você também pode conhecer como MMC, mínimo múltiplo comum), transformando a expressão em `2/4 + 1/4` que então pode se transformar em `3/4`.
 
-Podemos tirar algumas lições importantes disso. Quando `fatoramos a expressão`, `não mudamos o que ela faz`. Ambas as expreções são iguais a `3/4`, mas facilitamos a forma como trabalhamos com esse resultado; trocar `1/2` por `2/4` torna nosso "domínio" mais fácil.
+Podemos tirar algumas lições importantes disso. Quando `fatoramos a expressão`, `não mudamos o que ela faz`. Ambas as expressões são iguais a `3/4`, mas facilitamos a forma como trabalhamos com esse resultado; trocar `1/2` por `2/4` torna nosso "domínio" mais fácil.
 
-Quando refatora seu código, você tenta encontrar formar de tornar seu código mais fácil de entender e "encaixar" no seu entendimento atual do que o sistema precisa fazer. Mas é extremamente importante que **o comportamento do código não seja alterado**.
+Quando refatora seu código, você tenta encontrar formas de tornar seu código mais fácil de entender e "encaixar" no seu entendimento atual do que o sistema precisa fazer. Mas é extremamente importante que **o comportamento do código não seja alterado**.
 
 #### Exemplo em Go
 
@@ -185,7 +185,7 @@ Ter um projeto onde os seus principais comportamentos são testados unicamente e
 
 ## Se testes unitários são tão bons, por que há resistência em escrevê-los?
 
-De um lado, é possível ver pessoas (como eu) dizendo que testes unitários são importantes para a saúda do seu sistema a longo prazo, porque eles certificam que você possa continuar refatorando com confiança.
+De um lado, é possível ver pessoas (como eu) dizendo que testes unitários são importantes para a saúde do seu sistema a longo prazo, porque eles certificam que você possa continuar refatorando com confiança.
 
 Do outro lado, é possível ver pessoas descrevendo experiências com testes unitários que na verdade _dificultaram_ a refatoração.
 
@@ -223,11 +223,11 @@ Logo, _qual_ é o nível de abstração correto?
 
 Deixando testes de lado por um momento, é desejável "unidades" independentes e desacopladas dentro do seu sistema, centradas em torno de conceitos essenciais do seu domínio.
 
-Gosto de imaginar essas unidades tão simples quanto blocos de Lego que têm APIs coerentes e que eu possa combinar com outros blocos para criar sistemas maiores. Por baixo dessas APIs pode haver várisas coisas (tipos, funções etc) colaborando para fazê-las funcionar conforme esperado.
+Gosto de imaginar essas unidades tão simples quanto blocos de Lego que têm APIs coerentes e que eu possa combinar com outros blocos para criar sistemas maiores. Por baixo dessas APIs pode haver várias coisas (tipos, funções etc) colaborando para fazê-las funcionar conforme esperado.
 
 Por exemplo: se estiver escrevendo um banco em Go, você deve ter um pacote "conta". Ele vai te apresentar uma API que não vaza detalhes da implementação e é fácil de ser integrado.
 
-Se tiver essas unidades que seguem essas propriedades, você consegue escrever testes unitários para suas APIs públicas. _Por definição_, esses testes só podem testar os comportamentos importantes. Por baixo dos panos dessas unidades, fico livre para refatorar a implementação o quanto eu precisar e os testes para a maior parte dela não deve me atrapalhar.
+Se tiver essas unidades que seguem essas propriedades, você consegue escrever testes unitários para suas APIs públicas. _Por definição_, esses testes só podem testar os comportamentos importantes. Por baixo dos panos dessas unidades, fico livre para refatorar a implementação o quanto eu precisar e os testes para a maior parte dela não devem me atrapalhar.
 
 ### Mas são testes unitários, mesmo?
 
@@ -250,7 +250,7 @@ O que podemos começar a ver é que essas facetas do desenvolvimento de software
 
 ### Testes unitários
 
--   Nos dá a garantia para refatoração.
+-   Nos dão a garantia para refatoração.
 -   Verificam e documentam o comportamento de nossas unidades.
 
 ### Unidades (bem definidas)
@@ -258,7 +258,7 @@ O que podemos começar a ver é que essas facetas do desenvolvimento de software
 -   Facilitam a escrita de testes unitários _significativos_.
 -   Facilitam a refatoração.
 
-Há um processo que nos ajuda a alcançar um ponto onde podemos refatorar nosso código para lidaar com a complexidade e manter nossos sistemas maleáveis?
+Há um processo que nos ajuda a alcançar um ponto onde podemos refatorar nosso código para lidar com a complexidade e manter nossos sistemas maleáveis?
 
 ## Por que Desenvolvimento Orientado a Testes (TDD)
 
@@ -277,12 +277,12 @@ O TDD aborda as leis que Lehman fala sobre e outras lições difíceis aprendida
 -   Escrever um teste pequeno para uma unidade do comportamento desejado
 -   Verificar que o teste falha com um erro claro (vermelho)
 -   Escrever o mínimo de código para fazer o teste passar (verde)
--   Refatorar
+-   Refatorar (azul)
 -   Repetir
 
 Conforme você pratica, essa mentalidade vai se tornar natural e rápida.
 
-Você vai esperar que esse ciclo de feedback não leve muito tempo e se sentir desconfortável se estiver em um estado em que seu sistema não está "verde" por isso poder indicar que você pode ter deixado algo passar.
+Você vai esperar que esse ciclo de feedback não leve muito tempo e se sentir desconfortável se estiver em um estado em que seu sistema não está "verde", já que isso pode indicar que você pode ter deixado algo passar.
 
 Você sempre vai desenvolver de forma a criar funcionalidades pequenas & úteis confortavelmente reforçadas pelo feedback dos seus testes.
 
