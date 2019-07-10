@@ -1,10 +1,10 @@
-# Estruturas, métodos e interfaces
+# Structs, métodos e interfaces
 
-[**Você pode encontrar todo o código deste capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/structs)
+[**Você pode encontrar todos os códigos desse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/structs)
 
-Suponha que precisamos de algum código de geometria para calcular o perímetro de um retângulo dado uma altura e largura. Nós podemos escrever uma função `Perimeter(width float64, height float64)`, onde `float64` é para números em ponto flutuante como `123.45`.
+Supondo que precisamos de algum código geométrico para calcular o perímetro de um retângulo dado uma altura e largura. Podemos escrever uma função `Perimeter(width float64, height float64)`, onde `float64` é para números em ponto flutuante como `123.45`.
 
-O ciclo de TDD deve ser bem familiar para você agora.
+O ciclo de TDD deve ser mais familiar agora para você.
 
 ## Escreva o teste primeiro
 
@@ -19,13 +19,13 @@ func TestPerimeter(t *testing.T) {
 }
 ```
 
-Percebe o novo formatador de string? O `f` é para nosso `float64` e o `.2` significa imprima 2 casas decimais.
+Viu a nova string de formatação? O `f` é para nosso `float64` e o `.2` significa imprima 2 casas decimais.
 
-## Tente executar o teste
+## Execute o teste
 
 `./shapes_test.go:6:9: undefined: Perimeter`
 
-## Escreva a mínima quantidade de código para executar o teste e verifique a saída de teste com falha
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhando
 
 ```go
 func Perimeter(width float64, height float64) float64 {
@@ -35,7 +35,7 @@ func Perimeter(width float64, height float64) float64 {
 
 Resulta em `shapes_test.go:10: got 0 want 40`.
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer o teste passar
 
 ```go
 func Perimeter(width float64, height float64) float64 {
@@ -43,11 +43,11 @@ func Perimeter(width float64, height float64) float64 {
 }
 ```
 
-So far, so easy. Now let's create a function called `Area(width, height float64)` which returns the area of a rectangle.
+Por enquanto, tudo fácil. Agora vamos criar uma função chamada `Area(width, height float64)` que retorna a área de um retângulo.
 
-Try to do it yourself, following the TDD cycle.
+Tente fazer isso sozinho, segundo o ciclo de TDD.
 
-You should end up with tests like this
+Você deveria terminar com os testes como estes:
 
 ```go
 func TestPerimeter(t *testing.T) {
@@ -69,7 +69,7 @@ func TestArea(t *testing.T) {
 }
 ```
 
-And code like this
+E código como este:
 
 ```go
 func Perimeter(width float64, height float64) float64 {
@@ -81,15 +81,15 @@ func Area(width float64, height float64) float64 {
 }
 ```
 
-## Refactor
+## Refatoração
 
-Our code does the job, but it doesn't contain anything explicit about rectangles. An unwary developer might try to supply the width and height of a triangle to these functions without realising they will return the wrong answer.
+Nosso código faz o trabalho, mas não contém nada explícito sobre retângulos. Uma pessoa descuidada poderia tentar passar a largura e altura de um triângulo para esta função sem perceber que ela retornará uma resposta errada.
 
-We could just give the functions more specific names like `RectangleArea`. A neater solution is to define our own _type_ called `Rectangle` which encapsulates this concept for us.
+Podemos apenas dar para a função um nome mais específico como `RectangleArea`. Uma solução mais limpa é definir nosso próprio _tipo_ chamado `Rectangle` que encapsula este conceito para nós.
 
-We can create a simple type using a **struct**. [A struct](https://golang.org/ref/spec#Struct_types) is just a named collection of fields where you can store data.
+Podemos criar um tipo simples usando uma **struct** (estrutura). [Uma struct](https://golang.org/ref/spec#Struct_types) é apenas uma coleção nomeada de campos onde você pode armazenar dados.
 
-Declare a struct like this
+Declare uma `struct` assim:
 
 ```go
 type Rectangle struct {
@@ -98,7 +98,7 @@ type Rectangle struct {
 }
 ```
 
-Now lets refactor the tests to use `Rectangle` instead of plain `float64`s.
+Agora vamos refatorar os testes para usar `Rectangle` em vez de simples `float64`.
 
 ```go
 func TestPerimeter(t *testing.T) {
@@ -122,7 +122,7 @@ func TestArea(t *testing.T) {
 }
 ```
 
-Remember to run your tests before attempting to fix, you should get a helpful error like
+Lembre de rodar seus testes antes de tentar corrigir. Você deve ter erro útil como:
 
 ```text
 ./shapes_test.go:7:18: not enough arguments in call to Perimeter
@@ -130,9 +130,9 @@ Remember to run your tests before attempting to fix, you should get a helpful er
     want (float64, float64)
 ```
 
-You can access the fields of a struct with the syntax of `myStruct.field`.
+Você pode acessar os campos de uma `struct` com a sintaxe `myStruct.field`.
 
-Change the two functions to fix the test.
+Mude as duas funções para corrigir o teste.
 
 ```go
 func Perimeter(rectangle Rectangle) float64 {
@@ -144,7 +144,7 @@ func Area(rectangle Rectangle) float64 {
 }
 ```
 
-I hope you'll agree that passing a `Rectangle` to a function conveys our intent more clearly but there are more benefits of using structs that we will get on to.
+Eu espero que você concorde que passando um `Rectangle` para a função comunica com mais clareza nossa intenção, mas existem mais benefícios em usar `structs` que já vamos entender.
 
 Our next requirement is to write an `Area` function for circles.
 
