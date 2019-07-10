@@ -15,7 +15,7 @@
 -   Explore a linguagem Go escrevendo testes
 -   **Tenha uma base com TDD**. O Go é uma boa linguagem para aprender TDD por ser simples de aprender e ter testes nativamente
 -   Tenha confiança de que você será capaz de escrever sistemas robustos e bem testados em Go
--   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/why.md)
+-   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/motivacao.md)
 
 ## Índice
 
@@ -26,7 +26,7 @@
 3. [Inteiros](primeiros-passos-com-go/integers.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
 4. [Iteração](primeiros-passos-com-go/iteration.md) - Aprenda sobre `for` e benchmarking.
 5. [Arrays e slices](primeiros-passos-com-go/arrays-and-slices.md) - Aprenda sobre arrays, slices, `len`, varargs, `range` e cobertura de testes.
-6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
+6. [Structs, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
 7. [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
 8. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
 9. [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a io.
@@ -71,7 +71,7 @@ Se tiver esse tipo de dúvida, crie uma Issue no GitHub e vou tentar achar tempo
 
 -   _Esse projeto está em desenvolvimento_, tanto seu conteúdo original quanto sua tradução. Se tiver interesse em contribuir, por favor entre em contato.
 -   Leia [contribuindo.md](meta/contribuindo.md) para algumas diretrizes.
--   Quer ajudar com a tradução para o português? Leia [translating.md](meta/translating.md) e entenda como o processo de tradução está organizado.
+-   Quer ajudar com a tradução para o português? Leia [traduzindo.md](meta/traduzindo.md) e entenda como o processo de tradução está organizado.
 -   Tem ideias? Crie uma issue!
 
 ## Explicação
