@@ -4,7 +4,7 @@
 
 Para fazer coisas repetidamente em Go, você precisará do `for`. Go não possui nenhuma palavra chave do tipo `while`, `do` ou `until`. Você pode usar apenas `for`, o que é uma coisa boa!
 
-Vamos escrever um teste para uma função que repete um caracter 5 vezes.
+Vamos escrever um teste para uma função que repete um caractere 5 vezes.
 
 Não há nenhuma novidade até aqui, então tente escrever você mesmo para praticar.
 
@@ -65,7 +65,7 @@ Ao contrário de outras linguagens como `C`, `Java` ou `Javascript`, não há pa
 
 Execute o teste e ele deverá passar.
 
-Variação adicionais do loop `for` estão descritas [aqui](https://gobyexample.com/for).
+Variações adicionais do loop `for` podem ser vistas [aqui](https://gobyexample.com/for).
 
 ## Refatoração
 
@@ -121,7 +121,7 @@ _NOTA_ por padrão, o benchmark é executado sequencialmente.
 
 ## Exercícios para praticar
 
--   Altere o teste para que a função possa especificar quantas vezes o caracter deve ser repetido e então corrija o código para passar no teste.
+-   Altere o teste para que a função possa especificar quantas vezes o caractere deve ser repetido e então corrija o código para passar no teste.
 -   Escreva `ExampleRepeat` para documentar sua função.
 -   Veja também o pacote [strings](https://golang.org/pkg/strings). Encontre funções que você considera serem úteis e experimente-as escrevendo testes como fizemos aqui. Investir tempo aprendendo a biblioteca padrão irá te recompensar com o tempo.
 
