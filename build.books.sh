@@ -4,7 +4,7 @@ set -e
 
 docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --latex-engine=xelatex --variable urlcolor=blue --toc --toc-depth=1 pdf-cover.md \
     gb-readme.md \
-    meta/why.md \
+    meta/motivacao.md \
     primeiros-passos-com-go/instalacao-do-go.md \
     primeiros-passos-com-go/hello-world.md \
     primeiros-passos-com-go/integers.md \
@@ -31,7 +31,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
 
 docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --latex-engine=xelatex --toc --toc-depth=1 title.txt \
     gb-readme.md \
-    meta/why.md \
+    meta/motivacao.md \
     primeiros-passos-com-go/instalacao-do-go.md \
     primeiros-passos-com-go/hello-world.md \
     primeiros-passos-com-go/integers.md \

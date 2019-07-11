@@ -10,7 +10,7 @@
 -   [Inteiros](primeiros-passos-com-go/integers.md)
 -   [Iteração](primeiros-passos-com-go/iteration.md)
 -   [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md)
--   [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md)
+-   [Structs, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md)
 -   [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md)
 -   [Maps](primeiros-passos-com-go/maps.md)
 -   [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md)
@@ -38,7 +38,7 @@
 
 ## Meta
 
--   [Por que testes unitários e como fazê-los dar certo](meta/why.md)
--   [Como contribuir](meta/contributing.md)
--   [Como traduzir](meta/translating.md)
--   [Template de capítulo](meta/template.md)
+-   [Por que testes unitários?](meta/motivacao.md)
+-   [Como contribuir](meta/contribuindo.md)
+-   [Como traduzir](meta/traduzindo.md)
+-   [Exemplo de capítulo](meta/exemplo.md)
