@@ -146,9 +146,9 @@ func Area(rectangle Rectangle) float64 {
 
 Eu espero que você concorde que passando um `Rectangle` para a função comunica com mais clareza nossa intenção, mas existem mais benefícios em usar `structs` que já vamos entender.
 
-Our next requirement is to write an `Area` function for circles.
+Nosso próximo requisito é escrever uma função `Area` para círculos.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
 func TestArea(t *testing.T) {
@@ -176,13 +176,13 @@ func TestArea(t *testing.T) {
 }
 ```
 
-## Try to run the test
+## Execute o teste
 
 `./shapes_test.go:28:13: undefined: Circle`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhando
 
-We need to define our `Circle` type.
+Precisamos definir nosso tipo `Circle`.
 
 ```go
 type Circle struct {
@@ -190,35 +190,36 @@ type Circle struct {
 }
 ```
 
-Now try to run the tests again
+Agora rode os testes novamente.
 
 `./shapes_test.go:29:14: cannot use circle (type Circle) as type Rectangle in argument to Area`
 
-Some programming languages allow you to do something like this:
+Algumas linguagens de programação permitem você fazer algo como:
 
 ```go
 func Area(circle Circle) float64 { ... }
 func Area(rectangle Rectangle) float64 { ... }
 ```
 
-But you cannot in Go
+Mas em Go você não pode
 
 `./shapes.go:20:32: Area redeclared in this block`
 
-We have two choices:
+Temos duas escolhas:
 
-* You can have functions with the same name declared in different _packages_. So we could create our `Area(Circle)` in a new package, but that feels overkill here.
-* We can define [_methods_](https://golang.org/ref/spec#Method_declarations) on our newly defined types instead.
+* Podemos ter funções com o mesmo nome declaradas em _pacotes_ diferentes. Então poderíamos criar nossa `Area(Circle)` em um novo _pacote_, mas isso parece um exagero aqui.
+* Em vez disso, podemos definir [_métodos_](https://golang.org/ref/spec#Method_declarations) em nosso mais novo tipo definido.
 
-### What are methods?
+### O que são métodos?
 
-So far we have only been writing _functions_ but we have been using some methods. When we call `t.Errorf` we are calling the method `ErrorF` on the instance of our `t` \(`testing.T`\).
+Até agora só escrevemos _funções_, mas temos usado alguns métodos. Quando chamamos `t.Errorf`, nós chamamos o método `Errorf` na instância de nosso `t` \(`testing.T`\).
 
-A method is a function with a receiver. A method declaration binds an identifier, the method name, to a method, and associates the method with the receiver's base type.
+Um método é uma função com um receptor. Uma declaração de método víncula um identificador, o nome do método, a um método e associa o método com o tipo base do receptor.*
 
-Methods are very similar to functions but they are called by invoking them on an instance of a particular type. Where you can just call functions wherever you like, such as `Area(rectangle)` you can only call methods on "things".
+Métodos são muito similares a funções, mas, são chamados invocando eles em uma instância de um tipo específico.
+Enquanto você chamar funções onde quiser, como por exemplo `Area(rectangle)`, você só pode chamar métodos em "coisas".
 
-An example will help so let's change our tests first to call methods instead and then fix the code.
+Um exemplo ajudará. Então vamos mudar nossos testes primeiro para chamar métodos em vez de funções, e, em seguida, corrigir o código.
 
 ```go
 func TestArea(t *testing.T) {
@@ -246,7 +247,7 @@ func TestArea(t *testing.T) {
 }
 ```
 
-If we try to run the tests, we get
+Se rodarmos os testes agora, recebemos:
 
 ```text
 ./shapes_test.go:19:19: rectangle.Area undefined (type Rectangle has no field or method Area)
@@ -255,11 +256,11 @@ If we try to run the tests, we get
 
 > type Circle has no field or method Area
 
-I would like to reiterate how great the compiler is here. It is so important to take the time to slowly read the error messages you get, it will help you in the long run.
+Gostaria de reforçar quão grandioso é o compilador aqui. É muito importante ter tempo para ler lentamente as mensagens de erro que você recebe, isso te ajudará a longo prazo.
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhando
 
-Let's add some methods to our types
+Vamos adicionar alguns métodos para nossos tipos:
 
 ```go
 type Rectangle struct {
@@ -280,21 +281,21 @@ func (c Circle) Area() float64  {
 }
 ```
 
-The syntax for declaring methods is almost the same as functions and that's because they're so similar. The only difference is the syntax of the method receiver `func (receiverName RecieverType) MethodName(args)`.
+A sintaxe para declaração de métodos é quase a mesma que usamos para funções e isto é porque eles são tão parecidos. A única diferença é a sintaxe para o método receptor `func (receiverName RecieverType) MethodName(args)`.
 
-When your method is called on a variable of that type, you get your reference to its data via the `receiverName` variable. In many other programming languages this is done implicitly and you access the receiver via `this`.
+Quando seu método é chamado em uma variável deste tipo, você tem sua referência para o dado através da variável `receiverName`. Em muitas outras linguagens de programação isto é feito implicitamente e você acessa o receptor através de `this`.
 
-It is a convention in Go to have the receiver variable be the first letter of the type.
+É uma convenção em Go que a variável receptora seja a primeira letra do tipo.
 
 ```go
 r Rectangle
 ```
 
-If you try to re-run the tests they should now compile and give you some failing output.
+Se você executar novamente os testes, agora eles devem compilar e dar alguma saída do teste falhando.
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer o teste passar
 
-Now let's make our rectangle tests pass by fixing our new method
+Agora vamos fazer nossos testes de retângulo passarem corrigindo nosso novo método.
 
 ```go
 func (r Rectangle) Area() float64  {
@@ -302,9 +303,9 @@ func (r Rectangle) Area() float64  {
 }
 ```
 
-If you re-run the tests the rectangle tests should be passing but circle should still be failing.
+Se você executar novamente os testes, aqueles de retângulo devem passar, mas, os de círculo ainda falham.
 
-To make circle's `Area` function pass we will borrow the `Pi` constant from the `math` package \(remember to import it\).
+Para fazer a função `Area` de círculo passar, nós vamos emprestar a constante `Pi` do pacote `math` \(lembre-se de importá-lo\).
 
 ```go
 func (c Circle) Area() float64  {
