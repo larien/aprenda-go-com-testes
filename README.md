@@ -15,7 +15,7 @@
 -   Explore a linguagem Go escrevendo testes
 -   **Tenha uma base com TDD**. O Go é uma boa linguagem para aprender TDD por ser simples de aprender e ter testes nativamente
 -   Tenha confiança de que você será capaz de escrever sistemas robustos e bem testados em Go
--   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/why.md)
+-   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/motivacao.md)
 
 ## Índice
 
@@ -70,8 +70,8 @@ Se tiver esse tipo de dúvida, crie uma Issue no GitHub e vou tentar achar tempo
 ## Contribuição
 
 -   _Esse projeto está em desenvolvimento_, tanto seu conteúdo original quanto sua tradução. Se tiver interesse em contribuir, por favor entre em contato.
--   Leia [contributing.md](meta/contributing.md) para algumas diretrizes.
--   Quer ajudar com a tradução para o português? Leia [translating.md](meta/translating.md) e entenda como o processo de tradução está organizado.
+-   Leia [contribuindo.md](meta/contribuindo.md) para algumas diretrizes.
+-   Quer ajudar com a tradução para o português? Leia [traduzindo.md](meta/traduzindo.md) e entenda como o processo de tradução está organizado.
 -   Tem ideias? Crie uma issue!
 
 ## Explicação
@@ -127,23 +127,27 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 -   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
 -   Se sentir confortável com o terminal
 
-## Traduzido com :blue_heart: por
+## Traduzido com <3 por
 
--   [Diego Nascimento](https://github.com/diegonvs)
+-   Davi Marcondes Moreira
 
-[twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
+[github](http://github.com/devdrops) [twitter](https://twitter.com/devdrops)
 
--   [Jéssica Paz](https://github.com/jessicapaz)
+-   Diego Nascimento
 
-[site](https://jessicapaz.me) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
+[github](https://github.com/diegonvs) [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
 
--   [Lauren Ferreira](https://github.com/larien)
+-   Jéssica Paz
 
-[site](https://larien.dev) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
+[site](https://jessicapaz.me) [github](https://github.com/jessicapaz) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
 
--   [Rafael Acioly](https://github.com/rafa-acioly)
+-   Lauren Ferreira
 
-[twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
+[site](https://larien.dev) [github](https://github.com/larien) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
+
+-   Rafael Acioly
+
+[github](https://github.com/rafa-acioly) [twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
 
 ## Feedback
 
