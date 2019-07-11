@@ -1,6 +1,6 @@
 # Inteiros
 
-**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larienmf/learn-go-with-tests/tree/master/integers)**
+**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larien/learn-go-with-tests/tree/master/integers)**
 
 Inteiros funcionam como é de se esperar. Vamos escrever uma função de soma para testar algumas coisas. Crie um arquivo de teste chamado `adder_test.go` e escreva o seguinte código.
 
@@ -26,7 +26,7 @@ func TestAdder(t *testing.T) {
 Você deve ter notado que estamos usando `%d` como string de formatação, em vez de `%s`. Isso porque queremos que ele imprima um valor inteiro e não uma string.
 Observe também que não estamos mais usando o pacote `main`, em vez disso, definimos um pacote chamado `integers`, pois o nome sugere que ele agrupará funções para trabalhar com números inteiros, como Add.
 
-## Tente e execute o teste
+## Tente executar o teste
 
 Execute o test com `go test`
 
@@ -47,15 +47,15 @@ func Add(x, y int) int {
 ```
 Quando você tem mais de um argumento do mesmo tipo (no nosso caso dois inteiros) ao invés de ter `(x int e int)` você pode encurtá-lo para `(x, y int)`.
 
-Agora execute os testes, devemos ficar felizes que o teste esteja relatando corretamente o que está errado.
+Agora execute os testes. Devemos ficar felizes que o teste esteja relatando corretamente o que está errado.
 
 `adder_test.go:10: expected '4' but got '0'`
 
-Você deve ter percebido que nós aprendemos sobre o _valor de retorno nomeado_ na [última](hello-world.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto, no nosso caso, é muito claro que a função `Add` irá somar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
+Você deve ter percebido que aprendemos sobre o _valor de retorno nomeado_ na [última](hello-world.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto. No nosso caso, é muito claro que a função `Add` irá adicionar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
 
 ## Escreva código o suficiente para fazer o teste passar
 
-No sentido estrito de TDD, devemos escrever a _quantidade mínima de código para fazer o teste passar_. Uma pessoa pedante pode fazer isso
+No sentido estrito de TDD, devemos escrever a _quantidade mínima de código para fazer o teste passar_. Uma pessoa pretenciosa pode fazer isso:
 
 ```go
 func Add(x, y int) int {
@@ -113,7 +113,7 @@ func ExampleAdd() {
     // Output: 6
 }
 ```
-(Se o seu editor não importar os pacotes automaticamente para você, a etapa de compilação irá falhar porque você não colocou o `import "fmt"` no adder_test.go. É altamente recomendável que você pesquise como ter esses tipos de erros corrigidos automaticamente em qualquer editor que você esteja usando.)
+(Se o seu editor não importar os pacotes automaticamente para você, a etapa de compilação irá falhar porque você não colocou o `import "fmt"` no `adder_test.go`. É altamente recomendável que você pesquise como ter esses tipos de erros corrigidos automaticamente em qualquer editor que esteja usando.)
 
 Se o seu código mudar fazendo com que o exemplo não seja mais válido, você vai ter um erro de compilação.
 
@@ -133,15 +133,15 @@ Ao adicionar este trecho de código, o exemplo aparecerá na documentação dent
 
 Para ver como isso funciona, execute `godoc -http=:6060` e navegue para `http://localhost:6060/pkg/`
 
-Aqui você vai ver uma lista de todos os pacotes em seu `$GOPATH`, então, supondo que você tenha escrito esse código em algum lugar como `$GOPATH/src/github.com/{seu_id}`, você poderá encontrar uma documentação com seus exemplos.
+Aqui você vai ver uma lista de todos os pacotes em seu `$GOPATH`. Então, supondo que tenha escrito esse código em algum lugar como `$GOPATH/src/github.com/{seu_id}`, você poderá encontrar uma documentação com seus exemplos.
 
 Se você publicar seu código com exemplos em uma URL pública, poderá compartilhar a documentação em [godoc.org](https://godoc.org). Por exemplo, aqui está a API finalizada deste capítulo [https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2 ](https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2).
 
 ## Resumindo
 
-O que nós cobrimos:
+O que cobrimos:
 
 * Mais práticas do fluxo de trabalho de TDD
 * Inteiros, adição
-* Escrevendo melhores documentações para que os usuários do nosso código possam entender seu uso rapidamente
+* Escrever melhores documentações para que os usuários do nosso código possam entender seu uso rapidamente
 * Exemplos de como usar nosso código, que são verificados como parte de nossos testes
