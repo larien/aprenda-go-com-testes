@@ -4,7 +4,7 @@
 
 Inteiros funcionam como é de se esperar. Vamos escrever uma função de soma para testar algumas coisas. Crie um arquivo de teste chamado `adder_test.go` e escreva o seguinte código.
 
-**nota****: Os arquivos-fonte de Go devem ter apenas um `package`(pacote) por diretório, verifique se os arquivos estão organizados separadamente. [Aqui tem uma boa explicação sobre isso.](https://dave.cheney.net/2014/12/01/five-suggestions-for-setting-up-a-go-project)
+**nota**: Os arquivos-fonte de Go devem ter apenas um `package`(pacote) por diretório, verifique se os arquivos estão organizados separadamente. [Aqui tem uma boa explicação sobre isso (em inglês).](https://dave.cheney.net/2014/12/01/five-suggestions-for-setting-up-a-go-project)
 
 ## Escreva o teste primeiro
 
@@ -24,7 +24,7 @@ func TestAdder(t *testing.T) {
 ```
 
 Você deve ter notado que estamos usando `%d` como string de formatação, em vez de `%s`. Isso porque queremos que ele imprima um valor inteiro e não uma string.
-Observe também que não estamos mais usando o pacote main, em vez disso, definimos um pacote chamado integers, pois o nome sugere que ele agrupará funções para trabalhar com números inteiros, como Add.
+Observe também que não estamos mais usando o pacote `main`, em vez disso, definimos um pacote chamado `integers`, pois o nome sugere que ele agrupará funções para trabalhar com números inteiros, como Add.
 
 ## Tente e execute o teste
 
@@ -36,7 +36,7 @@ Inspecione o erro de compilação
 
 ## Escreva a quantidade mínima de código para o teste rodar e verifique o erro na saída do teste
 
-Escreva apenas o suficiente de código para satisfazer o compilador - lembre-se de que queremos verificar se nossos testes falham pelo motivo certo.
+Escreva apenas o suficiente de código para satisfazer o compilador _e nada mais_ - lembre-se de que queremos verificar se nossos testes falham pelo motivo certo.
 
 ```go
 package integers
@@ -51,7 +51,7 @@ Agora execute os testes, devemos ficar felizes que o teste esteja relatando corr
 
 `adder_test.go:10: expected '4' but got '0'`
 
-Você deve ter percebido que nós aprendemos sobre o _valor de retorno nomeado_ na [última](hello-world.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto, no nosso caso, é muito claro que a função `Add` irá adicionar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
+Você deve ter percebido que nós aprendemos sobre o _valor de retorno nomeado_ na [última](hello-world.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto, no nosso caso, é muito claro que a função `Add` irá somar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
 
 ## Escreva código o suficiente para fazer o teste passar
 
@@ -66,7 +66,7 @@ Ah hah! Frustração mais uma vez, TDD é uma farsa né?
 
 Poderíamos escrever outro teste, com números diferentes para forçar o teste a falhar, mas isso parece um jogo de gato e rato.
 
-Quando estivermos mais familiarizados com a sintaxe do Go, apresentarei uma técnica chamada Testes Baseados em Propriedade, que interromperia desenvolvedores irritantes e ajudaria a encontrar bugs.
+Quando estivermos mais familiarizados com a sintaxe do Go, apresentarei uma técnica chamada Testes Baseados em Propriedade, que interromperá a irritação das pessoas e ajudará a encontrar bugs.
 
 Por enquanto, vamos corrigi-lo corretamente
 
@@ -135,7 +135,7 @@ Para ver como isso funciona, execute `godoc -http=:6060` e navegue para `http://
 
 Aqui você vai ver uma lista de todos os pacotes em seu `$GOPATH`, então, supondo que você tenha escrito esse código em algum lugar como `$GOPATH/src/github.com/{seu_id}`, você poderá encontrar uma documentação com seus exemplos.
 
-Se você publicar seu código com exemplos em uma URL pública, poderá compartilhar a documentação do seu código em [godoc.org](https://godoc.org). Por exemplo, aqui está a API finalizada deste capítulo [https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2 ](https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2).
+Se você publicar seu código com exemplos em uma URL pública, poderá compartilhar a documentação em [godoc.org](https://godoc.org). Por exemplo, aqui está a API finalizada deste capítulo [https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2 ](https://godoc.org/github.com/quii/learn-go-with-tests/integers/v2).
 
 ## Resumindo
 
