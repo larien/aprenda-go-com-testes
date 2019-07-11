@@ -137,6 +137,10 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 
 [github](https://github.com/diegonvs) [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
 
+-   Edmilton Neves
+
+[site](http://edmilton.com.br/) [github](https://github.com/edmilton) [twitter](https://twitter.com/ed_neves) [linkedin](https://www.linkedin.com/in/edmilton/)
+
 -   Jéssica Paz
 
 [site](https://jessicapaz.me) [github](https://github.com/jessicapaz) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
