@@ -241,20 +241,16 @@ Para ver funcionando, quebre o teste de propósito para que possamos ver
 
 `carteira_test.go:18: valor 10 BTC valorEsperado 20 BTC`
 
-This makes it clearer what's going on in our test.
-
 Isto deixa mais claro o que está acontecendo em nossos testes.
 
-The next requirement is for a `Withdraw` function.
+O próximo requisito é para a função `Withdraw`.
 
-O próximo requisito é para a função `Retirar`.
+## Primeiro escreva o teste
 
-## Write the test first
-
-Pretty much the opposite of `Deposit()`
+Basicamente o aposto da função `Deposit()`
 
 ```go
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
     t.Run("Deposit", func(t *testing.T) {
         wallet := Wallet{}
@@ -286,11 +282,11 @@ func TestWallet(t *testing.T) {
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 `./wallet_test.go:26:9: wallet.Withdraw undefined (type Wallet has no field or method Withdraw)`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código para o teste executar e veja o erro apresentado
 
 ```go
 func (w *Wallet) Withdraw(amount Bitcoin) {
@@ -300,7 +296,7 @@ func (w *Wallet) Withdraw(amount Bitcoin) {
 
 `wallet_test.go:33: got 20 BTC want 10 BTC`
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer passar
 
 ```go
 func (w *Wallet) Withdraw(amount Bitcoin) {
@@ -308,9 +304,9 @@ func (w *Wallet) Withdraw(amount Bitcoin) {
 }
 ```
 
-## Refactor
+## Refatorando
 
-There's some duplication in our tests, lets refactor that out.
+Há algumas duplicações em nossos testes, vamos refatorar isto.
 
 ```go
 func TestWallet(t *testing.T) {
@@ -339,15 +335,15 @@ func TestWallet(t *testing.T) {
 }
 ```
 
-What should happen if you try to `Withdraw` more than is left in the account? For now, our requirement is to assume there is not an overdraft facility.
+O que aconteceria se você tentasse `Withdraw` mais do que há de saldo na conta? Por enquanto, nossos requisitos é assumir que não há nenhum tipo de cheque-especial.
 
-How do we signal a problem when using `Withdraw` ?
+Como sinalizamos um problema quando estivermos usando `Withdraw` ?
 
-In Go, if you want to indicate an error it is idiomatic for your function to return an `err` for the caller to check and act on.
+Em Go, se você quiser indicar um erro, sua função deve retornar um `err` para que quem a chamou possar checar e tratar.
 
-Let's try this out in a test.
+Vamos tentar isto em um teste.
 
-## Write the test first
+## Escreva o primeiro teste
 
 ```go
 t.Run("Withdraw insufficient funds", func(t *testing.T) {
@@ -363,21 +359,24 @@ t.Run("Withdraw insufficient funds", func(t *testing.T) {
 })
 ```
 
-We want `Withdraw` to return an error _if_ you try to take out more than you have and the balance should stay the same.
+Nós queremos que `Withdraw` retorne um erro se tentarmos retirar mais do que temos, e o saldo deverá continuar o mesmo.
 
-We then check an error has returned by failing the test if it is `nil`.
+Nós checamos se um erro foi retornado falhando o teste se o valor for `nil`.
 
-`nil` is synonymous with `null` from other programming languages. Errors can be `nil` because the return type of `Withdraw` will be `error`, which is an interface. If you see a function that takes arguments or returns values that are interfaces, they can be nillable.
+`nil` é sinônimo de `null` de outras linguagens de programação.
+Erros podem ser `nil`, porque o tipo do retorno de `Withdraw` vai ser `error`, que é uma interface. Se você ver uma função que tem argumentos ou retornos que são interfaces, eles podem ser nulos.
 
-Like `null` if you try to access a value that is `nil` it will throw a **runtime panic**. This is bad! You should make sure that you check for nils.
+Do mesmo jeito que `null`, se tentarmos acessar um valor que é `nil`, isto irá disparar um **runtime panic**. Isto é ruim! Devemos ter certeza que tratamos os valores nulos.
 
-## Try and run the test
+## Execute o teste
 
 `./wallet_test.go:31:25: wallet.Withdraw(Bitcoin(100)) used as value`
 
 The wording is perhaps a little unclear, but our previous intent with `Withdraw` was just to call it, it will never return a value. To make this compile we will need to change it so it has a return type.
 
-## Write the minimal amount of code for the test to run and check the failing test output
+Talvez não esteja tão claro, mas nossa intenção era apenas invocar a função `Withdraw`, ela nunca irá retornar um valor. Para fazer compilar, precisaremos mudar a função para que retorne um tipo.
+
+## Escreva o mínimo de código para o teste executar e veja o erro apresentado
 
 ```go
 func (w *Wallet) Withdraw(amount Bitcoin) error {
@@ -386,9 +385,9 @@ func (w *Wallet) Withdraw(amount Bitcoin) error {
 }
 ```
 
-Again, it is very important to just write enough code to satisfy the compiler. We correct our `Withdraw` method to return `error` and for now we have to return _something_ so let's just return `nil`.
+Novamente, é muito importante escrever apenas o suficiente para compilar. Nós corrigimos o método `Withdraw` para retornar `error` e por agora temos que retornar _alguma coisa_, então vamos apenas retornar `nil` .
 
-## Write enough code to make it pass
+## Escreva o suficiente para passar
 
 ```go
 func (w *Wallet) Withdraw(amount Bitcoin) error {
@@ -402,13 +401,13 @@ func (w *Wallet) Withdraw(amount Bitcoin) error {
 }
 ```
 
-Remember to import `errors` into your code.
+Lembre-se de importar `errors`.
 
-`errors.New` creates a new `error` with a message of your choosing.
+`errors.New` cria um novo `error` com a mensagem escolhida.
 
-## Refactor
+## Refatorando
 
-Let's make a quick test helper for our error check just to help our test read clearer
+Vamos fazer um rápido helper de teste para nossa checagem de erro, para deixar nosso teste mais legível.
 
 ```go
 assertError := func(t *testing.T, err error) {
@@ -419,7 +418,7 @@ assertError := func(t *testing.T, err error) {
 }
 ```
 
-And in our test
+E em nosso teste
 
 ```go
 t.Run("Withdraw insufficient funds", func(t *testing.T) {
