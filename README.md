@@ -130,7 +130,8 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 ## Traduzido com <3 por
 
 -   Davi Marcondes Moreira
-    [github](http://github.com/devdrops) [twitter](https://twitter.com/devdrops)
+
+[github](http://github.com/devdrops) [twitter](https://twitter.com/devdrops)
 
 -   Diego Nascimento
 
