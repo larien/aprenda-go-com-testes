@@ -8,8 +8,9 @@
 -   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
 -   [Olá, mundo](primeiros-passos-com-go/hello-world.md)
 -   [Inteiros](primeiros-passos-com-go/integers.md)
+    <<<<<<< HEAD
 -   [Iteração](primeiros-passos-com-go/iteracao.md)
--   [Arrays e slices](primeiros-passos-com-go/arrays-and-slices.md)
+-   [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md)
 -   [Structs, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md)
 -   [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md)
 -   [Maps](primeiros-passos-com-go/maps.md)
