@@ -430,13 +430,13 @@ t.Run("Withdraw insufficient funds", func(t *testing.T) {
 })
 ```
 
-Hopefully when returning an error of "oh no" you were thinking that we _might_ iterate on that because it doesn't seem that useful to return.
+Acredito, que quando retornamos um erro "oh no", você deve estar pensando que _devessemos_ ponderar melhor, aliás isto não parece tão útil para ser retornado.
 
-Assuming that the error ultimately gets returned to the user, let's update our test to assert on some kind of error message rather than just the existence of an error.
+Assumindo que o erro enfim foi retornado para o usuário, vamos atualizar nosso teste para verificar em algum tipo de mensagem de erro em vez de apenas checar a existência de um erro.
 
-## Write the test first
+## Escreva o primeiro teste
 
-Update our helper for a `string` to compare against.
+Atualize nosso helper para comparar com uma `string`.
 
 ```go
 assertError := func(t *testing.T, got error, want string) {
@@ -451,7 +451,7 @@ assertError := func(t *testing.T, got error, want string) {
 }
 ```
 
-And then update the caller
+E então atualize o *invocador
 
 ```go
 t.Run("Withdraw insufficient funds", func(t *testing.T) {
@@ -464,13 +464,14 @@ t.Run("Withdraw insufficient funds", func(t *testing.T) {
 })
 ```
 
-We've introduced `t.Fatal` which will stop the test if it is called. This is because we don't want to make any more assertions on the error returned if there isn't one around. Without this the test would carry on to the next step and panic because of a nil pointer.
+Nós apresentamos o `t.Fatal` que interromperá o teste se for chamado.
+Isto se deve ao fato de que não queremos fazer mais asserções no erro retornado, se não há um. Sem isto, o teste continuaria e causaria erros por causa do ponteiro `nil`.
 
-## Try to run the test
+## Execute o teste
 
 `wallet_test.go:61: got err 'oh no' want 'cannot withdraw, insufficient funds'`
 
-## Write enough code to make it pass
+## Escreva o suficiente para passar
 
 ```go
 func (w *Wallet) Withdraw(amount Bitcoin) error {
@@ -484,7 +485,7 @@ func (w *Wallet) Withdraw(amount Bitcoin) error {
 }
 ```
 
-## Refactor
+## Refatorando
 
 We have duplication of the error message in both the test code and the `Withdraw` code.
 
