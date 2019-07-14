@@ -313,19 +313,19 @@ func (c Circle) Area() float64  {
 }
 ```
 
-## Refactor
+## Refatoração
 
-There is some duplication in our tests.
+Existe alguma duplicação em nossos testes.
 
-All we want to do is take a collection of _shapes_, call the `Area()` method on them and then check the result.
+Tudo o que queremos fazer é pegar uma coleção de _formas_, chamar o método `Area()` e então verificar o resultado.
 
-We want to be able to write some kind of `checkArea` function that we can pass both `Rectangle`s and `Circle`s to, but fail to compile if we try to pass in something that isn't a shape.
+Nós queremos ser capazes de escrever um tipo de função `checkArea` que permita passar tanto `Rectangle` quanto `Circle`, mas falhe ao compilar se tentarmos passar algo que não seja uma _forma_.
 
-With Go, we can codify this intent with **interfaces**.
+Com Go, podemos codificar esta intenção com **interfaces**.
 
-[Interfaces](https://golang.org/ref/spec#Interface_types) are a very powerful concept in statically typed languages like Go because they allow you to make functions that can be used with different types and create highly-decoupled code whilst still maintaining type-safety.
+[Interfaces](https://golang.org/ref/spec#Interface_types) são um conceito muito poderoso em linguagens de programação estaticamente tipadas, como Go, porque permitem que você crie funções que podem ser usadas com diferentes tipos e cria código altamente desacoplado, mantendo ainda a segurança de tipo.
 
-Let's introduce this by refactoring our tests.
+Vamos apresentar isso refatorando nossos testes.
 
 ```go
 func TestArea(t *testing.T) {
@@ -351,9 +351,9 @@ func TestArea(t *testing.T) {
 }
 ```
 
-We are creating a helper function like we have in other exercises but this time we are asking for a `Shape` to be passed in. If we try to call this with something that isn't a shape, then it will not compile.
+Estamos criando uma função auxiliar como fizemos em outros exercícios, mas desta vez, estamos pedindo que um `Shape` seja passado. Se tentarmos chamá-la com algo que não seja uma _forma_, não vai compilar.
 
-How does something become a shape? We just tell Go what a `Shape` is using an interface declaration
+Como algo se torna uma _forma_? Nós apenas falamos para o Go o que é um `Shape` usando uma declaração de interface.
 
 ```go
 type Shape interface {
@@ -361,22 +361,22 @@ type Shape interface {
 }
 ```
 
-We're creating a new `type` just like we did with `Rectangle` and `Circle` but this time it is an `interface` rather than a `struct`.
+Estamos criando um novo `tipo` assim como fizemos com `Rectangle` e `Circle`, mas desta vez é uma `interface` em vez de uma `struct`.
 
-Once you add this to the code, the tests will pass.
+Uma vez adicionado isso ao código, os testes passarão.
 
-### Wait, what?
+### Espera, o que?
 
-This is quite different to interfaces in most other programming languages. Normally you have to write code to say `My type Foo implements interface Bar`.
+Isso é bem diferente das interfaces na maioria das outras linguagens de programação. Normalmente você tem que escrever um código para dizer `Meu tipo Foo implementa a interface Bar`.
 
-But in our case
+Mas em nosso caso:
 
-* `Rectangle` has a method called `Area` that returns a `float64` so it satisfies the `Shape` interface
-* `Circle` has a method called `Area` that returns a `float64` so it satisfies the `Shape` interface
-* `string` does not have such a method, so it doesn't satisfy the interface
+* `Rectangle` tem um método chamado `Area` que retorna um `float64`, então isso satisfaz a interface `Shape`.
+* `Circle` tem um método chamado `Area` que retorna um `float64`, então isso satisfaz a interface `Shape`.
+* `string` não tem tal método, então isso não satisfaz a interface.
 * etc.
 
-In Go **interface resolution is implicit**. If the type you pass in matches what the interface is asking for, it will compile.
+Em Go **resolução de interface é implícita**. Se o tipo que você passar combinar com o que a interface está esperando, o código será compilado.
 
 ### Decoupling
 
