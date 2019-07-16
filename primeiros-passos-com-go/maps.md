@@ -1,94 +1,94 @@
 # Maps
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/maps)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/maps)
 
-In [arrays & slices](primeiros-passos-com-go/arrays-e-slices.md), you saw how to store values in order. Now, we will look at a way to store items by a `key` and look them up quickly.
+Em [arrays e slices](primeiros-passos-com-go/arrays-e-slices.md), vimos como armazenas valores em ordem. Agora, vamos descobrir uma forma de armazenar itens por uma `chave` (chave) e procurar por ela rapidamente.
 
-Maps allow you to store items in a manner similar to a dictionary. You can think of the `key` as the word and the `value` as the definition. And what better way is there to learn about Maps than to build our own dictionary?
+Maps te permitem armazenar itens de forma parecida com a de um dicionário. Você pode pensar na `chave` como a palavra e o `valor` como a definição. E que forma melhor de aprender sobre Maps do que criar seu próprio dicionário?
 
-First, assuming we already have some words with their definitions in the dictionary, if we search for a word, it should return the definition of it.
+Primeiro, vamos presumir que já temos algumas palavras com suas definições no dicionário. Se procurarmos por uma palavra, ele deve retornar sua definição.
 
-## Write the test first
+## Escreva o teste primeiro
 
-In `dictionary_test.go`
+Em `dicionario_test.go`
 
 ```go
 package main
 
 import "testing"
 
-func TestSearch(t *testing.T) {
-    dictionary := map[string]string{"test": "this is just a test"}
+func TestBusca(t *testing.T) {
+    dicionario := map[string]string{"teste": "isso é apenas um teste"}
 
-    got := Search(dictionary, "test")
-    want := "this is just a test"
+    resultado := Busca(dictionary, "teste")
+    esperado := "isso é apenas um teste"
 
-    if got != want {
-        t.Errorf("got '%s' want '%s' given, '%s'", got, want, "test")
+    if resultado != esperado {
+        t.Errorf("resultado '%s', esperado '%s', dado '%s'", resultado, esperado, "test")
     }
 }
 ```
 
-Declaring a Map is somewhat similar to an array. Except, it starts with the `map` keyword and requires two types. The first is the key type, which is written inside the `[]`. The second is the value type, which goes right after the `[]`.
+Declarar um Map é bem parecido com um array. A diferença é que começa com a palavra-chave `map` e requer dois tipos. O primeiro é o tipo da chave, que é escrito dentro de `[]`. O segundo é o tipo do valor, que vai logo após o `[]`.
 
-The key type is special. It can only be a comparable type because without the ability to tell if 2 keys are equal, we have no way to ensure that we are getting the correct value. Comparable types are explained in depth in the [language spec](https://golang.org/ref/spec#Comparison_operators).
+O tipo da chave é especial. Só pode ser um tipo comparável, porque sem a habilidade de dizer se duas chaves são iguais, não temos como certificar de que estamos obtendo o valor correto. Tipos comparáveis são explicados com detalhes na [especificação da linguagem](https://golang.org/ref/spec#Comparison_operators).
 
-The value type, on the other hand, can be any type you want. It can even be another map.
+O tipo do valor, por outro lado, pode ser o tipo que quiser. Pode até ser outro map.
 
-Everything else in this test should be familiar.
+O restante do teste já deve ser familiar para você.
 
-## Try to run the test
+## Execute o teste
 
-By running `go test` the compiler will fail with `./dictionary_test.go:8:9: undefined: Search`.
+Ao executar `go test`, o compilador vai falhar com `./dicionario_test.go:8:9: undefined: Busca`.
 
-## Write the minimal amount of code for the test to run and check the output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
 
-In `dictionary.go`
+Em `dicionario.go`:
 
 ```go
 package main
 
-func Search(dictionary map[string]string, word string) string {
+func Busca(dicionario map[string]string, palavra string) string {
     return ""
 }
 ```
 
-Your test should now fail with a _clear error message_
+Agora seu teste vai falhar com uma _mensagem de erro clara_:
 
-`dictionary_test.go:12: got '' want 'this is just a test' given, 'test'`.
+`dicionario_test.go:12: resultado '', esperado 'isso é apenas um teste', dado 'teste'`.
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func Search(dictionary map[string]string, word string) string {
-    return dictionary[word]
+func Busca(dicionario map[string]string, palavra string) string {
+    return dicionario[palavra]
 }
 ```
 
-Getting a value out of a Map is the same as getting a value out of Array `map[key]`.
+Obter um valor de um Map é igual a obter um valor de um Array: `map[chave]`.
 
-## Refactor
+## Refatoração
 
 ```go
-func TestSearch(t *testing.T) {
-    dictionary := map[string]string{"test": "this is just a test"}
+func TestBusca(t *testing.T) {
+    dicionario := map[string]string{"teste": "isso é apenas um teste"}
 
-    got := Search(dictionary, "test")
-    want := "this is just a test"
+    resultado := Busca(dicionario, "teste")
+    esperado := "isso é apenas um teste"
 
-    assertStrings(t, got, want)
+    compararStrings(t, resultado, esperado)
 }
 
-func assertStrings(t *testing.T, got, want string) {
-    t.Helper()
+func compararStrings(t *testing.T, resultado, esperado string) {
+	t.Helper()
 
-    if got != want {
-        t.Errorf("got '%s' want '%s'", got, want)
+	if resultado != esperado {
+        t.Errorf("resultado '%s', esperado '%s', dado '%s'", resultado, esperado, "test")
     }
 }
 ```
 
-I decided to create an `assertStrings` helper to make the implementation more general.
+Decidi criar um helper `compararStrings` para tornar a implementação mais genérica.
 
 ### Using a custom type
 
