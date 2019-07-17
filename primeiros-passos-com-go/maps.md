@@ -90,72 +90,69 @@ func compararStrings(t *testing.T, resultado, esperado string) {
 
 Decidi criar um helper `compararStrings` para tornar a implementação mais genérica.
 
-### Using a custom type
+### Usando um tipo personalizado
 
-We can improve our dictionary's usage by creating a new type around map and making `Search` a method.
+Podemos melhorar o uso do nosso dicionário criando um novo tipo baseado no map e fazendo a `Busca` virar um método.
 
-In `dictionary_test.go`:
+Em `dicionario_test.go`:
 
 ```go
-func TestSearch(t *testing.T) {
-    dictionary := Dictionary{"test": "this is just a test"}
+func TestBusca(t *testing.T) {
+    dicionario := Dictionary{"teste": "isso é apenas um teste"}
 
-    got := dictionary.Search("test")
-    want := "this is just a test"
+    resultado := dictionary.Busca("teste")
+    esperado := "isso é apenas um teste"
 
-    assertStrings(t, got, want)
+    compararStrings(t, resultado, esperado)
 }
 ```
 
-We started using the `Dictionary` type, which we have not defined yet. Then called `Search` on the `Dictionary` instance.
+Começamos a usar o tipo `Dicionario`, que ainda não definimos. Depois disso, chamamos `Busca` da instância de `Dicionario`.
 
-We did not need to change `assertStrings`.
+Não precisamos mudar o `comparaStrings`.
 
-In `dictionary.go`:
+Em `dicionario.go`:
 
 ```go
-type Dictionary map[string]string
+type Dicionario map[string]string
 
-func (d Dictionary) Search(word string) string {
-    return d[word]
+func (d Dicionario) Busca(palavra string) string {
+	return d[palavra]
 }
 ```
 
-Here we created a `Dictionary` type which acts as a thin wrapper around `map`. With the custom type defined, we can create the `Search` method.
+Aqui criamos um tipo `Dicionario` que trabalha em cima da abstração de `map`. Com o tipo personalizado definido, podemos criar o método `Busca`.
 
-## Write the test first
+## Escreva o teste primeiro
 
-The basic search was very easy to implement, but what will happen if we supply a word that's not in our dictionary?
+A busca básica foi bem fácil de implementar, mas o que acontece se passarmos uma palavra que não está no nosso dicionário?
 
-We actually get nothing back. This is good because the program can continue to run, but there is a better approach. The function can report that the word is not in the dictionary. This way, the user isn't left wondering if the word doesn't exist or if there is just no definition \(this might not seem very useful for a dictionary. However, it's a scenario that could be key in other usecases\).
+Como o código está agora, não recebemos nada de volta. Isso é bom porque o programa continua a ser executado, mas há uma abordagem melhor. A função pode reportar que a palavra não está no dicionário. Dessa forma, o usuário não fica se perguntando se a palavra não existe ou se apenas não existe definição para ela (isso pode não parecer tão útil para um dicionário. No entanto, é um caso que pode ser essencial em outros casos de usos).
 
 ```go
-func TestSearch(t *testing.T) {
-    dictionary := Dictionary{"test": "this is just a test"}
+func TestBusca(t *testing.T) {
+	dicionario := Dicionario{"teste": "isso é apenas um teste"}
 
-    t.Run("known word", func(t *testing.T) {
-        got, _ := dictionary.Search("test")
-        want := "this is just a test"
+	t.Run("palavra conhecida", func(t *testing.T) {
+		resultado, _ := dicionario.Busca("teste")
+		esperado := "isso é apenas um teste"
 
-        assertStrings(t, got, want)
-    })
+		comparaStrings(t, resultado, esperado)
+	})
 
-    t.Run("unknown word", func(t *testing.T) {
-        _, err := dictionary.Search("unknown")
-        want := "could not find the word you were looking for"
+	t.Run("palavra desconhecida", func(t *testing.T) {
+		_, resultado := dicionario.Busca("desconhecida")
 
-        if err == nil {
-            t.Fatal("expected to get an error.")
+		if err == nil {
+            t.Fatal("é esperado que um erro seja obtido.")
         }
-
-        assertStrings(t, err.Error(), want)
-    })
+	})
 }
 ```
 
-The way to handle this scenario in Go is to return a second argument which is an `Error` type.
+A forma de lidar com esse caso no Go é retornar um segundo argumento que é do tipo `Error`.
 
-`Error`s can be converted to a string with the `.Error()` method, which we do when passing it to the assertion. We are also protecting `assertStrings` with `if` to ensure we don't call `.Error()` on `nil`.
+Erros podem ser convertidos para uma string com o método `.Error()`, o que podemos fazer quando passarmos para a asserção. Também estamos protegendo o `comparaStrings` com `if` para certificar que não chamemos `.Error()` quando o erro for `nil`.
 
 ## Try and run the test
 
