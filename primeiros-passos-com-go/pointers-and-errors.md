@@ -487,11 +487,11 @@ func (w *Wallet) Withdraw(amount Bitcoin) error {
 
 ## Refatorando
 
-We have duplication of the error message in both the test code and the `Withdraw` code.
+Nós temos duplicação da mensagem de erro tanto no código de teste, quanto no código de `Withdraw`.
 
-It would be really annoying for the test to fail if someone wanted to re-word the error and it's just too much detail for our test. We don't _really_ care what the exact wording is, just that some kind of meaningful error around withdrawing is returned given a certain condition.
+Seria chato se alguém quisesse mudar a mensagem de quando o teste falhe, é muito detalhe para o nosso teste. Nós não _necessariamente_ nos importamos qual mensagem é exatamente, apenas que algum tipo de erro significativo sobre a função é retornado dado uma certa condição.
 
-In Go, errors are values, so we can refactor it out into a variable and have a single source of truth for it.
+Em Go, erros são valores, então podemos refatorar isso para ser uma variável e termos apenas uma fonte da verdade.
 
 ```go
 var ErrInsufficientFunds = errors.New("cannot withdraw, insufficient funds")
@@ -507,11 +507,11 @@ func (w *Wallet) Withdraw(amount Bitcoin) error {
 }
 ```
 
-The `var` keyword allows us to define values global to the package.
+A palavra-chave `var` nos permite definir valores globais para o pacote.
 
-This is a positive change in itself because now our `Withdraw` function looks very clear.
+Está uma é uma mudança positiva porque agora nossa função `Withdraw` parece mais limpa.
 
-Next we can refactor our test code to use this value instead of specific strings.
+Agora, nós podemos refatorar nosso código para usar este valor em vez de uma string específica.
 
 ```go
 func TestWallet(t *testing.T) {
@@ -558,29 +558,29 @@ func assertError(t *testing.T, got error, want error) {
 }
 ```
 
-And now the test is easier to follow too.
+Agora nosso teste está mais fácil para dar continuidade.
 
-I have moved the helpers out of the main test function just so when someone opens up a file they can start reading our assertions first, rather than some helpers.
+Nós apenas movemos os helpers para fora da função principal de teste, então, quando alguém abrir o arquivo, começara lendo nossas asserções primeiro em vez de alguns helpers.
 
-Another useful property of tests is that they help us understand the _real_ usage of our code so we can make sympathetic code. We can see here that a developer can simply call our code and do an equals check to `ErrInsufficientFunds` and act accordingly.
+Outra propriedade útil de testes, é que eles nos ajudam a entender o uso _real_ do nosso código, e assim podemos fazer códigos mais compreensivos. Podemos ver aqui que um desenvolvedor pode simplesmente chamar nosso código e fazer uma comparação de igualdade a `ErrInsufficientFunds`, e então agir de acordo.
 
-### Unchecked errors
+### Erros não checados
 
-Whilst the Go compiler helps you a lot, sometimes there are things you can still miss and error handling can sometimes be tricky.
+Embora o compilador do Go ajude bastante, as vezes há coisas que você pode errar e o tratamento de erro pode ser complicado.
 
-There is one scenario we have not tested. To find it, run the following in a terminal to install `errcheck`, one of many linters available for Go.
+Há um cenário que nós não testamos. Para descobri-lo, execute o comando a seguir no terminal para instalar o `errcheck`, um dos muitos linters disponíveis em Go.
 
 `go get -u github.com/kisielk/errcheck`
 
-Then, inside the directory with your code run `errcheck .`
+Então, dentro do diretório do seu código execute `errcheck .`
 
-You should get something like
+Você deve receber algo assim
 
 `wallet_test.go:17:18: wallet.Withdraw(Bitcoin(10))`
 
-What this is telling us is that we have not checked the error being returned on that line of code. That line of code on my computer corresponds to our normal withdraw scenario because we have not checked that if the `Withdraw` is successful that an error is _not_ returned.
+O que isso está nos dizendo é que nós não checamos o erro sendo retornado naquela linha de código. Aquela linha de código, no meu computador, corresponde para o nosso cenário normal de retirada, porque nós não checamos que se `Withdraw` é bem sucedido, um erro _não_ é retornado.
 
-Here is the final test code that accounts for this.
+Aqui está o código de teste final que resolve isto.
 
 ```go
 func TestWallet(t *testing.T) {
@@ -637,30 +637,30 @@ func assertError(t *testing.T, got error, want error) {
 }
 ```
 
-## Wrapping up
+## Resumindo
 
-### Pointers
+### Ponteiros
 
-* Go copies values when you pass them to functions/methods so if you're writing a function that needs to mutate state you'll need it to take a pointer to the thing you want to change.
+* Go copia os valores quando são passados para funções/métodos, então, se você está escrevendo uma função que precise mudar o estado, você precisará de um ponteiro para o valor que você quer mudar.
 * The fact that Go takes a copy of values is useful a lot of the time but sometimes you wont want your system to make a copy of something, in which case you need to pass a reference. Examples could be very large data or perhaps things you intend only to have one instance of \(like database connection pools\).
+* O fato que Go pega um cópia dos valores é muito útil na maior parte dos tempos, mas as vezes você não vai querer que o seu sistema faça cópia de alguma coisa, nesse caso você precisa passar uma referência. Podemos ser dados muito grandes por exemplo, ou talvez coisas que você pretende ter apenas uma instância \(como conexões a banco de dados\).
 
 ### nil
 
-* Pointers can be nil
-* When a function returns a pointer to something, you need to make sure you check if it's nil or you might raise a runtime exception, the compiler wont help you here.
-* Useful for when you want to describe a value that could be missing
+* Ponteiros podem ser nil
+* Quando uma função retorna um ponteiro para ago, você precisa ter certeza de checar se é nil ou você precisa disparar uma execeção em tempo de execuçao, o compilador não te ajudará aqui.
+* Útil para quando você quer descrever um valor que pode estar faltando.
+### Erros
 
-### Errors
+* Erros é a forma de sinalizar falhas quando executar um função/método.
+* Analisando nossos testes, concluímos que buscando por uma string em um erro poderia resultar em um teste não muito confiável. Então, nos refatoramos para usar um valor significativo, e isto resultou em um código mais fácil de ser testado, e concluímos que seria mais fácil para usuários de nossa API também.
+* Este não e o fim do assunto de tratamento de erros, você pode fazer coisas mais sofisticadas, mas esta é apenas uma introdução. Seções posteriores vão abordar mais estratégias.
+* [Não cheque erros apenas, trate os graciosamente](https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully)
 
-* Errors are the way to signify failure when calling a function/method.
-* By listening to our tests we concluded that checking for a string in an error would result in a flaky test. So we refactored to use a meaningful value instead and this resulted in easier to test code and concluded this would be easier for users of our API too.
-* This is not the end of the story with error handling, you can do more sophisticated things but this is just an intro. Later sections will cover more strategies.
-* [Don’t just check errors, handle them gracefully](https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully)
+### Crie novos tipos a partir de existentes
 
-### Create new types from existing ones
+* Útil para adicionar domínios mais específicos a valores
+* Permite implementar interfaces
 
-* Useful for adding more domain specific meaning to values
-* Can let you implement interfaces
-
-Pointers and errors are a big part of writing Go that you need to get comfortable with. Thankfully the compiler will _usually_ help you out if you do something wrong, just take your time and read the error.
+Ponteiros e erros são uma grande parte de escrita em Go que você precisa estar confortável. Por sorte, _na maioria das vezes_, o compilador irá ajudar se você fizer algo errado, apenas tire um tempo e leia a mensagem de erro.
 
