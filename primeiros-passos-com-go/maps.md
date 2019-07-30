@@ -154,186 +154,190 @@ A forma de lidar com esse caso no Go é retornar um segundo argumento que é do 
 
 Erros podem ser convertidos para uma string com o método `.Error()`, o que podemos fazer quando passarmos para a asserção. Também estamos protegendo o `comparaStrings` com `if` para certificar que não chamemos `.Error()` quando o erro for `nil`.
 
-## Try and run the test
+## Execute o teste
+
+Isso não vai compilar.
 
 This does not compile
 
-```text
-./dictionary_test.go:18:10: assignment mismatch: 2 variables but 1 values
-```
+`./dictionary_test.go:18:10: assignment mismatch: 2 variables but 1 values`
 
-## Write the minimal amount of code for the test to run and check the output
+`incompatibilidade de atribuição: 2 variáveis, mas 1 valor`
+
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
 
 ```go
-func (d Dictionary) Search(word string) (string, error) {
-    return d[word], nil
+func (d Dicionario) Busca(palavra string) (string, error) {
+    return d[palavra], nil
 }
 ```
 
-Your test should now fail with a much clearer error message.
+Agora seu teste deve falhar com uma mensagem de erro muito mais clara.
 
 `dictionary_test.go:22: expected to get an error.`
 
-## Write enough code to make it pass
+`erro esperado.`
+
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func (d Dictionary) Search(word string) (string, error) {
-    definition, ok := d[word]
-    if !ok {
-        return "", errors.New("could not find the word you were looking for")
+func (d Dicionario) Busca(palavra string) (string, error) {
+    definicao, existe := d[palavra]
+    if !existe {
+        return "", errors.New("não foi possível encontrar a palavra que você procura")
     }
 
-    return definition, nil
+    return definicao, nil
 }
 ```
 
-In order to make this pass, we are using an interesting property of the map lookup. It can return 2 values. The second value is a boolean which indicates if the key was found successfully.
+Para fazê-lo passar, estamos usando uma propriedade interessante ao percorrer o map. Ele pode retornar dois valores. O segundo valor é uma boleana que indica se a chave foi encontrada com sucesso.
 
-This property allows us to differentiate between a word that doesn't exist and a word that just doesn't have a definition.
+Essa propriedade nos permite diferenciar entre uma palavra que não existe e uma palavra que só não tem uma definição.
 
-## Refactor
+## Refatoração
 
 ```go
-var ErrNotFound = errors.New("could not find the word you were looking for")
+var ErrNaoEncontrado = errors.New("não foi possível encontrar a palavra que você procura")
 
-func (d Dictionary) Search(word string) (string, error) {
-    definition, ok := d[word]
-    if !ok {
-        return "", ErrNotFound
+func (d Dicionario) Busca(palavra string) (string, error) {
+    definicao, existe := d[palavra]
+    if !existe {
+        return "", ErrNaoEncontrado
     }
 
-    return definition, nil
+    return definicao, nil
 }
 ```
 
-We can get rid of the magic error in our `Search` function by extracting it into a variable. This will also allow us to have a better test.
+Podemos nos livrar do "erro mágico" na nossa função de `Busca` extraindo-o para dentro de uma variável. Isso também nos permite ter um teste melhor.
 
 ```go
-t.Run("unknown word", func(t *testing.T) {
-    _, got := dictionary.Search("unknown")
+t.Run("palavra desconhecida", func(t *testing.T) {
+    _, resultado := dicionario.Busca("desconhecida")
 
-    assertError(t, got, ErrNotFound)
+    comparaErro(t, resultado, ErrNotFound)
 })
 
-func assertError(t *testing.T, got, want error) {
+func comparaErro(t *testing.T, resultado, esperado error) {
     t.Helper()
 
-    if got != want {
-        t.Errorf("got error '%s' want '%s'", got, want)
+    if resultado != esperado {
+        t.Errorf("resultado erro '%s', esperado '%s'", resultado, esperado)
     }
 }
 ```
 
-By creating a new helper we were able to simplify our test, and start using our `ErrNotFound` variable so our test doesn't fail if we change the error text in the future.
+Conseguimos simplificar nosso teste criando um novo helper e começando a usar nossa variável `ErrNaoEncontrado` para que nosso teste não falhe se mudarmos o texto do erro no futuro.
 
-## Write the test first
+## Escreva o teste primeiro
 
-We have a great way to search the dictionary. However, we have no way to add new words to our dictionary.
+Temos uma ótima maneira de buscar no dicionário. No entanto, não temos como adicionar novas palavras nele.
 
 ```go
-func TestAdd(t *testing.T) {
-    dictionary := Dictionary{}
-    dictionary.Add("test", "this is just a test")
+func TestAdiciona(t *testing.T) {
+    dicionario := Dicionario{}
+    dicionario.Adiciona("teste", "isso é apenas um teste")
 
-    want := "this is just a test"
-    got, err := dictionary.Search("test")
+    esperado := "isso é apenas um teste"
+    resultado, err := dicionario.Busca("teste")
     if err != nil {
-        t.Fatal("should find added word:", err)
+        t.Fatal("não foi possível encontrar a palavra adicionada:", err)
     }
 
-    if want != got {
-        t.Errorf("got '%s' want '%s'", got, want)
+    if esperado != resultado {
+        t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
     }
 }
 ```
 
-In this test, we are utilizing our `Search` function to make the validation of the dictionary a little easier.
+Nesse teste, estamos utilizando nossa função `Busca` para tornar a validação do dicionário um pouco mais fácil.
 
-## Write the minimal amount of code for the test to run and check output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
 
-In `dictionary.go`
+Em `dicionario.go`
 
 ```go
-func (d Dictionary) Add(word, definition string) {
+func (d Dicionario) Adiciona(palavra, definicao string) {
 }
 ```
 
-Your test should now fail
+Agora seu teste deve falhar.
 
-```text
-dictionary_test.go:31: should find added word: could not find the word you were looking for
+```bash
+dicionario_test.go:31: deveria ter encontrado palavra adicionada: não foi possível encontrar a palavra que você procura
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func (d Dictionary) Add(word, definition string) {
-    d[word] = definition
+func (d Dicionario) Adiciona(palavra, definicao string) {
+	d[palavra] = definicao
 }
 ```
 
-Adding to a map is also similar to an array. You just need to specify a key and set it equal to a value.
+Adicionar coisas a um map também é bem semelhante a um array. Você só precisar especificar uma chave e definir qual é seu valor.
 
-### Reference Types
+### Tipos Referência
 
-An interesting property of maps is that you can modify them without passing them as a pointer. This is because `map` is a reference type. Meaning it holds a reference to the underlying data structure, much like a pointer. The underlying data structure is a `hash table`, or `hash map`, and you can read more about `hash tables` [here](https://en.wikipedia.org/wiki/Hash_table).
+Uma propriedade interessante dos maps é que você pode modificá-los sem passá-los como ponteiro. Isso é porque o `map` é um tipo referência. Isso significa que ele contém uma referência à estrutura de dado subjacente, assim como um ponteiro. A estrutura de data subjacente é uma `tabela de dispersão` ou `mapa de hash`, e você pode ler mais sobre [aqui](https://pt.wikipedia.org/wiki/Tabela_de_dispers%C3%A3o).
 
-Maps being a reference is really good, because no matter how big a map gets there will only be one copy.
+É muito bom referenciar um map, porque não importa o tamanho do map, só vai haver uma cópia.
 
-A gotcha that reference types introduce is that maps can be a `nil` value. A `nil` map behaves like an empty map when reading, but attempts to write to a `nil` map will cause a runtime panic. You can read more about maps [here](https://blog.golang.org/go-maps-in-action).
+Um conceito que os tipos referência apresentam é que maps podem ser um valor `nil`. Um map `nil` se comporta como um map vazio durante a leitura,mas tentar inserir coisas em um map `nil` gera um panic em tempo de execução. Você pode saber mais sobre maps [aqui](https://blog.golang.org/go-maps-in-action) (em inglês).
 
-Therefore, you should never initialize an empty map variable:
+Além disso, você nunca deve inicializar um map vazio:
 
 ```go
 var m map[string]string
 ```
 
-Instead, you can initialize an empty map like we were doing above, or use the `make` keyword to create a map for you:
+Ao invés disso, você pode inicializar um map vazio como fizemos lá em cima, ou usando a palavra-chave `make` para criar um map para você:` keyword to create a map for you:
 
 ```go
-dictionary = map[string]string{}
+dicionario = map[string]string{}
 
-// OR
+// OU
 
-dictionary = make(map[string]string)
+dicionario = make(map[string]string)
 ```
 
-Both approaches create an empty `hash map` and point `dictionary` at it. Which ensures that you will never get a runtime panic.
+Ambas as abordagens criam um `hash map` vazio e apontam um `dicionario` para ele. Assim, nos certificamos que você nunca vai obter um panic em tempo de execução.
 
-## Refactor
+## Refatoração
 
-There isn't much to refactor in our implementation but the test could use a little simplification.
+Não há muito para refatorar na nossa implementação, mas podemos simplificar o teste um pouco.
 
 ```go
-func TestAdd(t *testing.T) {
-    dictionary := Dictionary{}
-    word := "test"
-    definition := "this is just a test"
+func TestAdiciona(t *testing.T) {
+	dicionario := Dicionario{}
+	palavra := "teste"
+	definicao := "isso é apenas um teste"
 
-    dictionary.Add(word, definition)
+	dicionario.Adiciona(palavra, definicao)
 
-    assertDefinition(t, dictionary, word, definition)
+	comparaDefinicao(t, dicionario, palavra, definicao)
 }
 
-func assertDefinition(t *testing.T, dictionary Dictionary, word, definition string) {
-    t.Helper()
+func comparaDefinicao(t *testing.T, dicionario Dicionario, palavra, definicao string) {
+	t.Helper()
 
-    got, err := dictionary.Search(word)
-    if err != nil {
-        t.Fatal("should find added word:", err)
-    }
+	resultado, err := dicionario.Busca(palavra)
+	if err != nil {
+		t.Fatal("deveria ter encontrado palavra adicionada:", err)
+	}
 
-    if definition != got {
-        t.Errorf("got '%s' want '%s'", got, definition)
-    }
+	if definicao != resultado {
+		t.Errorf("resultado '%s',  esperado '%s'", resultado, definicao)
+	}
 }
 ```
 
-We made variables for word and definition, and moved the definition assertion into its own helper function.
+Criamos variáveis para palavra e definição e movemos a comparação da definição para sua própria função auxiliar.
 
-Our `Add` is looking good. Except, we didn't consider what happens when the value we are trying to add already exists!
+Nosso `Adiciona` está bom. No entanto, não consideramos o que acontece quando o valor que estamos tentando adicionar já existe!
 
-Map will not throw an error if the value already exists. Instead, they will go ahead and overwrite the value with the newly provided value. This can be convenient in practice, but makes our function name less than accurate. `Add` should not modify existing values. It should only add new words to our dictionary.
+O map não vai mostrar um erro se o valor já existe. Ao invés disso, elas vão sobrescrever o valor com o novo recebido. Isso pode ser conveniente na prática, mas torna o nome da nossa função muito menos preciso. `Adiciona` não deve modificar valores existentes. Só deve adicionar palavras novas ao nosso dicionário.
 
 ## Write the test first
 
