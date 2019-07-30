@@ -2,15 +2,15 @@
 
 Introdução
 
-## Escrever o teste primeiro
+## Escreva o teste primeiro
 
-## Tentar executar o teste
+## Execute o teste
 
-## Escrever o mínimo possível para fazer o teste rodar e verificar a saída do teste que houver falha
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
-## Escrever código o suficente para fazê-lo passar
+## Escreva código o suficiente para fazer o teste passar
 
-## Refatorar
+## Refatoração
 
 ## Repetir a cada novo requerimento
 
