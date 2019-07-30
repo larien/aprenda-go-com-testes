@@ -339,110 +339,114 @@ Nosso `Adiciona` está bom. No entanto, não consideramos o que acontece quando 
 
 O map não vai mostrar um erro se o valor já existe. Ao invés disso, elas vão sobrescrever o valor com o novo recebido. Isso pode ser conveniente na prática, mas torna o nome da nossa função muito menos preciso. `Adiciona` não deve modificar valores existentes. Só deve adicionar palavras novas ao nosso dicionário.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
-func TestAdd(t *testing.T) {
-    t.Run("new word", func(t *testing.T) {
-        dictionary := Dictionary{}
-        word := "test"
-        definition := "this is just a test"
+func TestAdiciona(t *testing.T) {
+	t.Run("palavra nova", func(t *testing.T) {
+		dicionario := Dicionario{}
+		palavra := "teste"
+		definicao := "isso é apenas um teste"
 
-        err := dictionary.Add(word, definition)
+		err := dicionario.Adiciona(palavra, definicao)
 
-        assertError(t, err, nil)
-        assertDefinition(t, dictionary, word, definition)
-    })
+		comparaErro(t, err, nil)
+		comparaDefinicao(t, dicionario, palavra, definicao)
+	})
 
-    t.Run("existing word", func(t *testing.T) {
-        word := "test"
-        definition := "this is just a test"
-        dictionary := Dictionary{word: definition}
-        err := dictionary.Add(word, "new test")
+	t.Run("palavra existente", func(t *testing.T) {
+		palavra := "teste"
+		definicao := "isso é apenas um teste"
+		dicionario := Dicionario{palavra: definicao}
+		err := dicionario.Add(palavra, "teste novo")
 
-        assertError(t, err, ErrWordExists)
-        assertDefinition(t, dictionary, word, definition)
-    })
+		comparaErro(t, err, ErrPalavraExistente)
+		comparaDefinicao(t, dicionario, palavra, definicao)
+	})
 }
 ```
 
-For this test, we modified `Add` to return an error, which we are validating against a new error variable, `ErrWordExists`. We also modified the previous test to check for a `nil` error.
+Para esse teste, fizemos `Adiciona` devolver um erro, que estamos validando com uma nova variável de erro, `ErrPalavraExistente`. Também modificamos o teste anterior para verificar um erro `nil`.
 
-## Try to run test
+## Execute o teste
 
-The compiler will fail because we are not returning a value for `Add`.
+Agora o compilador vai falhar porque não estamos devolvendo um valor para `Adiciona`.
 
-```text
-./dictionary_test.go:30:13: dictionary.Add(word, definition) used as value
-./dictionary_test.go:41:13: dictionary.Add(word, "new test") used as value
+```bash
+./dicionario_test.go:30:13: dicionario.Adiciona(palavra, definicao) used as value
+./dicionario_test.go:41:13: dicionario.Adiciona(palavra, "teste novo") used as value
 ```
 
-## Write the minimal amount of code for the test to run and check the output
+`usado como valor`
 
-In `dictionary.go`
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
+
+Em `dicionario.go`
 
 ```go
 var (
-    ErrNotFound   = errors.New("could not find the word you were looking for")
-    ErrWordExists = errors.New("cannot add word because it already exists")
+    ErrNaoEncontrado = errors.New("não foi possível encontrar a palavra que você procura")
+    ErrPalavraExistente = errors.New("não é possível adicionar a palavra pois ela já existe")
 )
 
-func (d Dictionary) Add(word, definition string) error {
-    d[word] = definition
+func (d Dicionario) Adiciona(palavra, definicao string) error {
+    d[palavra] = definicao
     return nil
 }
 ```
 
+Agora temos mais dois erros. Ainda estamos modificando o valor e retornando um erro `nil`.
+
 Now we get two more errors. We are still modifying the value, and returning a `nil` error.
 
-```text
-dictionary_test.go:43: got error '%!s(<nil>)' want 'cannot add word because it already exists'
-dictionary_test.go:44: got 'new test' want 'this is just a test'
+```bash
+dicionario_test.go:43: resultado erro '%!s(<nil>)', esperado 'não é possível adicionar a palavra pois ela já existe'
+dicionario_test.go:44: resultado 'teste novo', esperado 'isso é apenas um teste'
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func (d Dictionary) Add(word, definition string) error {
-    _, err := d.Search(word)
-
+func (d Dicionario) Adiciona(palavra, definicao string) error {
+    _, err := d.Busca(palavra)
     switch err {
-    case ErrNotFound:
-        d[word] = definition
+    case ErrNaoEncontrado:
+        d[palavra] = definicao
     case nil:
-        return ErrWordExists
+        return ErrPalavraExistente
     default:
         return err
+
     }
 
     return nil
 }
 ```
 
-Here we are using a `switch` statement to match on the error. Having a `switch` like this provides an extra safety net, in case `Search` returns an error other than `ErrNotFound`.
+Aqui estamos usando a declaração `switch` para coincidir com o erro. Usar o `switch` dessa forma dá uma segurança a mais, no caso de `Busca` retornar um erro diferente de `ErrNaoEncontrado`.
 
-## Refactor
+## Refatoração
 
-We don't have too much to refactor, but as our error usage grows we can make a few modifications.
+Não temos muito o que refatorar, mas já que nossos erros estão aumentando, podemos fazer algumas modificações.
 
 ```go
 const (
-    ErrNotFound   = DictionaryErr("could not find the word you were looking for")
-    ErrWordExists = DictionaryErr("cannot add word because it already exists")
+    ErrNaoEncontrado = ErrDicionario("não foi possível encontrar a palavra que você procura")
+    ErrPalavraExistente = ErrDicionario("não é possível adicionar a palavra pois ela já existe")
 )
 
-type DictionaryErr string
+type ErrDicionario string
 
-func (e DictionaryErr) Error() string {
+func (e ErrDicionario) Error() string {
     return string(e)
 }
 ```
 
-We made the errors constant; this required us to create our own `DictionaryErr` type which implements the `error` interface. You can read more about the details in [this excellent article by Dave Cheney](https://dave.cheney.net/2016/04/07/constant-errors). Simply put, it makes the errors more reusable and immutable.
+Tornamos os erros constantes; para isso, tivemos que criar nosso próprio tipo `ErrDicionario` que implementa a interface `error`. Você pode ler mais sobre nesse [artigo excelente escrito por Dave Cheney](https://dave.cheney.net/2016/04/07/constant-errors) (em inglês). Resumindo, isso torna os erros mais reutilizáveis e imutáveis.
 
-Next, let's create a function to `Update` the definition of a word.
+Agora, vamos criar uma função que `Atualiza` a definição de uma palavra.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
 func TestUpdate(t *testing.T) {
@@ -459,7 +463,7 @@ func TestUpdate(t *testing.T) {
 
 `Update` is very closely related to `Add` and will be our next implementation.
 
-## Try and run the test
+## Execute o teste
 
 ```text
 ./dictionary_test.go:53:2: dictionary.Update undefined (type Dictionary has no field or method Update)
@@ -479,7 +483,7 @@ With that in place, we are able to see that we need to change the definition of 
 dictionary_test.go:55: got 'this is just a test' want 'new definition'
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 We already saw how to do this when we fixed the issue with `Add`. So let's implement something really similar to `Add`.
 
@@ -491,7 +495,7 @@ func (d Dictionary) Update(word, definition string) {
 
 There is no refactoring we need to do on this since it was a simple change. However, we now have the same issue as with `Add`. If we pass in a new word, `Update` will add it to the dictionary.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
 t.Run("existing word", func(t *testing.T) {
@@ -519,7 +523,7 @@ t.Run("new word", func(t *testing.T) {
 
 We added yet another error type for when the word does not exist. We also modified `Update` to return an `error` value.
 
-## Try and run the test
+## Execute o teste
 
 ```text
 ./dictionary_test.go:53:16: dictionary.Update(word, "new test") used as value
@@ -552,7 +556,7 @@ With these changes, we now get a very clear error:
 dictionary_test.go:66: got error '%!s(<nil>)' want 'cannot update word because it does not exist'
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
 func (d Dictionary) Update(word, definition string) error {
@@ -583,7 +587,7 @@ Having specific errors gives you more information about what went wrong. Here is
 
 Next, let's create a function to `Delete` a word in the dictionary.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
 func TestDelete(t *testing.T) {
@@ -623,7 +627,7 @@ After we add this, the test tells us we are not deleting the word.
 dictionary_test.go:78: Expected 'test' to be deleted
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
 func (d Dictionary) Delete(word string) {

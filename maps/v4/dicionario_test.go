@@ -22,13 +22,26 @@ func TestBusca(t *testing.T) {
 }
 
 func TestAdiciona(t *testing.T) {
-	dicionario := Dicionario{}
-	palavra := "teste"
-	definicao := "isso é apenas um teste"
+	t.Run("palavra nova", func(t *testing.T) {
+		dicionario := Dicionario{}
+		palavra := "teste"
+		definicao := "isso é apenas um teste"
 
-	dicionario.Adiciona(palavra, definicao)
+		err := dicionario.Adiciona(palavra, definicao)
 
-	comparaDefinicao(t, dicionario, palavra, definicao)
+		comparaErro(t, err, nil)
+		comparaDefinicao(t, dicionario, palavra, definicao)
+	})
+
+	t.Run("palavra existente", func(t *testing.T) {
+		palavra := "teste"
+		definicao := "isso é apenas um teste"
+		dicionario := Dicionario{palavra: definicao}
+		err := dicionario.Add(palavra, "teste novo")
+
+		comparaErro(t, err, ErrPalavraExistente)
+		comparaDefinicao(t, dicionario, palavra, definicao)
+	})
 }
 
 func comparaStrings(t *testing.T, resultado, esperado string) {
