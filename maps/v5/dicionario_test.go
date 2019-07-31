@@ -44,6 +44,17 @@ func TestAdiciona(t *testing.T) {
 	})
 }
 
+func TestAtualiza(t *testing.T) {
+	palavra := "teste"
+	definicao := "isso é apenas um teste"
+	dicionario := Dicionario{palavra: definicao}
+	novaDefinicao := "nova definição"
+
+	dicionario.Atualiza(palavra, novaDefinicao)
+
+	comparaDefinicao(t, dicionario, palavra, novaDefinicao)
+}
+
 func comparaStrings(t *testing.T, resultado, esperado string) {
 	t.Helper()
 

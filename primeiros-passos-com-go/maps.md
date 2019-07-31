@@ -450,142 +450,145 @@ Agora, vamos criar uma função que `Atualiza` a definição de uma palavra.
 
 ```go
 func TestUpdate(t *testing.T) {
-    word := "test"
-    definition := "this is just a test"
-    dictionary := Dictionary{word: definition}
-    newDefinition := "new definition"
+	palavra := "teste"
+	definicao := "isso é apenas um teste"
+	dicionario := Dicionario{palavra: definicao}
+	novaDefinicao := "nova definição"
 
-    dictionary.Update(word, newDefinition)
+	dicionario.Atualiza(palavra, novaDefinicao)
 
-    assertDefinition(t, dictionary, word, newDefinition)
+	comparaDefinicao(t, dicionario, palavra, novaDefinicao)
 }
 ```
 
-`Update` is very closely related to `Add` and will be our next implementation.
+`Atualiza` é bem parecido com `Adiciona` e será nossa próxima implementação.
 
 ## Execute o teste
 
-```text
-./dictionary_test.go:53:2: dictionary.Update undefined (type Dictionary has no field or method Update)
+```bash
+./dicionario_test.go:53:2: dicionario.Atualiza undefined (type Dicionario has no field or method Atualiza)
 ```
 
-## Write minimal amount of code for the test to run and check the failing test output
+`dicionario.Atualiza não definido (tipo Dicionario não tem nenhum campo ou método chamado Atualiza`
 
-We already know how to deal with an error like this. We need to define our function.
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
+
+Já sabemos como lidar com um erro como esse. Precisamos definir nossa função.
 
 ```go
-func (d Dictionary) Update(word, definition string) {}
+func (d Dicionario) Atualiza(palavra, definicao string) {}
 ```
+
+Feito isso, somos capazes de ver o que precisamos para mudar a definição da palavra.
 
 With that in place, we are able to see that we need to change the definition of the word.
 
-```text
-dictionary_test.go:55: got 'this is just a test' want 'new definition'
+```bash
+dicionario_test.go:55: resultado 'isso é apenas um teste', esperado 'nova definição'
 ```
 
 ## Escreva código o suficiente para fazer o teste passar
 
-We already saw how to do this when we fixed the issue with `Add`. So let's implement something really similar to `Add`.
+Já vimos como fazer essa implementação quando corrigimos o problema com `Adiciona`. Logo, vamos implementar algo bem parecido a `Adiciona`.
 
 ```go
-func (d Dictionary) Update(word, definition string) {
-    d[word] = definition
+func (d Dicionario) Atualiza(palavra, definicao string) {
+	d[palavra] = definicao
 }
 ```
 
-There is no refactoring we need to do on this since it was a simple change. However, we now have the same issue as with `Add`. If we pass in a new word, `Update` will add it to the dictionary.
+Não há refatoração necessária, já que foi uma mudança simples. No entanto, agora temos o mesmo problema com `Adiciona`. Se passarmos uma palavra nova, `Atualiza` vai adicioná-la no dicionário.
 
 ## Escreva o teste primeiro
 
 ```go
-t.Run("existing word", func(t *testing.T) {
-    word := "test"
-    definition := "this is just a test"
-    newDefinition := "new definition"
-    dictionary := Dictionary{word: definition}
+    t.Run("palavra existente", func(t *testing.T) {
+        palavra := "teste"
+        definicao := "isso é apenas um teste"
+        novaDefinicao := "nova definição"
+        dicionario := Dicionario{palavra: definicao}
+        err := dicionario.Atualiza(palavra, novaDefinicao)
 
-    err := dictionary.Update(word, newDefinition)
+        comparaErro(t, err, nil)
+        comparaDefinicao(t, dicionario, palavra, novaDefinicao)
+    })
 
-    assertError(t, err, nil)
-    assertDefinition(t, dictionary, word, newDefinition)
-})
+    t.Run("palavra nova", func(t *testing.T) {
+        palavra := "teste"
+        definicao := "isso é apenas um teste"
+        dicionario := Dicionario{}
 
-t.Run("new word", func(t *testing.T) {
-    word := "test"
-    definition := "this is just a test"
-    dictionary := Dictionary{}
+        err := dicionario.Atualiza(palavra, definicao)
 
-    err := dictionary.Update(word, definition)
-
-    assertError(t, err, ErrWordDoesNotExist)
-})
+        comparaErro(t, err, ErrPalavraInexistente)
+    })
 ```
 
-We added yet another error type for when the word does not exist. We also modified `Update` to return an `error` value.
+Criamos um outro tipo de erro para quando a palavra não existe. Também modificamos o `Atualiza` para retornar um valor `error`.
 
 ## Execute o teste
 
-```text
-./dictionary_test.go:53:16: dictionary.Update(word, "new test") used as value
-./dictionary_test.go:64:16: dictionary.Update(word, definition) used as value
-./dictionary_test.go:66:23: undefined: ErrWordDoesNotExists
+```bash
+./dicionario_test.go:53:16: dicionario.Atualiza(palavra, "teste novo") used as value
+./dicionario_test.go:64:16: dicionario.Atualiza(palavra, definicao) used as value
+./dicionario_test.go:66:23: undefined: ErrPalavraInexistente
 ```
 
-We get 3 errors this time, but we know how to deal with these.
+Agora recebemos três erros, mas sabemos como lidar com eles.
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 ```go
 const (
-    ErrNotFound         = DictionaryErr("could not find the word you were looking for")
-    ErrWordExists       = DictionaryErr("cannot add word because it already exists")
-    ErrWordDoesNotExist = DictionaryErr("cannot update word because it does not exist")
+    ErrNaoEncontrado = ErrDicionario("não foi possível encontrar a palavra que você procura")
+    ErrPalavraExistente = ErrDicionario("não é possível adicionar a palavra pois ela já existe")
+    ErrPalavraInexistente = ErrDicionario("não foi possível atualizar a palavra pois ela não existe")
 )
 
-func (d Dictionary) Update(word, definition string) error {
-    d[word] = definition
+func (d Dicionario) Atualiza(palavra, definicao string) error {
+    d[palavra] = definicao
     return nil
 }
 ```
 
-We added our own error type and are returning a `nil` error.
+Adicionamos nosso próprio tipo erro e retornamos um erro `nil`.
 
-With these changes, we now get a very clear error:
+Com essas mudanças, agora temos um erro muito mais claro:
 
-```text
-dictionary_test.go:66: got error '%!s(<nil>)' want 'cannot update word because it does not exist'
+```bash
+dicionario_test.go:66: resultado erro '%!s(<nil>)', esperado 'não foi possível atualizar a palavra pois ela não existe'
 ```
 
 ## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func (d Dictionary) Update(word, definition string) error {
-    _, err := d.Search(word)
+func (d Dicionario) Atualiza(palavra, definicao string) error {
+	_, err := d.Busca(palavra)
+	switch err {
+	case ErrNaoEncontrado:
+		return ErrPalavraInexistente
+	case nil:
+		d[palavra] = definicao
+	default:
+		return err
 
-    switch err {
-    case ErrNotFound:
-        return ErrWordDoesNotExist
-    case nil:
-        d[word] = definition
-    default:
-        return err
-    }
+	}
 
-    return nil
+	return nil
 }
 ```
 
-This function looks almost identical to `Add` except we switched when we update the `dictionary` and when we return an error.
+Essa função é quase idêntica à `Adiciona`, com exceção de que trocamos quando atualizamos o `dicionario` e quando retornamos um erro.
 
-### Note on declaring a new error for Update
+### Nota sobre a declaração de um novo erro para Atualiza
 
-We could reuse `ErrNotFound` and not add a new error. However, it is often better to have a precise error for when an update fails.
+Poderíamos reutilizar `ErrNaoEncontrado` e não criar um novo erro. No entanto, geralmente é melhor ter um erro preciso para quando uma atualização falhar.
 
-Having specific errors gives you more information about what went wrong. Here is an example in a web app:
+Ter erros específicos te dá mais informação sobre o que deu errado. Segue um exemplo em uma aplicação web:
 
-> You can redirect the user when `ErrNotFound` is encountered, but display an error message when `ErrWordDoesNotExist` is encountered.
+> Você pode redirecionar o usuário quando o `ErrNaoEncontrado` é encontrado, mas mostrar uma mensagem de erro só quando `ErrPalavraInexistente` é encontrado.
 
-Next, let's create a function to `Delete` a word in the dictionary.
+Agora, vamos criar uma função que `Deleta` uma palavra no dicionário.
 
 ## Escreva o teste primeiro
 
