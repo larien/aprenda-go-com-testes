@@ -181,36 +181,40 @@ import (
     "net/http"
 )
 
-func Greet(writer io.Writer, name string) {
-    fmt.Fprintf(writer, "Hello, %s", name)
+func Cumprimenta(escritor io.Writer, nome string) {
+    fmt.Fprintf(escritor, "Olá, %s", nome)
 }
 
-func MyGreeterHandler(w http.ResponseWriter, r *http.Request) {
-    Greet(w, "world")
+func HandlerMeuCumprimento(w http.ResponseWriter, r *http.Request) {
+    Cumprimenta(w, "mundo")
 }
 
 func main() {
-    http.ListenAndServe(":5000", http.HandlerFunc(MyGreeterHandler))
+    err := http.ListenAndServe(":5000", http.HandlerFunc(HandlerMeuCumprimento))
+
+    if err != nil {
+        fmt.Println(err)
+    }
 }
 ```
 
-Run the program and go to [http://localhost:5000](http://localhost:5000). You'll see your greeting function being used.
+Execute o programa e vá para [http://localhost:5000](http://localhost:5000). Você erá sua função de cumprimento ser utilizada.
 
-HTTP servers will be covered in a later chapter so don't worry too much about the details.
+Falaremos sobre servidores HTTP em um próximo capítulo, então não se preocupe muito com os detalhes.
 
-When you write an HTTP handler, you are given an `http.ResponseWriter` and the `http.Request` that was used to make the request. When you implement your server you _write_ your response using the writer.
+Quando se cria um handler HTTP, você recebe um `http.ResponseWriter` e o `http.Request` que é usado para fazer a requisição. Quando implementa seu servidor, você _escreve_ sua resposta usando o escritor.
 
-You can probably guess that `http.ResponseWriter` also implements `io.Writer` so this is why we could re-use our `Greet` function inside our handler.
+Você deve ter adivinhado que o `http.ResponseWriter` também implementa o `io.Writer` e é por isso que podemos reutilizar nossa função `Cumprimenta` dentro do nosso handler.
 
 ## Resumo
 
-Our first round of code was not easy to test because it wrote data to somewhere we couldn't control.
+Nossa primeira rodada de código não foi fácil de testar porque escrevemos dados em algum lugar que não podíamos controlar.
 
-_Motivated by our tests_ we refactored the code so we could control _where_ the data was written by **injecting a dependency** which allowed us to:
+_Graças aos nossos testes_, refatoramos o código para que pudéssemos controlar para _onde_ os dados eram escritos **injetando uma dependência** que nos permitiu:
 
--   **Test our code** If you can't test a function _easily_, it's usually because of dependencies hard-wired into a function _or_ global state. If you have a global database connection pool for instance that is used by some kind of service layer, it is likely going to be difficult to test and they will be slow to run. DI will motivate you to inject in a database dependency \(via an interface\) which you can then mock out with something you can control in your tests.
--   **Separate our concerns**, decoupling _where the data goes_ from _how to generate it_. If you ever feel like a method/function has too many responsibilities \(generating data _and_ writing to a db? handling HTTP requests _and_ doing domain level logic?\) DI is probably going to be the tool you need.
--   **Allow our code to be re-used in different contexts** The first "new" context our code can be used in is inside tests. But further on if someone wants to try something new with your function they can inject their own dependencies.
+-   **Testar nosso código**: se você não consegue testar uma função _de forma simples_, geralmente é porque dependências estão acopladas em uma função _ou_ estado global. Se você tem um pool de conexão global da base de dados, por exemplo, é provável que seja difícil testar e vai ser lento para ser execudado. A injeção de dependência te motiva a injetar em uma dependência da base de dados (através de uma interface), para que você possa criar um mock com algo que você possa controlar nos seus testes.
+-   _Separar nossas preocupações_, desacoplando _onde os dados vão_ de _como gerá-los_. Se você já achou que um método/função tem responsabilidades demais (gerando dados _e_ escrevendo na base de dados? Lidando com requisições HTTP _e_ aplicando lógica a nível de domínio?), a injeção de dependência provavelmente será a ferramenta que você precisa.
+-   **Permitir que nosso código seja reutilizado em contextos diferentes**: o primeiro contexto "novo" do nosso código pode ser usado dentro dos testes. No entanto, se alguém quiser testar algo novo com nossa função, a pessoa pode injetar suas próprias dependências.
 
 ### What about mocking? I hear you need that for DI and also it's evil
 
