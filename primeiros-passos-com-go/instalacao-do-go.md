@@ -118,7 +118,7 @@ Você deve ter familiaridade o suficiente com seu editor para performar as açõ
 -   **go fmt**. O Go tem um formatador nativo chamado `go fmt`. Seu editor deve executar esse comando a cada vez que salvar o arquivo.
 -   **Executar testes**. Não precisa nem dizer que você deve ser capaz de fazer todos os pontos acima e então re-executar seus testes rapidamente para certificar que sua refatoração não quebrou nada.
 
-Além disso, para te ajudar a trabalhar cm seu código, você deve ser capaz de:
+Além disso, para te ajudar a trabalhar com seu código, você deve ser capaz de:
 
 -   **Verificar a assinatura da função**. Nunca tenha dúvida sobre a forma de chamar uma função em Go. Sua IDE deve descrever uma função em termos de sua documentação, seus parâmetros e o que ela retorna.
 -   **Ver a definição da função**. Se não tiver certeza sobre como uma função funciona, você deve ser capaz de ir para o código fonte de descobrir por si facilmente.
@@ -128,4 +128,4 @@ Dominar suas ferramentas vai te ajudar a concentrar no código e reduzir a troca
 
 ## Resumindo
 
-Nesse ponto você já deve ter o Go instalado, um editor disponível e algumas ferramentas básicas configuradas. O Go tem um ecossistema enorme de produtos feitos por outras pessoas. Identificamos alguns componentes úteis aqui, mas você pode encontrar uma lista mais completa no [Awesome Go](ttps://awesome-go.com).
+Nesse ponto você já deve ter o Go instalado, um editor disponível e algumas ferramentas básicas configuradas. O Go tem um ecossistema enorme de produtos feitos por outras pessoas. Identificamos alguns componentes úteis aqui, mas você pode encontrar uma lista mais completa no [Awesome Go](https://awesome-go.com).
