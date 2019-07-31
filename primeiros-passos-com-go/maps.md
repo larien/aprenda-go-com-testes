@@ -593,64 +593,66 @@ Agora, vamos criar uma função que `Deleta` uma palavra no dicionário.
 ## Escreva o teste primeiro
 
 ```go
-func TestDelete(t *testing.T) {
-    word := "test"
-    dictionary := Dictionary{word: "test definition"}
+func TestDeleta(t *testing.T) {
+    palavra := "teste"
+    dicionario := Dicionario{palavra: "definição de teste"}
 
-    dictionary.Delete(word)
+    dicionario.Deleta(palavra)
 
-    _, err := dictionary.Search(word)
-    if err != ErrNotFound {
-        t.Errorf("Expected '%s' to be deleted", word)
+    _, err := dicionario.Busca(palavra)
+    if err != ErrNaoEncontrado {
+        t.Errorf("espera-se que '%s' seja deletado", palavra)
     }
 }
 ```
 
-Our test creates a `Dictionary` with a word and then checks if the word has been removed.
+Nosso teste cria um `Dicionario` com uma palavra e depois verifica se a palavra foi removida.
 
-## Try to run the test
+## Execute o teste
 
-By running `go test` we get:
+Executando `go test` obtemos:
 
-```text
-./dictionary_test.go:74:6: dictionary.Delete undefined (type Dictionary has no field or method Delete)
+```bash
+./dicionario_test.go:74:6: dicionario.Deleta undefined (type Dicionario has no field or method Deleta)
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+`dicionario.Deleta não definido (tipo Dicionario não tem campo ou método Deleta)`
+
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 ```go
-func (d Dictionary) Delete(word string) {
+func (d Dicionario) Deleta(palavra string) {
 
 }
 ```
 
-After we add this, the test tells us we are not deleting the word.
+Depois que adicionamos isso, o teste nos diz que não estamos deletando a palavra.
 
-```text
-dictionary_test.go:78: Expected 'test' to be deleted
+```bash
+dicionario_test.go:78: espera-se que 'teste' seja deletado
 ```
 
 ## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func (d Dictionary) Delete(word string) {
-    delete(d, word)
+func (d Dicionario) Deleta(palavra string) {
+	delete(d, palavra)
 }
 ```
 
-Go has a built-in function `delete` that works on maps. It takes two arguments. The first is the map and the second is the key to be removed.
+Go tem uma função nativa chamada `delete` que funciona em maps. Ela leva dois argumentos: o primeiro é o map e o segundo é a chave a ser removida.
 
-The `delete` function returns nothing, and we based our `Delete` method on the same notion. Since deleting a value that's not there has no effect, unlike our `Update` and `Add` methods, we don't need to complicate the API with errors.
+A função `delete` não retorna nada, e baseamos nosso método `Deleta` nesse conceito. Já que deletar um valor não tem nenhum efeito, diferentemente dos nossos métodos `Atualiza` e `Adiciona`, não precisamos complicar a API com erros.
 
-## Wrapping up
+## Resumo
 
-In this section, we covered a lot. We made a full CRUD \(Create, Read, Update and Delete\) API for our dictionary. Throughout the process we learned how to:
+Nessa seção, falamos sobre muita coisa. Criamos uma API CRUD (Criar, Ler, Atualizar e Deletar) completa para nosso dicionário. No decorrer do processo, aprendemos como:
 
--   Create maps
--   Search for items in maps
--   Add new items to maps
--   Update items in maps
--   Delete items from a map
--   Learned more about errors
-    -   How to create errors that are constants
-    -   Writing error wrappers
+-   Criar maps
+-   Buscar por itens em maps
+-   Adicionar novos itens aos maps
+-   Atualizar itens em maps
+-   Deletar itens de um map
+-   Aprendemos mais sobre erros
+    -   Como criar erros que são constantes
+    -   Escrever wrappers de erro
