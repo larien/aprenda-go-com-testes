@@ -216,14 +216,14 @@ _Graças aos nossos testes_, refatoramos o código para que pudéssemos controla
 -   _Separar nossas preocupações_, desacoplando _onde os dados vão_ de _como gerá-los_. Se você já achou que um método/função tem responsabilidades demais (gerando dados _e_ escrevendo na base de dados? Lidando com requisições HTTP _e_ aplicando lógica a nível de domínio?), a injeção de dependência provavelmente será a ferramenta que você precisa.
 -   **Permitir que nosso código seja reutilizado em contextos diferentes**: o primeiro contexto "novo" do nosso código pode ser usado dentro dos testes. No entanto, se alguém quiser testar algo novo com nossa função, a pessoa pode injetar suas próprias dependências.
 
-### What about mocking? I hear you need that for DI and also it's evil
+### Mas e o mock? Ouvi falar que precisa disso para trabalhar com injeção de dependência e que também é do demonho
 
-Mocking will be covered in detail later \(and it's not evil\). You use mocking to replace real things you inject with a pretend version that you can control and inspect in your tests. In our case though, the standard library had something ready for us to use.
+Vamos falar mais sobre mocks depois (e não é do demonho). Você mocka para substituir coisas reais que você injeta com uma versão falsa que você pode controlar e examinar nos seus testes. No entanto, no nosso caso a biblioteca padrão já tinha algo pronto para usarmos.
 
-### The Go standard library is really good, take time to study it
+### A biblioteca padrão do Go é muito boa, leve um tempo para estudá-la
 
-By having some familiarity with the `io.Writer` interface we are able to use `bytes.Buffer` in our test as our `Writer` and then we can use other `Writer`s from the standard library to use our function in a command line app or in web server.
+Ao termos familiaridade com a interface `io.Writer`, somos capazes de usar `bytes.Buffer` no nosso teste como nosso `Writer` para que depois possamos usar outros `Writer` da biblioteca padrão para usar na nossa função em uma aplicação de linha de comando ou em um servidor web.
 
-The more familiar you are with the standard library the more you'll see these general purpose interfaces which you can then re-use in your own code to make your software reusable in a number of contexts.
+Quanto mais familiar você for com a biblioteca padrão, mais vai ver essas interfaces de propósito geral que você pode reutilizar no seu próprio código para tornar o software reutilizável em vários contextos diferentes.
 
-This example is heavily influenced by a chapter in [The Go Programming language](https://www.amazon.co.uk/Programming-Language-Addison-Wesley-Professional-Computing/dp/0134190440), so if you enjoyed this, go buy it!
+Esse exemplo teve grande influência de um capítulo de [A Linguagem de Programação Go](https://www.amazon.com.br/dp/8575225464/ref=cm_sw_r_tw_dp_U_x_0HIqDbYP7VSN5). Logo, se gostou, vá adquiri-lo!
