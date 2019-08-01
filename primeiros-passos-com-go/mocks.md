@@ -1,117 +1,121 @@
 # Mocking
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/mocking)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/mocks)
 
-You have been asked to write a program which counts from 3, printing each number on a new line \(with a 1 second pause\) and when it reaches zero it will print "Go!" and exit.
+Te pediram para criar um programa que conta a partir de 3, imprimindo cada número em uma linha nova (com um segundo intervalo entre cada uma) e quando chega a zero, imprime "Vai!" e sai.
 
 ```text
 3
 2
 1
-Go!
+Vai!
 ```
 
-We'll tackle this by writing a function called `Countdown` which we will then put inside a `main` program so it looks something like this:
+Vamos resolver isso escrevendo uma função chamada `Contagem` que vamos colocar dentro de um programa `main` e se parecer com algo assim:
 
 ```go
 package main
 
 func main() {
-    Countdown()
+    Contagem()
 }
 ```
 
-While this is a pretty trivial program, to test it fully we will need as always to take an _iterative_, _test-driven_ approach.
+Apesar de ser um programa simples, para testá-lo completamente vamos precisar, como de costume, de uma abordagem _iterativa_ e _orientada a testes_.
 
-What do I mean by iterative? We make sure we take the smallest steps we can to have _useful software_.
+Mas o que quero dizer com iterativa? Precisamos ter certeza de que tomamos os menores passos que pudermos para ter um _software_ útil.
 
-We dont want to spend a long time with code that will theoretically work after some hacking because that's often how developers fall down rabbit holes. **It's an important skill to be able to slice up requirements as small as you can so you can have** _**working software**_**.**
+Não queremos passar muito tempo com código que vai funcionar hora ou outra após alguma implementação mirabolante, porque é assim que os desenvolvedores caem em armadilhas. **É importante ser capaz de dividir os requerimentos da menor forma que conseguir para você ter um** _**software funcionando**_**.**
 
-Here's how we can divide our work up and iterate on it:
+Podemos separar essa tarefa da seguinte forma:
 
-* Print 3
-* Print 3 to Go!
-* Wait a second between each line
+-   Imprimir 3
+-   Imprimir de 3 para Vai!
+-   Esperar um segundo entre cada linha
 
-## Write the test first
+## Escreva o teste primeiro
 
-Our software needs to print to stdout and we saw how we could use DI to facilitate testing this in the DI section.
+Nosso software precisa imprimir para a saída. Vimos como podemos usar a injeção de dependência para facilitar nosso teste na [seção anterior](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/injecao-de-dependencia.md).
 
 ```go
-func TestCountdown(t *testing.T) {
+func TestContagem(t *testing.T) {
     buffer := &bytes.Buffer{}
 
-    Countdown(buffer)
+    Contagem(buffer)
 
-    got := buffer.String()
-    want := "3"
+    resultado := buffer.String()
+    esperado := "3"
 
-    if got != want {
-        t.Errorf("got '%s' want '%s'", got, want)
+    if resultado != esperado {
+        t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
     }
 }
 ```
 
-If anything like `buffer` is unfamiliar to you, re-read [the previous section](dependency-injection.md).
+Se tiver dúvidas sobre o `buffer`, leia a [seção anterior](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/injecao-de-dependencia.md) novamente.
 
-We know we want our `Countdown` function to write data somewhere and `io.Writer` is the de-facto way of capturing that as an interface in Go.
+Sabemos que nossa função `Contagem` precisa escrever dados em algum lugar e o `io.Writer` é a forma de capturarmos essa saída como uma interface em Go.
 
-* In `main` we will send to `os.Stdout` so our users see the countdown printed to the terminal.
-* In test we will send to `bytes.Buffer` so our tests can capture what data is being generated.
+-   Na `main`, vamos enviar o `os.Stdout` como parâmetro para nossos usuários verem a contagem regressiva impressa no terminal.
+-   No teste, vamos enviar o `bytes.Buffer` como parâmetro para que nossos testes possam capturar que dado está sendo gerado.
 
-## Try and run the test
+## Execute o teste
 
-`./countdown_test.go:11:2: undefined: Countdown`
+`./contagem_test.go:11:2: undefined: Contagem`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+`indefinido: Contagem`
 
-Define `Countdown`
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
+
+Defina `Contagem`:
 
 ```go
-func Countdown() {}
+func Contagem() {}
 ```
 
-Try again
+Tente novamente:
 
 ```go
-./countdown_test.go:11:11: too many arguments in call to Countdown
+./contagem_test.go:11:11: too many arguments in call to Countdown
     have (*bytes.Buffer)
     want ()
 ```
 
-The compiler is telling you what your function signature could be, so update it.
+`argumentos demais na chamada para Contagem`
+
+O compilador está te dizendo como a assinatura da função deve ser, então é só atualizá-la.
 
 ```go
-func Countdown(out *bytes.Buffer) {}
+func Contagem(saida *bytes.Buffer) {}
 ```
 
-`countdown_test.go:17: got '' want '3'`
+`contagem_test.go:17: resultado '', esperado '3'`
 
-Perfect!
+Perfeito!
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func Countdown(out *bytes.Buffer) {
-    fmt.Fprint(out, "3")
+func Contagem(saida *bytes.Buffer) {
+    fmt.Fprint(saida, "3")
 }
 ```
 
-We're using `fmt.Fprint` which takes an `io.Writer` \(like `*bytes.Buffer`\) and sends a `string` to it. The test should pass.
+Estamos usando `fmt.Fprint`, o que significa que ele recebe um `io.Writer` (como `*bytes.Buffer`) e envia uma `string` para ele. O teste deve passar.
 
-## Refactor
+## Refatoração
 
-We know that while `*bytes.Buffer` works, it would be better to use a general purpose interface instead.
+Agora sabemos que, apesar do `*bytes.Buffer` funcionar, seria melhor ter uma interface de propósito geral ao invés disso.
 
 ```go
-func Countdown(out io.Writer) {
-    fmt.Fprint(out, "3")
+func Contagem(saida io.Writer) {
+    fmt.Fprint(saida, "3")
 }
 ```
 
-Re-run the tests and they should be passing.
+Execute os testes novamente e eles devem passar.
 
-To complete matters, let's now wire up our function into a `main` so we have some working software to reassure ourselves we're making progress.
+Só para finalizar, vamos colocar nossa função dentro da `main` para que possamos executar o software para nos assegurarmos de que estamos progredindo.
 
 ```go
 package main
@@ -122,12 +126,12 @@ import (
     "os"
 )
 
-func Countdown(out io.Writer) {
-    fmt.Fprint(out, "3")
+func Contagem(saida io.Writer) {
+	fmt.Fprint(saida, "3")
 }
 
 func main() {
-    Countdown(os.Stdout)
+	Contagem(os.Stdout)
 }
 ```
 
@@ -221,11 +225,11 @@ If you run the program it works as we want it to.
 
 The tests still pass and the software works as intended but we have some problems:
 
-* Our tests take 4 seconds to run.
-  * Every forward thinking post about software development emphasises the importance of quick feedback loops.
-  * **Slow tests ruin developer productivity**.
-  * Imagine if the requirements get more sophisticated warranting more tests. Are we happy with 4s added to the test run for every new test of `Countdown`?
-* We have not tested an important property of our function.
+-   Our tests take 4 seconds to run.
+    -   Every forward thinking post about software development emphasises the importance of quick feedback loops.
+    -   **Slow tests ruin developer productivity**.
+    -   Imagine if the requirements get more sophisticated warranting more tests. Are we happy with 4s added to the test run for every new test of `Countdown`?
+-   We have not tested an important property of our function.
 
 We have a dependency on `Sleep`ing which we need to extract so we can then control it in our tests.
 
@@ -357,13 +361,13 @@ There's still another important property we haven't tested.
 
 `Countdown` should sleep before each print, e.g:
 
-* `Sleep`
-* `Print N`
-* `Sleep`
-* `Print N-1`
-* `Sleep`
-* `Print Go!`
-* etc
+-   `Sleep`
+-   `Print N`
+-   `Sleep`
+-   `Print N-1`
+-   `Sleep`
+-   `Print Go!`
+-   etc
 
 Our latest change only asserts that it has slept 4 times, but those sleeps could occur out of sequence.
 
@@ -581,12 +585,12 @@ People normally get in to a bad state when they don't _listen to their tests_ an
 
 If your mocking code is becoming complicated or you are having to mock out lots of things to test something, you should _listen_ to that bad feeling and think about your code. Usually it is a sign of
 
-* The thing you are testing is having to do too many things
-  * Break the module apart so it does less
-* Its dependencies are too fine-grained
-  * Think about how you can consolidate some of these dependencies into one meaningful module
-* Your test is too concerned with implementation details
-  * Favour testing expected behaviour rather than the implementation
+-   The thing you are testing is having to do too many things
+    -   Break the module apart so it does less
+-   Its dependencies are too fine-grained
+    -   Think about how you can consolidate some of these dependencies into one meaningful module
+-   Your test is too concerned with implementation details
+    -   Favour testing expected behaviour rather than the implementation
 
 Normally a lot of mocking points to _bad abstraction_ in your code.
 
@@ -596,20 +600,20 @@ Normally a lot of mocking points to _bad abstraction_ in your code.
 
 Ever run into this situation?
 
-* You want to do some refactoring
-* To do this you end up changing lots of tests
-* You question TDD and make a post on Medium titled "Mocking considered harmful"
+-   You want to do some refactoring
+-   To do this you end up changing lots of tests
+-   You question TDD and make a post on Medium titled "Mocking considered harmful"
 
 This is usually a sign of you testing too much _implementation detail_. Try to make it so your tests are testing _useful behaviour_ unless the implementation is really important to how the system runs.
 
 It is sometimes hard to know _what level_ to test exactly but here are some thought processes and rules I try to follow:
 
-* **The definition of refactoring is that the code changes but the behaviour stays the same**. If you have decided to do some refactoring in theory you should be able to do make the commit without any test changes. So when writing a test ask yourself
-  * Am i testing the behaviour I want or the implementation details?
-  * If i were to refactor this code, would I have to make lots of changes to the tests?
-* Although Go lets you test private functions, I would avoid it as private functions are to do with implementation.
-* I feel like if a test is working with **more than 3 mocks then it is a red flag** - time for a rethink on the design
-* Use spies with caution. Spies let you see the insides of the algorithm you are writing which can be very useful but that means a tighter coupling between your test code and the implementation. **Be sure you actually care about these details if you're going to spy on them**
+-   **The definition of refactoring is that the code changes but the behaviour stays the same**. If you have decided to do some refactoring in theory you should be able to do make the commit without any test changes. So when writing a test ask yourself
+    -   Am i testing the behaviour I want or the implementation details?
+    -   If i were to refactor this code, would I have to make lots of changes to the tests?
+-   Although Go lets you test private functions, I would avoid it as private functions are to do with implementation.
+-   I feel like if a test is working with **more than 3 mocks then it is a red flag** - time for a rethink on the design
+-   Use spies with caution. Spies let you see the insides of the algorithm you are writing which can be very useful but that means a tighter coupling between your test code and the implementation. **Be sure you actually care about these details if you're going to spy on them**
 
 As always, rules in software development aren't really rules and there can be exceptions. [Uncle Bob's article of "When to mock"](https://8thlight.com/blog/uncle-bob/2014/05/10/WhenToMock.html) has some excellent pointers.
 
@@ -617,8 +621,8 @@ As always, rules in software development aren't really rules and there can be ex
 
 ### More on TDD approach
 
-* When faced with less trivial examples, break the problem down into "thin vertical slices". Try to get to a point where you have _working software backed by tests_ as soon as you can, to avoid getting in rabbit holes and taking a "big bang" approach.
-* Once you have some working software it should be easier to _iterate with small steps_ until you arrive at the software you need.
+-   When faced with less trivial examples, break the problem down into "thin vertical slices". Try to get to a point where you have _working software backed by tests_ as soon as you can, to avoid getting in rabbit holes and taking a "big bang" approach.
+-   Once you have some working software it should be easier to _iterate with small steps_ until you arrive at the software you need.
 
 > "When to use iterative development? You should use iterative development only on projects that you want to succeed."
 
@@ -626,11 +630,10 @@ Martin Fowler.
 
 ### Mocking
 
-* **Without mocking important areas of your code will be untested**. In our case we would not be able to test that our code paused between each print but there are countless other examples. Calling a service that _can_ fail? Wanting to test your system in a particular state? It is very hard to test these scenarios without mocking.
-* Without mocks you may have to set up databases and other third parties things just to test simple business rules. You're likely to have slow tests, resulting in **slow feedback loops**.
-* By having to spin up a database or a webservice to test something you're likely to have **fragile tests** due to the unreliability of such services.
+-   **Without mocking important areas of your code will be untested**. In our case we would not be able to test that our code paused between each print but there are countless other examples. Calling a service that _can_ fail? Wanting to test your system in a particular state? It is very hard to test these scenarios without mocking.
+-   Without mocks you may have to set up databases and other third parties things just to test simple business rules. You're likely to have slow tests, resulting in **slow feedback loops**.
+-   By having to spin up a database or a webservice to test something you're likely to have **fragile tests** due to the unreliability of such services.
 
 Once a developer learns about mocking it becomes very easy to over-test every single facet of a system in terms of the _way it works_ rather than _what it does_. Always be mindful about **the value of your tests** and what impact they would have in future refactoring.
 
 In this post about mocking we have only covered **Spies** which are a kind of mock. There are different kind of mocks. [Uncle Bob explains the types in a very easy to read article](https://8thlight.com/blog/uncle-bob/2014/05/14/TheLittleMocker.html). In later chapters we will need to write code that depends on others for data, which is where we will show **Stubs** in action.
-
