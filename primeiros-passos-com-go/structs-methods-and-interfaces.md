@@ -577,18 +577,18 @@ func TestArea(t *testing.T) {
 }
 ```
 
-## Wrapping up
+## Resumindo
 
-This was more TDD practice, iterating over our solutions to basic mathematic problems and learning new language features motivated by our tests.
+Esta foi mais uma prática de TDD, iterando em nossas soluções para problemas matemáticos básicos e aprendendo novos recursos da linguagem motivados por nossos testes.
 
-* Declaring structs to create your own data types which lets you bundle related data together and make the intent of your code clearer
-* Declaring interfaces so you can define functions that can be used by different types \([parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)\)
-* Adding methods so you can add functionality to your data types and so you can implement interfaces
-* Table based tests to make your assertions clearer and your suites easier to extend & maintain
+* Declarando structs para criar seus próprios tipos de dados, o que permite agrupar dados relacionados e torna a intenção do seu código mais clara.
+* Declarando interfaces para que você possa definir funções que podem ser usadas por diferentes tipos \([polimorfismo paramétrico](https://pt.wikipedia.org/wiki/Polimorfismo_paramétrico)\).
+* Adicionando métodos para que você possa adicionar funcionalidades aos seus tipos de dados e implementar interfaces.
+* Testes baseados em tabela para tornar suas asserções mais claras e suas suítes mais fáceis de estender e manter.
 
-This was an important chapter because we are now starting to define our own types. In statically typed languages like Go, being able to design your own types is essential for building software that is easy to understand, to piece together and to test.
+Este foi um capítulo importante porque agora começamos a definir nossos próprios tipos. Em linguagens estaticamente tipadas como Go, conseguir projetar seus próprios tipos é essencial para construir software que seja fácil de entender, compilar e testar.
 
-Interfaces are a great tool for hiding complexity away from other parts of the system. In our case our test helper _code_ did not need to know the exact shape it was asserting on, only how to "ask" for it's area.
+Interfaces são uma ótima ferramenta para ocultar a complexidade de outras partes do sistema. Em nosso caso, o _código_ de teste auxiliar não precisou conhecer a forma exata que estava afirmando, apenas como "pedir" pela sua área.
 
-As you become more familiar with Go you start to see the real strength of interfaces and the standard library. You'll learn about interfaces defined in the standard library that are used _everywhere_ and by implementing them against your own types you can very quickly re-use a lot of great functionality.
-
+Conforme você se familiariza com Go, começa a ver a força real das interfaces e da biblioteca padrão.
+Você aprenderá sobre as interfaces definidas na biblioteca padrão que são usadas _em todo lugar_ e, implementando-as em relação aos seus próprios tipos, você pode reutilizar rapidamente muitas das ótimas funcionalidades.
