@@ -378,17 +378,17 @@ Mas em nosso caso:
 
 Em Go **resolução de interface é implícita**. Se o tipo que você passar combinar com o que a interface está esperando, o código será compilado.
 
-### Decoupling
+### Desacoplando
 
-Notice how our helper does not need to concern itself with whether the shape is a `Rectangle` or a `Circle` or a `Triangle`. By declaring an interface the helper is _decoupled_ from the concrete types and just has the method it needs to do its job.
+Veja como nossa função auxiliar não precisa se preocupar se a _forma_ é um `Rectangle` ou um `Circle` ou um `Triangle`. Ao declarar uma interface, a função auxiliar está _desacoplada_ de tipos concretos e tem apenas o método que precisa para fazer o trabalho.
 
-This kind of approach of using interfaces to declare **only what you need** is very important in software design and will be covered in more detail in later sections.
+Este tipo de abordagem - de usar interfaces para declarar **somente o que você precisa** - é muito importante em desenho de software e será coberto mais detalhadamente nas próximas seções.
 
-## Further refactoring
+## Refatoração adicional
 
-Now that you have some understanding of structs we can now introduce "table driven tests".
+Agora que você tem algum entendimento sobre `structs`, podemos apresentar "table driven tests" (testes guiados por tabela)*
 
-[Table driven tests](https://github.com/golang/go/wiki/TableDrivenTests) are useful when you want to build a list of test cases that can be tested in the same manner.
+[Table driven tests](https://github.com/golang/go/wiki/TableDrivenTests) são úteis quando você quer construir uma lista de casos de testes que podem ser testados da mesma forma.
 
 ```go
 func TestArea(t *testing.T) {
@@ -411,19 +411,19 @@ func TestArea(t *testing.T) {
 }
 ```
 
-The only new syntax here is creating an "anonymous struct", areaTests. We are declaring a slice of structs by using `[]struct` with two fields, the `shape` and the `want`. Then we fill the slice with cases.
+A única sintaxe nova aqui é a criação de uma "struct anônima", `areaTests`. Estamos declarando um slice de structs usando `[]struct` com dois campos, o `shape` e o `want`. Então preenchemos o slice com os casos.
 
-We then iterate over them just like we do any other slice, using the struct fields to run our tests.
+Então iteramos sobre eles assim como fazemos com qualquer outro slice, usando os campos da struct para executar nossos testes.
 
-You can see how it would be very easy for a developer to introduce a new shape, implement `Area` and then add it to the test cases. In addition, if a bug is found with `Area` it is very easy to add a new test case to exercise it before fixing it.
+Você pode ver como será muito fácil para uma pessoa introduzir uma nova forma, implementar `Area` e então adicioná-la nos casos de teste. Além disso, se for encontrada uma falha com `Area`, é muito fácil adicionar um novo caso de teste para exercitar antes de corrigí-la.
 
-Table based tests can be a great item in your toolbox but be sure that you have a need for the extra noise in the tests. If you wish to test various implementations of an interface, or if the data being passed in to a function has lots of different requirements that need testing then they are a great fit.
+_Testes baseados em tabela_ podem ser um item valioso em sua caixa de ferramentas, mas, tenha certeza de que você precisa do ruído extra nos testes. Se você deseja testar várias implementações de uma interface ou se o dado passado para uma função tem muitos requisitos diferentes que precisam de testes, então eles se encaixam bem.
 
-Let's demonstrate all this by adding another shape and testing it; a triangle.
+Vamos demonstrar tudo isso adicionando e testando outra forma; um triângulo.
 
-## Write the test first
+## Escreva o teste primeiro
 
-Adding a new test for our new shape is very easy. Just add `{Triangle{12, 6}, 36.0},` to our list.
+Adicionar um teste para nossa nova forma é muito fácil. Simplesmente adicione `{Triangle{12, 6}, 36.0},` à nossa lista.
 
 ```go
 func TestArea(t *testing.T) {
@@ -447,15 +447,15 @@ func TestArea(t *testing.T) {
 }
 ```
 
-## Try to run the test
+## Execute o teste
 
-Remember, keep trying to run the test and let the compiler guide you toward a solution.
+Lembre-se, continue tentando executar o teste e deixe o compilador guiá-lo em direção a solução.
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhando
 
 `./shapes_test.go:25:4: undefined: Triangle`
 
-We have not defined Triangle yet
+Ainda não definimos `Triangle`:
 
 ```go
 type Triangle struct {
@@ -464,14 +464,15 @@ type Triangle struct {
 }
 ```
 
-Try again
+Tente novamente:
 
 ```text
 ./shapes_test.go:25:8: cannot use Triangle literal (type Triangle) as type Shape in field value:
     Triangle does not implement Shape (missing Area method)
 ```
+`Triangle não implementa Shape (método Area ausente)`
 
-It's telling us we cannot use a Triangle as a shape because it does not have an `Area()` method, so add an empty implementation to get the test working
+Isso nos diz que não podemos usar um `Triangle` como uma forma porque ele não tem um método `Area()`, então adicione uma implementação vazia para termos o teste funcionando:
 
 ```go
 func (t Triangle) Area() float64 {
@@ -479,11 +480,11 @@ func (t Triangle) Area() float64 {
 }
 ```
 
-Finally the code compiles and we get our error
+Finalmente o código compilou e temos o nosso erro:
 
 `shapes_test.go:31: got 0.00 want 36.00`
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer o teste passar
 
 ```go
 func (t Triangle) Area() float64 {
@@ -491,13 +492,13 @@ func (t Triangle) Area() float64 {
 }
 ```
 
-And our tests pass!
+E nossos testes passaram!
 
-## Refactor
+## Refatoração
 
-Again, the implementation is fine but our tests could do with some improvement.
+Novamente, a implementação está boa, mas, nossos testes podem ser melhorados.
 
-When you scan this
+Quando você lê isso:
 
 ```go
 {Rectangle{12, 6}, 72.0},
@@ -505,11 +506,11 @@ When you scan this
 {Triangle{12, 6}, 36.0},
 ```
 
-It's not immediately clear what all the numbers represent and you should be aiming for your tests to easily understood.
+Não está imediatamente claro o que todos os números representam e você deve mirar para que seus testes sejam fáceis de entender.
 
-So far you've only been shown one syntax for creating instances of structs `MyStruct{val1, val2}` but you can optionally name the fields.
+Até agora você viu uma sintaxe para criar instâncias de structs `MyStruct{val1, val2}`, mas você pode opcionalmente nomear os campos.
 
-Let's see what it looks like
+Vamos ver como isso parece:
 
 ```go
         {shape: Rectangle{Width: 12, Height: 6}, want: 72.0},
@@ -517,27 +518,27 @@ Let's see what it looks like
         {shape: Triangle{Base: 12, Height: 6}, want: 36.0},
 ```
 
-In [Test-Driven Development by Example](https://g.co/kgs/yCzDLF) Kent Beck refactors some tests to a point and asserts:
+Em [Test-Driven Development by Example](https://g.co/kgs/yCzDLF) Kent Beck refatora alguns testes para um ponto e afirma:
 
-> The test speaks to us more clearly, as if it were an assertion of truth, **not a sequence of operations**
+> O teste nos fala mais claramente, como se fosse uma afirmação da verdade, **não uma sequência de operações**
 
-\(emphasis mine\)
+\(ênfase minha\)
 
-Now our tests \(at least the list of cases\) make assertions of truth about shapes and their areas.
+Agora nossos testes \(pelo menos a lista de casos\) fazem afirmações da verdade sobre formas e suas áreas.
 
-## Make sure your test output is helpful
+## Garanta que a saída do seu teste seja útil
 
-Remember earlier when we were implementing `Triangle` and we had the failing test? It printed `shapes_test.go:31: got 0.00 want 36.00`.
+Lembra anteriormente quando implementamos `Triangle` e tivemos um teste falhando? Ele imprimiu `shapes_test.go:31: got 0.00 want 36.00`.
 
-We knew this was in relation to `Triangle` because we were just working with it, but what if a bug slipped in to the system in one of 20 cases in the table? How would a developer know which case failed? This is not a great experience for the developer, they will have to manually look through the cases to find out which case actually failed.
+Nós sabíamos que estava relacionado ao `Triangle` porque estávamos trabalhando nisso, mas e se uma falha escorregasse para o sistema em um dos 20 casos na tabela? Como uma pessoa saberia qual caso falhou? Esta não é uma boa experiência. Eles teriam que olhar manualmente através dos casos para encontrar qual deles está falhando de fato.
 
-We can change our error message into `%#v got %.2f want %.2f`. The `%#v` format string will print out our struct with the values in its field, so the developer can see at a glance the properties that are being tested.
+Podemos mudar nossa mensagem de erro para `%#v got %.2f want %.2f`. A string de formatação `%#v` irá imprimir nossa struct com os valores em seu campo, então as pessoas podem ver imediatamente as propriedades que estão sendo testadas.
 
-To increase the readability of our test cases further we can rename the `want` field into something more descriptive like `hasArea`.
+Para melhorar a legibilidade de nossos futuros casos de teste, podemos renomear o campo `want` para algo mais descritivo como `hasArea`.
 
-One final tip with table driven tests is to use `t.Run` and to name the test cases.
+Uma dica final com testes guiados por tabela é usar `t.Run` e renomear os casos de teste.
 
-By wrapping each case in a `t.Run` you will have clearer test output on failures as it will print the name of the case
+Envolvendo cada caso em um `t.Run` você terá uma saída de testes mais limpa em caso de falhas, além de imprimir o nome do caso.
 
 ```text
 --- FAIL: TestArea (0.00s)
@@ -545,9 +546,9 @@ By wrapping each case in a `t.Run` you will have clearer test output on failures
         shapes_test.go:33: main.Rectangle{Width:12, Height:6} got 72.00 want 72.10
 ```
 
-And you can run specific tests within your table with `go test -run TestArea/Rectangle`.
+E você pode rodar testes específicos dentro de sua tabela com `go test -run TestArea/Rectangle`.
 
-Here is our final test code which captures this
+Aqui está o código final do nosso teste que captura isso:
 
 ```go
 func TestArea(t *testing.T) {
