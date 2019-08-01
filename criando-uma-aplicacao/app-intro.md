@@ -1,18 +1,15 @@
 # Introdução
 
-Now that you have hopefully digested the _Go Fundamentals_ section you have a solid grounding of a majority of Go's language features and how to do TDD.
+Finalizada a seção dos _Primeiros passos com Go_, você já deve possuir uma base sólida sobre os principais recursos da linguagem Go e como utilizar o TDD durante o seu processo de desenvolvimento.
 
-This next section will involve building an application.
+Nossos próximos passos vão envolver o desenvolvimento de uma aplicação. Nessa seção, todo capitulo irá depender da funcionalidade implementada pelo seu antecessor, por isso evite pulá-los.
 
-Each chapter will iterate on the previous one, expanding the application's functionality as our product owner dictates.
+Aqui novos conceitos serão introduzidos para facilitar a escrita de grandes aplicações e a maior parte desse projeto será realizada utilizando bibliotecas padrões da linguagem Go.
 
-New concepts will be introduced to help facilitate writing great code but most of the new material will be learning what can be accomplished from Go's standard library.
+Até o final dessa seção você deve ter obtido um entendimento sólido de como escrever aplicações em Go com o apoio de testes.
 
-By the end of this you should have a strong grasp as to how to iteratively write an application in Go, backed by tests.
-
-* [HTTP server](http-server.md) - We will create an application which listens to HTTP requests and responds to them.
-* [JSON, routing and embedding](json.md) - We will make our endpoints return JSON, explore how to do routing and learn about type embedding.
-* [IO ](io.md) - We will persist and read our data from disk and we'll cover sorting data.
-* [Command line](command-line.md) - We will create a new program leveraging the code we've made so far to make a command line interface. This will involve us restructuring our project to support multiple binaries
-* [Time](time.md) - We will schedule some activities that happen at different times depending on user input. 
-
+* [HTTP server](http-server.md) - Vamos criar uma API que aceita requisições HTTP.
+* [Respostas em JSON e roteamentos](json.md) - Iremos evoluir nossa API para retornar objetos JSON e vamos explorar como fazer roteamentos.
+* [IO ](io.md) - Vamos salvar e ler dados de arquivos. Também vamos ordenar esses dados.
+* [Linha de comando](command-line.md) - Vamos criar uma aplicação que vai ser utilizada por linha de comando no terminal, para entendermos como podemos suportar múltiplas plataformas.
+* [Eventos](time.md) - Vamos agendar alguns eventos de processamento que irão acontecer dependendo do horário que usuário utilizou a aplicação.
