@@ -20,7 +20,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     primeiros-passos-com-go/reflection.md \
     primeiros-passos-com-go/sync.md \
     primeiros-passos-com-go/context.md \
-    criando-uma-aplicacao/app-intro.md \
+    criando-uma-aplicacao/introducao.md \
     criando-uma-aplicacao/http-server.md \
     criando-uma-aplicacao/json.md \
     criando-uma-aplicacao/io.md \
@@ -48,7 +48,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     primeiros-passos-com-go/reflection.md \
     primeiros-passos-com-go/sync.md \
     primeiros-passos-com-go/context.md \
-    criando-uma-aplicacao/app-intro.md \
+    criando-uma-aplicacao/introducao.md \
     criando-uma-aplicacao/http-server.md \
     criando-uma-aplicacao/json.md \
     criando-uma-aplicacao/io.md \
