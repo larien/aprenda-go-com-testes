@@ -1,6 +1,6 @@
 package main
 
-// Perimeter returns the perimeter of a rectangle
-func Perimeter(width float64, height float64) float64 {
-	return 2 * (width + height)
+// Perímetro retorna o perímetro de um retângulo
+func Perimetro(largura float64, altura float64) float64 {
+	return 2 * (largura + altura)
 }
