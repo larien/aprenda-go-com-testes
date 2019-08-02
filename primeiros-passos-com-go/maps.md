@@ -2,11 +2,11 @@
 
 [**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/maps)
 
-Em [arrays e slices](primeiros-passos-com-go/arrays-e-slices.md), vimos como armazenas valores em ordem. Agora, vamos descobrir uma forma de armazenar itens por uma `chave` (chave) e procurar por ela rapidamente.
+Em [arrays e slices](primeiros-passos-com-go/arrays-e-slices.md), vimos como armazenar valores em ordem. Agora, vamos descobrir uma forma de armazenar itens por uma `key` (chave) e procurar por ela rapidamente.
 
-Maps te permitem armazenar itens de forma parecida com a de um dicionário. Você pode pensar na `chave` como a palavra e o `valor` como a definição. E que forma melhor de aprender sobre Maps do que criar seu próprio dicionário?
+Maps te permitem armazenar itens de forma parecida com a de um dicionário. Você pode pensar na `chave` como a palavra e o `valor` como a definição. E tem forma melhor de aprender sobre maps do que criar seu próprio dicionário?
 
-Primeiro, vamos presumir que já temos algumas palavras com suas definições no dicionário. Se procurarmos por uma palavra, ele deve retornar sua definição.
+Primeiro, vamos presumir que já temos algumas palavras com suas definições no dicionário. Se procurarmos por uma palavra, o dicionário deve retornar sua definição.
 
 ## Escreva o teste primeiro
 
@@ -29,9 +29,9 @@ func TestBusca(t *testing.T) {
 }
 ```
 
-Declarar um Map é bem parecido com um array. A diferença é que começa com a palavra-chave `map` e requer dois tipos. O primeiro é o tipo da chave, que é escrito dentro de `[]`. O segundo é o tipo do valor, que vai logo após o `[]`.
+Declarar um map é bem parecido com declarar um array. A diferença é que começa com a palavra-chave `map` e requer dois tipos. O primeiro é o tipo da chave, que é escrito dentro de `[]`. O segundo é o tipo do valor, que vai logo após o `[]`.
 
-O tipo da chave é especial. Só pode ser um tipo comparável, porque sem a habilidade de dizer se duas chaves são iguais, não temos como certificar de que estamos obtendo o valor correto. Tipos comparáveis são explicados com detalhes na [especificação da linguagem](https://golang.org/ref/spec#Comparison_operators).
+O tipo da chave é especial. Só pode ser um tipo comparável, porque sem a habilidade de dizer se duas chaves são iguais, não temos como ter certeza de que estamos obtendo o valor correto. Tipos comparáveis são explicados com detalhes na [especificação da linguagem](https://golang.org/ref/spec#Comparison_operators) (em inglês).
 
 O tipo do valor, por outro lado, pode ser o tipo que quiser. Pode até ser outro map.
 
@@ -41,7 +41,7 @@ O restante do teste já deve ser familiar para você.
 
 Ao executar `go test`, o compilador vai falhar com `./dicionario_test.go:8:9: undefined: Busca`.
 
-## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 Em `dicionario.go`:
 
@@ -65,7 +65,7 @@ func Busca(dicionario map[string]string, palavra string) string {
 }
 ```
 
-Obter um valor de um Map é igual a obter um valor de um Array: `map[chave]`.
+Obter um valor de um map é igual a obter um valor de um array: `map[chave]`.
 
 ## Refatoração
 
@@ -76,23 +76,23 @@ func TestBusca(t *testing.T) {
     resultado := Busca(dicionario, "teste")
     esperado := "isso é apenas um teste"
 
-    compararStrings(t, resultado, esperado)
+    comparaStrings(t, resultado, esperado)
 }
 
-func compararStrings(t *testing.T, resultado, esperado string) {
-	t.Helper()
+func comparaStrings(t *testing.T, resultado, esperado string) {
+    t.Helper()
 
-	if resultado != esperado {
-        t.Errorf("resultado '%s', esperado '%s', dado '%s'", resultado, esperado, "test")
+    if resultado != esperado {
+        t.Errorf("resultado '%s', esperado '%s', dado '%s'", resultado, esperado, "teste")
     }
 }
 ```
 
-Decidi criar um helper `compararStrings` para tornar a implementação mais genérica.
+Decidi criar um helper `comparaStrings` para tornar a implementação mais genérica.
 
 ### Usando um tipo personalizado
 
-Podemos melhorar o uso do nosso dicionário criando um novo tipo baseado no map e fazendo a `Busca` virar um método.
+Podemos melhorar o uso do nosso dicionário criando um novo tipo baseado no map e transformando a `Busca` em um método.
 
 Em `dicionario_test.go`:
 
@@ -103,7 +103,7 @@ func TestBusca(t *testing.T) {
     resultado := dictionary.Busca("teste")
     esperado := "isso é apenas um teste"
 
-    compararStrings(t, resultado, esperado)
+    comparaStrings(t, resultado, esperado)
 }
 ```
 
@@ -117,7 +117,7 @@ Em `dicionario.go`:
 type Dicionario map[string]string
 
 func (d Dicionario) Busca(palavra string) string {
-	return d[palavra]
+    return d[palavra]
 }
 ```
 
@@ -127,26 +127,26 @@ Aqui criamos um tipo `Dicionario` que trabalha em cima da abstração de `map`. 
 
 A busca básica foi bem fácil de implementar, mas o que acontece se passarmos uma palavra que não está no nosso dicionário?
 
-Como o código está agora, não recebemos nada de volta. Isso é bom porque o programa continua a ser executado, mas há uma abordagem melhor. A função pode reportar que a palavra não está no dicionário. Dessa forma, o usuário não fica se perguntando se a palavra não existe ou se apenas não existe definição para ela (isso pode não parecer tão útil para um dicionário. No entanto, é um caso que pode ser essencial em outros casos de usos).
+Com o código atual, não recebemos nada de volta. Isso é bom porque o programa continua a ser executado, mas há uma abordagem melhor. A função pode reportar que a palavra não está no dicionário. Dessa forma, o usuário não fica se perguntando se a palavra não existe ou se apenas não existe definição para ela (isso pode não parecer tão útil para um dicionário. No entanto, é um caso que pode ser essencial em outros casos de uso).
 
 ```go
 func TestBusca(t *testing.T) {
-	dicionario := Dicionario{"teste": "isso é apenas um teste"}
+    dicionario := Dicionario{"teste": "isso é apenas um teste"}
 
-	t.Run("palavra conhecida", func(t *testing.T) {
-		resultado, _ := dicionario.Busca("teste")
-		esperado := "isso é apenas um teste"
+    t.Run("palavra conhecida", func(t *testing.T) {
+        resultado, _ := dicionario.Busca("teste")
+        esperado := "isso é apenas um teste"
 
-		comparaStrings(t, resultado, esperado)
-	})
+        comparaStrings(t, resultado, esperado)
+    })
 
-	t.Run("palavra desconhecida", func(t *testing.T) {
-		_, resultado := dicionario.Busca("desconhecida")
+    t.Run("palavra desconhecida", func(t *testing.T) {
+        _, resultado := dicionario.Busca("desconhecida")
 
-		if err == nil {
+        if err == nil {
             t.Fatal("é esperado que um erro seja obtido.")
         }
-	})
+    })
 }
 ```
 
@@ -158,13 +158,11 @@ Erros podem ser convertidos para uma string com o método `.Error()`, o que pode
 
 Isso não vai compilar.
 
-This does not compile
-
 `./dictionary_test.go:18:10: assignment mismatch: 2 variables but 1 values`
 
 `incompatibilidade de atribuição: 2 variáveis, mas 1 valor`
 
-## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 ```go
 func (d Dicionario) Busca(palavra string) (string, error) {
@@ -193,7 +191,7 @@ func (d Dicionario) Busca(palavra string) (string, error) {
 
 Para fazê-lo passar, estamos usando uma propriedade interessante ao percorrer o map. Ele pode retornar dois valores. O segundo valor é uma boleana que indica se a chave foi encontrada com sucesso.
 
-Essa propriedade nos permite diferenciar entre uma palavra que não existe e uma palavra que só não tem uma definição.
+Essa propriedade nos permite diferenciar entre uma palavra que não existe e uma palavra que simplesmente não tem uma definição.
 
 ## Refatoração
 
@@ -216,7 +214,7 @@ Podemos nos livrar do "erro mágico" na nossa função de `Busca` extraindo-o pa
 t.Run("palavra desconhecida", func(t *testing.T) {
     _, resultado := dicionario.Busca("desconhecida")
 
-    comparaErro(t, resultado, ErrNotFound)
+    comparaErro(t, resultado, ErrNaoEncontrado)
 })
 
 func comparaErro(t *testing.T, resultado, esperado error) {
@@ -253,7 +251,7 @@ func TestAdiciona(t *testing.T) {
 
 Nesse teste, estamos utilizando nossa função `Busca` para tornar a validação do dicionário um pouco mais fácil.
 
-## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 Em `dicionario.go`
 
@@ -272,7 +270,7 @@ dicionario_test.go:31: deveria ter encontrado palavra adicionada: não foi poss�
 
 ```go
 func (d Dicionario) Adiciona(palavra, definicao string) {
-	d[palavra] = definicao
+    d[palavra] = definicao
 }
 ```
 
@@ -280,19 +278,19 @@ Adicionar coisas a um map também é bem semelhante a um array. Você só precis
 
 ### Tipos Referência
 
-Uma propriedade interessante dos maps é que você pode modificá-los sem passá-los como ponteiro. Isso é porque o `map` é um tipo referência. Isso significa que ele contém uma referência à estrutura de dado subjacente, assim como um ponteiro. A estrutura de data subjacente é uma `tabela de dispersão` ou `mapa de hash`, e você pode ler mais sobre [aqui](https://pt.wikipedia.org/wiki/Tabela_de_dispers%C3%A3o).
+Uma propriedade interessante dos maps é que você pode modificá-los sem passá-los como ponteiro. Isso é porque o `map` é um tipo referência. Isso significa que ele contém uma referência à estrutura de dado que estamos utilizando, assim como um ponteiro. Logo, quando criamos passamos o map como parâmetro, estamos alterando o map original e não sua cópia. A estrutura de dados utilizada é uma `tabela de dispersão` ou `mapa de hash`, e você pode ler mais sobre [aqui](https://pt.wikipedia.org/wiki/Tabela_de_dispers%C3%A3o).
 
-É muito bom referenciar um map, porque não importa o tamanho do map, só vai haver uma cópia.
+É muito bom ter o map como referência, porque não importa o tamanho do map, só vai haver uma cópia.
 
-Um conceito que os tipos referência apresentam é que maps podem ser um valor `nil`. Um map `nil` se comporta como um map vazio durante a leitura,mas tentar inserir coisas em um map `nil` gera um panic em tempo de execução. Você pode saber mais sobre maps [aqui](https://blog.golang.org/go-maps-in-action) (em inglês).
+Um conceito que os tipos referência apresentam é que maps podem ser um valor `nil`. Um map `nil` se comporta como um map vazio durante a leitura, mas tentar inserir coisas em um map `nil` gera um panic em tempo de execução. Você pode saber mais sobre maps [aqui](https://blog.golang.org/go-maps-in-action) (em inglês).
 
-Além disso, você nunca deve inicializar um map vazio:
+Além disso, você nunca deve inicializar um map vazio, como:
 
 ```go
 var m map[string]string
 ```
 
-Ao invés disso, você pode inicializar um map vazio como fizemos lá em cima, ou usando a palavra-chave `make` para criar um map para você:` keyword to create a map for you:
+Ao invés disso, você pode inicializar um map vazio como fizemos lá em cima, ou usando a palavra-chave `make` para criar um map para você:
 
 ```go
 dicionario = map[string]string{}
@@ -306,30 +304,30 @@ Ambas as abordagens criam um `hash map` vazio e apontam um `dicionario` para ele
 
 ## Refatoração
 
-Não há muito para refatorar na nossa implementação, mas podemos simplificar o teste um pouco.
+Não há muito para refatorar na nossa implementação, mas podemos simplificar o teste.
 
 ```go
 func TestAdiciona(t *testing.T) {
-	dicionario := Dicionario{}
-	palavra := "teste"
-	definicao := "isso é apenas um teste"
+    dicionario := Dicionario{}
+    palavra := "teste"
+    definicao := "isso é apenas um teste"
 
-	dicionario.Adiciona(palavra, definicao)
+    dicionario.Adiciona(palavra, definicao)
 
-	comparaDefinicao(t, dicionario, palavra, definicao)
+    comparaDefinicao(t, dicionario, palavra, definicao)
 }
 
 func comparaDefinicao(t *testing.T, dicionario Dicionario, palavra, definicao string) {
-	t.Helper()
+    t.Helper()
 
-	resultado, err := dicionario.Busca(palavra)
-	if err != nil {
-		t.Fatal("deveria ter encontrado palavra adicionada:", err)
-	}
+    resultado, err := dicionario.Busca(palavra)
+    if err != nil {
+        t.Fatal("deveria ter encontrado palavra adicionada:", err)
+    }
 
-	if definicao != resultado {
-		t.Errorf("resultado '%s',  esperado '%s'", resultado, definicao)
-	}
+    if definicao != resultado {
+        t.Errorf("resultado '%s',  esperado '%s'", resultado, definicao)
+    }
 }
 ```
 
@@ -337,32 +335,32 @@ Criamos variáveis para palavra e definição e movemos a comparação da defini
 
 Nosso `Adiciona` está bom. No entanto, não consideramos o que acontece quando o valor que estamos tentando adicionar já existe!
 
-O map não vai mostrar um erro se o valor já existe. Ao invés disso, elas vão sobrescrever o valor com o novo recebido. Isso pode ser conveniente na prática, mas torna o nome da nossa função muito menos preciso. `Adiciona` não deve modificar valores existentes. Só deve adicionar palavras novas ao nosso dicionário.
+O map não vai mostrar um erro se o valor já existe. Ao invés disso, ele vai sobrescrever o valor com o novo recebido. Isso pode ser conveniente na prática, mas torna o nome da nossa função muito menos preciso. `Adiciona` não deve modificar valores existentes. Só deve adicionar palavras novas ao nosso dicionário.
 
 ## Escreva o teste primeiro
 
 ```go
 func TestAdiciona(t *testing.T) {
-	t.Run("palavra nova", func(t *testing.T) {
-		dicionario := Dicionario{}
-		palavra := "teste"
-		definicao := "isso é apenas um teste"
+    t.Run("palavra nova", func(t *testing.T) {
+        dicionario := Dicionario{}
+        palavra := "teste"
+        definicao := "isso é apenas um teste"
 
-		err := dicionario.Adiciona(palavra, definicao)
+        err := dicionario.Adiciona(palavra, definicao)
 
-		comparaErro(t, err, nil)
-		comparaDefinicao(t, dicionario, palavra, definicao)
-	})
+        comparaErro(t, err, nil)
+        comparaDefinicao(t, dicionario, palavra, definicao)
+    })
 
-	t.Run("palavra existente", func(t *testing.T) {
-		palavra := "teste"
-		definicao := "isso é apenas um teste"
-		dicionario := Dicionario{palavra: definicao}
-		err := dicionario.Add(palavra, "teste novo")
+    t.Run("palavra existente", func(t *testing.T) {
+        palavra := "teste"
+        definicao := "isso é apenas um teste"
+        dicionario := Dicionario{palavra: definicao}
+        err := dicionario.Add(palavra, "teste novo")
 
-		comparaErro(t, err, ErrPalavraExistente)
-		comparaDefinicao(t, dicionario, palavra, definicao)
-	})
+        comparaErro(t, err, ErrPalavraExistente)
+        comparaDefinicao(t, dicionario, palavra, definicao)
+    })
 }
 ```
 
@@ -379,9 +377,9 @@ Agora o compilador vai falhar porque não estamos devolvendo um valor para `Adic
 
 `usado como valor`
 
-## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhado
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
-Em `dicionario.go`
+Em `dicionario.go`:
 
 ```go
 var (
@@ -396,8 +394,6 @@ func (d Dicionario) Adiciona(palavra, definicao string) error {
 ```
 
 Agora temos mais dois erros. Ainda estamos modificando o valor e retornando um erro `nil`.
-
-Now we get two more errors. We are still modifying the value, and returning a `nil` error.
 
 ```bash
 dicionario_test.go:43: resultado erro '%!s(<nil>)', esperado 'não é possível adicionar a palavra pois ela já existe'
@@ -450,14 +446,14 @@ Agora, vamos criar uma função que `Atualiza` a definição de uma palavra.
 
 ```go
 func TestUpdate(t *testing.T) {
-	palavra := "teste"
-	definicao := "isso é apenas um teste"
-	dicionario := Dicionario{palavra: definicao}
-	novaDefinicao := "nova definição"
+    palavra := "teste"
+    definicao := "isso é apenas um teste"
+    dicionario := Dicionario{palavra: definicao}
+    novaDefinicao := "nova definição"
 
-	dicionario.Atualiza(palavra, novaDefinicao)
+    dicionario.Atualiza(palavra, novaDefinicao)
 
-	comparaDefinicao(t, dicionario, palavra, novaDefinicao)
+    comparaDefinicao(t, dicionario, palavra, novaDefinicao)
 }
 ```
 
@@ -481,23 +477,21 @@ func (d Dicionario) Atualiza(palavra, definicao string) {}
 
 Feito isso, somos capazes de ver o que precisamos para mudar a definição da palavra.
 
-With that in place, we are able to see that we need to change the definition of the word.
-
 ```bash
 dicionario_test.go:55: resultado 'isso é apenas um teste', esperado 'nova definição'
 ```
 
 ## Escreva código o suficiente para fazer o teste passar
 
-Já vimos como fazer essa implementação quando corrigimos o problema com `Adiciona`. Logo, vamos implementar algo bem parecido a `Adiciona`.
+Já vimos como fazer essa implementação quando corrigimos o problema com `Adiciona`. Logo, vamos implementar algo bem parecido com `Adiciona`.
 
 ```go
 func (d Dicionario) Atualiza(palavra, definicao string) {
-	d[palavra] = definicao
+    d[palavra] = definicao
 }
 ```
 
-Não há refatoração necessária, já que foi uma mudança simples. No entanto, agora temos o mesmo problema com `Adiciona`. Se passarmos uma palavra nova, `Atualiza` vai adicioná-la no dicionário.
+Não é necessário fazer refatorar nada, já que foi uma mudança simples. No entanto, agora temos o mesmo problema com `Adiciona`. Se passarmos uma palavra nova, `Atualiza` vai adicioná-la no dicionário.
 
 ## Escreva o teste primeiro
 
@@ -563,18 +557,18 @@ dicionario_test.go:66: resultado erro '%!s(<nil>)', esperado 'não foi possível
 
 ```go
 func (d Dicionario) Atualiza(palavra, definicao string) error {
-	_, err := d.Busca(palavra)
-	switch err {
-	case ErrNaoEncontrado:
-		return ErrPalavraInexistente
-	case nil:
-		d[palavra] = definicao
-	default:
-		return err
+    _, err := d.Busca(palavra)
+    switch err {
+    case ErrNaoEncontrado:
+        return ErrPalavraInexistente
+    case nil:
+        d[palavra] = definicao
+    default:
+        return err
 
-	}
+    }
 
-	return nil
+    return nil
 }
 ```
 
@@ -636,7 +630,7 @@ dicionario_test.go:78: espera-se que 'teste' seja deletado
 
 ```go
 func (d Dicionario) Deleta(palavra string) {
-	delete(d, palavra)
+    delete(d, palavra)
 }
 ```
 
@@ -655,4 +649,4 @@ Nessa seção, falamos sobre muita coisa. Criamos uma API CRUD (Criar, Ler, Atua
 -   Deletar itens de um map
 -   Aprendemos mais sobre erros
     -   Como criar erros que são constantes
-    -   Escrever wrappers de erro
+    -   Escrever encapsuladores de erro

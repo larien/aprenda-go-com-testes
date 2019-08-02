@@ -8,13 +8,13 @@ func TestBusca(t *testing.T) {
 	resultado := dicionario.Busca("teste")
 	esperado := "isso é apenas um teste"
 
-	compararStrings(t, resultado, esperado)
+	comparaStrings(t, resultado, esperado)
 }
 
-func compararStrings(t *testing.T, resultado, esperado string) {
+func comparaStrings(t *testing.T, resultado, esperado string) {
 	t.Helper()
 
 	if resultado != esperado {
-		t.Errorf("resultado '%s', esperado '%s', dado '%s'", resultado, esperado, "test")
+		t.Errorf("resultado '%s', esperado '%s', dado '%s'", resultado, esperado, "teste")
 	}
 }
