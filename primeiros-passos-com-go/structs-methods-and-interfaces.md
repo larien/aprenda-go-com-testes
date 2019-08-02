@@ -2,20 +2,20 @@
 
 [**Você pode encontrar todos os códigos desse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/structs)
 
-Supondo que precisamos de algum código geométrico para calcular o perímetro de um retângulo dado uma altura e largura. Podemos escrever uma função `Perimeter(width float64, height float64)`, onde `float64` é para números em ponto flutuante como `123.45`.
+Supondo que precisamos de algum código de geometria para calcular o perímetro de um retângulo dado uma altura e largura. Podemos escrever uma função `Perimetro(largura float64, altura float64)`, onde `float64` é para números em ponto flutuante como `123.45`.
 
 O ciclo de TDD deve ser mais familiar agora para você.
 
 ## Escreva o teste primeiro
 
 ```go
-func TestPerimeter(t *testing.T) {
-    got := Perimeter(10.0, 10.0)
-    want := 40.0
+func TestPerimetro(t *testing.T) {
+	resultado := Perimetro(10.0, 10.0)
+	esperado := 40.0
 
-    if got != want {
-        t.Errorf("got %.2f want %.2f", got, want)
-    }
+	if resultado != esperado {
+		t.Errorf("resultado %.2f esperado %.2f", resultado, esperado)
+	}
 }
 ```
 
@@ -23,23 +23,25 @@ Viu a nova string de formatação? O `f` é para nosso `float64` e o `.2` signif
 
 ## Execute o teste
 
-`./shapes_test.go:6:9: undefined: Perimeter`
+`./shapes_test.go:6:9: undefined: Perimetro`
+
+`indefinido: Perimetro`
 
 ## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste falhando
 
 ```go
-func Perimeter(width float64, height float64) float64 {
+func Perimetro(largura float64, altura float64) float64 {
     return 0
 }
 ```
 
-Resulta em `shapes_test.go:10: got 0 want 40`.
+Resulta em `shapes_test.go:10: resultado 0 esperado 40`.
 
 ## Escreva código suficiente para fazer o teste passar
 
 ```go
-func Perimeter(width float64, height float64) float64 {
-    return 2 * (width + height)
+func Perimetro(largura float64, altura float64) float64 {
+	return 2 * (largura + altura)
 }
 ```
 
