@@ -6,17 +6,17 @@ import (
 	"os"
 )
 
-const finalWord = "Go!"
-const countdownStart = 3
+const ultimaPalavra = "Vai!"
+const inicioContagem = 3
 
-// Countdown prints a countdown from 5 to out
-func Countdown(out io.Writer) {
-	for i := countdownStart; i > 0; i-- {
-		fmt.Fprintln(out, i)
+// Contagem imprime uma contagem de 3 para a sáida
+func Contagem(saida io.Writer) {
+	for i := inicioContagem; i > 0; i-- {
+		fmt.Fprintln(saida, i)
 	}
-	fmt.Fprint(out, finalWord)
+	fmt.Fprint(saida, ultimaPalavra)
 }
 
 func main() {
-	Countdown(os.Stdout)
+	Contagem(os.Stdout)
 }

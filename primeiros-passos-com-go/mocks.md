@@ -135,109 +135,108 @@ func main() {
 }
 ```
 
-Try and run the program and be amazed at your handywork.
+Execute o programa e surpreenda-se com seu trabalho.
 
-Yes this seems trivial but this approach is what I would recommend for any project. **Take a thin slice of functionality and make it work end-to-end, backed by tests.**
+Apesar de parecer simples, essa é a abordagem que recomendo para qualquer projeto. **Escolher uma pequena parte da funcionalidade e fazê-la funcionar do começo ao fim com apoio de testes.**
 
-Next we can make it print 2,1 and then "Go!".
+Depois, precisamos fazer o software imprimir 2, 1 e então "Vai!".
 
-## Write the test first
+## Escreva o teste primeiro
 
-By investing in getting the overall plumbing working right, we can iterate on our solution safely and easily. We will no longer need to stop and re-run the program to be confident of it working as all the logic is tested.
+Após investirmos tempo e esforço para fazer o principal funcionar, podemos iterar nossa solução com segurança e de forma simples. Não vamos mais precisar para parar e executar o programa novamente para ter confiança de que ele está funcionando, desde que a lógica esteja testada.
 
 ```go
-func TestCountdown(t *testing.T) {
+func TestContagem(t *testing.T) {
     buffer := &bytes.Buffer{}
 
-    Countdown(buffer)
+    Contagem(buffer)
 
-    got := buffer.String()
-    want := `3
+    resultado := buffer.String()
+    esperado := `3
 2
 1
-Go!`
-
-    if got != want {
-        t.Errorf("got '%s' want '%s'", got, want)
+Vai!`
+    if resultado != esperado {
+        t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
     }
 }
 ```
 
-The backtick syntax is another way of creating a `string` but lets you put things like newlines which is perfect for our test.
+A sintaxe de aspas simples é outra forma de criar uma `string`, mas te permite colocar coisas como linhas novas, o que é perfeito para nosso teste.
 
-## Try and run the test
+## Execute o teste
 
-```text
-countdown_test.go:21: got '3' want '3
+```bash
+contagem_test.go:21: resultado '3', esperado '3
         2
         1
-        Go!'
+        Vai!'
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func Countdown(out io.Writer) {
+func Contagem(saida io.Writer) {
     for i := 3; i > 0; i-- {
-        fmt.Fprintln(out, i)
+        fmt.Fprintln(saida, i)
     }
-    fmt.Fprint(out, "Go!")
+    fmt.Fprint(saida, "Go!")
 }
 ```
 
-Use a `for` loop counting backwards with `i--` and use `fmt.Fprintln` to print to `out` with our number followed by a newline character. Finally use `fmt.Fprint` to send "Go!" aftward.
+Usamos um laço `for` fazendo contagem regressiva com `i--` e depois `fmt.Fprintln` para imprimir a `saida` com nosso número seguro por um caracter de nova linha. Finalmente, usamos o `fmt.Fprint` para enviar "Vai!" no final.
 
-## Refactor
+## Refatoração
 
-There's not much to refactor other than refactoring some magic values into named constants.
+Não há muito para refatorar além de transformar alguns valores mágicos em constantes com nomes descritivos.
 
 ```go
-const finalWord = "Go!"
-const countdownStart = 3
+const ultimaPalavra = "Go!"
+const inicioContagem = 3
 
-func Countdown(out io.Writer) {
-    for i := countdownStart; i > 0; i-- {
-        fmt.Fprintln(out, i)
+func Contagem(saida io.Writer) {
+    for i := inicioContagem; i > 0; i-- {
+        fmt.Fprintln(saida, i)
     }
-    fmt.Fprint(out, finalWord)
+    fmt.Fprint(saida, ultimaPalavra)
 }
 ```
 
-If you run the program now, you should get the desired output but we don't have it as a dramatic countdown with the 1 second pauses.
+Se executar o programa agora, você deve obter a saída de sejada, mas não tem uma contagem regressiva dramática com as pausas de 1 segundo.
 
-Go let's you achieve this with `time.Sleep`. Try adding it in to our code.
+Go te permite obter isso com `time.Sleep`. Tente adicionar essa função ao seu código.
 
 ```go
-func Countdown(out io.Writer) {
-    for i := countdownStart; i > 0; i-- {
+func Contagem(saida io.Writer) {
+    for i := inicioContagem; i > 0; i-- {
         time.Sleep(1 * time.Second)
-        fmt.Fprintln(out, i)
+        fmt.Fprintln(saida, i)
     }
 
     time.Sleep(1 * time.Second)
-    fmt.Fprint(out, finalWord)
+    fmt.Fprint(saida, ultimaPalavra)
 }
 ```
 
-If you run the program it works as we want it to.
+Se você executar o programa, ele funciona conforme esperado.
 
-## Mocking
+## Mock
 
-The tests still pass and the software works as intended but we have some problems:
+Os testes ainda vão passar e o software funciona como planejado, mas temos alguns problemas:
 
--   Our tests take 4 seconds to run.
-    -   Every forward thinking post about software development emphasises the importance of quick feedback loops.
-    -   **Slow tests ruin developer productivity**.
-    -   Imagine if the requirements get more sophisticated warranting more tests. Are we happy with 4s added to the test run for every new test of `Countdown`?
--   We have not tested an important property of our function.
+-   Nossos testes levam 4 segundos para rodar.
+    -   Todo conteúdo gerado sobre desenvolvimento de software enfatiza a importância de loops de feedback rápidos.
+    -   **Testes lentos arruinam a produtividade do desenvolvedor**.
+    -   Imagine se os requerimentos ficam mais sofisticados, gerando a necessidade de mais testes. É viável adicionar 4s para cada teste novo de `Contagem`?
+-   Não testamos uma propriedade importante da nossa função.
 
-We have a dependency on `Sleep`ing which we need to extract so we can then control it in our tests.
+Temos uma dependência no `Sleep` que precisamos extrair para podermos controlá-la nos nossos testes.
 
-If we can _mock_ `time.Sleep` we can use _dependency injection_ to use it instead of a "real" `time.Sleep` and then we can **spy on the calls** to make assertions on them.
+Se conseguirmos _mockar_ o `time.Sleep`, podemos usar a _injeção de dependências_ para usá-lo ao invés de um `time.Sleep` "de verdade", e então podemos **verificar as chamadas** para certificar de que estão corretas.
 
-## Write the test first
+## Escreva o teste primeiro
 
-Let's define our dependency as an interface. This lets us then use a _real_ Sleeper in `main` and a _spy sleeper_ in our tests. By using an interface our `Countdown` function is oblivious to this and adds some flexibility for the caller.
+Vamos definir nossa dependência como uma interface. Isso nos permite usar um Sleeper _de verdade_ em `main` e um _sleeper spy_ nos nossos testes. Usar uma interface na nossa função `Contagem` é essencial para isso e dá certa flexibilidade à função que a chamar.
 
 ```go
 type Sleeper interface {
@@ -245,133 +244,135 @@ type Sleeper interface {
 }
 ```
 
-I made a design decision that our `Countdown` function would not be responsible for how long the sleep is. This simplifies our code a little for now at least and means a user of our function can configure that sleepiness however they like.
+Tomei uma decisão de design que nossa função `Contagem` não seria responsável por quanto tempo o sleep leva. Isso simplifica um pouco nosso código, pelo menos por enquanto, e significa que um usuário da nossa função pode configurar a duração desse tempo como preferir.
 
-Now we need to make a _mock_ of it for our tests to use.
+Agora precisamos criar um _mock_ disso para usarmos nos nossos testes.
 
 ```go
-type SpySleeper struct {
-    Calls int
+type SleeperSpy struct {
+    Chamadas int
 }
 
-func (s *SpySleeper) Sleep() {
-    s.Calls++
+func (s *SleeperSpy) Sleep() {
+    s.Chamadas++
 }
 ```
 
-_Spies_ are a kind of _mock_ which can record how a dependency is used. They can record the arguments sent in, how many times, etc. In our case, we're keeping track of how many times `Sleep()` is called so we can check it in our test.
+_Spies_ (espiões) são um tipo de _mock_ em que podemos gravar como uma dependência é usada. Eles podem gravar os argumentos definidos, quantas vezes são usados etc. No nosso caso, vamos manter o controle de quantas vezes `Sleep()` é chamada para verificá-la no nosso teste.
 
-Update the tests to inject a dependency on our Spy and assert that the sleep has been called 4 times.
+Atualize os testes para injetar uma dependência no nosso Espião e verifique se o sleep foi chamado 4 vezes.
 
 ```go
-func TestCountdown(t *testing.T) {
+func TestContagem(t *testing.T) {
     buffer := &bytes.Buffer{}
-    spySleeper := &SpySleeper{}
+    sleeperSpy := &SleeperSpy{}
 
-    Countdown(buffer, spySleeper)
+    Contagem(buffer, sleeperSpy)
 
-    got := buffer.String()
-    want := `3
+    resultado := buffer.String()
+    esperado := `3
 2
 1
-Go!`
+Vai!`
 
-    if got != want {
-        t.Errorf("got '%s' want '%s'", got, want)
+    if resultado != esperado {
+        t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
     }
 
-    if spySleeper.Calls != 4 {
-        t.Errorf("not enough calls to sleeper, want 4 got %d", spySleeper.Calls)
+    if sleeperSpy.Chamadas != 4 {
+        t.Errorf("não houve chamadas suficientes do sleeper, esperado 4, resultado %d", sleeperSpy.Chamadas)
     }
 }
 ```
 
-## Try and run the test
+## Execute o teste
 
-```text
-too many arguments in call to Countdown
+```bash
+too many arguments in call to Contagem
     have (*bytes.Buffer, *SpySleeper)
     want (io.Writer)
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
-We need to update `Countdown` to accept our `Sleeper`
+Precisamos atualizar a `Contagem` para aceitar nosso `Sleeper`:
 
 ```go
-func Countdown(out io.Writer, sleeper Sleeper) {
-    for i := countdownStart; i > 0; i-- {
+func Contagem(saida io.Writer, sleeper Sleeper) {
+    for i := inicioContagem; i > 0; i-- {
         time.Sleep(1 * time.Second)
-        fmt.Fprintln(out, i)
+        fmt.Fprintln(saida, i)
     }
 
     time.Sleep(1 * time.Second)
-    fmt.Fprint(out, finalWord)
+    fmt.Fprint(saida, ultimaPalavra)
 }
 ```
 
-If you try again, your `main` will no longer compile for the same reason
+Se tentar novamente, nossa `main` não vai mais compilar pelo menos motivo:
 
 ```text
-./main.go:26:11: not enough arguments in call to Countdown
+./main.go:26:11: not enough arguments in call to Contagem
     have (*os.File)
     want (io.Writer, Sleeper)
 ```
 
-Let's create a _real_ sleeper which implements the interface we need
+Vamos criar um sleeper _de verdade_ que implementa a interface que precisamos:
 
 ```go
-type DefaultSleeper struct {}
+type SleeperPadrao struct {}
 
-func (d *DefaultSleeper) Sleep() {
-    time.Sleep(1 * time.Second)
+func (d *SleeperPadrao) Sleep() {
+	time.Sleep(1 * time.Second)
 }
 ```
 
-We can then use it in our real application like so
+Podemos usá-lo na nossa aplicação real, como:
 
 ```go
 func main() {
-    sleeper := &DefaultSleeper{}
-    Countdown(os.Stdout, sleeper)
+    sleeper := &SleeperPadrao{}
+    Contagem(os.Stdout, sleeper)
 }
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
+
+Agora o teste está compilando, mas não passando. Isso acontece porque ainda estamos chamando o `time.Sleep` ao invés da injetada. Vamos arrumar isso.
 
 The test is now compiling but not passing because we're still calling the `time.Sleep` rather than the injected in dependency. Let's fix that.
 
 ```go
-func Countdown(out io.Writer, sleeper Sleeper) {
-    for i := countdownStart; i > 0; i-- {
+func Contagem(saida io.Writer, sleeper Sleeper) {
+    for i := inicioContagem; i > 0; i-- {
         sleeper.Sleep()
-        fmt.Fprintln(out, i)
+        fmt.Fprintln(saida, i)
     }
 
     sleeper.Sleep()
-    fmt.Fprint(out, finalWord)
+    fmt.Fprint(saida, ultimaPalavra)
 }
 ```
 
-The test should pass and no longer taking 4 seconds.
+O teste deve passar sem levar 4 segundos.
 
-### Still some problems
+### Ainda temos alguns problemas
 
-There's still another important property we haven't tested.
+Ainda há outra propriedade importante que não estamos testando.
 
-`Countdown` should sleep before each print, e.g:
+A `Contagem` deve ter uma pausa para cada impressão, como por exemplo:
 
--   `Sleep`
--   `Print N`
--   `Sleep`
--   `Print N-1`
--   `Sleep`
--   `Print Go!`
+-   `Pausa`
+-   `Imprime N`
+-   `Pausa`
+-   `Imprime N-1`
+-   `Pausa`
+-   `Imprime Vai!`
 -   etc
 
-Our latest change only asserts that it has slept 4 times, but those sleeps could occur out of sequence.
+Nossa alteração mais recente só verifica se o software teve 4 pausas, mas essas pausas poderiam ocorrer fora de ordem.
 
-When writing tests if you're not confident that your tests are giving you sufficient confidence, just break it! \(make sure you have committed your changes to source control first though\). Change the code to the following
+Quando escrevemos testes, se não estiver confiante de que seus testes estão te dando confiança o suficiente, quebre-o (mas certifique-se de que você salvou suas alterações antes)! Mude o código para o seguinte:
 
 ```go
 func Countdown(out io.Writer, sleeper Sleeper) {
