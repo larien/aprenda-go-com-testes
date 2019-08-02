@@ -375,123 +375,124 @@ Nossa alteração mais recente só verifica se o software teve 4 pausas, mas ess
 Quando escrevemos testes, se não estiver confiante de que seus testes estão te dando confiança o suficiente, quebre-o (mas certifique-se de que você salvou suas alterações antes)! Mude o código para o seguinte:
 
 ```go
-func Countdown(out io.Writer, sleeper Sleeper) {
-    for i := countdownStart; i > 0; i-- {
-        sleeper.Sleep()
+func Contagem(saida io.Writer, sleeper Sleeper) {
+    for i := inicioContagem; i > 0; i-- {
+        sleeper.Pausa()
+        fmt.Fprintln(saida, i)
     }
 
-    for i := countdownStart; i > 0; i-- {
-        fmt.Fprintln(out, i)
+    for i := inicioContagem; i > 0; i-- {
+        fmt.Fprintln(saida, i)
     }
 
-    sleeper.Sleep()
-    fmt.Fprint(out, finalWord)
+    sleeper.Pausa()
+    fmt.Fprint(saida, ultimaPalavra)
 }
 ```
 
-If you run your tests they should still be passing even though the implementation is wrong.
+Se executar seus testes, eles ainda vão passar, apesar da implementação estar errada.
 
-Let's use spying again with a new test to check the order of operations is correct.
+Vamos usar o spy novamente com um novo teste para verificar se a ordem das operações está correta.
 
-We have two different dependencies and we want to record all of their operations into one list. So we'll create _one spy for them both_.
+Temos duas dependências diferentes e queremos gravar todas as operações delas em uma lista. Logo, vamos criar _um spy para ambas_.
 
 ```go
-type CountdownOperationsSpy struct {
-    Calls []string
+type SpyContagemOperacoes struct {
+    Chamadas []string
 }
 
-func (s *CountdownOperationsSpy) Sleep() {
-    s.Calls = append(s.Calls, sleep)
+func (s *SpyContagemOperacoes) Pausa() {
+    s.Chamadas = append(s.Chamadas, pausa)
 }
 
-func (s *CountdownOperationsSpy) Write(p []byte) (n int, err error) {
-    s.Calls = append(s.Calls, write)
+func (s *SpyContagemOperacoes) Write(p []byte) (n int, err error) {
+    s.Chamadas = append(s.Chamadas, escrita)
     return
 }
 
-const write = "write"
-const sleep = "sleep"
+const escrita = "escrita"
+const pausa = "pausa"
 ```
 
-Our `CountdownOperationsSpy` implements both `io.Writer` and `Sleeper`, recording every call into one slice. In this test we're only concerned about the order of operations, so just recording them as list of named operations is sufficient.
+Nosso `SpyContagemOperacoes` implementa tanto o `io.Writer` quanto o `Sleeper`, gravando cada chamada em um slice. Nesse teste, temos preocupação apenas na ordem das operações, então apenas gravá-las em uma lista de operações nomeadas é suficiente.
 
-We can now add a sub-test into our test suite.
+Agora podemos adicionar um subteste no nosso conjunto de testes.
 
 ```go
-t.Run("sleep before every print", func(t *testing.T) {
-    spySleepPrinter := &CountdownOperationsSpy{}
-    Countdown(spySleepPrinter, spySleepPrinter)
+t.Run("pausa antes de cada impressão", func(t *testing.T) {
+        spyImpressoraSleep := &SpyContagemOperacoes{}
+        Contagem(spyImpressoraSleep, spyImpressoraSleep)
 
-    want := []string{
-        sleep,
-        write,
-        sleep,
-        write,
-        sleep,
-        write,
-        sleep,
-        write,
-    }
+        esperado := []string{
+            pausa,
+            escrita,
+            pausa,
+            escrita,
+            pausa,
+            escrita,
+            pausa,
+            escrita,
+        }
 
-    if !reflect.DeepEqual(want, spySleepPrinter.Calls) {
-        t.Errorf("wanted calls %v got %v", want, spySleepPrinter.Calls)
-    }
-})
+        if !reflect.DeepEqual(esperado, spyImpressoraSleep.Chamadas) {
+            t.Errorf("esperado %v chamadas, resultado %v", esperado, spyImpressoraSleep.Chamadas)
+        }
+    })
 ```
 
-This test should now fail. Revert it back and the new test should pass.
+Esse teste deve falhar. Volte o código que quebramos para a versão correta e agora o novo teste deve passar.
 
-We now have two tests spying on the `Sleeper` so we can now refactor our test so one is testing what is being printed and the other one is ensuring we're sleeping in between the prints. Finally we can delete our first spy as it's not used anymore.
+Agora temos dois spies no `Sleeper`. O próximo passo é refatorar nosso teste para que um teste o que está sendo impresso e o outro se certifique de que estamos pausando entre as impressões. Por fim, podemos apagar nosso primeiro spy, já que não é mais utilizado.
 
 ```go
-func TestCountdown(t *testing.T) {
+func TestContagem(t *testing.T) {
 
-    t.Run("prints 3 to Go!", func(t *testing.T) {
+    t.Run("imprime 3 até Vai!", func(t *testing.T) {
         buffer := &bytes.Buffer{}
-        Countdown(buffer, &CountdownOperationsSpy{})
+        Contagem(buffer, &SpyContagemOperacoes{})
 
-        got := buffer.String()
-        want := `3
+        resultado := buffer.String()
+        esperado := `3
 2
 1
-Go!`
+Vai!`
 
-        if got != want {
-            t.Errorf("got '%s' want '%s'", got, want)
+        if resultado != esperado {
+            t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
         }
     })
 
-    t.Run("sleep before every print", func(t *testing.T) {
-        spySleepPrinter := &CountdownOperationsSpy{}
-        Countdown(spySleepPrinter, spySleepPrinter)
+    t.Run("pausa antes de cada impressão", func(t *testing.T) {
+        spyImpressoraSleep := &SpyContagemOperacoes{}
+        Contagem(spyImpressoraSleep, spyImpressoraSleep)
 
-        want := []string{
-            sleep,
-            write,
-            sleep,
-            write,
-            sleep,
-            write,
-            sleep,
-            write,
+        esperado := []string{
+            pausa,
+            escrita,
+            pausa,
+            escrita,
+            pausa,
+            escrita,
+            pausa,
+            escrita,
         }
 
-        if !reflect.DeepEqual(want, spySleepPrinter.Calls) {
-            t.Errorf("wanted calls %v got %v", want, spySleepPrinter.Calls)
+        if !reflect.DeepEqual(esperado, spyImpressoraSleep.Chamadas) {
+            t.Errorf("esperado %v chamadas, resultado %v", esperado, spyImpressoraSleep.Chamadas)
         }
     })
 }
 ```
 
-We now have our function and its 2 important properties properly tested.
+Agora temos nossa função e suas duas propriedades testadas adequadamente.
 
-## Extending Sleeper to be configurable
+## Extendendo o Sleeper para se tornar configurável
 
-A nice feature would be for the `Sleeper` to be configurable.
+Uma funcionalidadee legal seria o `Sleeper` seja configurável.
 
-### Write the test first
+### Escreva o teste primeiro
 
-Let's first create a new type for `ConfigurableSleeper` that accepts what we need for configuration and testing.
+Agora vamos criar um novo tipo para `SleeperConfiguravel` que aceita o que precisamos para configuração e teste.
 
 ```go
 type ConfigurableSleeper struct {

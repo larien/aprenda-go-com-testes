@@ -30,6 +30,6 @@ type SleeperSpy struct {
 	Chamadas int
 }
 
-func (s *SleeperSpy) Sleep() {
+func (s *SleeperSpy) Pausa() {
 	s.Chamadas++
 }

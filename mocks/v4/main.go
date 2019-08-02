@@ -7,35 +7,34 @@ import (
 	"time"
 )
 
-// Sleeper allows you to put delays
+// Sleeper te permite definir pausas
 type Sleeper interface {
-	Sleep()
+	Pausa()
 }
 
-// DefaultSleeper is an implementation of Sleeper with a predefined delay
-type DefaultSleeper struct{}
+// SleeperPadrao é uma implementação de Sleeper com um atraso pré-definido
+type SleeperPadrao struct{}
 
-// Sleep will pause execution for the defined Duration
-func (d *DefaultSleeper) Sleep() {
+// Pausa vai pausar a execução pela Duração definida
+func (d *SleeperPadrao) Pausa() {
 	time.Sleep(1 * time.Second)
 }
 
-const finalWord = "Go!"
-const countdownStart = 3
+const ultimaPalavra = "Vai!"
+const inicioContagem = 3
 
-// Countdown prints a countdown from 5 to out with a delay between count provided by Sleeper
-func Countdown(out io.Writer, sleeper Sleeper) {
-
-	for i := countdownStart; i > 0; i-- {
-		sleeper.Sleep()
-		fmt.Fprintln(out, i)
+// Contagem imprime uma contagem de 3 para a sáida com um atraso determinado por um Sleeper
+func Contagem(saida io.Writer, sleeper Sleeper) {
+	for i := inicioContagem; i > 0; i-- {
+		sleeper.Pausa()
+		fmt.Fprintln(saida, i)
 	}
 
-	sleeper.Sleep()
-	fmt.Fprint(out, finalWord)
+	sleeper.Pausa()
+	fmt.Fprint(saida, ultimaPalavra)
 }
 
 func main() {
-	sleeper := &DefaultSleeper{}
-	Countdown(os.Stdout, sleeper)
+	sleeper := &SleeperPadrao{}
+	Contagem(os.Stdout, sleeper)
 }
