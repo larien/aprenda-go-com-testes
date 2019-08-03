@@ -5,28 +5,28 @@
 A questão é a seguinte: um colega escreveu uma função, `VerificaWebsites`, que verifica o status de uma lista de URLs.
 
 ```go
-package concurrency
+package concorrencia
 
-type WebsiteChecker func(string) bool
+type VerificadorWebsite func(string) bool
 
-func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
-    results := make(map[string]bool)
+func VerificaWebsites(vw VerificadorWebsite, urls []string) map[string]bool {
+    resultados := make(map[string]bool)
 
     for _, url := range urls {
-        results[url] = wc(url)
+        resultados[url] = vw(url)
     }
 
-    return results
+    return resultados
 }
 ```
 
-It returns a map of each URL checked to a boolean value - `true` for a good response, `false` for a bad response.
+Ela retorna um map de cada URL verificado com um valor booleano - `true` para uma boa resposta, `false` para uma resposta ruim.
 
-You also have to pass in a `WebsiteChecker` which takes a single URL and returns a boolean. This is used by the function to check all the websites.
+Você também tem que passar um `VerificadorWebsite` como parâmetro, que leva um URL e retorna um boleano. Isso é usado pela função que verifica todos os websites.
 
-Using [dependency injection](dependency-injection.md) has allowed them to test the function without making real HTTP calls, making it reliable and fast.
+Usando a [injeção de dependência](dependency-injection.md), conseguimos testar a função sem fazer chamadas HTTP de verdade, tornando o teste seguro e rápido.
 
-Here's the test they've written:
+Aqui está o teste que escreveram:
 
 ```go
 package concurrency
@@ -36,126 +36,124 @@ import (
     "testing"
 )
 
-func mockWebsiteChecker(url string) bool {
+ffunc mockVerificadorWebsite(url string) bool {
     if url == "waat://furhurterwe.geds" {
         return false
     }
     return true
 }
 
-func TestCheckWebsites(t *testing.T) {
+func TestVerificaWebsites(t *testing.T) {
     websites := []string{
         "http://google.com",
         "http://blog.gypsydave5.com",
         "waat://furhurterwe.geds",
     }
 
-    want := map[string]bool{
+    esperado := map[string]bool{
         "http://google.com":          true,
         "http://blog.gypsydave5.com": true,
         "waat://furhurterwe.geds":    false,
     }
 
-    got := CheckWebsites(mockWebsiteChecker, websites)
+    resultado := VerificaWebsites(mockVerificadorWebsite, websites)
 
-    if !reflect.DeepEqual(want, got) {
-        t.Fatalf("Wanted %v, got %v", want, got)
+    if !reflect.DeepEqual(esperado, resultado) {
+        t.Fatalf("esperado %v, resultado %v", esperado, resultado)
     }
 }
 ```
 
-The function is in production and being used to check hundreds of websites. But your colleague has started to get complaints that it's slow, so they've asked you to help speed it up.
+A função que está em produção está sendo usada para verificar centenas de websites. Só que seu colega começou a reclamar que está lento demais, e pediram sua ajuda para melhorar a velocidade dele.
 
-## Write a test
+## Escreva o teste primeiro
 
-Let's use a benchmark to test the speed of `CheckWebsites` so that we can see the effect of our changes.
+Vamos usar um teste de benchmark para testar a velocidade de `VerificaWebsites` para que possamos ver o efeito das nossas alterações.
 
 ```go
-package concurrency
+package concorrencia
 
 import (
     "testing"
     "time"
 )
 
-func slowStubWebsiteChecker(_ string) bool {
+func slowStubVerificadorWebsite(_ string) bool {
     time.Sleep(20 * time.Millisecond)
     return true
 }
 
-func BenchmarkCheckWebsites(b *testing.B) {
+func BenchmarkVerificaWebsites(b *testing.B) {
     urls := make([]string, 100)
     for i := 0; i < len(urls); i++ {
-        urls[i] = "a url"
+        urls[i] = "uma url"
     }
 
     for i := 0; i < b.N; i++ {
-        CheckWebsites(slowStubWebsiteChecker, urls)
+        VerificaWebsites(slowStubVerificadorWebsite, urls)
     }
 }
 ```
 
-The benchmark tests `CheckWebsites` using a slice of one hundred urls and uses a new fake implementation of `WebsiteChecker`. `slowStubWebsiteChecker` is deliberately slow. It uses `time.Sleep` to wait exactly twenty milliseconds and then it returns true.
+O benchmark testa `VerificaWebsites` usando um slice de 100 URLs e usa uma nova implementação falsa de `VerificadorWebsite`. `slowStubVerificadorWebsite` é intencionalmente lento. Ele usa um `time.Sleep` para esperar exatamente 20 milissegundos e então retorna verdadeiro.
 
-When we run the benchmark using `go test -bench=.` \(or if you're in Windows Powershell `go test -bench="."`\):
+Quando executamos o benchmark com `go test -bench=.` (ou, se estiver no Powershell do WIndows, `go test -bench="."`):
 
 ```bash
-pkg: github.com/gypsydave5/learn-go-with-tests/concurrency/v0
-BenchmarkCheckWebsites-4               1        2249228637 ns/op
+pkg: github.com/larien/learn-go-with-tests/concorrencia/v1
+BenchmarkVerificaWebsites-4               1        2249228637 ns/op
 PASS
-ok      github.com/gypsydave5/learn-go-with-tests/concurrency/v0        2.268s
+ok      github.com/larien/learn-go-with-tests/concorrencia/v1        2.268s
 ```
 
-`CheckWebsites` has been benchmarked at 2249228637 nanoseconds - about two and a quarter seconds.
+`VerificaWebsites` teve uma marca de 2249228637 nanosegundos - pouco mais de dois segundos.
 
-Let's try and make this faster.
+Vamos torná-lo mais rápido.
 
-### Write enough code to make it pass
+### Escreva código o suficiente para fazer o teste passar
 
-Now we can finally talk about concurrency which, for the purposes of the following, means 'having more than one thing in progress'. This is something that we do naturally everyday.
+Agora finalmente podemos falar sobre concorrência que, apenas para fins dessa situação, significa "fazer mais do que uma coisa ao mesmo tempo". Isso é algo que fazemos naturalmente todo dia.
 
-For instance, this morning I made a cup of tea. I put the kettle on and then, while I was waiting for it to boil, I got the milk out of the fridge, got the tea out of the cupboard, found my favourite mug, put the teabag into the cup and then, when the kettle had boiled, I put the water in the cup.
+Por exemplo, hoje de manhã fiz uma xícara de chá. Coloquei a chaleira no foco e, enquanto esperava a água ferver, tirei o leite da geladeira, tirei o chá do armário, encontrei minha xícara favorita, coloquei o saquinho do chá e, quando a chaleira ferveu a água, coloquei a água na xícara.
 
-What I _didn't_ do was put the kettle on and then stand there blankly staring at the kettle until it boiled, then do everything else once the kettle had boiled.
+O que eu _não fiz_ foi colocar a chaleira no fogo e então ficar sem fazer nada só esperando a chaleira ferver a água, para depois fazer todo o restante quando a água tivesse fervido.
 
-If you can understand why it's faster to make tea the first way, then you can understand how we will make `CheckWebsites` faster. Instead of waiting for a website to respond before sending a request to the next website, we will tell our computer to make the next request while it is waiting.
+Se conseguir entender por que é mais rápido fazer chá da primeira forma, então você é capaz de entender como vamos tornar o `VerificaWebsites` mais rápido. Ao invés de esperar por um website responder antes de enviar uma requisição para o próximo website, vamos dizer para nosso computador fazer a próxima requisição enquanto espera pela primeira.
 
-Normally in Go when we call a function `doSomething()` we wait for it to return \(even if it has no value to return, we still wait for it to finish\). We say that this operation is _blocking_ - it makes us wait for it to finish. An operation that does not block in Go will run in a separate _process_ called a _goroutine_. Think of a process as reading down the page of Go code from top to bottom, going 'inside' each function when it gets called to read what it does. When a separate process starts it's like another reader begins reading inside the function, leaving the original reader to carry on going down the page.
+Normalmente, em Go, quando chamamos uma função `fazAlgumaCoisa()`, esperamos que ela retorne alguma coisa (mesmo se não tiver valor para retornar, ainda esperamos que ela termine). Chamamos essa operação de _bloqueante_ - espera algo acabar para terminar seu trabalho. Uma operação que não bloqueia no Go vai rodar em um _processo_ separado, chamado de _goroutine_. Pense no processo como uma leitura de uma página de código Go de cima para baixo, 'entrando' em cada função quando é chamado para ler o que essa página faz. Quando um processo separado começa, é como se outro leitor começasse a ler o interior da função, deixando o leitor original continuar lendo a página.
 
-To tell Go to start a new goroutine we turn a function call into a `go` statement by putting the keyword `go` in front of it: `go doSomething()`.
+Para dizer ao Go começar uma nova goroutine, transformamos a chamada de função em uma declaração `go` colocando a palavra-chave `go` na frente da função: `go fazAlgumaCoisa()`.
 
 ```go
 package concurrency
 
-type WebsiteChecker func(string) bool
+type VerificadorWebsite func(string) bool
 
-func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
-    results := make(map[string]bool)
+func VerificaWebsites(vw VerificadorWebsite, urls []string) map[string]bool {
+    resultados := make(map[string]bool)
 
     for _, url := range urls {
         go func() {
-            results[url] = wc(url)
+            resultados[url] = vw(url)
         }()
     }
 
-    return results
+    return resultados
 }
 ```
 
-Because the only way to start a goroutine is to put `go` in front of a function call, we often use _anonymous functions_ when we want to start a goroutine. An anonymous function literal looks just the same as a normal function declaration, but without a name \(unsurprisingly\). You can see one above in the body of the `for` loop.
+Já que a única forma de começar uma goroutine é colocar `go` na frente da chamada de função, costumamos usar _funções anônimas_ quando queremos iniciar uma goroutine. Uma função anônima literal é bem parecida com uma declaração de função normal, mas (obviamente) sem um nome. Você ṕde ver uma acima no corpo do laço `for`.
 
-Anonymous functions have a number of features which make them useful, two of which we're using above. Firstly, they can be executed at the same time that the're declared - this is what the `()` at the end of the anonymous function is doing. Secondly they maintain access to the lexical scope they are defined in - all the variables that are available at the point when you declare the anonymous function are also available in the body of the function.
+Funções anônimas têm várias funcionalidades que as torna útil, duas das quais estamos usando acima. Primeiramente, elas podem ser executadas assim que fazemos sua declaração - que é o `()` no final da função anônima. Em segundo lugar, elas mantém acesso ao escopo léxico em que são definidas - todas as variáveis que estão disponíveis no ponto em que a função anônima é declarada também estão variáveis no corpo da função.
 
-The body of the anonymous function above is just the same as the loop body was before. The only difference is that each iteration of the loop will start a new goroutine, concurrent with the current process \(the `WebsiteChecker` function\) each of which will add its result to the results map.
-
-But when we run `go test`:
+O corpo da função anônima acima é quase o mesmo da função no laço utilizada anteriormente. A única diferença é que cada iteração do loop vai iniciar uma nova goroutine, concorrente com o processo atual (a função `VerificadorWebsite`), e cada uma vai adicionar seu resultado ao map de resultados.
 
 ```bash
---- FAIL: TestCheckWebsites (0.00s)
-        CheckWebsites_test.go:31: Wanted map[http://google.com:true http://blog.gypsydave5.com:true waat://furhurterwe.geds:false], got map[]
+--- FAIL: TestVerificaWebsites (0.00s)
+        VerificaWebsites_test.go:31: esperado map[http://google.com:true http://blog.gypsydave5.com:true waat://furhurterwe.geds:false], resultado map[]
 FAIL
 exit status 1
-FAIL    github.com/gypsydave5/learn-go-with-tests/concurrency/v1        0.010s
+FAIL    github.com/larien/learn-go-with-tests/concorrencia/v2        0.010s
 ```
 
 ### A quick aside into a parallel\(ism\) universe...
@@ -391,19 +389,19 @@ This exercise has been a little lighter on the TDD than usual. In a way we've be
 
 In making it faster we learned about
 
-* _goroutines_, the basic unit of concurrency in Go, which let us check more
+-   _goroutines_, the basic unit of concurrency in Go, which let us check more
 
-  than one website at the same time.
+    than one website at the same time.
 
-* _anonymous functions_, which we used to start each of the concurrent processes
+-   _anonymous functions_, which we used to start each of the concurrent processes
 
-  that check websites.
+    that check websites.
 
-* _channels_, to help organize and control the communication between the
+-   _channels_, to help organize and control the communication between the
 
-  different processes, allowing us to avoid a _race condition_ bug.
+    different processes, allowing us to avoid a _race condition_ bug.
 
-* _the race detector_ which helped us debug problems with concurrent code
+-   _the race detector_ which helped us debug problems with concurrent code
 
 ### Make it fast
 
@@ -414,4 +412,3 @@ One formulation of an agile way of building software, often misattributed to Ken
 Where 'work' is making the tests pass, 'right' is refactoring the code, and 'fast' is optimizing the code to make it, for example, run quickly. We can only 'make it fast' once we've made it work and made it right. We were lucky that the code we were given was already demonstrated to be working, and didn't need to be refactored. We should never try to 'make it fast' before the other two steps have been performed because
 
 > [Premature optimization is the root of all evil](http://wiki.c2.com/?PrematureOptimization) -- Donald Knuth
-
