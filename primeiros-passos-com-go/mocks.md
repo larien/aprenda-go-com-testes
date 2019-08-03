@@ -495,147 +495,148 @@ Uma funcionalidadee legal seria o `Sleeper` seja configurável.
 Agora vamos criar um novo tipo para `SleeperConfiguravel` que aceita o que precisamos para configuração e teste.
 
 ```go
-type ConfigurableSleeper struct {
-    duration time.Duration
-    sleep    func(time.Duration)
+type SleeperConfiguravel struct {
+	duracao time.Duration
+	pausa   func(time.Duration)
 }
 ```
 
-We are using `duration` to configure the time slept and `sleep` as a way to pass in a sleep function. The signature of `sleep` is the same as for `time.Sleep` allowing us to use `time.Sleep` in our real implementation and a spy in our tests.
+Estamos usando a `duracao` para configurar o tempo de pausa e `pausa` como forma de passar uma função de pausa. A assinatura de `sleep` é a mesma de `time.Sleep`, nos permitindo usar `time.Sleep` na nossa implementação real e um spy nos nossos testes.
 
 ```go
-type SpyTime struct {
-    durationSlept time.Duration
+type TempoSpy struct {
+	duracaoPausa time.Duration
 }
 
-func (s *SpyTime) Sleep(duration time.Duration) {
-    s.durationSlept = duration
+func (t *TempoSpy) Pausa(duracao time.Duration) {
+	t.duracaoPausa = duracao
 }
 ```
 
-With our spy in place, we can create a new test for the configurable sleeper.
+Definindo nosso spy, podemos criar um novo teste para o sleeper configurável.
 
 ```go
-func TestConfigurableSleeper(t *testing.T) {
-    sleepTime := 5 * time.Second
+func TestSleeperConfiguravel(t *testing.T) {
+    tempoPausa := 5 * time.Second
 
-    spyTime := &SpyTime{}
-    sleeper := ConfigurableSleeper{sleepTime, spyTime.Sleep}
-    sleeper.Sleep()
+    tempoSpy := &TempoSpy{}
+    sleeper := SleeperConfiguravel{tempoPausa, tempoSpy.Pausa}
+    sleeper.Pausa()
 
-    if spyTime.durationSlept != sleepTime {
-        t.Errorf("should have slept for %v but slept for %v", sleepTime, spyTime.durationSlept)
+    if tempoSpy.duracaoPausa != tempoPausa {
+        t.Errorf("deveria ter pausado por %v, mas pausou por %v", tempoPausa, tempoSpy.duracaoPausa)
     }
 }
 ```
 
-There should be nothing new in this test and it is setup very similar to the previous mock tests.
+Não há nada de novo nesse teste e seu funcionamento é bem semelhante aos testes com mock anteriores.
 
-### Try and run the test
+### Execute o teste
 
-```text
+```bash
 sleeper.Sleep undefined (type ConfigurableSleeper has no field or method Sleep, but does have sleep)
 ```
 
-You should see a very clear error message indicating that we do not have a `Sleep` method created on our `ConfigurableSleeper`.
+`sleeper.Pausa não definido (tipo SleeperConfiguravel não tem campo ou método Pausa, mas tem o método sleep`
 
-### Write the minimal amount of code for the test to run and check failing test output
+Você deve ver uma mensagem de erro bem clara indicando que não temos um método `Pausa` criado no nosso `SleeperConfiguravel`.
+
+### Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 ```go
-func (c *ConfigurableSleeper) Sleep() {
+func (c *SleeperConfiguravel) Pausa() {
 }
 ```
 
-With our new `Sleep` function implemented we have a failing test.
+Com nossa nova função `Pausa` implementada, ainda há um teste falhando.
 
-```text
-countdown_test.go:56: should have slept for 5s but slept for 0s
+```bash
+contagem_test.go:56: deveria ter pausado por 5s, mas pausou por 0s
 ```
 
-### Write enough code to make it pass
+### Escreva código o suficiente para fazer o teste passar
 
-All we need to do now is implement the `Sleep` function for `ConfigurableSleeper`.
+Tudo o que precisamos fazer agora é implementar a função `Pausa` para o `SleeperConfiguravel`.
 
 ```go
-func (c *ConfigurableSleeper) Sleep() {
-    c.sleep(c.duration)
+func (s *SleeperConfiguravel) Pausa() {
+    s.pausa(s.duracao)
 }
 ```
 
-With this change all of the test should be passing again.
+Com essa mudança, todos os testes devem voltar a passar.
 
-### Cleanup and refactor
+### Limpeza e refatoração
 
-The last thing we need to do is to actually use our `ConfigurableSleeper` in the main function.
+A última coisa que precisamos fazer é de fato usar nosso `SleeperConfiguravel` na função main.
 
 ```go
 func main() {
-    sleeper := &ConfigurableSleeper{1 * time.Second, time.Sleep}
-    Countdown(os.Stdout, sleeper)
+    sleeper := &SleeperConfiguravel{1 * time.Second, time.Sleep}
+    Contagem(os.Stdout, sleeper)
 }
 ```
 
-If we run the tests and the program manually, we can see that all the behavior remains the same.
+Se executarmos os testes e o programa manualmente, podemos ver que todo o comportamento permanece o mesmo.
 
-Since we are using the `ConfigurableSleeper`, it is safe to delete the `DefaultSleeper` implementation. Wrapping up our program.
+Já que estamos usando o `SleeperConfiguravel`, é seguro deletar o `SleeperPadrao`.
 
-## But isn't mocking evil?
+## Mas o mock não é do demonho?
 
-You may have heard mocking is evil. Just like anything in software development it can be used for evil, just like [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+Você já deve ter ouvido que o mock é do mal. Quase qualquer coisa no desenvolvimento de software pode ser usada para o mal, assim como o [DRY](https://pt.wikipedia.org/wiki/Don%27t_repeat_yourself).
 
-People normally get in to a bad state when they don't _listen to their tests_ and are _not respecting the refactoring stage_.
+As pessoas acabam chegando numa fase ruim em que não _dão atenção aos próprios testes_ e _não respeitam a etapa de refatoração_.
 
-If your mocking code is becoming complicated or you are having to mock out lots of things to test something, you should _listen_ to that bad feeling and think about your code. Usually it is a sign of
+Se seu código de mock estiver ficando complicado ou você tem que mockar muita coisa para testar algo, você deve _prestar mais atenção_ a essa sensação ruim e pensar sobre o seu código. Geralmente isso é sinal de que:
 
--   The thing you are testing is having to do too many things
-    -   Break the module apart so it does less
--   Its dependencies are too fine-grained
-    -   Think about how you can consolidate some of these dependencies into one meaningful module
--   Your test is too concerned with implementation details
-    -   Favour testing expected behaviour rather than the implementation
+-   A coisa que você está tentando faz coisas demais
+    -   Modularize a função para que faça menos coisas
+-   Suas dependências estão muito desacopladas
+    -   Pense e uma forma de consolidar algumas das dependências em um módulo útil
+-   Você está se preocupando demais com detalhes de implementaçaõ
+    -   Dê prioridade em testar o comportamento esperado ao invés da implementação
 
-Normally a lot of mocking points to _bad abstraction_ in your code.
+Normalmente, muitos pontos de mock são sinais de _abstração ruim_ no seu código.
 
-**What people see here is a weakness in TDD but it is actually a strength**, more often than not poor test code is a result of bad design or put more nicely, well-designed code is easy to test.
+**Costumam pensar que essa é uma fraqueza no TDD, mas na verdade é um ponto forte**. Testes mal desenvolvidos são resultado de código ruim. Código bem desenvolvido é fácil de ser testado.
 
-### But mocks and tests are still making my life hard!
+### Só que mocks e testes ainda estão dificultando minha vida!
 
-Ever run into this situation?
+Já se deparou com a situação a seguir?
 
--   You want to do some refactoring
--   To do this you end up changing lots of tests
--   You question TDD and make a post on Medium titled "Mocking considered harmful"
+-   Você quer refatorar algo
+-   Para isso, você precisa mudar vários testes
+-   Você duvida do TDD e cria um post no Medium chamado "Mock é prejudicial"
 
-This is usually a sign of you testing too much _implementation detail_. Try to make it so your tests are testing _useful behaviour_ unless the implementation is really important to how the system runs.
+Isso costuma ser um sinal de que você está testando muito _detalhe de implementação_. Tente fazer de forma que esteja testando _comportamentos úteis_, a não ser que a implementação seja tão importante que a falta dela possa fazer o sistema quebrar.
 
-It is sometimes hard to know _what level_ to test exactly but here are some thought processes and rules I try to follow:
+Às vezes é difícil saber _qual nível_ testar exatamente, então aqui vai algumas ideias e regras que tento seguir:
 
--   **The definition of refactoring is that the code changes but the behaviour stays the same**. If you have decided to do some refactoring in theory you should be able to do make the commit without any test changes. So when writing a test ask yourself
-    -   Am i testing the behaviour I want or the implementation details?
-    -   If i were to refactor this code, would I have to make lots of changes to the tests?
--   Although Go lets you test private functions, I would avoid it as private functions are to do with implementation.
--   I feel like if a test is working with **more than 3 mocks then it is a red flag** - time for a rethink on the design
--   Use spies with caution. Spies let you see the insides of the algorithm you are writing which can be very useful but that means a tighter coupling between your test code and the implementation. **Be sure you actually care about these details if you're going to spy on them**
+-**A definição de refatoração é que o código muda, mas o comportamento permanece o mesmo**. Se você decidiu refatorar alguma coisa, na teoria você deve ser capaz de salvar seu código sem que o teste mude. Então, quando estiver escrevendo um teste, pergunte para si: - Estou testando o comportamento que quero ou detalhes de implementação? - Se fosse refatorar esse código, eu teria que fazer muitas mudanças no meu teste?
 
-As always, rules in software development aren't really rules and there can be exceptions. [Uncle Bob's article of "When to mock"](https://8thlight.com/blog/uncle-bob/2014/05/10/WhenToMock.html) has some excellent pointers.
+-   Apesar do Go te deixar testar funções privadas, eu evitaria fazer isso, já que funções privadas costumam ser detalhes de implementação.
+-   Se o teste estiver com **3 mocks, esse é um sinal de alerta** - hora de repensar no design.
+-   Use spies com cuidado. Spies te deixam ver a parte interna do algoritmo que você está escrevendo, o que pode ser bem útil, mas significa que há um acoplamento maior entre o código do teste e a implementação. **Certifique-se de que você realmente precisa desses detalhes se você vai colocar um spy neles**.
 
-## Wrapping up
+Como sempre, regras no desenvolvimento de software não são realmente regras e podem haver exceções. [O artigo do Uncle Bob sobre "Quando mockar"](https://8thlight.com/blog/uncle-bob/2014/05/10/WhenToMock.html) (em inglês) tem alguns pontos excelentes.
 
-### More on TDD approach
+## Resumo
 
--   When faced with less trivial examples, break the problem down into "thin vertical slices". Try to get to a point where you have _working software backed by tests_ as soon as you can, to avoid getting in rabbit holes and taking a "big bang" approach.
--   Once you have some working software it should be easier to _iterate with small steps_ until you arrive at the software you need.
+### Mais sobre abordagem TDD
 
-> "When to use iterative development? You should use iterative development only on projects that you want to succeed."
+-   Quando se deparar com exemplos menos comuns, divida o problema em "linhas verticais finas". Tente chegar em um ponto onde você tem _software em funcionamento com o apoio de testes_ o mais rápido possível, para evitar cair em armadilhas e se perder.
+-   Quando tiver uma parte software em funcionamento, deve ser mais fácil _iterar com etapas pequenas_ até chegar no software que você precisa.
+
+> "Quando usar o desenvolvimento iterativo? Apenas em projetos que você quer obter sucesso."
 
 Martin Fowler.
 
-### Mocking
+### Mock
 
--   **Without mocking important areas of your code will be untested**. In our case we would not be able to test that our code paused between each print but there are countless other examples. Calling a service that _can_ fail? Wanting to test your system in a particular state? It is very hard to test these scenarios without mocking.
--   Without mocks you may have to set up databases and other third parties things just to test simple business rules. You're likely to have slow tests, resulting in **slow feedback loops**.
--   By having to spin up a database or a webservice to test something you're likely to have **fragile tests** due to the unreliability of such services.
+-   **Sem o mock, partes importantes do seu código não serão testadas**. No nosso caso, não seríamos capazes de testar se nosso código pausava em cada impressão, mas existem inúmeros exemplos. Chamar um serviço que _pode_ falhar? Querer testar seu sistema em um estado em particular? É bem difícil testar esses casos sem mock.
+-   Sem mocks você pode ter que definir bancos de dados e outras dependências externas só para testar regras de negócio simples. Seus testes provavelmente ficarão mais lentos, resultando em **loops de feedback lentos**.
+-   Ter que se conectar a um banco de dados ou webservice para testar algo vai tornar seus testes **frágeis** por causa da falta de segurança nesses serviços.
 
-Once a developer learns about mocking it becomes very easy to over-test every single facet of a system in terms of the _way it works_ rather than _what it does_. Always be mindful about **the value of your tests** and what impact they would have in future refactoring.
+Uma vez que a pessoa aprende a mockar, é bem fácil testar pontos demais de um sistema em termos da _forma que ele funciona_ ao invés _do que ele faz_. Sempre tenha em mente o **valor dos seus testes** e qual impacto eles teriam em uma refatoração futura.
 
-In this post about mocking we have only covered **Spies** which are a kind of mock. There are different kind of mocks. [Uncle Bob explains the types in a very easy to read article](https://8thlight.com/blog/uncle-bob/2014/05/14/TheLittleMocker.html). In later chapters we will need to write code that depends on others for data, which is where we will show **Stubs** in action.
+Nesse artigo sobre mock, falamos sobre **spies**, que são um tipo de mock. Aqui estão diferentes tipos de mocks. [O Uncle Bob explica os tipos em um artigo bem fácil de ler](https://8thlight.com/blog/uncle-bob/2014/05/14/TheLittleMocker.html) (em inglês). Nos próximos capítulos, vamos precisar escrever código que depende de outros para obter dados, que é aonde vou mostrar os **Stubs** em ação.
