@@ -1,8 +1,8 @@
 # Concorrência
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/concurrency)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/concurrency)
 
-Here's the setup: a colleague has written a function, `CheckWebsites`, that checks the status of a list of URLs.
+A questão é a seguinte: um colega escreveu uma função, `VerificaWebsites`, que verifica o status de uma lista de URLs.
 
 ```go
 package concurrency
