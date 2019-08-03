@@ -14,7 +14,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     primeiros-passos-com-go/pointers-and-errors.md \
     primeiros-passos-com-go/maps.md \
     primeiros-passos-com-go/dependency-injection.md \
-    primeiros-passos-com-go/mocking.md \
+    primeiros-passos-com-go/mocks.md \
     primeiros-passos-com-go/concurrency.md \
     primeiros-passos-com-go/select.md \
     primeiros-passos-com-go/reflection.md \
@@ -42,7 +42,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     primeiros-passos-com-go/pointers-and-errors.md \
     primeiros-passos-com-go/maps.md \
     primeiros-passos-com-go/dependency-injection.md \
-    primeiros-passos-com-go/mocking.md \
+    primeiros-passos-com-go/mocks.md \
     primeiros-passos-com-go/concurrency.md \
     primeiros-passos-com-go/select.md \
     primeiros-passos-com-go/reflection.md \

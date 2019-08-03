@@ -32,7 +32,7 @@
 9. [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
 10. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
 11. [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a io.
-12. [Mocking](primeiros-passos-com-go/mocking.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
+12. [Mocking](primeiros-passos-com-go/mocks.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
 13. [Concorrência](primeiros-passos-com-go/concurrency.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
 14. [Select](primeiros-passos-com-go/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
 15. [Reflection](primeiros-passos-com-go/reflection.md) - Aprenda sobre reflection.

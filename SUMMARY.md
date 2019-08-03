@@ -15,7 +15,7 @@
 -   [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md)
 -   [Maps](primeiros-passos-com-go/maps.md)
 -   [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md)
--   [Mocking](primeiros-passos-com-go/mocking.md)
+-   [Mocking](primeiros-passos-com-go/mocks.md)
 -   [Concorrência](primeiros-passos-com-go/concurrency.md)
 -   [Select](primeiros-passos-com-go/select.md)
 -   [Reflection](primeiros-passos-com-go/reflection.md)
