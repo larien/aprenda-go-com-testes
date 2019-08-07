@@ -26,18 +26,16 @@
 3. [Inteiros](primeiros-passos-com-go/integers.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
 4. [Iteração](primeiros-passos-com-go/iteracao.md) - Aprenda sobre `for` e benchmarking.
 5. [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md) - Aprenda sobre arrays, slices, `len`, variáveis recebidas como argumentos, `range` e cobertura de testes.
-6. [Iteração](primeiros-passos-com-go/iteracao.md) - Aprenda sobre `for` e benchmarking.
-7. [Arrays e slices](primeiros-passos-com-go/arrays-and-slices.md) - Aprenda sobre arrays, slices, `len`, varargs, `range` e cobertura de testes.
-8. [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
-9. [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
-10. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
-11. [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a io.
-12. [Mocking](primeiros-passos-com-go/mocking.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
-13. [Concorrência](primeiros-passos-com-go/concurrency.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
-14. [Select](primeiros-passos-com-go/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
-15. [Reflection](primeiros-passos-com-go/reflection.md) - Aprenda sobre reflection.
-16. [Sync](primeiros-passos-com-go/sync.md) - Conheça algumas funcionalidades do pacote sync, como `WaitGroup` e `Mutex`.
-17. [Context](primeiros-passos-com-go/context.md) - Use o pacote context para gerenciar e cancelar processos de longa duração.
+6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
+7. [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
+8. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
+9. [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
+10. [Mocking](primeiros-passos-com-go/mocking.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
+11. [Concorrência](primeiros-passos-com-go/concurrency.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
+12. [Select](primeiros-passos-com-go/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
+13. [Reflection](primeiros-passos-com-go/reflection.md) - Aprenda sobre reflection.
+14. [Sync](primeiros-passos-com-go/sync.md) - Conheça algumas funcionalidades do pacote `sync`, como `WaitGroup` e `Mutex`.
+15. [Context](primeiros-passos-com-go/context.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
 
 ### Crie uma aplicação
 
