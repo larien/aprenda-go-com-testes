@@ -26,7 +26,7 @@ func (s *SleeperConfiguravel) Pausa() {
 const ultimaPalavra = "Vai!"
 const inicioContagem = 3
 
-// Contagem imprime uma contagem de 3 para a sáida com um atraso determinado por um Sleeper
+// Contagem imprime uma contagem de 3 para a saída com um atraso determinado por um Sleeper
 func Contagem(saida io.Writer, sleeper Sleeper) {
 	for i := inicioContagem; i > 0; i-- {
 		sleeper.Pausa()

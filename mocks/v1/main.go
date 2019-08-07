@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// Contagem imprime uma contagem de 3 para a sáida
+// Contagem imprime uma contagem de 3 para a saída
 func Contagem(saida io.Writer) {
 	fmt.Fprint(saida, "3")
 }

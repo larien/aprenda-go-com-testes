@@ -534,7 +534,7 @@ Não há nada de novo nesse teste e seu funcionamento é bem semelhante aos test
 ### Execute o teste
 
 ```bash
-sleeper.Sleep undefined (type ConfigurableSleeper has no field or method Sleep, but does have sleep)
+sleeper.Pausa undefined (type SleeperConfiguravel has no field or method Pausa, but does have pausa)
 ```
 
 `sleeper.Pausa não definido (tipo SleeperConfiguravel não tem campo ou método Pausa, mas tem o método sleep`
@@ -589,16 +589,16 @@ As pessoas acabam chegando numa fase ruim em que não _dão atenção aos própr
 
 Se seu código de mock estiver ficando complicado ou você tem que mockar muita coisa para testar algo, você deve _prestar mais atenção_ a essa sensação ruim e pensar sobre o seu código. Geralmente isso é sinal de que:
 
--   A coisa que você está tentando faz coisas demais
+-   A coisa que você está testando está tendo que fazer coisas demais
     -   Modularize a função para que faça menos coisas
 -   Suas dependências estão muito desacopladas
     -   Pense e uma forma de consolidar algumas das dependências em um módulo útil
--   Você está se preocupando demais com detalhes de implementaçaõ
+-   Você está se preocupando demais com detalhes de implementação
     -   Dê prioridade em testar o comportamento esperado ao invés da implementação
 
 Normalmente, muitos pontos de mock são sinais de _abstração ruim_ no seu código.
 
-**Costumam pensar que essa é uma fraqueza no TDD, mas na verdade é um ponto forte**. Testes mal desenvolvidos são resultado de código ruim. Código bem desenvolvido é fácil de ser testado.
+**As pessoas costumam pensar que essa é uma fraqueza no TDD, mas na verdade é um ponto forte**. Testes mal desenvolvidos são resultado de código ruim. Código bem desenvolvido é fácil de ser testado.
 
 ### Só que mocks e testes ainda estão dificultando minha vida!
 
@@ -625,7 +625,7 @@ Como sempre, regras no desenvolvimento de software não são realmente regras e 
 ### Mais sobre abordagem TDD
 
 -   Quando se deparar com exemplos menos comuns, divida o problema em "linhas verticais finas". Tente chegar em um ponto onde você tem _software em funcionamento com o apoio de testes_ o mais rápido possível, para evitar cair em armadilhas e se perder.
--   Quando tiver uma parte software em funcionamento, deve ser mais fácil _iterar com etapas pequenas_ até chegar no software que você precisa.
+-   Quando tiver uma parte do software em funcionamento, deve ser mais fácil _iterar com etapas pequenas_ até chegar no software que você precisa.
 
 > "Quando usar o desenvolvimento iterativo? Apenas em projetos que você quer obter sucesso."
 
