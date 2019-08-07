@@ -2,14 +2,14 @@
 
 [**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/injecao-de-dependencia)
 
-Presume-se que você tenha lido a seção de `structs` antes, já que será necessário saber um pouco sobre interfaces para entender esse capítulo.
+Presume-se que você tenha lido a seção de `structs` antes, já que será necessário saber um pouco sobre interfaces para entender este capítulo.
 
 Há muitos mal entendidos relacionados à injeção de dependência na comunidade de programação. Se tudo der certo, esse guia vai te mostrar que:
 
 -   Você não precisa de uma framework
 -   Não torna seu design complexo demais
 -   Facilita seus testes
--   Permite que você escreva funções ótimas para própósitos diversos.
+-   Permite que você escreva funções ótimas para propósitos diversos.
 
 Queremos criar uma função que cumprimenta alguém, assim como a que fizemos no capítulo [Olá, mundo](https://github.com/larien/learn-go-with-tests/tree/master/hello-world), mas dessa vez vamos testar o _print de verdade_.
 
@@ -198,7 +198,7 @@ func main() {
 }
 ```
 
-Execute o programa e vá para [http://localhost:5000](http://localhost:5000). Você erá sua função de cumprimento ser utilizada.
+Execute o programa e vá para [http://localhost:5000](http://localhost:5000). Você verá sua função de cumprimento ser utilizada.
 
 Falaremos sobre servidores HTTP em um próximo capítulo, então não se preocupe muito com os detalhes.
 
