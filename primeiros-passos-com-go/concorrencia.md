@@ -338,90 +338,84 @@ Nesse caso, queremos pensar sobre a comunicação entre o processo pai e cada um
 ```go
 package concurrency
 
-type WebsiteChecker func(string) bool
-type result struct {
+type VerificadorWebsite func(string) bool
+type resultado struct {
     string
     bool
 }
 
-func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
-    results := make(map[string]bool)
-    resultChannel := make(chan result)
+func VerificaWebsites(vw VerificadorWebsite, urls []string) map[string]bool {
+    resultados := make(map[string]bool)
+    canalResultado := make(chan resultado)
 
     for _, url := range urls {
         go func(u string) {
-            resultChannel <- result{u, wc(u)}
+            canalResultado <- resultado{u, vw(u)}
         }(url)
     }
 
     for i := 0; i < len(urls); i++ {
-        result := <-resultChannel
-        results[result.string] = result.bool
+        resultado := <-canalResultado
+        resultados[resultado.string] = resultado.bool
     }
 
-    return results
+    return resultados
 }
 ```
 
-Alongside the `results` map we now have a `resultChannel`, which we `make` in the same way. `chan result` is the type of the channel - a channel of `result`. The new type, `result` has been made to associate the return value of the `WebsiteChecker` with the url being checked - it's a struct of `string` and `bool`. As we don't need either value to be named, each of them is anonymous within the struct; this can be useful in when it's hard to know what to name a value.
+Junto do map `resultados`, agora temos um `canalResultados`, que criamos da mesma forma usando `make`. O `chan resultado` é o tipo do canal - um canal de `resultado`. O tipo novo, `resultado`, foi criado para associar o retorno de `VerificadorWebsite` com a URL sendo verificada - é uma estrutura que contém uma `string` e um `bool`. Já que não precisamos que nenhum valor tenha um nome, cada um deles é anônimo dentro da struct; isso pode ser útil quando for difícil saber que nome dar a um valor.
 
-Now when we iterate over the urls, instead of writing to the `map` directly we're sending a `result` struct for each call to `wc` to the `resultChannel` with a _send statement_. This uses the `<-` operator, taking a channel on the left and a value on the right:
-
-```go
-// Send statement
-resultChannel <- result{u, wc(u)}
-```
-
-The next `for` loop iterates once for each of the urls. Inside we're using a _receive expression_, which assigns a value received from a channel to a variable. This also uses the `<-` operator, but with the two operands now reversed: the channel is now on the right and the variable that we're assigning to is on the left:
+Agora que iteramos pelas URLs, ao invés de escrever no `map` diretamente, enviamos uma struct `resultado` para cada chamada de `vw` para o `canalResultado` com uma _sintaxe de envio_. Essa sintaxe usa o operador `<-`, usando um canal à esquerda e um valor à direita:
 
 ```go
-// Receive expression
-result := <-resultChannel
+// Sintaxe de envio
+canalResultado <- resultado{u, vw(u)}
 ```
 
-We then use the `result` received to update the map.
+O próximo laço `for` itera uma vez sobre cada uma das URLs. Dentro, estamos usando uma _expressão de recebimento_, que atribui um valor recebido por um canal a uma variável. Essa expressão também usa o operador `<-`, mas com os dois operandos ao posições invertidas: o canal agora fica à direita e a variável que está recebendo o valor dele fica à esquerda:
 
-By sending the results into a channel, we can control the timing of each write into the results map, ensuring that it happens one at a time. Although each of the calls of `wc`, and each send to the result channel, is happening in parallel inside its own process, each of the results is being dealt with one at a time as we take values out of the result channel with the receive expression.
+```go
+// Expressão recebida
+resultado := <-canalResultado
+```
 
-We have paralellized the part of the code that we wanted to make faster, while making sure that the part that cannot happen in parallel still happens linearly. And we have communicated across the multiple processes involved by using channels.
+E depois usamos o `resultado` recebido para atualizar o map.
 
-When we run the benchmark:
+AO enviar os resultados para um canal, podemos controlar o timing de cada escrita dentro do map `resultados`, garantindo que só aconteça uma por vez. Apesar de cada uma das chamadas de `vw` e cada envio ao canal resultado estar acontecendo em paralelo dentro de seu próprio processo, cada resultado está sendo resolvido de cada vez enquanto tiramos o valor do canal resultado com a expressão recebida.
+
+Paralelizamos um pedaço do código que queríamos tornar mais rápida, enquanto mantivemos a parte que não pode acontecer em paralelo ainda acontecendo linearmente. E comunicamos diversos processos envolvidos utilizando canais.
+
+Agora podemos executar o benchmark:
 
 ```bash
-pkg: github.com/gypsydave5/learn-go-with-tests/concurrency/v2
-BenchmarkCheckWebsites-8             100          23406615 ns/op
+pkg: github.com/larien/learn-go-with-tests/concorrencia/v3
+BenchmarkVerificaWebsites-8             100          23406615 ns/op
 PASS
-ok      github.com/gypsydave5/learn-go-with-tests/concurrency/v2        2.377s
+ok      github.com/larien/learn-go-with-tests/concorrencia/v3        2.377s
 ```
 
-23406615 nanoseconds - 0.023 seconds, about one hundred times as fast as original function. A great success.
+23406615 nanossegundos - 0.023 segundos, cerca de 100 vezes mais rápida que a função original. Um sucesso enorme.
 
-## Wrapping up
+## Resumo
 
-This exercise has been a little lighter on the TDD than usual. In a way we've been taking part in one long refactoring of the `CheckWebsites` function; the inputs and outputs never changed, it just got faster. But the tests we had in place, as well as the benchmark we wrote, allowed us to refactor `CheckWebsites` in a way that maintained confidence that the software was still working, while demonstrating that it had actually become faster.
+Esse exercício foi um pouco mais leve na parte do TDD que o restante. Levamos um bom tempo refatorando a função `VerificaWebsites`; as entradas e saídas não mudaram, ela apenas ficou mais rápida. Mas, com os testes que já tinhamos escrito, assim como com o benchmark que escrevemos, fomos capazes de refatorar o `VerificaWebsites` de forma que mantivéssemos a confiança de que o software ainda estava funcionando, enquanto demonstramos que ela realmente havia ficado mais rápida.
 
-In making it faster we learned about
+Tornando as coisas mais rápidas, aprendemos sobre:
 
--   _goroutines_, the basic unit of concurrency in Go, which let us check more
+-   _goroutines_, a unidade básica de concorrência em Go, que nos permite verificar mais do que um site ao mesmo tempo.
 
-    than one website at the same time.
+-   _funções anônimas_, que usamos para iniciar cada um dos processos concorrentes que verificam os sites.
 
--   _anonymous functions_, which we used to start each of the concurrent processes
+-   _canais_, para nos ajudar a organizar e controlar a comunicação entre diferentes processos, nos permitindo evitar um bug de _condição de corrida_.
 
-    that check websites.
+-   _o detector de corrida_, que nos ajudou a desvendar problemas com código concorrente.
 
--   _channels_, to help organize and control the communication between the
+### Torne-o rápido
 
-    different processes, allowing us to avoid a _race condition_ bug.
+Uma formulação da forma ágil de desenvolver software, erroneamente atribuida a Kent Beck, é:
 
--   _the race detector_ which helped us debug problems with concurrent code
+> [Faça funcionar, faça da forma certa, torne-o rápido](http://wiki.c2.com/?MakeItWorkMakeItRightMakeItFast) (em inglês)
 
-### Make it fast
+Onde 'funcionar' é fazer os testes passarem, 'forma certa' é refatorar o código e 'tornar rápido' é otimizar o código para, por exemplo, tornar sua execução rápida. Só podemos 'torná-lo rápido' quando fizermos funcionar da forma certa. Tivemos sorte que o código que estudamos já estava funcionando e não precisava ser refatorado. Nunca devemos tentar 'torná-lo rápido' antes das outras duas etapas terem sido feitas, porque:
 
-One formulation of an agile way of building software, often misattributed to Kent Beck, is:
-
-> [Make it work, make it right, make it fast](http://wiki.c2.com/?MakeItWorkMakeItRightMakeItFast)
-
-Where 'work' is making the tests pass, 'right' is refactoring the code, and 'fast' is optimizing the code to make it, for example, run quickly. We can only 'make it fast' once we've made it work and made it right. We were lucky that the code we were given was already demonstrated to be working, and didn't need to be refactored. We should never try to 'make it fast' before the other two steps have been performed because
-
-> [Premature optimization is the root of all evil](http://wiki.c2.com/?PrematureOptimization) -- Donald Knuth
+> [Otimização prematura é a raiz de todo o mal](http://wiki.c2.com/?PrematureOptimization) -- Donald Knuth
