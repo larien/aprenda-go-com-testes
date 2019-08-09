@@ -24,7 +24,7 @@ func TestAdicionador(t *testing.T) {
 ```
 
 Você deve ter notado que estamos usando `%d` como string de formatação, em vez de `%s`. Isso porque queremos que ele imprima um valor inteiro e não uma string.
-Observe também que não estamos mais usando o pacote `main`, em vez disso, definimos um pacote chamado `integers`, pois o nome sugere que ele agrupará funções para trabalhar com números inteiros, como Adiciona.
+Observe também que não estamos mais usando o pacote `main`, em vez disso, definimos um pacote chamado `inteiros`, pois o nome sugere que ele agrupará funções para trabalhar com números inteiros, como Adiciona.
 
 ## Tente executar o teste
 
@@ -112,7 +112,7 @@ Como nos testes comuns, os exemplos são funções que residem nos arquivos \_te
 func ExemploAdiciona() {
     soma := Adiciona(1, 5)
     fmt.Println(soma)
-    // Output: 6
+    // Saida: 6
 }
 ```
 
