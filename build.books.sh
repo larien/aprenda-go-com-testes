@@ -7,14 +7,14 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     meta/motivacao.md \
     primeiros-passos-com-go/instalacao-do-go.md \
     primeiros-passos-com-go/hello-world.md \
-    primeiros-passos-com-go/integers.md \
+    primeiros-passos-com-go/inteiros.md \
     primeiros-passos-com-go/iteracao.md \
     primeiros-passos-com-go/arrays-e-slices.md \
     primeiros-passos-com-go/structs-methods-and-interfaces.md \
     primeiros-passos-com-go/pointers-and-errors.md \
     primeiros-passos-com-go/maps.md \
-    primeiros-passos-com-go/dependency-injection.md \
-    primeiros-passos-com-go/mocking.md \
+    primeiros-passos-com-go/injecao-de-dependencia.md \
+    primeiros-passos-com-go/mocks.md \
     primeiros-passos-com-go/concurrency.md \
     primeiros-passos-com-go/select.md \
     primeiros-passos-com-go/reflection.md \
@@ -35,14 +35,14 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     meta/motivacao.md \
     primeiros-passos-com-go/instalacao-do-go.md \
     primeiros-passos-com-go/hello-world.md \
-    primeiros-passos-com-go/integers.md \
+    primeiros-passos-com-go/inteiros.md \
     primeiros-passos-com-go/iteracao.md \
     primeiros-passos-com-go/arrays-e-slices.md \
     primeiros-passos-com-go/structs-methods-and-interfaces.md \
     primeiros-passos-com-go/pointers-and-errors.md \
     primeiros-passos-com-go/maps.md \
-    primeiros-passos-com-go/dependency-injection.md \
-    primeiros-passos-com-go/mocking.md \
+    primeiros-passos-com-go/injecao-de-dependencia.md \
+    primeiros-passos-com-go/mocks.md \
     primeiros-passos-com-go/concurrency.md \
     primeiros-passos-com-go/select.md \
     primeiros-passos-com-go/reflection.md \
