@@ -156,167 +156,180 @@ exit status 1
 FAIL    github.com/larien/learn-go-with-tests/concorrencia/v2        0.010s
 ```
 
-### A quick aside into a parallel\(ism\) universe...
+### Uma breve visita ao universo paralelo...
 
-You might not get this result. You might get a panic message that we're going to talk about in a bit. Don't worry if you got that, just keep running the test until you _do_ get the result above. Or pretend that you did. Up to you. Welcome to concurrency: when it's not handled correctly it's hard to predict what's going to happen. Don't worry - that's why we're writing tests, to help us know when we're handling concurrency predictably.
+Você pode não ter obtido esse resultado. Você pode obter uma mesnagem de pânico, que vamos falar sobre em breve. Não se preocupe se isso aparecer para você, basta você executar o teste até você _de fato_ receber o resultado acima. Ou faça de conta que você recebeu. Escolha sua. Boas vindas à concorrência: quando não for trabalhada da forma correta, é difícil prever o que vai acontecer. Não se preocupe, é por isso que estamos escrevendo testes: para nos ajudar a saber quando estamos trabalhando com concorrência de forma previsível.
 
-### ... and we're back.
+### ... e estamos de volta.
 
-We are caught by the original tests `WebsiteChecker` is now returning an empty map. What went wrong?
+Acabou que os testes originais do `VerificadorWebsite` agora está devolvendo um map vazio. O que deu de errado?
 
-None of the goroutines that our `for` loop started had enough time to add their result to the `results` map; the `WebsiteChecker` function is too fast for them, and it returns the still empty map.
+Nenhuma das goroutines que nosso loop `for` iniciou teve tempo de adicionar seu resultado ao map `resultados`; a função `VerificadorWebsite` é rápida demais para eles, e por isso retorna o map vazio.
 
-To fix this we can just wait while all the goroutines do their work, and then return. Two seconds ought to do it, right?
+Para consertar isso, podemos apenas esperar enquanto todas as goroutines fazem seu trabalho, para depois retornar. Dois segundos devem servir, certo?
 
 ```go
 package concurrency
 
 import "time"
 
-type WebsiteChecker func(string) bool
+type VerificadorWebsite func(string) bool
 
-func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
-    results := make(map[string]bool)
+func VerificaWebsites(vw VerificadorWebsite, urls []string) map[string]bool {
+    resultados := make(map[string]bool)
 
     for _, url := range urls {
         go func() {
-            results[url] = wc(url)
+            resultados[url] = vw(url)
         }()
     }
 
     time.Sleep(2 * time.Second)
 
-    return results
+    return resultados
 }
+
 ```
 
-Now when we run the tests you get \(or or don't get - see above\):
+Agora, quando os testes forem executados, você vai ver (ou não - leia a mensagem no início do tópico):
 
 ```bash
---- FAIL: TestCheckWebsites (0.00s)
-        CheckWebsites_test.go:31: Wanted map[http://google.com:true http://blog.gypsydave5.com:true waat://furhurterwe.geds:false], got map[waat://furhurterwe.geds:false]
+--- FAIL: TestVerificaWebsites (0.00s)
+        VerificaWebsites_test.go:31: esperado map[http://google.com:true http://blog.gypsydave5.com:true waat://furhurterwe.geds:false], resultado map[waat://furhurterwe.geds:false]
 FAIL
 exit status 1
-FAIL    github.com/gypsydave5/learn-go-with-tests/concurrency/v1        0.010s
+FAIL    github.com/larien/learn-go-with-tests/concorrencia/v1        0.010s
 ```
 
-This isn't great - why only one result? We might try and fix this by increasing the time we wait - try it if you like. It won't work. The problem here is that the variable `url` is reused for each iteration of the `for` loop - it takes a new value from `urls` each time. But each of our goroutines have a reference to the `url` variable - they don't have their own independent copy. So they're _all_ writing the value that `url` has at the end of the iteration - the last url. Which is why the one result we have is the last url.
+Isso não é muito bom - por que só um resultado? Podemos arrumar isso aumentando o tempo de espera - pode tentar se preferir. Não vai funcionar. O problema aqui é que a variável `url` é reutilizada para cada iteração do laço `for` - ele recebe um valor novo de `urls` a cada vez. Mas cada uma das goroutines tem uma referência para a variável `url` - eles não têm sua própria cópia independente. Logo, _todas_ estão escrevendo o valor que `url` tem no final da iteração - o último URL. E é por isso que o resultado que obtemos é a última URL.
 
-To fix this:
+Para consertar isso:
 
 ```go
-package concurrency
+package concorrencia
 
 import (
     "time"
 )
 
-type WebsiteChecker func(string) bool
+type VerificadorWebsite func(string) bool
 
-func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
-    results := make(map[string]bool)
+func VerificaWebsites(vw VerificadorWebsite, urls []string) map[string]bool {
+    resultados := make(map[string]bool)
 
     for _, url := range urls {
         go func(u string) {
-            results[u] = wc(u)
+            resultados[u] = vw(u)
         }(url)
     }
 
     time.Sleep(2 * time.Second)
 
-    return results
+    return resultados
 }
 ```
 
-By giving each anonymous function a parameter for the url - `u` - and then calling the anonymous function with the `url` as the argument, we make sure that the value of `u` is fixed as the value of `url` for the iteration of the loop that we're launching the goroutine in. `u` is a copy of the value of `url`, and so can't be changed.
+Ao passar cada função anônima como parâmetro para a URL - como `u` - e chamar a função anônima com `url` como argumento, nos certificamos de que o valor de `u` está fixado como o valor de `url` para cada iteração do laço de `url` e não pode ser modificado.
 
-Now if you're lucky you'll get:
+Agora, se você tiver sorte, vai obter:
 
 ```bash
 PASS
-ok      github.com/gypsydave5/learn-go-with-tests/concurrency/v1        2.012s
+ok      github.com/larien/learn-go-with-tests/concorrencia/v1        2.012s
 ```
 
-But if you're unlucky \(this is more likely if you run them with the benchmark as you'll get more tries\)
+No entanto, se não tiver sorte (isso é mais provável se estiver rodando o código com o benchmark, já que haverá mais tentativas):
 
 ```bash
 fatal error: concurrent map writes
 
-goroutine 8 [running]:
-runtime.throw(0x12c5895, 0x15)
-        /usr/local/Cellar/go/1.9.3/libexec/src/runtime/panic.go:605 +0x95 fp=0xc420037700 sp=0xc4200376e0 pc=0x102d395
-runtime.mapassign_faststr(0x1271d80, 0xc42007acf0, 0x12c6634, 0x17, 0x0)
-        /usr/local/Cellar/go/1.9.3/libexec/src/runtime/hashmap_fast.go:783 +0x4f5 fp=0xc420037780 sp=0xc420037700 pc=0x100eb65
-github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker.func1(0xc42007acf0, 0x12d3938, 0x12c6634, 0x17)
-        /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:12 +0x71 fp=0xc4200377c0 sp=0xc420037780 pc=0x12308f1
+goroutine 37 [running]:
+runtime.throw(0x6d74f3, 0x15)
+    /usr/local/go/src/runtime/panic.go:608 +0x72 fp=0xc000034718 sp=0xc0000346e8 pc=0x42d4e2
+runtime.mapassign_faststr(0x67dbe0, 0xc000082660, 0x6d33cb, 0x7, 0x0)
+    /usr/local/go/src/runtime/map_faststr.go:275 +0x3bf fp=0xc000034780 sp=0xc000034718 pc=0x4139ff
+github.com/larien/learn-go-with-tests/concorrencia/v2.VerificaWebsites.func1(0x6e6580, 0xc000082660, 0x6d33cb, 0x7)
+    /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:17 +0x7f fp=0xc0000347c0 sp=0xc000034780 pc=0x64035f
 runtime.goexit()
-        /usr/local/Cellar/go/1.9.3/libexec/src/runtime/asm_amd64.s:2337 +0x1 fp=0xc4200377c8 sp=0xc4200377c0 pc=0x105cf01
-created by github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker
-        /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:11 +0xa1
+    /usr/local/go/src/runtime/asm_amd64.s:1333 +0x1 fp=0xc0000347c8 sp=0xc0000347c0 pc=0x45c661
+created by github.com/larien/learn-go-with-tests/concorrencia/v2.VerificaWebsites
+	/home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:16 +0xa9
 
-        ... many more scary lines of text ...
+        ... e mais um monte de linhas assustadoras ...
 ```
 
-This is long and scary, but all we need to do is take a breath and read the stacktrace: `fatal error: concurrent map writes`. Sometimes, when we run our tests, two of the goroutines write to the results map at exactly the same time. Maps in Go don't like it when more than one thing tries to write to them at once, and so `fatal error`.
+Isso pode ser enorme e assustador, mas tudo o que precisamos fazer é respirar com calma e ler o stacktrace: `fatal error: concurrent map writes` (erro fatal: escrita concorrente no map). Às vezes, quando executamos nossos testes, duas das goroutines escrevem no map `resultados` ao mesmo tempo. Maps em Go não gostam quando mais de uma coisa tenta escrever algo neles ao mesmo tempo, então o `erro fatal` é gerado.
 
-This is a _race condition_, a bug that occurs when the output of our software is dependent on the timing and sequence of events that we have no control over. Because we cannot control exactly when each goroutine writes to the results map, we are vulnerable to two goroutines writing to it at the same time.
+Essa é uma _condição de corrida_, um bug que aparece quando a saída do nosso software depende do timing e da sequência de eventos que não temos controle sobre. Por não termos controle exato sobre quando cada goroutine escreve no map `resultados`, ficamos vulneráveis à situação de duas goroutines escreverem nele ao mesmo tempo.
 
-Go can help us to spot race conditions with its built in [_race detector_](https://blog.golang.org/race-detector). To enable this feature, run the tests with the `race` flag: `go test -race`.
+O Go nos ajuda a encontrar condições de corrida com seu [_detector de corrida_](https://blog.golang.org/race-detector) nativo. Para habilitar essa funcionalidade, execute os testes com a flag `race`: `go test -race`.
 
-You should get some output that looks like this:
+Você deve ver uma saída parecida com essa:
 
 ```bash
 ==================
 WARNING: DATA RACE
-Write at 0x00c420084d20 by goroutine 8:
-  runtime.mapassign_faststr()
-      /usr/local/Cellar/go/1.9.3/libexec/src/runtime/hashmap_fast.go:774 +0x0
-  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker.func1()
-      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:12 +0x82
-
-Previous write at 0x00c420084d20 by goroutine 7:
-  runtime.mapassign_faststr()
-      /usr/local/Cellar/go/1.9.3/libexec/src/runtime/hashmap_fast.go:774 +0x0
-  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker.func1()
-      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:12 +0x82
-
-Goroutine 8 (running) created at:
-  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker()
-      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:11 +0xc4
-  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.TestWebsiteChecker()
-      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker_test.go:27 +0xad
+Write at 0x00c000120089 by goroutine 6:
+  reflect.typedmemmove()
+      /usr/local/go/src/runtime/mbarrier.go:177 +0x0
+  reflect.Value.MapIndex()
+      /usr/local/go/src/reflect/value.go:1124 +0x2ae
+  reflect.deepValueEqual()
+      /usr/local/go/src/reflect/deepequal.go:118 +0x13be
+  reflect.DeepEqual()
+      /usr/local/go/src/reflect/deepequal.go:196 +0x2f0
+  github.com/larien/learn-go-with-tests/concorrencia/v2.TestVerificaWebsites()
+      /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites_test.go:30 +0x1ad
   testing.tRunner()
-      /usr/local/Cellar/go/1.9.3/libexec/src/testing/testing.go:746 +0x16c
+      /usr/local/go/src/testing/testing.go:827 +0x162
 
-Goroutine 7 (finished) created at:
-  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker()
-      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:11 +0xc4
-  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.TestWebsiteChecker()
-      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker_test.go:27 +0xad
+Previous write at 0x00c000120089 by goroutine 8:
+  github.com/larien/learn-go-with-tests/concorrencia/v2.VerificaWebsites.func1()
+      /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:17 +0x97
+
+Goroutine 6 (running) created at:
+  testing.(*T).Run()
+      /usr/local/go/src/testing/testing.go:878 +0x659
+  testing.runTests.func1()
+      /usr/local/go/src/testing/testing.go:1119 +0xa8
   testing.tRunner()
-      /usr/local/Cellar/go/1.9.3/libexec/src/testing/testing.go:746 +0x16c
+      /usr/local/go/src/testing/testing.go:827 +0x162
+  testing.runTests()
+      /usr/local/go/src/testing/testing.go:1117 +0x4ee
+  testing.(*M).Run()
+      /usr/local/go/src/testing/testing.go:1034 +0x2ee
+  main.main()
+      _testmain.go:44 +0x221
+
+Goroutine 8 (finished) created at:
+  github.com/larien/learn-go-with-tests/concorrencia/v2.VerificaWebsites()
+      /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:16 +0xb2
+  github.com/larien/learn-go-with-tests/concorrencia/v2.TestVerificaWebsites()
+      /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites_test.go:28 +0x17f
+  testing.tRunner()
+      /usr/local/go/src/testing/testing.go:827 +0x162
 ==================
 ```
 
-The details are, again, hard to read - but `WARNING: DATA RACE` is pretty unambiguous. Reading into the body of the error we can see two different goroutines performing writes on a map:
+Os detalhes ainda assim são bem difíceis de serem lidos - mas o `WARNING: DATA RACE` (CUIDADO: CONDIÇÃO DE CORRIDA) é bem claro. Lendo o corpo do erro podemos ver duas goroutines diferentes performando escritas em um map:
 
-`Write at 0x00c420084d20 by goroutine 8:`
+`Write at 0x00c000120089 by goroutine 6:`
 
-is writing to the same block of memory as
+está escrevendo no mesmo bloco de memória que:
 
-`Previous write at 0x00c420084d20 by goroutine 7:`
+`Previous write at 0x00c000120089 by goroutine 8:`
 
-On top of that we can see the line of code where the write is happening:
+Além disso, conseguimos ver a linha de código onde a escrita está acontecendo:
 
-`/Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:12`
+`/home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:17 +0x97`
 
-and the line of code where goroutines 7 an 8 are started:
+e a linha de código onde as goroutines 6 e 7 foram iniciadas:
 
-`/Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:11`
+`/home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:16 +0xb2`
 
-Everything you need to know is printed to your terminal - all you have to do is be patient enough to read it.
+Tudo o que você precisa saber está impresso no seu terminal - tudo o que você tem que fazer é ser paciente o bastante para lê-lo.
 
-### Channels
+### Canais
 
 We can solve this data race by coordinating our goroutines using _channels_. Channels are a Go data structure that can both receive and send values. These operations, along with their details, allow communication between different processes.
 
