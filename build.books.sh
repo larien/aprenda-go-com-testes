@@ -2,54 +2,58 @@
 
 set -e
 
-docker run -v `pwd`:/source jagregory/pandoc -o learn-go-with-tests.pdf --latex-engine=xelatex --variable urlcolor=blue --toc --toc-depth=1 pdf-cover.md \
+docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --latex-engine=xelatex --variable urlcolor=blue --toc --toc-depth=1 pdf-cover.md \
     gb-readme.md \
-    why.md \
-    hello-world.md \
-    integers.md \
-    arrays-and-slices.md \
-    structs-methods-and-interfaces.md \
-    pointers-and-errors.md \
-    maps.md \
-    dependency-injection.md \
-    mocking.md \
-    concurrency.md \
-    select.md \
-    reflection.md \
-    sync.md \
-    context.md \
-    app-intro.md \
-    http-server.md \
-    json.md \
-    io.md \
-    command-line.md \
-    time.md \
-    websockets.md \
-    os-exec.md \
-    error-types.md \
+    meta/motivacao.md \
+    primeiros-passos-com-go/instalacao-do-go.md \
+    primeiros-passos-com-go/hello-world.md \
+    primeiros-passos-com-go/integers.md \
+    primeiros-passos-com-go/iteracao.md \
+    primeiros-passos-com-go/arrays-e-slices.md \
+    primeiros-passos-com-go/structs-methods-and-interfaces.md \
+    primeiros-passos-com-go/pointers-and-errors.md \
+    primeiros-passos-com-go/maps.md \
+    primeiros-passos-com-go/injecao-de-dependencia.md \
+    primeiros-passos-com-go/mocking.md \
+    primeiros-passos-com-go/concurrency.md \
+    primeiros-passos-com-go/select.md \
+    primeiros-passos-com-go/reflection.md \
+    primeiros-passos-com-go/sync.md \
+    primeiros-passos-com-go/context.md \
+    criando-uma-aplicacao/introducao.md \
+    criando-uma-aplicacao/http-server.md \
+    criando-uma-aplicacao/json.md \
+    criando-uma-aplicacao/io.md \
+    criando-uma-aplicacao/command-line.md \
+    criando-uma-aplicacao/time.md \
+    criando-uma-aplicacao/websockets.md \
+    perguntas-e-respostas/os-exec.md \
+    perguntas-e-respostas/error-types.md \
 
-docker run -v `pwd`:/source jagregory/pandoc -o learn-go-with-tests.epub --latex-engine=xelatex --toc --toc-depth=1 title.txt \
+docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --latex-engine=xelatex --toc --toc-depth=1 title.txt \
     gb-readme.md \
-    why.md \
-    hello-world.md \
-    integers.md \
-    arrays-and-slices.md \
-    structs-methods-and-interfaces.md \
-    pointers-and-errors.md \
-    maps.md \
-    dependency-injection.md \
-    mocking.md \
-    concurrency.md \
-    select.md \
-    reflection.md \
-    sync.md \
-    context.md \
-    app-intro.md \
-    http-server.md \
-    json.md \
-    io.md \
-    command-line.md \
-    time.md \
-    websockets.md \
-    os-exec.md \
-    error-types.md
+    meta/motivacao.md \
+    primeiros-passos-com-go/instalacao-do-go.md \
+    primeiros-passos-com-go/hello-world.md \
+    primeiros-passos-com-go/integers.md \
+    primeiros-passos-com-go/iteracao.md \
+    primeiros-passos-com-go/arrays-e-slices.md \
+    primeiros-passos-com-go/structs-methods-and-interfaces.md \
+    primeiros-passos-com-go/pointers-and-errors.md \
+    primeiros-passos-com-go/maps.md \
+    primeiros-passos-com-go/injecao-de-dependencia.md \
+    primeiros-passos-com-go/mocking.md \
+    primeiros-passos-com-go/concurrency.md \
+    primeiros-passos-com-go/select.md \
+    primeiros-passos-com-go/reflection.md \
+    primeiros-passos-com-go/sync.md \
+    primeiros-passos-com-go/context.md \
+    criando-uma-aplicacao/introducao.md \
+    criando-uma-aplicacao/http-server.md \
+    criando-uma-aplicacao/json.md \
+    criando-uma-aplicacao/io.md \
+    criando-uma-aplicacao/command-line.md \
+    criando-uma-aplicacao/time.md \
+    criando-uma-aplicacao/websockets.md \
+    perguntas-e-respostas/os-exec.md \
+    perguntas-e-respostas/error-types.md

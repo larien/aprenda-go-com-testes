@@ -1,42 +1,44 @@
-# Table of contents
+# Índice
 
-* [Learn Go with Tests](gb-readme.md)
+-   [Introdução](README.md)
+-   [Aprenda Go com Testes](gb-readme.md)
 
-## Go fundamentals
+## Primeiros Passos com Go
 
-* [Install Go](install-go.md)
-* [Hello, World](hello-world.md)
-* [Integers](integers.md)
-* [Iteration](iteration.md)
-* [Arrays and slices](arrays-and-slices.md)
-* [Structs, methods & interfaces](structs-methods-and-interfaces.md)
-* [Pointers & errors](pointers-and-errors.md)
-* [Maps](maps.md)
-* [Dependency Injection](dependency-injection.md)
-* [Mocking](mocking.md)
-* [Concurrency](concurrency.md)
-* [Select](select.md)
-* [Reflection](reflection.md)
-* [Sync](sync.md)
-* [Context](context.md)
+-   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
+-   [Olá, mundo](primeiros-passos-com-go/hello-world.md)
+-   [Inteiros](primeiros-passos-com-go/integers.md)
+-   [Iteração](primeiros-passos-com-go/iteracao.md)
+-   [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md)
+-   [Structs, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md)
+-   [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md)
+-   [Maps](primeiros-passos-com-go/maps.md)
+-   [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md)
+-   [Mocking](primeiros-passos-com-go/mocking.md)
+-   [Concorrência](primeiros-passos-com-go/concurrency.md)
+-   [Select](primeiros-passos-com-go/select.md)
+-   [Reflection](primeiros-passos-com-go/reflection.md)
+-   [Sync](primeiros-passos-com-go/sync.md)
+-   [Context](primeiros-passos-com-go/context.md)
 
-## Build an application
+## Criando uma aplicação
 
-* [Intro](app-intro.md)
-* [HTTP server](http-server.md)
-* [JSON, routing and embedding](json.md)
-* [IO and sorting](io.md)
-* [Command line & package structure](command-line.md)
-* [Time](time.md)
-* [WebSockets](websockets.md)
+-   [Introdução](criando-uma-aplicacao/introducao.md)
+-   [Servidor HTTP](criando-uma-aplicacao/http-server.md)
+-   [JSON, roteamento and embedding](criando-uma-aplicacao/json.md)
+-   [IO e sorting](criando-uma-aplicacao/io.md)
+-   [Linha de comando e estrutura de pacotes](criando-uma-aplicacao/command-line.md)
+-   [Tempo](criando-uma-aplicacao/time.md)
+-   [Websockets](criando-uma-aplicacao/websockets.md)
 
-## Questions and answers
+## Perguntas e respostas
 
-* [OS Exec](os-exec.md)
-* [Error types](error-types.md)
+-   [OS Exec](perguntas-e-respostas/os-exec.md)
+-   [Tipos de erro](perguntas-e-respostas/error-types.md)
 
 ## Meta
 
-* [Why unit tests and how to make them work for you](why.md)
-* [Contributing](contributing.md)
-* [Chapter Template](template.md)
+-   [Por que testes unitários?](meta/motivacao.md)
+-   [Como contribuir](meta/contribuindo.md)
+-   [Como traduzir](meta/traduzindo.md)
+-   [Exemplo de capítulo](meta/exemplo.md)
