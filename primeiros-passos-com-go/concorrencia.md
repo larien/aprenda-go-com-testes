@@ -331,9 +331,9 @@ Tudo o que você precisa saber está impresso no seu terminal - tudo o que você
 
 ### Canais
 
-We can solve this data race by coordinating our goroutines using _channels_. Channels are a Go data structure that can both receive and send values. These operations, along with their details, allow communication between different processes.
+Podemos resolver essa condição de corrida coordenando nossas goroutines usando _canais_. Canais são uma estrutura de dados em Go que pode receber e enviar valores. Essas operações, junto de seus detalhes, permitem a comunicação entre processos diferentes.
 
-In this case we want to think about the communication between the parent process and each of the goroutines that it makes to do the work of running the `WebsiteChecker` function with the url.
+Nesse caso, queremos pensar sobre a comunicação entre o processo pai e cada uma das goroutines criadas por ele de orma que façam o trabalho de executar a função `VerificadorWebsite` com a URL.
 
 ```go
 package concurrency
