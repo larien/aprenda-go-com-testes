@@ -2,7 +2,7 @@
 
 [**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/mocks)
 
-Te pediram para criar um programa que conta a partir de 3, imprimindo cada número em uma linha nova (com um segundo intervalo entre cada uma) e quando chega a zero, imprime "Vai!" e sai.
+Te pediram para criar um programa que conta a partir de 3, imprimindo cada número em uma linha nova (com um segundo de intervalo entre cada uma) e quando chega a zero, imprime "Vai!" e sai.
 
 ```text
 3
@@ -143,7 +143,7 @@ Depois, precisamos fazer o software imprimir 2, 1 e então "Vai!".
 
 ## Escreva o teste primeiro
 
-Após investirmos tempo e esforço para fazer o principal funcionar, podemos iterar nossa solução com segurança e de forma simples. Não vamos mais precisar para parar e executar o programa novamente para ter confiança de que ele está funcionando, desde que a lógica esteja testada.
+Após investirmos tempo e esforço para fazer o principal funcionar, podemos iterar nossa solução com segurança e de forma simples. Não vamos mais precisar parar e executar o programa novamente para ter confiança de que ele está funcionando, desde que a lógica esteja testada.
 
 ```go
 func TestContagem(t *testing.T) {
@@ -202,7 +202,7 @@ func Contagem(saida io.Writer) {
 }
 ```
 
-Se executar o programa agora, você deve obter a saída de sejada, mas não tem uma contagem regressiva dramática com as pausas de 1 segundo.
+Se executar o programa agora, você deve obter a saída desejada, mas não tem uma contagem regressiva dramática com as pausas de 1 segundo.
 
 Go te permite obter isso com `time.Sleep`. Tente adicionar essa função ao seu código.
 
@@ -309,7 +309,7 @@ func Contagem(saida io.Writer, sleeper Sleeper) {
 }
 ```
 
-Se tentar novamente, nossa `main` não vai mais compilar pelo menos motivo:
+Se tentar novamente, nossa `main` não vai mais compilar pelo mesmo motivo:
 
 ```text
 ./main.go:26:11: not enough arguments in call to Contagem
@@ -339,8 +339,6 @@ func main() {
 ## Escreva código o suficiente para fazer o teste passar
 
 Agora o teste está compilando, mas não passando. Isso acontece porque ainda estamos chamando o `time.Sleep` ao invés da injetada. Vamos arrumar isso.
-
-The test is now compiling but not passing because we're still calling the `time.Sleep` rather than the injected in dependency. Let's fix that.
 
 ```go
 func Contagem(saida io.Writer, sleeper Sleeper) {
@@ -488,7 +486,7 @@ Agora temos nossa função e suas duas propriedades testadas adequadamente.
 
 ## Extendendo o Sleeper para se tornar configurável
 
-Uma funcionalidadee legal seria o `Sleeper` seja configurável.
+Uma funcionalidade legal seria o `Sleeper` ser configurável.
 
 ### Escreva o teste primeiro
 
