@@ -13,14 +13,14 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     primeiros-passos-com-go/structs-methods-and-interfaces.md \
     primeiros-passos-com-go/pointers-and-errors.md \
     primeiros-passos-com-go/maps.md \
-    primeiros-passos-com-go/dependency-injection.md \
+    primeiros-passos-com-go/injecao-de-dependencia.md \
     primeiros-passos-com-go/mocks.md \
     primeiros-passos-com-go/concurrency.md \
     primeiros-passos-com-go/select.md \
     primeiros-passos-com-go/reflection.md \
     primeiros-passos-com-go/sync.md \
     primeiros-passos-com-go/context.md \
-    criando-uma-aplicacao/app-intro.md \
+    criando-uma-aplicacao/introducao.md \
     criando-uma-aplicacao/http-server.md \
     criando-uma-aplicacao/json.md \
     criando-uma-aplicacao/io.md \
@@ -41,14 +41,14 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     primeiros-passos-com-go/structs-methods-and-interfaces.md \
     primeiros-passos-com-go/pointers-and-errors.md \
     primeiros-passos-com-go/maps.md \
-    primeiros-passos-com-go/dependency-injection.md \
+    primeiros-passos-com-go/injecao-de-dependencia.md \
     primeiros-passos-com-go/mocks.md \
     primeiros-passos-com-go/concurrency.md \
     primeiros-passos-com-go/select.md \
     primeiros-passos-com-go/reflection.md \
     primeiros-passos-com-go/sync.md \
     primeiros-passos-com-go/context.md \
-    criando-uma-aplicacao/app-intro.md \
+    criando-uma-aplicacao/introducao.md \
     criando-uma-aplicacao/http-server.md \
     criando-uma-aplicacao/json.md \
     criando-uma-aplicacao/io.md \

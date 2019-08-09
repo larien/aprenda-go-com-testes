@@ -8,7 +8,6 @@
 -   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
 -   [Olá, mundo](primeiros-passos-com-go/hello-world.md)
 -   [Inteiros](primeiros-passos-com-go/integers.md)
-    <<<<<<< HEAD
 -   [Iteração](primeiros-passos-com-go/iteracao.md)
 -   [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md)
 -   [Structs, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md)
@@ -24,7 +23,7 @@
 
 ## Criando uma aplicação
 
--   [Introdução](criando-uma-aplicacao/app-intro.md)
+-   [Introdução](criando-uma-aplicacao/introducao.md)
 -   [Servidor HTTP](criando-uma-aplicacao/http-server.md)
 -   [JSON, roteamento and embedding](criando-uma-aplicacao/json.md)
 -   [IO e sorting](criando-uma-aplicacao/io.md)
