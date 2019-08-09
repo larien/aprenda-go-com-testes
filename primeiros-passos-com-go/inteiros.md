@@ -64,13 +64,13 @@ func Adiciona(x, y int) int {
 }
 ```
 
-Ah hah! Frustração mais uma vez, TDD é uma farsa né?
+Ah hah! Frustração mais uma vez! TDD é uma farsa, né?
 
 Poderíamos escrever outro teste, com números diferentes para forçar o teste a falhar, mas isso parece um jogo de gato e rato.
 
 Quando estivermos mais familiarizados com a sintaxe do Go, apresentarei uma técnica chamada Testes Baseados em Propriedade, que interromperá a irritação das pessoas e ajudará a encontrar bugs.
 
-Por enquanto, vamos corrigi-lo corretamente
+Por enquanto, vamos corrigi-lo corretamente:
 
 ```go
 func Adiciona(x, y int) int {
@@ -99,7 +99,7 @@ func Adiciona(x, y int) int {
 
 ### Exemplos
 
-Se você realmente quer ir além, você pode fazer [exemplos](https://blog.golang.org/examples). Você encontrará muitos exemplos na documentação da biblioteca padrão.
+Se realmente quer ir além, você pode fazer [exemplos](https://blog.golang.org/examples). Você encontrará muitos exemplos na documentação da biblioteca padrão.
 
 Muitas vezes, exemplos de código que podem ser encontrados fora da base de código, como um arquivo readme, ficam desatualizados e incorretos em comparação com o código real, porque eles não são verificados.
 
