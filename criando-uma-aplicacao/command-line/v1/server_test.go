@@ -39,7 +39,7 @@ func TestGETPlayers(t *testing.T) {
 	}
 	server := NewPlayerServer(&store)
 
-	t.Run("returns Pepper's score", func(t *testing.T) {
+	t.Run("retorna os pontos da Pepper", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
 		response := httptest.NewRecorder()
 
@@ -49,7 +49,7 @@ func TestGETPlayers(t *testing.T) {
 		assertResponseBody(t, response.Body.String(), "20")
 	})
 
-	t.Run("returns Floyd's score", func(t *testing.T) {
+	t.Run("retorna os pontos do Floyd", func(t *testing.T) {
 		request := newGetScoreRequest("Floyd")
 		response := httptest.NewRecorder()
 
@@ -59,7 +59,7 @@ func TestGETPlayers(t *testing.T) {
 		assertResponseBody(t, response.Body.String(), "10")
 	})
 
-	t.Run("returns 404 on missing players", func(t *testing.T) {
+	t.Run("retorna 404 para jogadores que não existem", func(t *testing.T) {
 		request := newGetScoreRequest("Apollo")
 		response := httptest.NewRecorder()
 
@@ -77,7 +77,7 @@ func TestStoreWins(t *testing.T) {
 	}
 	server := NewPlayerServer(&store)
 
-	t.Run("it records wins on POST", func(t *testing.T) {
+	t.Run("armazenda vitórias com POST", func(t *testing.T) {
 		player := "Pepper"
 
 		request := newPostWinRequest(player)
@@ -88,18 +88,18 @@ func TestStoreWins(t *testing.T) {
 		assertStatus(t, response.Code, http.StatusAccepted)
 
 		if len(store.winCalls) != 1 {
-			t.Fatalf("got %d calls to RecordWin want %d", len(store.winCalls), 1)
+			t.Fatalf("recebi %d chamadas de RecordWin esperava %d", len(store.winCalls), 1)
 		}
 
 		if store.winCalls[0] != player {
-			t.Errorf("did not store the correct winner got '%s' want '%s'", store.winCalls[0], player)
+			t.Errorf("não armazenou o vencedor correto recebi '%s' esperava '%s'", store.winCalls[0], player)
 		}
 	})
 }
 
 func TestLeague(t *testing.T) {
 
-	t.Run("it returns the league table as JSON", func(t *testing.T) {
+	t.Run("retorna a tabela da liga como JSON", func(t *testing.T) {
 		wantedLeague := []Player{
 			{"Cleo", 32},
 			{"Chris", 20},
@@ -126,7 +126,7 @@ func TestLeague(t *testing.T) {
 func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want string) {
 	t.Helper()
 	if response.Header().Get("content-type") != want {
-		t.Errorf("response did not have content-type of %s, got %v", want, response.HeaderMap)
+		t.Errorf("resposta não tem o content-type igual a %s, recebi %v", want, response.HeaderMap)
 	}
 }
 
@@ -135,7 +135,7 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) []Player {
 	league, err := NewLeague(body)
 
 	if err != nil {
-		t.Fatalf("Unable to parse response from server '%s' into slice of Player, '%v'", body, err)
+		t.Fatalf("Incapaz de converter a resposta do servidor '%s' em forma de Player, '%v'", body, err)
 	}
 
 	return league
@@ -144,14 +144,14 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) []Player {
 func assertLeague(t *testing.T, got, want []Player) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %v want %v", got, want)
+		t.Errorf("recebi %v esperava %v", got, want)
 	}
 }
 
 func assertStatus(t *testing.T, got, want int) {
 	t.Helper()
 	if got != want {
-		t.Errorf("did not get correct status, got %d, want %d", got, want)
+		t.Errorf("não pegou o estado correto, recebi %d, esperava %d", got, want)
 	}
 }
 
@@ -173,6 +173,6 @@ func newPostWinRequest(name string) *http.Request {
 func assertResponseBody(t *testing.T, got, want string) {
 	t.Helper()
 	if got != want {
-		t.Errorf("response body is wrong, got '%s' want '%s'", got, want)
+		t.Errorf("corpo da resposta incorreto, recebi '%s' esperava '%s'", got, want)
 	}
 }

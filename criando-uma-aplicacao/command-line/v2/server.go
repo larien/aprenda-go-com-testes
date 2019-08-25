@@ -6,20 +6,20 @@ import (
 	"net/http"
 )
 
-// PlayerStore stores score information about players
+// PlayerStore armazena a pontuação dos jogadores
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
 	GetLeague() League
 }
 
-// Player stores a name with a number of wins
+// Player armazena o nome com o número de vitórias
 type Player struct {
 	Name string
 	Wins int
 }
 
-// PlayerServer is a HTTP interface for player information
+// PlayerServer é uma interface HTTP para informação do jogador
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
@@ -27,7 +27,7 @@ type PlayerServer struct {
 
 const jsonContentType = "application/json"
 
-// NewPlayerServer creates a PlayerServer with routing configured
+// NewPlayerServer cria um PlayerServer com rotas configuradas
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	p := new(PlayerServer)
 

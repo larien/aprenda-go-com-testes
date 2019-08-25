@@ -12,7 +12,7 @@ func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	tmpfile, err := ioutil.TempFile("", "db")
 
 	if err != nil {
-		t.Fatalf("could not create temp file %v", err)
+		t.Fatalf("nao foi possivel criar o arquivo temporario %v", err)
 	}
 
 	tmpfile.Write([]byte(initialData))
@@ -26,7 +26,7 @@ func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 
 func TestFileSystemStore(t *testing.T) {
 
-	t.Run("league sorted", func(t *testing.T) {
+	t.Run("liga ordenada", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[
 			{"Name": "Cleo", "Wins": 10},
 			{"Name": "Chris", "Wins": 33}]`)
@@ -45,12 +45,12 @@ func TestFileSystemStore(t *testing.T) {
 
 		assertLeague(t, got, want)
 
-		// read again
+		// Ler novamente
 		got = store.GetLeague()
 		assertLeague(t, got, want)
 	})
 
-	t.Run("get player score", func(t *testing.T) {
+	t.Run("encontrar os pontos do jogador", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[
 			{"Name": "Cleo", "Wins": 10},
 			{"Name": "Chris", "Wins": 33}]`)
@@ -65,7 +65,7 @@ func TestFileSystemStore(t *testing.T) {
 		assertScoreEquals(t, got, want)
 	})
 
-	t.Run("store wins for existing players", func(t *testing.T) {
+	t.Run("armazenar vitórias para jogadores existentes", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[
 			{"Name": "Cleo", "Wins": 10},
 			{"Name": "Chris", "Wins": 33}]`)
@@ -82,7 +82,7 @@ func TestFileSystemStore(t *testing.T) {
 		assertScoreEquals(t, got, want)
 	})
 
-	t.Run("store wins for existing players", func(t *testing.T) {
+	t.Run("armazenar vitórias para jogadores existentes", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[
 			{"Name": "Cleo", "Wins": 10},
 			{"Name": "Chris", "Wins": 33}]`)
@@ -99,7 +99,7 @@ func TestFileSystemStore(t *testing.T) {
 		assertScoreEquals(t, got, want)
 	})
 
-	t.Run("works with an empty file", func(t *testing.T) {
+	t.Run("trabalhar com um arquivo vazio", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, "")
 		defer cleanDatabase()
 
@@ -112,13 +112,13 @@ func TestFileSystemStore(t *testing.T) {
 func assertScoreEquals(t *testing.T, got, want int) {
 	t.Helper()
 	if got != want {
-		t.Errorf("got %d want %d", got, want)
+		t.Errorf("recebi %d esperava %d", got, want)
 	}
 }
 
 func assertNoError(t *testing.T, err error) {
 	t.Helper()
 	if err != nil {
-		t.Fatalf("didn't expect an error but got one, %v", err)
+		t.Fatalf("não esperava um erro mas recebi um, %v", err)
 	}
 }

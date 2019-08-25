@@ -9,8 +9,8 @@ import (
 
 func TestCLI(t *testing.T) {
 
-	t.Run("record chris win from user input", func(t *testing.T) {
-		in := strings.NewReader("Chris wins\n")
+	t.Run("recorda vencedor chris digitado pelo usuario", func(t *testing.T) {
+		in := strings.NewReader("Chris venceu\n")
 		playerStore := &poker.StubPlayerStore{}
 
 		cli := poker.NewCLI(playerStore, in)
@@ -19,8 +19,8 @@ func TestCLI(t *testing.T) {
 		poker.AssertPlayerWin(t, playerStore, "Chris")
 	})
 
-	t.Run("record cleo win from user input", func(t *testing.T) {
-		in := strings.NewReader("Cleo wins\n")
+	t.Run("recorda vencedor cleo digitado pelo usuario", func(t *testing.T) {
+		in := strings.NewReader("Cleo venceu\n")
 		playerStore := &poker.StubPlayerStore{}
 
 		cli := poker.NewCLI(playerStore, in)
@@ -29,10 +29,10 @@ func TestCLI(t *testing.T) {
 		poker.AssertPlayerWin(t, playerStore, "Cleo")
 	})
 
-	t.Run("do not read beyond the first newline", func(t *testing.T) {
+	t.Run("não ler além da primeira nova linha", func(t *testing.T) {
 		in := failOnEndReader{
 			t,
-			strings.NewReader("Chris wins\n hello there"),
+			strings.NewReader("Chris wins\n E ai"),
 		}
 
 		playerStore := &poker.StubPlayerStore{}
@@ -53,7 +53,7 @@ func (m failOnEndReader) Read(p []byte) (n int, err error) {
 	n, err = m.rdr.Read(p)
 
 	if n == 0 || err == io.EOF {
-		m.t.Fatal("Read to the end when you shouldn't have")
+		m.t.Fatal("Ler o até o fim quando não precisava")
 	}
 
 	return n, err

@@ -11,6 +11,6 @@ func TestCLI(t *testing.T) {
 	cli.PlayPoker()
 
 	if len(playerStore.winCalls) < 1 {
-		t.Fatal("expected a win call but didn't get any")
+		t.Fatal("esperando uma chamada de vitoria mas nao recebi nenhuma")
 	}
 }

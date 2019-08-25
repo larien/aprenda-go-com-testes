@@ -1,16 +1,21 @@
 # Linha de comando e estrutura de pacotes
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/criando-uma-aplicacao/command-line)
+[**Você pode encontrar os exemplos deste capítulo aqui**](/command-line)
 
-Our product owner now wants to _pivot_ by introducing a second application - a command line application.
+Nosso gerente de produto quer [_pivotar_](https://pt.wikipedia.org/wiki/Startup#Dicion%C3%A1rio_com_os_termos_mais_usados_pelas_startups)
+ e introduzir uma segunda aplicação - uma aplicação de 
+linha de comando. 
 
-For now, it will just need to be able to record a player's win when the user types `Ruth wins`. The intention is to eventually be a tool for helping users play poker.
+Inicialmente, ela vai apenas ser capaz de gravar o que um jogador vence quando o usuário digita `Ruth venceu`. 
+A intenção é eventualmente criar uma ferramenta para ajudar usuários a jogar poker.
 
-The product owner wants the database to be shared amongst the two applications so that the league updates according to wins recorded in the new application.
+O gerente de produto quer que o banco de dados seja compartilhado entre as duas aplicações para que a `liga` atualize 
+de acordo com as vitórias gravadas nessa nova aplicação.
 
-## A reminder of the code
+## Lembrando do código
 
-We have an application with a `main.go` file that launches an HTTP server. The HTTP server won't be interesting to us for this exercise but the abstraction it uses will. It depends on a `PlayerStore`.
+Nós temos uma aplicação com um arquivo `main.go` que inicia um servidor HTTP. O servidor HTTP não é nosso interesse neste
+exercício mas a abstração usada é. Ele depende de `PlayerStore`.
 
 ```go
 type PlayerStore interface {
@@ -20,29 +25,32 @@ type PlayerStore interface {
 }
 ```
 
-In the previous chapter, we made a `FileSystemPlayerStore` which implements that interface. We should be able to re-use some of this for our new application.
+No capítulo anterior, criamos um `FileSystemPlayerStore` que implementa essa mesma interface. Temos que poder reutilizar
+parte dela para a nossa nova aplicação. 
 
-## Some project refactoring first
+## Primeiro vamos [refatorar](https://pt.wikipedia.org/wiki/Refatora%C3%A7%C3%A3o) um pouco
 
-Our project now needs to create two binaries, our existing web server and the command line app.
+Nosso projeto precisa criar dois executáveis, nosso existente servidor web e o app de linha de comand. 
 
-Before we get stuck into our new work we should structure our project to accommodate this.
+Antes de nos entretermos no nosso novo código, precisamos estruturar nosso projeto melhor para suportar isso.
 
-So far all the code has lived in one folder, in a path looking like this
+Até agora todos os códigos foram colocador em uma única pasta, em uma estrutura parecida com essa
 
-`$GOPATH/src/github.com/your-name/my-app`
+`$GOPATH/src/github.com/seu-nome/meu-app`
 
-In order for you to make an application in Go, you need a `main` function inside a `package main`. So far all of our "domain" code has lived inside `package main` and our `func main` can reference everything.
+Para fazer qualquer aplicação em Go, é necessário uma função `main` dentro de um `package main`. Até agora todo nosso
+código viveu dentro de `package main` e a função `func main` pode referenciar tudo. 
 
-This was fine so far and it is good practice not to go over-the-top with package structure. If you take the time to look through the standard library you will see very little in the way of lots of folders and structure.
+Isso foi legal e é uma boa prática não sair gerando estrutura com pacotes logo de início. Se você olhar dentro da biblioteca
+padrão você vai ver bem pouco a utilização de pastas e estruturas.
 
-Thankfully it's pretty straightforward to add structure _when you need it_.
+Felizmente é bem fácil adicionar uma estrutura _quando precisar dela_.
 
-Inside the existing project create a `cmd` directory with a `webserver` directory inside that \(e.g `mkdir -p cmd/webserver`\).
+Dentro do projeto existente crie uma pasta `cmd` com uma chamada `webserver` dentro dela \(ex: `mkdir -p cmd/webserver`\).
 
-Move the `main.go` inside there.
+Mova o arquivo `main.go` para dentro dessa pasta.
 
-If you have `tree` installed you should run it and your structure should look like this
+Se você tiver o comand `tree` instalado você pode executar sua estrutura de pastas tem que parecer
 
 ```text
 .
@@ -59,13 +67,15 @@ If you have `tree` installed you should run it and your structure should look li
 └── tape_test.go
 ```
 
-We now effectively have a separation between our application and the library code but we now need to change some package names. Remember when you build a Go application its package _must_ be `main`.
+Agora temos uma separação efetiva entre nossa aplicação e o código da biblioteca mas agora temos que mudar alguns nomes
+de pacotes(package). Lembre-se que ao construir uma aplicação Go seu nome _deve_  ser `main`.
 
-Change all the other code to have a package called `poker`.
+Mude todos os outros códigos para ter um pacote chamado `poker`.
 
-Finally, we need to import this package into `main.go` so we can use it to create our web server. Then we can use our library code by using `poker.FunctionName`.
+Finalmente, temos que importar esse pacote no `main.go` para utilizá-lo na criação de nosso servidor web. Então podemos
+usar nossa biblioteca chamando `poker.NomeDaFunção`.
 
-The paths will be different on your computer, but it should be similar to this:
+Os caminhos de diretórios vão ser diferentes no seu computador, mas deveria parecer com isso: 
 
 ```go
 package main
@@ -74,7 +84,7 @@ import (
     "log"
     "net/http"
     "os"
-    "github.com/quii/learn-go-with-tests/criando-uma-aplicacao/command-line/v1"
+    "github.com/larien/learn-go-with-tests/command-line/v1"
 )
 
 const dbFileName = "game.db.json"
@@ -83,38 +93,41 @@ func main() {
     db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
 
     if err != nil {
-        log.Fatalf("problem opening %s %v", dbFileName, err)
+        log.Fatalf("falha ao abrir %s %v", dbFileName, err)
     }
 
     store, err := poker.NewFileSystemPlayerStore(db)
 
     if err != nil {
-        log.Fatalf("problem creating file system player store, %v ", err)
+        log.Fatalf("falha ao criar sistema de arquivos para armazenar jogadores, %v ", err)
     }
 
     server := poker.NewPlayerServer(store)
 
     if err := http.ListenAndServe(":5000", server); err != nil {
-        log.Fatalf("could not listen on port 5000 %v", err)
+        log.Fatalf("nao foi possivel escutar na porta 5000 %v", err)
     }
 }
 ```
 
-The full path may seem a bit jarring, but this is how you can import _any_ publicly available library into your code.
+O caminho da pasta pode parecer chocante, mas essa é a forma para importar _qualquer_ biblioteca pública no seu código.
 
-By separating our domain code into a separate package and committing it to a public repo like GitHub any Go developer can write their own code which imports that package the features we've written available. The first time you try and run it will complain it is not existing but all you need to do is run `go get`.
+Separando nosso código em um pacote isolado e enviando para um repositório público como o GitHub qualquer desenvolvedor
+Go pode escrever código que importe esse pacote com as funcionalidades que disponibilizarmos. A primeira vez que você
+tentar e executar ele vai reclamar que o pacote não existe mas tudo que precisa ser feito é executar `go get`.
 
-[In addition, users can view the documentation at godoc.org](https://godoc.org/github.com/quii/learn-go-with-tests/criando-uma-aplicacao/command-line/v1).
+[Além disso, usuários podem ver a documentação em godoc.org](https://godoc.org/github.com/larien/learn-go-with-tests/command-line/v1).
 
-### Final checks
+### Verificações finais
 
-* Inside the root run `go test` and check they're still passing
-* Go inside our `cmd/webserver` and do `go run main.go`
-  * Visit `http://localhost:5000/league` and you should see it's still working
+* Dentro do diretório raiz rode `go test` e valide que ainda está passando
+* Vá dentro de `cmd/webserver` e rode `go run main.go`
+  * Abra `http://localhost:5000/league` e veja que ainda está funcionando
 
-### Walking skeleton
+### Estrutura inicial
 
-Before we get stuck into writing tests, let's add a new application that our project will build. Create another directory inside `cmd` called `cli` \(command line interface\) and add a `main.go` with the following
+Antes de escrever os testes, vamos adicionar uma nova aplicação que nosso projeto vai construir. Crie outro diretório
+ dentro de `cmd` chamado `cli` \(command line interface\) e adicione um arquivo `main.go` com
 
 ```go
 package main
@@ -122,19 +135,21 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("Let's play poker")
+    fmt.Println("Vamos jogar poker")
 }
 ```
 
-The first requirement we'll tackle is recording a win when the user types `{PlayerName} wins`.
+O primeiro requisito que vamos discutir is como gravar uma vitória quando o usuário digitar `{NomeDoJogador} venceu`.
 
-## Write the test first
+## Escreva o teste antes
 
-We know we need to make something called `CLI` which will allow us to `Play` poker. It'll need to read user input and then record wins to a `PlayerStore`.
+Sabemos que temos que escrever algo chamado `CLI` que vai nos permitir `Play(Jogar)` poker. Isso vai precisar ler o que
+o usuário digita e então gravar a vitória no armazenamento `PlayerStore`.  
 
-Before we jump too far ahead though, let's just write a test to check it integrates with the `PlayerStore` how we'd like.
+Antes de irmos muito longe, vamos apenas escrever um teste para verificar a integração com a `PlayerStore` funciona como
+gostaríamos. 
 
-Inside `CLI_test.go` \(in the root of the project, not inside `cmd`\)
+Dentro de `CLI_test.go` \(no diretório raiz do projeto, não dentro de `cmd`\)
 
 ```go
 func TestCLI(t *testing.T) {
@@ -143,28 +158,29 @@ func TestCLI(t *testing.T) {
     cli.PlayPoker()
 
     if len(playerStore.winCalls) !=1 {
-        t.Fatal("expected a win call but didn't get any")
+        t.Fatal("esperando uma chamada de vitoria mas nao recebi nenhuma")
     }
 }
 ```
 
-* We can use our `StubPlayerStore` from other tests
-* We pass in our dependency into our not yet existing `CLI` type
-* Trigger the game by an unwritten `PlayPoker` method
-* Check that a win is recorded
+* Podemos usar nossa `StubPlayerStore` de outros testes
+* Passamos nossa dependência dentro do nosso ainda não existente tipo `CLI`
+* Iniciamos o jogo chamando um método que chamaremos de `PlayPoker`
+* Validamos se a vitória foi registrada
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
-# github.com/quii/learn-go-with-tests/criando-uma-aplicacao/command-line/v2
+# github.com/larien/learn-go-with-tests/command-line/v2
 ./cli_test.go:25:10: undefined: CLI
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo código para o teste rodar e verificarmos o próximo error
 
-At this point, you should be comfortable enough to create our new `CLI` struct with the respective field for our dependency and add a method.
+Neste ponto, você deveria estar confortável para criar nossa nova `CLI` struct(estrutura de dados) com os respectivos
+campos necessários para nossa dependência e adicionar um método.
 
-You should end up with code like this
+Você deveria acabar com um código como esse
 
 ```go
 type CLI struct {
@@ -174,15 +190,15 @@ type CLI struct {
 func (cli *CLI) PlayPoker() {}
 ```
 
-Remember we're just trying to get the test running so we can check the test fails how we'd hope
+Lembre-se que estamos apenas tentando fazer o teste rodar para validarmos que ele falha como esperamos
 
 ```text
 --- FAIL: TestCLI (0.00s)
-    cli_test.go:30: expected a win call but didn't get any
+    cli_test.go:30: esperando uma chamada de vitoria mas nao recebi nenhuma
 FAIL
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer ele passar
 
 ```go
 func (cli *CLI) PlayPoker() {
@@ -190,46 +206,48 @@ func (cli *CLI) PlayPoker() {
 }
 ```
 
-That should make it pass.
+Isso deve fazer ele passar.
 
-Next, we need to simulate reading from `Stdin` \(the input from the user\) so that we can record wins for specific players.
+Agora, precisamos simular leando isso from `Stdin` \(o que o usuário digita\) para que fique registrado vitórias para 
+jogadores específicos.
 
-Let's extend our test to exercise this.
+Vamos incrementar nosso teste para exercitar essa condição.
 
-## Write the test first
+## Escreva o teste antes
 
 ```go
 func TestCLI(t *testing.T) {
-    in := strings.NewReader("Chris wins\n")
+    in := strings.NewReader("Chris venceu\n")
     playerStore := &StubPlayerStore{}
 
     cli := &CLI{playerStore, in}
     cli.PlayPoker()
 
     if len(playerStore.winCalls) < 1 {
-        t.Fatal("expected a win call but didn't get any")
+        t.Fatal("esperando uma chamada de vitoria mas nao recebi nenhuma")
     }
 
     got := playerStore.winCalls[0]
     want := "Chris"
 
     if got != want {
-        t.Errorf("didn't record correct winner, got '%s', want '%s'", got, want)
+        t.Errorf("nao armazenou o vencedor correto, recebi '%s', esperava '%s'", got, want)
     }
 }
 ```
 
-`os.Stdin` is what we'll use in `main` to capture the user's input. It is a `*File` under the hood which means it implements `io.Reader` which as we know by now is a handy way of capturing text.
+`os.Stdin` é o que vamos usar no `main` para capturar o que for digitado pelo usuário. Ele é um `*File` por trás dos panos
+ o que siginifica que implementa `io.Reader` o qual sabemos ser um jeito útil de capturar texto.
 
-We create an `io.Reader` in our test using the handy `strings.NewReader`, filling it with what we expect the user to type.
+Nós criamos um `io.Reader` no nosso teste usando `strings.NewReader`, preenchendo ele com o que esperamos que o usuário digite.
 
-## Try to run the test
+## Tente rodar o teste
 
 `./CLI_test.go:12:32: too many values in struct initializer`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo código para o teste rodar e verificarmos o próximo error
 
-We need to add our new dependency into `CLI`.
+Precisamos adicionar nossa nova dependência dentro de `CLI`.
 
 ```go
 type CLI struct {
@@ -238,15 +256,15 @@ type CLI struct {
 }
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer ele passar
 
 ```text
 --- FAIL: TestCLI (0.00s)
-    CLI_test.go:23: didn't record the correct winner, got 'Cleo', want 'Chris'
+    CLI_test.go:23: nao armazenou o vencedor correto, recebi 'Cleo', esperava 'Chris'
 FAIL
 ```
 
-Remember to do the strictly easiest thing first
+Lembre-se de primeiro fazer o que for mais fácil
 
 ```go
 func (cli *CLI) PlayPoker() {
@@ -254,33 +272,35 @@ func (cli *CLI) PlayPoker() {
 }
 ```
 
-The test passes. We'll add another test to force us to write some real code next, but first, let's refactor.
+O teste vai passar. Depois nós vamos adicionar outro teste que vai nos forçar a escrever mais código, mas antes, vamos 
+[refatorar](https://pt.wikipedia.org/wiki/Refatora%C3%A7%C3%A3o).
 
-## Refactor
+## [Refatoração](https://pt.wikipedia.org/wiki/Refatora%C3%A7%C3%A3o)
 
-In `server_test` we earlier did checks to see if wins are recorded as we have here. Let's DRY that assertion up into a helper
+No `server_test` anteriormente fizemos validações para saber se uma vitória é armazenada assim como temos aqui. Vamos mover
+essa validação para dentro de um helper e manter o código [DRY](https://pt.wikipedia.org/wiki/Don%27t_repeat_yourself).
 
 ```go
 func assertPlayerWin(t *testing.T, store *StubPlayerStore, winner string) {
     t.Helper()
 
     if len(store.winCalls) != 1 {
-        t.Fatalf("got %d calls to RecordWin want %d", len(store.winCalls), 1)
+        t.Fatalf("recebi %d chamadas de RecordWin esperava %d", len(store.winCalls), 1)
     }
 
     if store.winCalls[0] != winner {
-        t.Errorf("did not store correct winner got '%s' want '%s'", store.winCalls[0], winner)
+        t.Errorf("nao armazenou o vencedor correto, recebi '%s' esperava '%s'", store.winCalls[0], winner)
     }
 }
 ```
 
-Now replace the assertions in both `server_test.go` and `CLI_test.go`.
+Agora troque a validação em ambos os arquivos `server_test.go` e `CLI_test.go`.
 
-The test should now read like so
+O teste deve agora parecer com
 
 ```go
 func TestCLI(t *testing.T) {
-    in := strings.NewReader("Chris wins\n")
+    in := strings.NewReader("Chris venceu\n")
     playerStore := &StubPlayerStore{}
 
     cli := &CLI{playerStore, in}
@@ -290,15 +310,15 @@ func TestCLI(t *testing.T) {
 }
 ```
 
-Now let's write _another_ test with different user input to force us into actually reading it.
+Agora vamos escrever _outro_ teste com uma variação do que o usuário digitou nos forçando a ler de verdade.
 
-## Write the test first
+## Escreva o teste antes
 
 ```go
 func TestCLI(t *testing.T) {
 
-    t.Run("record chris win from user input", func(t *testing.T) {
-        in := strings.NewReader("Chris wins\n")
+    t.Run("recorda vencedor chris digitado pelo usuario", func(t *testing.T) {
+        in := strings.NewReader("Chris venceu\n")
         playerStore := &StubPlayerStore{}
 
         cli := &CLI{playerStore, in}
@@ -307,8 +327,8 @@ func TestCLI(t *testing.T) {
         assertPlayerWin(t, playerStore, "Chris")
     })
 
-    t.Run("record cleo win from user input", func(t *testing.T) {
-        in := strings.NewReader("Cleo wins\n")
+    t.Run("recorda vencedor cleo digitado pelo usuario", func(t *testing.T) {
+        in := strings.NewReader("Cleo venceu\n")
         playerStore := &StubPlayerStore{}
 
         cli := &CLI{playerStore, in}
@@ -320,26 +340,27 @@ func TestCLI(t *testing.T) {
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 === RUN   TestCLI
 --- FAIL: TestCLI (0.00s)
-=== RUN   TestCLI/record_chris_win_from_user_input
-    --- PASS: TestCLI/record_chris_win_from_user_input (0.00s)
-=== RUN   TestCLI/record_cleo_win_from_user_input
-    --- FAIL: TestCLI/record_cleo_win_from_user_input (0.00s)
-        CLI_test.go:27: did not store correct winner got 'Chris' want 'Cleo'
+=== RUN   TestCLI/recorda_vencedor_chris_digitado_pelo_usuario
+    --- PASS: TestCLI/recorda_vencedor_chris_digitado_pelo_usuario (0.00s)
+=== RUN   TestCLI/recorda_vencedor_cleo_digitado_pelo_usuario
+    --- FAIL: TestCLI/recorda_vencedor_cleo_digitado_pelo_usuario (0.00s)
+        CLI_test.go:27: nao armazenou o vencedor correto, recebi 'Chris' esperava 'Cleo'
 FAIL
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer ele passar
 
-We'll use a [`bufio.Scanner`](https://golang.org/pkg/bufio/) to read the input from the `io.Reader`.
+Vamos usar o [`bufio.Scanner`](https://golang.org/pkg/bufio/) para ler o que foi digitado no `io.Reader`.
 
-> Package bufio implements buffered I/O. It wraps an io.Reader or io.Writer object, creating another object \(Reader or Writer\) that also implements the interface but provides buffering and some help for textual I/O.
+> O pacote bufio implementa [buffered](https://pt.wikipedia.org/wiki/Buffer_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) [I/O](https://pt.wikipedia.org/wiki/Entrada/sa%C3%ADda).
+ Ele encapsula um objeto io.Reader ou io.Writer, criando um outro objeto \(Reader ou Writer\) que também implementa a interface mas prover buffering e ajuda com entradas/saídas de textos.
 
-Update the code to the following
+Atualize o código para
 
 ```go
 type CLI struct {
@@ -354,25 +375,27 @@ func (cli *CLI) PlayPoker() {
 }
 
 func extractWinner(userInput string) string {
-    return strings.Replace(userInput, " wins", "", 1)
+    return strings.Replace(userInput, " venceu", "", 1)
 }
 ```
 
-The tests will now pass.
+O teste agora vai passar.
 
-* `Scanner.Scan()` will read up to a newline.
-* We then use `Scanner.Text()` to return the `string` the scanner read to.
+* `Scanner.Scan()` vai ler até o carácter de nova linha.
+* Só então usamos `Scanner.Text()` para returnar a `string` lida pelo scanner.
 
-Now that we have some passing tests, we should wire this up into `main`. Remember we should always strive to have fully-integrated working software as quickly as we can.
+Agora que temos alguns testes passando, devemos amarrar isso ao nosso `main`. Lembre-se que devemos sempre almejar ter
+o código funcionando totalmente integrado o mais rápido que pudermos.
 
-In `main.go` add the following and run it. \(you may have to adjust the path of the second dependency to match what's on your computer\)
+No `main.go` adicione o seguinte e execute. \(você pode ter que ajustar o caminho da segunda dependência para refletir 
+o que tem no seu computador\)
 
 ```go
 package main
 
 import (
     "fmt"
-    "github.com/quii/learn-go-with-tests/criando-uma-aplicacao/command-line/v3"
+    "github.com/larien/learn-go-with-tests/command-line/v3"
     "log"
     "os"
 )
@@ -380,19 +403,19 @@ import (
 const dbFileName = "game.db.json"
 
 func main() {
-    fmt.Println("Let's play poker")
-    fmt.Println("Type {Name} wins to record a win")
+    fmt.Println("Vamos jogar poker")
+    fmt.Println("Digite {Nome} venceu para registrar uma vitoria")
 
     db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
 
     if err != nil {
-        log.Fatalf("problem opening %s %v", dbFileName, err)
+        log.Fatalf("falha ao abrir %s %v", dbFileName, err)
     }
 
     store, err := poker.NewFileSystemPlayerStore(db)
 
     if err != nil {
-        log.Fatalf("problem creating file system player store, %v ", err)
+        log.Fatalf("falha ao criar sistema de arquivos para armazenar jogadores, %v ", err)
     }
 
     game := poker.CLI{store, os.Stdin}
@@ -400,34 +423,46 @@ func main() {
 }
 ```
 
-You should get an error
+Você deve receber um erro
 
 ```text
 command-line/v3/cmd/cli/main.go:32:25: implicit assignment of unexported field 'playerStore' in poker.CLI literal
 command-line/v3/cmd/cli/main.go:32:34: implicit assignment of unexported field 'in' in poker.CLI literal
 ```
 
-What's happening here is because we are trying to assign to the fields `playerStore` and `in` in `CLI`. These are unexported \(private\) fields. We _could_ do this in our test code because our test is in the same package as `CLI` \(`poker`\). But our `main` is in package `main` so it does not have access.
+O que está acontecendo é que por causa da tentativa de associar os campos `playerStore` e `in` na `CLI`. Eles são campos 
+não exportados\(privados\). Nós _podemos_ fazer isso nos nossos testes porque o teste está no mesmo pacote da `CLI` \(`poker`\). 
+Mas nosso `main` é um pacote `main` portanto não tem acesso.
 
-This highlights the importance of _integrating your work_. We rightfully made the dependencies of our `CLI` private \(because we don't want them exposed to users of `CLI`s\) but haven't made a way for users to construct it.
+Isso enfatiza a importância de _integrar seu código_. Nós definimos corretamente as dependências da `CLI` como privada 
+\(porque não queremos expô-las para os usuários da `CLI`\) mas não criamos uma forma para os usuário construí-las.  
 
-Is there a way to have caught this problem earlier?
+Existe alguma forma de identificarmos esse problema antes?
 
 ### `package mypackage_test`
 
-In all other examples so far, when we make a test file we declare it as being in the same package that we are testing.
+Nos exemplos usados até agora, quando nós fazemos um arquivo para testes nós declaramos ele como pertencendo ao mesmo pacote
+que estamos testando.
 
-This is fine and it means on the odd occasion where we want to test something internal to the package we have access to the unexported types.
+Tudo bem e fazer isso significa no pior dos casos que queremos testar algo que é pertecente somente aquele pacote
+conseguimos acesso aos tipos não exportados.
 
-But given we have advocated for _not_ testing internal things _generally_, can Go help enforce that? What if we could test our code where we only have access to the exported types \(like our `main` does\)?
+Mas considerando que, _em geral_, advogamos para _não_ se fazer testes de coisas internas, como Go pode garantir isso?
+ E se pudéssemos testar nosso código aonde somente temos acesso aos tipos exportados \(como em nossp `main`\)?
 
-When you're writing a project with multiple packages I would strongly recommend that your test package name has `_test` at the end. When you do this you will only be able to have access to the public types in your package. This would help with this specific case but also helps enforce the discipline of only testing public APIs. If you still wish to test internals you can make a separate test with the package you want to test.
+Quando você escreve um project com múltiplos pacotes eu recomendo fortmente que o nome to seu pacote tenha o sufixo `_test`.
+ Fazendo isso você somente ter acesso aos tipos públicos no seu pacote. Isso ajuda nesse caso especificamente mas também
+ ajuda a disciplinar o teste somente de APIs públicas. Se ainda assim você precisar testar coisa interna você pode criar
+ um teste separado com o nome de pacote igual ao do que você quer testar.
 
-An adage with TDD is that if you cannot test your code then it is probably hard for users of your code to integrate with it. Using `package foo_test` will help with this by forcing you to test your code as if you are importing it like users of your package will.
+A máxima do TDD é que se você não pode testar o seu código então provávelmente vai ser difícil para os usuários do seu
+ código de integrar com ele. Fazendo uso de `package foo_test` vai forçar você à testar seu código como se você estivesse
+ importando ele como vão fazer aqueles que importarem o seu pacote.  
 
-Before fixing `main` let's change the package of our test inside `CLI_test.go` to `poker_test`.
+Antes de consertar o `main` vamos mudar o nome de pacote do nosso teste dentro de `CLI_test.go` para `poker_test`.
 
-If you have a well-configured IDE you will suddenly see a lot of red! If you run the compiler you'll get the following errors
+Se sua IDE estiver bem configurada você vai de repente ver um monte de vermelho! Se você rodar o compilador vocês vai ver
+os seguintes errors:
 
 ```text
 ./CLI_test.go:12:19: undefined: StubPlayerStore
@@ -436,17 +471,24 @@ If you have a well-configured IDE you will suddenly see a lot of red! If you run
 ./CLI_test.go:27:3: undefined: assertPlayerWin
 ```
 
-We have now stumbled into more questions on package design. In order to test our software we made unexported stubs and helper functions which are no longer available for us to use in our `CLI_test` because the helpers are defined in the `_test.go` files in the `poker` package.
+Nós agora tropeçamenos nos problemas de desenho do pacote. Para testar nosso código nós criamos algumas funções auxíliares
+ e tipos emulados sem exportá-los e portanto não estão mais disponíveis para uso no nosso `CLI_test` porque eles foram
+ definidos somente nos arquivos com `_test.go` no pacote `poker`.
+ 
+#### Queremos ter as funções auxíliares e tipos emulados disponível publicamente?
 
-#### Do we want to have our stubs and helpers 'public'?
+Está é uma discussão subjetiva. One argumento é que não queremos poluir a API do nosso pacote só para ter código que
+ facilitam os tests.
 
-This is a subjective discussion. One could argue that you do not want to pollute your package's API with code to facilitate tests.
+Na apresentação ["Testes avançados em Go"](https://speakerdeck.com/mitchellh/advanced-testing-with-go?slide=53) do
+ Mitchell Hashimoto, é descrito como eles advogam na HashiCorp isso para que usuários do pacote possam escrever testes
+ sem ter que reinventar a roda escrevendo tipos emulados. No nosso caso, isso significa que qualquer um usando nosso
+ pacote `poker` não tem que criar seus próprios `PlayStore` emulados se eles quiserem usar nosso código.  
 
-In the presentation ["Advanced Testing with Go"](https://speakerdeck.com/mitchellh/advanced-testing-with-go?slide=53) by Mitchell Hashimoto, it is described how at HashiCorp they advocate doing this so that users of the package can write tests without having to re-invent the wheel writing stubs. In our case, this would mean anyone using our `poker` package won't have to create their own stub `PlayerStore` if they wish to work with our code.
+Informalmente eu tenho usado esta técnica em outros pacotes compartilhados e tem se provado extremamente útil em termos
+ de economizar tempo dos usuários quando eles integram com nossos pacotes.
 
-Anecdotally I have used this technique in other shared packages and it has proved extremely useful in terms of users saving time when integrating with our packages.
-
-So let's create a file called `testing.go` and add our stub and our helpers.
+Então vamos criar um arquivo chamado `testing.go` e adicionar nossos cógidos auxiliares nele.
 
 ```go
 package poker
@@ -476,26 +518,27 @@ func AssertPlayerWin(t *testing.T, store *StubPlayerStore, winner string) {
     t.Helper()
 
     if len(store.winCalls) != 1 {
-        t.Fatalf("got %d calls to RecordWin want %d", len(store.winCalls), 1)
+        t.Fatalf("recebi %d chamadas de RecordWin esperava %d", len(store.winCalls), 1)
     }
 
     if store.winCalls[0] != winner {
-        t.Errorf("did not store correct winner got '%s' want '%s'", store.winCalls[0], winner)
+        t.Errorf("nao armazenou o vencedor correto, recebi '%s' esperava '%s'", store.winCalls[0], winner)
     }
 }
 
-// todo for you - the rest of the helpers
+// tarega para você - adicionar os códigos restantes
 ```
 
-You'll need to make the helpers public \(remember exporting is done with a capital letter at the start\) if you want them to be exposed to importers of our package.
+Você precisar tornar essas funções públicas \(lembre-se que exportar em Go é feito apenas colocando a primeira letra em
+maíusculo\) se você quiser que elas sejam expostas para quem importar esse pacote.
 
-In our `CLI` test you'll need to call the code as if you were using it within a different package.
+No nosso teste `CLI` você precisa chamar o código como se fosse usando de um pacote diferente.
 
 ```go
 func TestCLI(t *testing.T) {
 
-    t.Run("record chris win from user input", func(t *testing.T) {
-        in := strings.NewReader("Chris wins\n")
+    t.Run("recorda vencedor chris digitado pelo usuario", func(t *testing.T) {
+        in := strings.NewReader("Chris venceu\n")
         playerStore := &poker.StubPlayerStore{}
 
         cli := &poker.CLI{playerStore, in}
@@ -504,8 +547,8 @@ func TestCLI(t *testing.T) {
         poker.AssertPlayerWin(t, playerStore, "Chris")
     })
 
-    t.Run("record cleo win from user input", func(t *testing.T) {
-        in := strings.NewReader("Cleo wins\n")
+    t.Run("recorda vencedor cleo digitado pelo usuario", func(t *testing.T) {
+        in := strings.NewReader("Cleo venceu\n")
         playerStore := &poker.StubPlayerStore{}
 
         cli := &poker.CLI{playerStore, in}
@@ -517,7 +560,7 @@ func TestCLI(t *testing.T) {
 }
 ```
 
-You'll now see we have the same problems as we had in `main`
+Você vai ver que agora temos o mesmo problema que tivemos na `main`
 
 ```text
 ./CLI_test.go:15:26: implicit assignment of unexported field 'playerStore' in poker.CLI literal
@@ -526,7 +569,9 @@ You'll now see we have the same problems as we had in `main`
 ./CLI_test.go:25:39: implicit assignment of unexported field 'in' in poker.CLI literal
 ```
 
-The easiest way to get around this is to make a constructor as we have for other types. We'll also change `CLI` so it stores a `bufio.Scanner` instead of the reader as it's now automatically wrapped at construction time.
+O jeito mais fácil de resolver isso é fazer um construtor como temos para outros tipos. Nós também vamos mudar o `CLI`
+ para que ele armazene a `bufio.Scanner` ao invés do leitor pois ele vai ser automaticamente encapsulado no momento da
+ construção.  
 
 ```go
 type CLI struct {
@@ -542,7 +587,7 @@ func NewCLI(store PlayerStore, in io.Reader) *CLI {
 }
 ```
 
-By doing this, we can then simplify and refactor our reading code
+Fazendo isso, podemos simplificar e refatorar no código do leitor
 
 ```go
 func (cli *CLI) PlayPoker() {
@@ -551,7 +596,7 @@ func (cli *CLI) PlayPoker() {
 }
 
 func extractWinner(userInput string) string {
-    return strings.Replace(userInput, " wins", "", 1)
+    return strings.Replace(userInput, " venceu", "", 1)
 }
 
 func (cli *CLI) readLine() string {
@@ -560,26 +605,28 @@ func (cli *CLI) readLine() string {
 }
 ```
 
-Change the test to use the constructor instead and we should be back to the tests passing.
+Mude o teste para usar o esse construtor e valtamos a ter nossos testes passando.
 
-Finally, we can go back to our new `main.go` and use the constructor we just made
+Por último, podemos voltar para o nosso `main.go` e usar o construtor que acabamos de criar
 
 ```go
 game := poker.NewCLI(store, os.Stdin)
 ```
 
-Try and run it, type "Bob wins".
+Tente executar ele, digite "Bob venceu".
 
-### Refactor
+### Refatoração
 
-We have some repetition in our respective applications where we are opening a file and creating a `FileSystemStore` from its contents. This feels like a slight weakness in our package's design so we should make a function in it to encapsulate opening a file from a path and returning you the `PlayerStore`.
+Nós temos alguma repetição nas nossas respectivas aplicações aonde estamos abrindo um arquivo e criando um `FileSystemStore`
+ a partir do seu conteúdo. Isso parece uma pequena fraqueza no desenho do nosso pacote então deveríamos fazer uma função
+ nele para encapsular a abertura de arquivos dado um caminho e retornar a `PlayerStore`.
 
 ```go
 func FileSystemPlayerStoreFromFile(path string) (*FileSystemPlayerStore, func(), error) {
     db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
 
     if err != nil {
-        return nil, nil, fmt.Errorf("problem opening %s %v", path, err)
+        return nil, nil, fmt.Errorf("falha ao abrir %s %v", path, err)
     }
 
     closeFunc := func() {
@@ -589,22 +636,22 @@ func FileSystemPlayerStoreFromFile(path string) (*FileSystemPlayerStore, func(),
     store, err := NewFileSystemPlayerStore(db)
 
     if err != nil {
-        return nil, nil, fmt.Errorf("problem creating file system player store, %v ", err)
+        return nil, nil, fmt.Errorf("falha ao criar sistema de arquivos para armazenar jogadores, %v ", err)
     }
 
     return store, closeFunc, nil
 }
 ```
 
-Now refactor both of our applications to use this function to create the store.
+Agora refatorando ambas aplicações para usar a função de criar o armazenamento.
 
-#### CLI application code
+#### Código da aplicação CLI
 
 ```go
 package main
 
 import (
-    "github.com/quii/learn-go-with-tests/criando-uma-aplicacao/command-line/v3"
+    "github.com/larien/learn-go-with-tests/command-line/v3"
     "log"
     "os"
     "fmt"
@@ -620,19 +667,19 @@ func main() {
     }
     defer close()
 
-    fmt.Println("Let's play poker")
-    fmt.Println("Type {Name} wins to record a win")
+    fmt.Println("Vamos jogar poker")
+    fmt.Println("Digite {Nome} venceu para registrar uma vitoria")
     poker.NewCLI(store, os.Stdin).PlayPoker()
 }
 ```
 
-#### Web server application code
+#### Código da aplicação do servidor Web
 
 ```go
 package main
 
 import (
-    "github.com/quii/learn-go-with-tests/criando-uma-aplicacao/command-line/v3"
+    "github.com/larien/learn-go-with-tests/command-line/v3"
     "log"
     "net/http"
 )
@@ -650,28 +697,38 @@ func main() {
     server := poker.NewPlayerServer(store)
 
     if err := http.ListenAndServe(":5000", server); err != nil {
-        log.Fatalf("could not listen on port 5000 %v", err)
+        log.Fatalf("nao foi possivel escutar na porta 5000 %v", err)
     }
 }
 ```
 
-Notice the symmetry: despite being different user interfaces the setup is almost identical. This feels like good validation of our design so far. And notice also that `FileSystemPlayerStoreFromFile` returns a closing function, so we can close the underlying file once we are done using the Store.
+Note a simetria: mesmo sendo diferente interfaces de usuário o setup é quase idêntico. Isso dá impressão de uma boa
+ validação do nosso desenho. E note também que `FileSystemPlayerStoreFromFile` retorna uma função `close` (fechar), que
+ podemos encerrar o arquivo fundamental assim que terminarmos de usar o armazenamento.
 
-## Wrapping up
+## Resumindo
 
-### Package structure
+### Estrutura do pacote
 
-This chapter meant we wanted to create two applications, re-using the domain code we've written so far. In order to do this, we needed to update our package structure so that we had separate folders for our respective `main`s.
+Esse capítulo pretendia criar duas aplicações, reusar o código de domínio que escrevemos até agora. Para fazer isso,
+ nós precisamos atualizar a estrutura do nosso pacote para que ela tivesse pastas separadas para nossos respectivos
+ `main`s.
 
-By doing this we ran into integration problems due to unexported values so this further demonstrates the value of working in small "slices" and integrating often.
+Fazendo isso nós enfrentamos problemas de integração devido a valores não exportados então demostrando o valor de trabalhar
+ em pequenas "etapas" e integrar com frequência.
 
-We learned how `mypackage_test` helps us create a testing environment which is the same experience for other packages integrating with your code, to help you catch integration problems and see how easy \(or not!\) your code is to work with.
+Aprendemos como `mypackage_test` ajudou a criar um ambiente de testes que prover a mesma experiência de outros pacotes
+ integrando com nosso código, assim ajudando você a pegar problemas de integração e ver o quão fácil \(ou não\) é de usar
+ seu código. 
 
-### Reading user input
+### Lendo a entrada do usuário
 
-We saw how reading from `os.Stdin` is very easy for us to work with as it implements `io.Reader`. We used `bufio.Scanner` to easily read line by line user input.
+Vimos como lendo do `os.Stdin` é muito fácil de usar pois ele implementa o `io.Reader`. Nós usamos `bufio.Scanner` para
+ facilitar a leitura linha à linha do que o usuário digita.
 
-### Simple abstractions leads to simpler code re-use
+### Abstração simples leva à simples reutilização de código
 
-It was almost no effort to integrate `PlayerStore` into our new application \(once we had made the package adjustments\) and subsequently testing was very easy too because we decided to expose our stub version too.
-
+Quase não nos esforçamos para integrar a `PlayerStore` na nossa aplicação \(assim que fizemos alguns ajustes no pacode\)
+ e subsequente testar foi muito fácil tambem porque nós decidimos também expor a versão emulada. 
+It was almost no effort to integrate `PlayerStore` into our new application \(once we had made the package adjustments\) 
+and subsequently testing was very easy too because we decided to expose our stub version too.

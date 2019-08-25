@@ -18,7 +18,7 @@ func main() {
 	}
 	defer close()
 
-	fmt.Println("Let's play poker")
-	fmt.Println("Type {Name} wins to record a win")
+	fmt.Println("Vamos jogar poker")
+	fmt.Println("Digite {Nome} venceu para registrar uma vitoria")
 	poker.NewCLI(store, os.Stdin).PlayPoker()
 }

@@ -30,10 +30,10 @@ func AssertPlayerWin(t *testing.T, store *StubPlayerStore, winner string) {
 	t.Helper()
 
 	if len(store.WinCalls) != 1 {
-		t.Fatalf("got %d calls to RecordWin want %d", len(store.WinCalls), 1)
+		t.Fatalf("recebi %d chamadas de RecordWin esperava %d", len(store.WinCalls), 1)
 	}
 
 	if store.WinCalls[0] != winner {
-		t.Errorf("did not store the correct winner got '%s' want '%s'", store.WinCalls[0], winner)
+		t.Errorf("não armazenou o vencedor correto recebi '%s' esperava '%s'", store.WinCalls[0], winner)
 	}
 }

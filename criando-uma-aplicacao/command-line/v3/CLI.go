@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-// CLI helps players through a game of poker
+// CLI auxilia jogadores em um jogo de poker
 type CLI struct {
 	playerStore PlayerStore
 	in          *bufio.Scanner
 }
 
-// NewCLI creates a CLI for playing poker
+// NewCLI cria uma CLI para jogar poker
 func NewCLI(store PlayerStore, in io.Reader) *CLI {
 	return &CLI{
 		playerStore: store,
@@ -20,14 +20,14 @@ func NewCLI(store PlayerStore, in io.Reader) *CLI {
 	}
 }
 
-// PlayPoker starts the game
+// PlayPoker inicia o jogo
 func (cli *CLI) PlayPoker() {
 	userInput := cli.readLine()
 	cli.playerStore.RecordWin(extractWinner(userInput))
 }
 
 func extractWinner(userInput string) string {
-	return strings.Replace(userInput, " wins", "", 1)
+	return strings.Replace(userInput, " venceu", "", 1)
 }
 
 func (cli *CLI) readLine() string {
