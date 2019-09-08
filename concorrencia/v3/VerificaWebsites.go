@@ -7,8 +7,8 @@ type resultado struct {
 	bool
 }
 
-// VerificaWebsites recebe um VerificadorWebsite e um slide de URLs e retorna um map
-// de URLs com o resultado da verificaação de cada URL com a função VerificadorWebsite
+// VerificaWebsites recebe um VerificadorWebsite e um slice de URLs e retorna um map
+// de URLs com o resultado da verificação de cada URL com a função VerificadorWebsite
 func VerificaWebsites(vw VerificadorWebsite, urls []string) map[string]bool {
 	resultados := make(map[string]bool)
 	canalResultado := make(chan resultado)

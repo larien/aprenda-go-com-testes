@@ -1,6 +1,6 @@
 # Concorrência
 
-[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/concurrency)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/concorrencia)
 
 A questão é a seguinte: um colega escreveu uma função, `VerificaWebsites`, que verifica o status de uma lista de URLs.
 
@@ -24,7 +24,7 @@ Ela retorna um map de cada URL verificado com um valor booleano - `true` para um
 
 Você também tem que passar um `VerificadorWebsite` como parâmetro, que leva um URL e retorna um boleano. Isso é usado pela função que verifica todos os websites.
 
-Usando a [injeção de dependência](dependency-injection.md), conseguimos testar a função sem fazer chamadas HTTP de verdade, tornando o teste seguro e rápido.
+Usando a [injeção de dependência](injecao-de-dependencia.md), conseguimos testar a função sem fazer chamadas HTTP de verdade, tornando o teste seguro e rápido.
 
 Aqui está o teste que escreveram:
 
@@ -36,7 +36,7 @@ import (
     "testing"
 )
 
-ffunc mockVerificadorWebsite(url string) bool {
+func mockVerificadorWebsite(url string) bool {
     if url == "waat://furhurterwe.geds" {
         return false
     }
@@ -97,7 +97,7 @@ func BenchmarkVerificaWebsites(b *testing.B) {
 
 O benchmark testa `VerificaWebsites` usando um slice de 100 URLs e usa uma nova implementação falsa de `VerificadorWebsite`. `slowStubVerificadorWebsite` é intencionalmente lento. Ele usa um `time.Sleep` para esperar exatamente 20 milissegundos e então retorna verdadeiro.
 
-Quando executamos o benchmark com `go test -bench=.` (ou, se estiver no Powershell do WIndows, `go test -bench="."`):
+Quando executamos o benchmark com `go test -bench=.` (ou, se estiver no Powershell do Windows, `go test -bench="."`):
 
 ```bash
 pkg: github.com/larien/learn-go-with-tests/concorrencia/v1
@@ -114,7 +114,7 @@ Vamos torná-lo mais rápido.
 
 Agora finalmente podemos falar sobre concorrência que, apenas para fins dessa situação, significa "fazer mais do que uma coisa ao mesmo tempo". Isso é algo que fazemos naturalmente todo dia.
 
-Por exemplo, hoje de manhã fiz uma xícara de chá. Coloquei a chaleira no foco e, enquanto esperava a água ferver, tirei o leite da geladeira, tirei o chá do armário, encontrei minha xícara favorita, coloquei o saquinho do chá e, quando a chaleira ferveu a água, coloquei a água na xícara.
+Por exemplo, hoje de manhã fiz uma xícara de chá. Coloquei a chaleira no fogo e, enquanto esperava a água ferver, tirei o leite da geladeira, tirei o chá do armário, encontrei minha xícara favorita, coloquei o saquinho do chá e, quando a chaleira ferveu a água, coloquei a água na xícara.
 
 O que eu _não fiz_ foi colocar a chaleira no fogo e então ficar sem fazer nada só esperando a chaleira ferver a água, para depois fazer todo o restante quando a água tivesse fervido.
 
@@ -142,9 +142,9 @@ func VerificaWebsites(vw VerificadorWebsite, urls []string) map[string]bool {
 }
 ```
 
-Já que a única forma de começar uma goroutine é colocar `go` na frente da chamada de função, costumamos usar _funções anônimas_ quando queremos iniciar uma goroutine. Uma função anônima literal é bem parecida com uma declaração de função normal, mas (obviamente) sem um nome. Você ṕde ver uma acima no corpo do laço `for`.
+Já que a única forma de começar uma goroutine é colocar `go` na frente da chamada de função, costumamos usar _funções anônimas_ quando queremos iniciar uma goroutine. Uma função anônima literal é bem parecida com uma declaração de função normal, mas (obviamente) sem um nome. Você pode ver uma acima no corpo do laço `for`.
 
-Funções anônimas têm várias funcionalidades que as torna útil, duas das quais estamos usando acima. Primeiramente, elas podem ser executadas assim que fazemos sua declaração - que é o `()` no final da função anônima. Em segundo lugar, elas mantém acesso ao escopo léxico em que são definidas - todas as variáveis que estão disponíveis no ponto em que a função anônima é declarada também estão variáveis no corpo da função.
+Funções anônimas têm várias funcionalidades que as tornam úteis, duas das quais estamos usando acima. Primeiramente, elas podem ser executadas assim que fazemos sua declaração - que é o `()` no final da função anônima. Em segundo lugar, elas mantém acesso ao escopo léxico em que são definidas - todas as variáveis que estão disponíveis no ponto em que a função anônima é declarada também estão disponíveis no corpo da função.
 
 O corpo da função anônima acima é quase o mesmo da função no laço utilizada anteriormente. A única diferença é que cada iteração do loop vai iniciar uma nova goroutine, concorrente com o processo atual (a função `VerificadorWebsite`), e cada uma vai adicionar seu resultado ao map de resultados.
 
@@ -162,7 +162,7 @@ Você pode não ter obtido esse resultado. Você pode obter uma mesnagem de pân
 
 ### ... e estamos de volta.
 
-Acabou que os testes originais do `VerificadorWebsite` agora está devolvendo um map vazio. O que deu de errado?
+Acabou que os testes originais do `VerificadorWebsite` agora estão devolvendo um map vazio. O que deu de errado?
 
 Nenhuma das goroutines que nosso loop `for` iniciou teve tempo de adicionar seu resultado ao map `resultados`; a função `VerificadorWebsite` é rápida demais para eles, e por isso retorna o map vazio.
 
@@ -333,7 +333,7 @@ Tudo o que você precisa saber está impresso no seu terminal - tudo o que você
 
 Podemos resolver essa condição de corrida coordenando nossas goroutines usando _canais_. Canais são uma estrutura de dados em Go que pode receber e enviar valores. Essas operações, junto de seus detalhes, permitem a comunicação entre processos diferentes.
 
-Nesse caso, queremos pensar sobre a comunicação entre o processo pai e cada uma das goroutines criadas por ele de orma que façam o trabalho de executar a função `VerificadorWebsite` com a URL.
+Nesse caso, queremos pensar sobre a comunicação entre o processo pai e cada uma das goroutines criadas por ele de forma que façam o trabalho de executar a função `VerificadorWebsite` com a URL.
 
 ```go
 package concurrency
@@ -381,7 +381,7 @@ resultado := <-canalResultado
 
 E depois usamos o `resultado` recebido para atualizar o map.
 
-AO enviar os resultados para um canal, podemos controlar o timing de cada escrita dentro do map `resultados`, garantindo que só aconteça uma por vez. Apesar de cada uma das chamadas de `vw` e cada envio ao canal resultado estar acontecendo em paralelo dentro de seu próprio processo, cada resultado está sendo resolvido de cada vez enquanto tiramos o valor do canal resultado com a expressão recebida.
+Ao enviar os resultados para um canal, podemos controlar o timing de cada escrita dentro do map `resultados`, garantindo que só aconteça uma por vez. Apesar de cada uma das chamadas de `vw` e cada envio ao canal resultado estar acontecendo em paralelo dentro de seu próprio processo, cada resultado está sendo resolvido de cada vez enquanto tiramos o valor do canal resultado com a expressão recebida.
 
 Paralelizamos um pedaço do código que queríamos tornar mais rápida, enquanto mantivemos a parte que não pode acontecer em paralelo ainda acontecendo linearmente. E comunicamos diversos processos envolvidos utilizando canais.
 
