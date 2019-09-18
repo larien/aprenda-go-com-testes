@@ -24,7 +24,7 @@ func TestSoma(t *testing.T) {
     resultado := Soma(numeros)
     esperado := 15
 
-    if esperado != recebido {
+    if esperado != resultado {
         t.Errorf("resultado %d, esperado %d, dado %v", resultado, esperado, numeros)
     }
 }
@@ -114,7 +114,7 @@ func TestSoma(t *testing.T) {
         resultado := Soma(numeros)
         esperado := 15
 
-        if resultado != want {
+        if resultado != esperado {
             t.Errorf("resultado %d, want %d, dado %v", resultado, esperado, numeros)
         }
     })
@@ -125,7 +125,7 @@ func TestSoma(t *testing.T) {
         resultado := Soma(numeros)
         esperado := 6
 
-        if resultado != want {
+        if resultado != esperado {
             t.Errorf("resultado %d, esperado %d, dado %v", resultado, esperado, numeros)
         }
     })
