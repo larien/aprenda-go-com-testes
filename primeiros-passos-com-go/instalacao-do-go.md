@@ -8,6 +8,8 @@ Para propósitos de demonstração, vamos te mostrar o procedimento de instalaç
 
 ## Instalação
 
+### Mac OSX
+
 O processo de instalação é bem simples. Primeiro, o que você precisa fazer é executar o comando abaixo pra instalar o homebrew (brew). O Brew depende do Xcode, então você deve se certificar de instalá-lo primeiro.
 
 ```bash
@@ -34,6 +36,38 @@ Você pode verificar a instalação com:
 $ go version
 go version go1.10 darwin/amd64
 ```
+
+### Linux
+
+O processo de instalação é bem simples. Primeiro você precisa escolher e baixar a versão do Go que você deseja instalar. Para isso [acesso o site oficial](https://golang.org/) da linguagem e copie o [link](https://dl.google.com/go/go1.13.linux-amd64.tar.gz) da versão desejada (recomendamos instalar sempre a versão mais atual).
+
+Para baixá-lo execute o seguinte comando no seu terminal.
+
+```bash
+cd ~
+curl -O https://dl.google.com/go/go1.13.linux-amd64.tar.gz
+```
+
+Agora descompacte os arquivos com o seguinte comando.
+
+```bash
+tar xvf go1.13.linux-amd64.tar.gz
+```
+
+E em seguida, mova os arquivos para o diretório de binário do seu usuário.
+
+```bash
+sudo mv go /usr/local
+```
+
+Agora teste a sua instalação.
+
+```bash
+go version
+go version go1.13 linux/amd64
+```
+
+Nos próximos passos vamos configurar o ambiente Go. As instruções abaixo valem tanto para sistema operacional OSX quanto para o Linux.
 
 ## O Ambiente Go
 
