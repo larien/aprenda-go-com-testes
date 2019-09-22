@@ -39,19 +39,21 @@ go version go1.10 darwin/amd64
 
 ### Linux
 
-O processo de instalação é bem simples. Primeiro você precisa escolher e baixar a versão do Go que você deseja instalar. Para isso [acesso o site oficial](https://golang.org/) da linguagem e copie o [link](https://dl.google.com/go/go1.13.linux-amd64.tar.gz) da versão desejada (recomendamos instalar sempre a versão mais atual).
+O processo de instalação é bem simples. Primeiro você precisa escolher e baixar a versão do Go que você deseja instalar. Para isso [acesse o site oficial](https://golang.org/) da linguagem e copie o [link](https://golang.org/dl/) da versão desejada (recomendamos instalar sempre a versão mais atual).
 
 Para baixá-lo execute o seguinte comando no seu terminal.
 
 ```bash
+#escolha a vsersão go Go que você deseja instalar, no nosso exemplo estamos utilizando a versão 1.10
+VERSAO_GO=1.10
 cd ~
-curl -O https://dl.google.com/go/go1.13.linux-amd64.tar.gz
+curl -O "https://dl.google.com/go/go${VERSAO_GO}.linux-amd64.tar.gz"
 ```
 
 Agora descompacte os arquivos com o seguinte comando.
 
 ```bash
-tar xvf go1.13.linux-amd64.tar.gz
+tar xvf "go${VERSAO_GO}.linux-amd64.tar.gz"
 ```
 
 E em seguida, mova os arquivos para o diretório de binário do seu usuário.
