@@ -15,15 +15,15 @@ Vamos seguir com a abordagem do TDD, criando software que funciona o mais rápid
 
 ## Vermelho, verde, refatore
 
-Throughout this book, we have emphasised the TDD process of write a test & watch it fail \(red\), write the _minimal_ amount of code to make it work \(green\) and then refactor.
+Por todo o livro, enfatizamos o processo TDD de escrever um teste e ver a falha \(vermelho\), escrever a _menor_ quantidade de código para fazer o teste passar/funcionar \(verde\), e então fazemos a reescrita (refatoração).
 
-This discipline of writing the minimal amount of code is important in terms of the safety TDD gives you. You should be striving to get out of "red" as soon as you can.
+A disciplina de escrever a menor quantidade de código é importante para garantir a seguraça que o TDD proporciona. Você deve se empenhar em sair do "vermelho" o quanto antes.
 
-Kent Beck describes it as:
+Kent Beck descreve essa prática como:
 
-> Make the test work quickly, committing whatever sins necessary in process.
+> Faça o teste passar rapidamente, cometendo quaisquer pecados necessários nesse processo.
 
-You can commit these sins because you will refactor afterwards backed by the safety of the tests.
+E você pode cometer estes pecados porque vai reescrever o código logo depois, com a segurança garantida pelos testes.
 
 ### What if you don't do this?
 
