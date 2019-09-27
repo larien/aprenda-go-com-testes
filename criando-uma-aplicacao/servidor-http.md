@@ -1,19 +1,19 @@
 # Servidor HTTP
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/http-server)
+[**Você encontra todo o código-fonte para este capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/http-server)
 
-You have been asked to create a web server where users can track how many games players have won.
+Você recebeu o desafio de criar um servidor web para que usuários possam acompanhar quantas partidas os jogadores venceram.
 
-* `GET /players/{name}` should return a number indicating the total number of wins
-* `POST /players/{name}` should record a win for that name, incrementing for every subsequent `POST`
+* `GET /players/{name}` deve retornar um número indicando o número total de vitórias
+* `POST /players/{name}` deve registrar uma vitória para este nome de jogador, incrementando a cada nova chamada `POST`
 
-We will follow the TDD approach, getting working software as quickly as we can and then making small iterative improvements until we have the solution. By taking this approach we
+Vamos seguir com a abordagem do TDD, criando software que funciona o mais rápido possível, e a cada ciclo fazendo pequenas melhoras até uma solução completa. Com essa abordagem, nós
 
-* Keep the problem space small at any given time
-* Don't go down rabbit holes
-* If we ever get stuck/lost, doing a revert wouldn't lose loads of work.
+* Mantemos pequeno o escopo do problema em qualquer momento
+* Não perdemos o foco por pensar em muito detalhes
+* Se ficamos emperrados ou perdidos, voltando para uma versão anterior do código não perdemos muito trabalho.
 
-## Red, green, refactor
+## Vermelho, verde, refatore
 
 Throughout this book, we have emphasised the TDD process of write a test & watch it fail \(red\), write the _minimal_ amount of code to make it work \(green\) and then refactor.
 
