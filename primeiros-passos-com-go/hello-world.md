@@ -237,17 +237,17 @@ func TestHello(t *testing.T) {
 }
 ```
 
-Here we are introducing another tool in our testing arsenal, subtests. Sometimes it is useful to group tests around a "thing" and then have subtests describing different scenarios.
+Aqui nós estamos introduzindo outra ferramenta em nosso arsenal de testes, _subtestes_. Às vezes, é útil agrupar testes em torno de uma "coisa" e, em seguida, ter _subtestes_ descrevendo diferentes cenários.
 
-A benefit of this approach is you can set up shared code that can be used in the other tests.
+O benefício dessa abordagem é que você poderá construir um código que pode ser compartilhado por outros testes.
 
-There is repeated code when we check if the message is what we expect.
+Há um código repetido quando verificamos se a mensagem é o que esperamos.
 
-Refactoring is not _just_ for the production code!
+A refatoração não é _apenas_ o código de produção!
 
-It is important that your tests _are clear specifications_ of what the code needs to do.
+É importante que seus testes _sejam especificações claras_ do que o código precisa fazer.
 
-We can and should refactor our tests.
+Podemos e devemos refatorar nossos testes.
 
 ```go
 func TestHello(t *testing.T) {
@@ -274,13 +274,15 @@ func TestHello(t *testing.T) {
 }
 ```
 
-What have we done here?
+O que fizemos aqui?
 
-We've refactored our assertion into a function. This reduces duplication and improves readability of our tests. In Go you can declare functions inside other functions and assign them to variables. You can then call them, just like normal functions. We need to pass in `t *testing.T` so that we can tell the test code to fail when we need to.
+Refatoramos nossa asserção em uma função. Isso reduz a duplicação e melhora a legibilidade de nossos testes. No Go, você pode declarar funções dentro de outras funções e atribuí-las a variáveis. Você pode chamá-las, assim como as funções normais. Precisamos passar em `t * testing.T` para que possamos dizer ao código de teste que falhará quando necessário.
 
-`t.Helper()` is needed to tell the test suite that this method is a helper. By doing this when it fails the line number reported will be in our _function call_ rather than inside our test helper. This will help other developers track down problems easier. If you still don't understand, comment it out, make a test fail and observe the test output.
+`t.Helper ()` é necessário para dizermos ao conjunto de testes que este é método auxiliar. Ao fazer isso, quando o teste falhar, o número da linha relatada estará em nossa chamada de função, e não dentro do nosso auxiliar de teste. Isso ajudará outros desenvolvedores a rastrear os problemas com maior facilidade. Se você ainda não entender, comente, faça um teste falhar e observe a saída do teste.
 
 Now that we have a well-written failing test, let's fix the code, using an `if`.
+
+Agora que temos um teste bem escrito falhando, vamos corrigir o código, usando um `if`.
 
 ```go
 const englishHelloPrefix = "Hello, "
@@ -293,16 +295,15 @@ func Hello(name string) string {
 }
 ```
 
-If we run our tests we should see it satisfies the new requirement and we haven't accidentally broken the other functionality.
+Se executarmos nossos testes, veremos que ele satisfaz o novo requisito e não quebramos acidentalmente a outra funcionalidade.
 
-### Back to source control
+### De volta controle de versão
 
-Now we are happy with the code I would amend the previous commit so we only
-check in the lovely version of our code with its test.
+Agora, estamos felizes com o código. Eu adicionaria mais um commit ao anterior, então apenas verifique o quão adorável ficou o nosso código com os testes.
 
-### Discipline
+### Disciplina
 
-Let's go over the cycle again
+Vamos repassar o ciclo novamente
 
 * Write a test
 * Make the compiler pass
