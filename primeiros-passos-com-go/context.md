@@ -277,7 +277,7 @@ Se sentindo um pouco desconfortável? Bom. Vamos tentar seguir essa abordagem e,
 
 ## Escreva o teste primeiro
 
-Teremos de alterar os nossos testes existentes, uma vez que as suas responsabilidades estão mudando. As únicas coisas que nosso handler é responsável por agora é certificar-se que emite um context à `Store` a jusante e que trata o erro que virá da `Store` quando é cancelada.
+Teremos de alterar os nossos testes existentes, uma vez que as suas responsabilidades estão mudando. As únicas coisas que nosso handler é responsável por agora é certificar-se que emite um context à `Store` em cascata e que trata o erro que virá da `Store` quando é cancelada.
 
 Vamos atualizar nossa interface `Store` para mostrar as novas responsabilidades.
 
@@ -456,7 +456,7 @@ func Server(store Store) http.HandlerFunc {
 }
 ```
 
-Podemos ver depois disso que o código do servidor se tornou simplificado, pois não é mais explicitamente responsável pelo cancelamento, ele simplesmente passa o `context` e confia nas funções downstream (a jusante) para respeitar qualquer cancelamento que possa ocorrer.
+Podemos ver depois disso que o código do servidor se tornou simplificado, pois não é mais explicitamente responsável pelo cancelamento, ele simplesmente passa o `context` e confia nas funções em cascata para respeitar qualquer cancelamento que possa ocorrer.
 
 ## Concluindo
 
