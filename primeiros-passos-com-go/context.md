@@ -56,11 +56,11 @@ func TestHandler(t *testing.T) {
 }
 ```
 
-Now that we have a happy path, we want to make a more realistic scenario where the `Store` cant finish a`Fetch` before the user cancels the request.
+Agora que temos um caminho feliz, queremos fazer um cenário mais realista onde a `Store` não consegue finalizar o `Fetch` antes que o usuário cancele a requisição.
 
-## Write the test first
+## Escreva o teste primeiro
 
-Our handler will need a way of telling the `Store` to cancel the work so update the interface.
+Nosso handler precisará de uma maneira de dizer à `Store` para cancelar o trabalho, então atualize a interface.
 
 ```go
 type Store interface {
@@ -69,7 +69,7 @@ type Store interface {
 }
 ```
 
-We will need to adjust our spy so it takes some time to return `data` and a way of knowing it has been told to cancel. We'll also rename it to `SpyStore` as we are now observing the way it is called. It'll have to add `Cancel` as a method to implement the `Store` interface.
+Nós precisaremos ajustar nosso spy para que leve algum tempo para retornar `data` e uma maneira de saber que foi dito para cancelar. Nós também o renomearemos para `SpyStore`, pois agora estamos observando a forma como ele é chamado. Ele terá que adicionar `Cancel` como um método para implementar a interface `Store`.
 
 ```go
 type SpyStore struct {
@@ -87,7 +87,7 @@ func (s *SpyStore) Cancel() {
 }
 ```
 
-Let's add a new test where we cancel the request before 100 milliseconds and check the store to see if it gets cancelled.
+Vamos adicionar um novo teste onde cancelamos a requisição antes de 100 milissegundos e verificamos a store para ver se ela é cancelada.
 
 ```go
 t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
@@ -110,17 +110,17 @@ t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
   })
 ```
 
-From the google blog again
+Do blog da google novamente
 
-> The context package provides functions to derive new Context values from existing ones. These values form a tree: when a Context is canceled, all Contexts derived from it are also canceled.
+> O pacote context fornece funções para derivar novos valores Context dos já existentes. Estes valores formam uma árvore: quando um Context é cancelado, todos os Contexts derivados dele também são cancelados.
 
-It's important that you derive your contexts so that cancellations are propagated throughout the call stack for a given request.
+É importante que você derive seus contexts para que os cancelamentos sejam propagados através da pilha de chamadas para uma determinada requisição.
 
-What we do is derive a new `cancellingCtx` from our `request` which returns us a `cancel` function. We then schedule that function to be called in 5 milliseconds by using `time.AfterFunc`. Finally we use this new context in our request by calling `request.WithContext`.
+O que fazemos é derivar um novo `cancellingCtx` da nossa `request` que nos retorna uma função `cancel`. Nós então programamos que a função seja chamada em 5 milissegundos usando `time.AfterFunc`. Finalmente nós usamos este novo context em nossa requisição chamando `request.WithContext`.
 
-## Try to run the test
+## Tente executar o teste
 
-The test fails as we'd expect.
+O teste falha como seria de esperar.
 
 ```go
 --- FAIL: TestServer (0.00s)
@@ -128,9 +128,9 @@ The test fails as we'd expect.
         context_test.go:62: store was not told to cancel
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazê-lo passar
 
-Remember to be disciplined with TDD. Write the _minimal_ amount of code to make our test pass.
+Lembre-se de ser disciplinado com o TDD. Escreva a quantidade _mínima_ de código para fazer nosso teste passar.
 
 ```go
 func Server(store Store) http.HandlerFunc {
@@ -141,11 +141,11 @@ func Server(store Store) http.HandlerFunc {
 }
 ```
 
-This makes this test pass but it doesn't feel good does it! We surely shouldn't be cancelling `Store` before we fetch on _every request_.
+Isto faz com que este teste passe, mas não traz um bom sentimento! Nós certamente não deveríamos estar cancelando a `Store` antes do fetch em _cada requisição_.
 
-By being disciplined it highlighted a flaw in our tests, this is a good thing!
+Ao ser disciplinado ele destacou uma falha em nossos testes, isso é uma coisa boa!
 
-We'll need to update our happy path test to assert that it does not get cancelled.
+Vamos precisar atualizar nosso teste de caminho feliz para afirmar que ele não será cancelado.
 
 ```go
 t.Run("returns data from store", func(t *testing.T) {
@@ -167,7 +167,7 @@ t.Run("returns data from store", func(t *testing.T) {
 })
 ```
 
-Run both tests and the happy path test should now be failing and now we're forced to do a more sensible implementation.
+Execute ambos os testes. O teste do caminho feliz deve agora estar falhando e somos forçados a fazer uma implementação mais sensata.
 
 ```go
 func Server(store Store) http.HandlerFunc {
@@ -190,15 +190,15 @@ func Server(store Store) http.HandlerFunc {
 }
 ```
 
-What have we done here?
+O que fizemos aqui?
 
-`context` has a method `Done()` which returns a channel which gets sent a signal when the context is "done" or "cancelled". We want to listen to that signal and call `store.Cancel` if we get it but we want to ignore it if our `Store` manages to `Fetch` before it.
+`context` tem um método `Done()` que retorna um channel que recebe um sinal quando o context é "done" ou "cancelled". Queremos ouvir esse sinal e chamar `store.Cancel` se o obtivermos mas queremos ignorá-lo se a nossa `Store` conseguir finalizar o `Fetch` antes dele.
 
-To manage this we run `Fetch` in a goroutine and it will write the result into a new channel `data`. We then use `select` to effectively race to the two asynchronous processes and then we either write a response or `Cancel`.
+Para gerenciar isto, executamos o `Fetch` em uma goroutine e ele irá escrever o resultado em um novo channel `data`. Nós então usamos `select` para efetivamente correr para os dois processos assíncronos e então nós escrevemos uma resposta ou cancelamos com `Cancel`.
 
-## Refactor
+## Refatoração
 
-We can refactor our test code a bit by making assertion methods on our spy
+Podemos refatorar um pouco o nosso código de teste fazendo métodos de afirmação no nosso spy.
 
 ```go
 func (s *SpyStore) assertWasCancelled() {
@@ -216,7 +216,7 @@ func (s *SpyStore) assertWasNotCancelled() {
 }
 ```
 
-Remember to pass in the `*testing.T` when creating the spy.
+Lembre-se de passar o `*testing.T` ao criar o spy.
 
 ```go
 func TestServer(t *testing.T) {
@@ -257,29 +257,29 @@ func TestServer(t *testing.T) {
 }
 ```
 
-This approach is ok, but is it idiomatic?
+Esta abordagem é boa, mas é idiomática?
 
-Does it make sense for our web server to be concerned with manually cancelling `Store`? What if `Store` also happens to depend on other slow-running processes? We'll have to make sure that `Store.Cancel` correctly propagates the cancellation to all of its dependants.
+Faz sentido para o nosso servidor web estar preocupado com o cancelamento manual da `Store`? E se a `Store` também depender de outros processos de execução lenta? Nós teremos que ter certeza que a `Store.Cancel` propagará corretamente o cancelamento para todos os seus dependentes.
 
-One of the main points of `context` is that it is a consistent way of offering cancellation.
+Um dos pontos principais do `context` é que é uma maneira consistente de oferecer cancelamento.
 
-[From the go doc](https://golang.org/pkg/context/)
+[Da documentação do go](https://golang.org/pkg/context/)
 
-> Incoming requests to a server should create a Context, and outgoing calls to servers should accept a Context. The chain of function calls between them must propagate the Context, optionally replacing it with a derived Context created using WithCancel, WithDeadline, WithTimeout, or WithValue. When a Context is canceled, all Contexts derived from it are also canceled.
+> As requisições de entrada para um servidor devem criar um Context e as chamadas de saída para servidores devem aceitar um Context. A cadeia de chamadas de função entre eles deve propagar o Context, substituindo-o opcionalmente por um Context derivado criado usando WithCancel, WithDeadline, WithTimeout ou WithValue. Quando um Context é cancelado, todos os Contexts derivados dele também são cancelados.
 
-From the Google blog again:
+Do blog da google novamente:
 
-> At Google, we require that Go programmers pass a Context parameter as the first argument to every function on the call path between incoming and outgoing requests. This allows Go code developed by many different teams to interoperate well. It provides simple control over timeouts and cancelation and ensures that critical values like security credentials transit Go programs properly.
+> Na Google, exigimos que os programadores Go passem um parâmetro Context como o primeiro argumento para cada função no caminho de chamada entre requisições de entrada e saída. Isto permite que o código Go desenvolvido por muitas equipes diferentes interopere bem. Ele fornece um controle simples sobre timeouts e cancelamentos e garante que valores críticos, como credenciais de segurança, transitem corretamente pelos programas Go.
 
-\(Pause for a moment and think of the ramifications of every function having to send in a context, and the ergonomics of that.\)
+\(Pause por um momento e pense nas ramificações de cada função tendo que enviar um context, e a ergonomia disso.\)
 
-Feeling a bit uneasy? Good. Let's try and follow that approach though and instead pass through the `context` to our `Store` and let it be responsible. That way it can also pass the `context` through to it's dependants and they too can be responsible for stopping themselves.
+Se sentindo um pouco desconfortável? Bom. Vamos tentar seguir essa abordagem e, em vez disso, passar o `context` para nossa `Store` e deixá-la ser responsável. Dessa maneira, ela também pode passar o `context` para os seus dependentes e eles também podem ser responsáveis por se pararem.
 
-## Write the test first
+## Escreva o teste primeiro
 
-We'll have to change our existing tests as their responsibilities are changing. The only thing our handler is responsible for now is making sure it sends a context through to the downstream `Store` and that it handles the error that will come from the `Store` when it is cancelled.
+Teremos de alterar os nossos testes existentes, uma vez que as suas responsabilidades estão mudando. As únicas coisas que nosso handler é responsável por agora é certificar-se que emite um context à `Store` a jusante e que trata o erro que virá da `Store` quando é cancelada.
 
-Let's update our `Store` interface to show the new responsibilities.
+Vamos atualizar nossa interface `Store` para mostrar as novas responsabilidades.
 
 ```go
 type Store interface {
@@ -287,7 +287,7 @@ type Store interface {
 }
 ```
 
-Delete the code inside our handler for now
+Apague o código dentro do nosso handler por enquanto
 
 ```go
 func Server(store Store) http.HandlerFunc {
@@ -296,7 +296,7 @@ func Server(store Store) http.HandlerFunc {
 }
 ```
 
-Update our `SpyStore`
+Atualize nosso `SpyStore`
 
 ```go
 type SpyStore struct {
@@ -331,19 +331,19 @@ func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
 }
 ```
 
-We have to make our spy act like a real method that works with `context`.
+Nós temos que fazer nosso spy agir como um método real que funciona com `context`.
 
-We are simulating a slow process where we build the result slowly by appending the string, character by character in a goroutine. When the goroutine finishes its work it writes the string to the `data` channel. The goroutine listens for the `ctx.Done` and will stop the work if a signal is sent in that channel.
+Estamos simulando um processo lento onde construímos o resultado lentamente adicionando a string, caractere por caractere em uma goroutine. Quando a goroutine termina seu trabalho, ela escreve a string no channel `data`. A goroutine escuta o `ctx.Done` e irá parar o trabalho se um sinal for enviado nesse channel.
 
-Finally the code uses another `select` to wait for that goroutine to finish its work or for the cancellation to occur.
+Finalmente o código usa outro `select` para esperar que a goroutine termine seu trabalho ou que o cancelamento ocorra.
 
-It's similar to our approach from before, we use Go's concurrency primitives to make two asynchronous processes race each other to determine what we return.
+É semelhante à nossa abordagem de antes, usamos as primitivas de simultaneidade do Go para fazerem dois processos assíncronos correrem uns contra os outros para determinar o que retornamos.
 
-You'll take a similar approach when writing your own functions and methods that accept a `context` so make sure you understand what's going on.
+Você usará uma aproximação similar ao escrever suas próprias funções e métodos que aceitam um `context`, por isso certifique-se de que você está entendendo o que está acontecendo.
 
-We removed the reference to `ctx` from the `SpyStore`'s fields because it's no longer interesting to us. We're strictly testing behaviour now which we prefer over testing implementation details such as "you passed through a particular value to function `foo`".
+Nós removemos a referência ao `ctx` dos campos do `SpyStore` porque não é mais interessante para nós. Estamos estritamente testando o comportamento agora, que preferimos em comparação aos detalhes da implementação dos testes, como "você passou um determinado valor para a função `foo`".
 
-Finally we can update our tests. Comment out our cancellation test so we can fix the happy path test first.
+Finalmente podemos atualizar nossos testes. Comente nosso teste de cancelamento para que possamos corrigir o teste do caminho feliz primeiro.
 
 ```go
 t.Run("returns data from store", func(t *testing.T) {
@@ -361,7 +361,7 @@ t.Run("returns data from store", func(t *testing.T) {
 })
 ```
 
-## Try to run the test
+## Tente executar o teste
 
 ```text
 === RUN   TestServer/returns_data_from_store
@@ -370,7 +370,7 @@ t.Run("returns data from store", func(t *testing.T) {
         context_test.go:22: got "", want "hello, world"
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazê-lo passar
 
 ```go
 func Server(store Store) http.HandlerFunc {
@@ -381,11 +381,11 @@ func Server(store Store) http.HandlerFunc {
 }
 ```
 
-Our happy path should be... happy. Now we can fix the other test.
+O nosso caminho feliz deve estar... feliz. Agora podemos corrigir o outro teste.
 
-## Write the test first
+## Escreva o teste primeiro
 
-We need to test that we do not write any kind of response on the error case. Sadly `httptest.ResponseRecorder` doesn't have a way of figuring this out so we'll have to role our own spy to test for this.
+Precisamos testar que não escrevemos qualquer tipo de resposta no caso de erro. Infelizmente o `httptest.ResponseRecorder` não tem uma maneira de descobrir isso, então nós teremos que usar nosso próprio spy para testar isso.
 
 ```go
 type SpyResponseWriter struct {
@@ -407,7 +407,7 @@ func (s *SpyResponseWriter) WriteHeader(statusCode int) {
 }
 ```
 
-Our `SpyResponseWriter` implements `http.ResponseWriter` so we can use it in the test.
+Nosso `SpyResponseWriter` implementa `http.ResponseWriter` para que possamos usá-lo no teste.
 
 ```go
 t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
@@ -430,7 +430,7 @@ t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
 })
 ```
 
-## Try to run the test
+## Tente executar o teste
 
 ```text
 === RUN   TestServer
@@ -440,7 +440,7 @@ t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
         context_test.go:47: a response should not have been written
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazê-lo passar
 
 ```go
 func Server(store Store) http.HandlerFunc {
@@ -456,42 +456,42 @@ func Server(store Store) http.HandlerFunc {
 }
 ```
 
-We can see after this that the server code has become simplified as it's no longer explicitly responsible for cancellation, it simply passes through `context` and relies on the downstream functions to respect any cancellations that may occur.
+Podemos ver depois disso que o código do servidor se tornou simplificado, pois não é mais explicitamente responsável pelo cancelamento, ele simplesmente passa o `context` e confia nas funções downstream (a jusante) para respeitar qualquer cancelamento que possa ocorrer.
 
-## Wrapping up
+## Concluindo
 
-### What we've covered
+### O que cobrimos
 
-* How to test a HTTP handler that has had the request cancelled by the client.
-* How to use context to manage cancellation.
-* How to write a function that accepts `context` and uses it to cancel itself by using goroutines, `select` and channels.
-* Follow Google's guidelines as to how to manage cancellation by propagating request scoped context through your call-stack.
-* How to roll your own spy for `http.ResponseWriter` if you need it.
+* Como testar um handler HTTP que teve a requisição cancelada pelo cliente.
+* Como usar o context para gerenciar o cancelamento.
+* Como escrever uma função que aceita `context` e o usa para se cancelar usando goroutines, `select` e channels.
+* Seguir as diretrizes da Google a respeito de como controlar o cancelamento propagando o context escopado da requisição através de seu call-stack.
+* Como levar seu próprio spy para `http.ResponseWriter` se você precisar dele.
 
 ### What about context.Value ?
 
-[Michal Štrba](https://faiface.github.io/post/context-should-go-away-go2/) and I have a similar opinion.
+[Michal Štrba](https://faiface.github.io/post/context-should-go-away-go2/) e eu temos uma opinião semelhante.
 
-> If you use ctx.Value in my \(non-existent\) company, you’re fired
+> Se você usar o ctx.Value na minha empresa \(não-existente\), você está demitido
 
-Some engineers have advocated passing values through `context` as it _feels convenient_.
+Alguns engenheiros têm defendido a passagem de valores através do `context` porque _parece conveniente_.
 
-Convenience is often the cause of bad code.
+A conveniência é muitas vezes a causa do código ruim.
 
-The problem with `context.Values` is that it's just an untyped map so you have no type-safety and you have to handle it not actually containing your value. You have to create a coupling of map keys from one module to another and if someone changes something things start breaking.
+O problema com `context.Values` é que ele é apenas um mapa não tipado para que você não tenha nenhum tipo de segurança e você tem que lidar com ele não realmente contendo seu valor. Você tem que criar um acoplamento de chaves de mapa de um módulo para outro e se alguém muda alguma coisa começar a quebrar.
 
-In short, **if a function needs some values, put them as typed parameters rather than trying to fetch them from `context.Value`**. This makes is statically checked and documented for everyone to see.
+Em suma, **se uma função necessita de alguns valores, coloque-os como parâmetros tipados em vez de tentar obtê-los a partir de `context.Value`***. Isto torna-o estaticamente verificado e documentado para que todos o vejam.
 
-#### But...
+#### Mas...
 
-On other other hand, it can be helpful to include information that is orthogonal to a request in a context, such as a trace id. Potentially this information would not be needed by every function in your call-stack and would make your functional signatures very messy.
+Por outro lado, pode ser útil incluir informações que sejam ortogonais a uma requisição em um context, como um trace id. Potencialmente esta informação não seria necessária para todas as funções do seu call-stack e tornaria as suas assinaturas funcionais muito confusas.
 
-[Jack Lindamood says **Context.Value should inform, not control**](https://medium.com/@cep21/how-to-correctly-use-context-context-in-go-1-7-8f2c0fafdf39)
+[Jack Lindamood diz que **Context.value deve informar, não controlar***](https://medium.com/@cep21/how-to-correctly-use-context-context-in-go-1-7-8f2c0fafdf39)
 
-> The content of context.Value is for maintainers not users. It should never be required input for documented or expected results.
+> O conteúdo do context.Value é para os mantenedores e não para os usuários. Ele nunca deve ser uma entrada necessária para resultados documentados ou esperados.
 
-### Additional material
+### Material adicional
 
-* I really enjoyed reading [Context should go away for Go 2 by Michal Štrba](https://faiface.github.io/post/context-should-go-away-go2/). His argument is that having to pass `context` everywhere is a smell, that it's pointing to a deficiency in the language in respect to cancellation. He says it would better if this was somehow solved at the language level, rather than at a library level. Until that happens, you will need `context` if you want to manage long running processes.
-* The [Go blog further describes the motivation for working with `context` and has some examples](https://blog.golang.org/context)
+* Gostei muito de ler [Context should go away for Go 2 por Michal Štrba](https://faiface.github.io/post/context-should-go-away-go2/). Seu argumento é que ter que passar o `context` em toda parte é um indicador que está apontando a uma deficiência na linguagem a respeito do cancelamento. Ele diz que seria melhor se isso fosse resolvido de alguma forma no nível de linguagem, em vez de em um nível de biblioteca. Até que isso aconteça, você precisará do `context` se você quiser gerenciar processos de longa duração.
+* O [blog do Go descreve ainda mais a motivação para trabalhar com `context` e tem alguns exemplos](https://blog.golang.org/context)
 
