@@ -468,11 +468,11 @@ Podemos ver depois disso que o código do servidor se tornou simplificado, pois 
 * Seguir as diretrizes da Google a respeito de como controlar o cancelamento propagando o context escopado da requisição através de seu call-stack.
 * Como levar seu próprio spy para `http.ResponseWriter` se você precisar dele.
 
-### What about context.Value ?
+### E quanto ao context.Value?
 
 [Michal Štrba](https://faiface.github.io/post/context-should-go-away-go2/) e eu temos uma opinião semelhante.
 
-> Se você usar o ctx.Value na minha empresa \(não-existente\), você está demitido
+> Se você usar o ctx.Value na minha empresa \(inexistente\), você está demitido
 
 Alguns engenheiros têm defendido a passagem de valores através do `context` porque _parece conveniente_.
 
@@ -480,13 +480,13 @@ A conveniência é muitas vezes a causa do código ruim.
 
 O problema com `context.Values` é que ele é apenas um mapa não tipado para que você não tenha nenhum tipo de segurança e você tem que lidar com ele não realmente contendo seu valor. Você tem que criar um acoplamento de chaves de mapa de um módulo para outro e se alguém muda alguma coisa começar a quebrar.
 
-Em suma, **se uma função necessita de alguns valores, coloque-os como parâmetros tipados em vez de tentar obtê-los a partir de `context.Value`***. Isto torna-o estaticamente verificado e documentado para que todos o vejam.
+Em suma, **se uma função necessita de alguns valores, coloque-os como parâmetros tipados em vez de tentar obtê-los a partir de `context.Value`**. Isto torna-o estaticamente verificado e documentado para que todos o vejam.
 
 #### Mas...
 
 Por outro lado, pode ser útil incluir informações que sejam ortogonais a uma requisição em um context, como um trace id. Potencialmente esta informação não seria necessária para todas as funções do seu call-stack e tornaria as suas assinaturas funcionais muito confusas.
 
-[Jack Lindamood diz que **Context.value deve informar, não controlar***](https://medium.com/@cep21/how-to-correctly-use-context-context-in-go-1-7-8f2c0fafdf39)
+[Jack Lindamood diz que **Context.value deve informar, não controlar**](https://medium.com/@cep21/how-to-correctly-use-context-context-in-go-1-7-8f2c0fafdf39)
 
 > O conteúdo do context.Value é para os mantenedores e não para os usuários. Ele nunca deve ser uma entrada necessária para resultados documentados ou esperados.
 
