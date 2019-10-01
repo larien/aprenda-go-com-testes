@@ -1,16 +1,16 @@
 # Context
 
-Software often kicks off long-running, resource-intensive processes \(often in goroutines\). If the action that caused this gets cancelled or fails for some reason you need to stop these processes in a consistent way through your application.
+Softwares geralmente iniciam processos de longa duração e intensivos em recursos \(muitas vezes em goroutines\). Se a ação que causou isso é cancelada ou falha por algum motivo, você precisa parar esses processos de uma forma consistente através da sua aplicação.
 
-If you dont manage this your snappy Go application that you're so proud of could start having difficult to debug performance problems.
+Se você não gerenciar isso, sua aplicação Go ágil da qual você está tão orgulhoso pode começar a ter problemas de desempenho difíceis de depurar.
 
-In this chapter we'll use the package `context` to help us manage long-running processes.
+Neste capítulo vamos usar o pacote `context` para nos ajudar a gerenciar processos de longa duração.
 
-We're going to start with a classic example of a web server that when hit kicks off a potentially long-running process to fetch some data for it to return in the response.
+Vamos começar com um exemplo clássico de um servidor web que quando o hit inicia um processo potencialmente longo para buscar alguns dados para ele retornar na resposta.
 
-We will exercise a scenario where a user cancels the request before the data can be retrieved and we'll make sure the process is told to give up.
+Exercitaremos um cenário em que um usuário cancela a requisição antes que os dados possam ser recuperados e faremos com que o processo seja instruído a desistir.
 
-I've set up some code on the happy path to get us started. Here is our server code.
+Criei um código no caminho feliz para começarmos. Aqui está o código do nosso servidor.
 
 ```go
 func Server(store Store) http.HandlerFunc {
@@ -20,7 +20,7 @@ func Server(store Store) http.HandlerFunc {
 }
 ```
 
-The function `Server` takes a `Store` and returns us a `http.HandlerFunc`. Store is defined as:
+A função `Server` recebe uma `Store` e nos retorna um `http.HandlerFunc`. Store está definida como:
 
 ```go
 type Store interface {
@@ -28,9 +28,9 @@ type Store interface {
 }
 ```
 
-The returned function calls the `store`'s `Fetch` method to get the data and writes it to the response.
+A função retornada chama o método `Fetch` da `store` para obter os dados e escrevê-los na resposta.
 
-We have a corresponding stub for `Store` which we use in a test.
+Nós temos um stub correspondente para `Store` que usamos em um teste.
 
 ```go
 type StubStore struct {
