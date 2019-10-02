@@ -1,12 +1,12 @@
 # Context
 
-Softwares geralmente iniciam processos de longa duração e intensivos em recursos \(muitas vezes em goroutines\). Se a ação que causou isso é cancelada ou falha por algum motivo, você precisa parar esses processos de uma forma consistente através da sua aplicação.
+Softwares geralmente iniciam processos de longa duração e de uso intensivo de recursos \(muitas vezes em goroutines\). Se a ação que causou isso é cancelada ou falha por algum motivo, você precisa parar esses processos de uma forma consistente através da sua aplicação.
 
 Se você não gerenciar isso, sua aplicação Go ágil da qual você está tão orgulhoso pode começar a ter problemas de desempenho difíceis de depurar.
 
 Neste capítulo vamos usar o pacote `context` para nos ajudar a gerenciar processos de longa duração.
 
-Vamos começar com um exemplo clássico de um servidor web que quando o hit inicia um processo potencialmente longo para buscar alguns dados para ele retornar na resposta.
+Vamos começar com um exemplo clássico de quando um hit no servidor web inicia um processo potencialmente longo para buscar alguns dados para ele retornar na resposta.
 
 Exercitaremos um cenário em que um usuário cancela a requisição antes que os dados possam ser recuperados e faremos com que o processo seja instruído a desistir.
 
@@ -114,7 +114,7 @@ Do blog da google novamente
 
 > O pacote context fornece funções para derivar novos valores Context dos já existentes. Estes valores formam uma árvore: quando um Context é cancelado, todos os Contexts derivados dele também são cancelados.
 
-É importante que você derive seus contexts para que os cancelamentos sejam propagados através da pilha de chamadas para uma determinada requisição.
+É importante que você derive seus contexts para que os cancelamentos sejam propagados através da pilha de chamadas (call-stack) para uma determinada requisição.
 
 O que fazemos é derivar um novo `cancellingCtx` da nossa `request` que nos retorna uma função `cancel`. Nós então programamos que a função seja chamada em 5 milissegundos usando `time.AfterFunc`. Finalmente nós usamos este novo context em nossa requisição chamando `request.WithContext`.
 
@@ -277,7 +277,7 @@ Se sentindo um pouco desconfortável? Bom. Vamos tentar seguir essa abordagem e,
 
 ## Escreva o teste primeiro
 
-Teremos de alterar os nossos testes existentes, uma vez que as suas responsabilidades estão mudando. As únicas coisas que nosso handler é responsável por agora é certificar-se que emite um context à `Store` em cascata e que trata o erro que virá da `Store` quando é cancelada.
+Teremos de alterar os nossos testes existentes, uma vez que as suas responsabilidades estão mudando. As únicas coisas que nosso handler é responsável por agora é certificar-se que emite um context à `Store` em cascata (downstream) e que trata o erro que virá da `Store` quando é cancelada.
 
 Vamos atualizar nossa interface `Store` para mostrar as novas responsabilidades.
 
@@ -456,7 +456,7 @@ func Server(store Store) http.HandlerFunc {
 }
 ```
 
-Podemos ver depois disso que o código do servidor se tornou simplificado, pois não é mais explicitamente responsável pelo cancelamento, ele simplesmente passa o `context` e confia nas funções em cascata para respeitar qualquer cancelamento que possa ocorrer.
+Podemos ver depois disso que o código do servidor se tornou simplificado, pois não é mais explicitamente responsável pelo cancelamento, ele simplesmente passa o `context` e confia nas funções em cascata (downstream) para respeitar qualquer cancelamento que possa ocorrer.
 
 ## Concluindo
 
@@ -465,7 +465,7 @@ Podemos ver depois disso que o código do servidor se tornou simplificado, pois 
 * Como testar um handler HTTP que teve a requisição cancelada pelo cliente.
 * Como usar o context para gerenciar o cancelamento.
 * Como escrever uma função que aceita `context` e o usa para se cancelar usando goroutines, `select` e channels.
-* Seguir as diretrizes da Google a respeito de como controlar o cancelamento propagando o context escopado da requisição através de seu call-stack.
+* Seguir as diretrizes da Google a respeito de como controlar o cancelamento propagando o context escopado da requisição através da sua pilha de chamadas (call-stack).
 * Como levar seu próprio spy para `http.ResponseWriter` se você precisar dele.
 
 ### E quanto ao context.Value?
