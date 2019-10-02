@@ -11,7 +11,7 @@ Em algum momento talvez você deseje utilizar estruturas para gerenciar valores,
 
 Vamos construir uma estrutura de `Carteira` que possamos depositar `Bitcoin`.
 
-## Escreva o primeiro teste
+## Escreva o teste primeiro
 
 ```go
 func TestCarteira(t *testing.T) {
@@ -29,13 +29,13 @@ func TestCarteira(t *testing.T) {
 }
 ```
 
-No [exemplo anterior](structs-methods-and-interfaces.md) nós acessamos campos diretamente pelo nome, entretanto na nossa _carteira super protegida_, nós não queremos expor o valor interno para o resto do mundo. Queremos controlar o acesso por meio de métodos.
+No [exemplo anterior](structs-methods-and-interfaces.md) acessamos campos diretamente pelo nome. Entretanto, na nossa _carteira super protegida_, não queremos expor o valor interno para o resto do mundo. Queremos controlar o acesso por meio de métodos.
 
 ## Tente rodar o teste
 
 `./carteira_test.go:7:12: undefined: Carteira`
 
-## Escreva o mínimo de código para o código executar e verifique a saída de erro do teste
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 O compilador não sabe o que uma `Carteira` é, então vamos declara-la.
 
@@ -69,7 +69,7 @@ Os testes agora devem compilar e rodar
 
 `carteira_test.go:15: valor 0 valorEsperado 10`
 
-## Codifique o suficiente para fazer passar
+## Escreva código o suficiente para fazer o teste passar
 
 Precisaremos de algum tipo de variável de _saldo_ em nossa estrutura para guardar o valor
 
@@ -166,7 +166,7 @@ Rode novamente os testes e eles devem passar.
 
 ## Refatorar
 
-Dissemos que estávamos fazendo uma carteira Bitcoin, mas até agora nós não os mecionamos. Estamos usando `int` porque é um bom tipo para contar coisas!
+Dissemos que estávamos fazendo uma carteira Bitcoin, mas até agora nós não os mencionamos. Estamos usando `int` porque é um bom tipo para contar coisas!
 
 Parece um pouco exagerado criar uma `struct` para isso. `int` é o suficiente em termos de como funciona, mas não é descritivo o suficiente.
 
@@ -243,40 +243,40 @@ Para ver funcionando, quebre o teste de propósito para que possamos ver
 
 Isto deixa mais claro o que está acontecendo em nossos testes.
 
-O próximo requisito é para a função `Withdraw`.
+O próximo requisito é para a função `Retirar`.
 
-## Primeiro escreva o teste
+## Escreva o teste primeiro
 
-Basicamente o aposto da função `Deposit()`
+Basicamente o aposto da função `Depositar()`
 
 ```go
 func TestCarteira(t *testing.T) {
 
-    t.Run("Deposit", func(t *testing.T) {
-        wallet := Wallet{}
+    t.Run("Depositar", func(t *testing.T) {
+        carteira := Carteira{}
 
-        wallet.Deposit(Bitcoin(10))
+        carteira.Depositar(Bitcoin(10))
 
-        got := wallet.Balance()
+        valor := carteira.Balance()
 
-        want := Bitcoin(10)
+        valorEsperado := Bitcoin(10)
 
-        if got != want {
-            t.Errorf("got %s want %s", got, want)
+        if valor != valorEsperado {
+            t.Errorf("valor %s valorEsperado %s", valor, valorEsperado)
         }
     })
 
-    t.Run("Withdraw", func(t *testing.T) {
-        wallet := Wallet{balance: Bitcoin(20)}
+    t.Run("Retirar", func(t *testing.T) {
+        carteira := Carteira{saldo: Bitcoin(20)}
 
-        wallet.Withdraw(Bitcoin(10))
+        carteira.Retirar(Bitcoin(10))
 
-        got := wallet.Balance()
+        valor := carteira.Balance()
 
-        want := Bitcoin(10)
+        valorEsperado := Bitcoin(10)
 
-        if got != want {
-            t.Errorf("got %s want %s", got, want)
+        if valor != valorEsperado {
+            t.Errorf("valor %s valorEsperado %s", valor, valorEsperado)
         }
     })
 }
@@ -284,60 +284,60 @@ func TestCarteira(t *testing.T) {
 
 ## Tente rodar o teste
 
-`./wallet_test.go:26:9: wallet.Withdraw undefined (type Wallet has no field or method Withdraw)`
+`./wallet_test.go:26:9: carteira.Retirar undefined (type Carteira has no field or method Retirar)`
 
-## Escreva o mínimo de código para o teste executar e veja o erro apresentado
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 ```go
-func (w *Wallet) Withdraw(amount Bitcoin) {
+func (c *Carteira) Retirar(quantidade Bitcoin) {
 
 }
 ```
 
-`wallet_test.go:33: got 20 BTC want 10 BTC`
+`wallet_test.go:33: valor 20 BTC valorEsperado 10 BTC`
 
-## Escreva código suficiente para fazer passar
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func (w *Wallet) Withdraw(amount Bitcoin) {
-    w.balance -= amount
+func (c *Carteira) Retirar(quantidade Bitcoin) {
+    c.saldo -= quantidade
 }
 ```
 
-## Refatorando
+## Refatoração
 
 Há algumas duplicações em nossos testes, vamos refatorar isto.
 
 ```go
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-    assertBalance := func(t *testing.T, wallet Wallet, want Bitcoin) {
+    assertBalance := func(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
         t.Helper()
-        got := wallet.Balance()
+        valor := carteira.Saldo()
 
-        if got != want {
-            t.Errorf("got %s want %s", got, want)
+        if valor != ValorEsperado {
+            t.Errorf("valor %s valorEsperado %s", valor, valorEsperado)
         }
     }
 
-    t.Run("Deposit", func(t *testing.T) {
-        wallet := Wallet{}
-        wallet.Deposit(Bitcoin(10))
-        assertBalance(t, wallet, Bitcoin(10))
+    t.Run("Depositar", func(t *testing.T) {
+        carteira := Carteira{}
+        carteira.Depositar(Bitcoin(10))
+        assertBalance(t, carteira, Bitcoin(10))
     })
 
-    t.Run("Withdraw", func(t *testing.T) {
-        wallet := Wallet{balance: Bitcoin(20)}
-        wallet.Withdraw(Bitcoin(10))
-        assertBalance(t, wallet, Bitcoin(10))
+    t.Run("Retirar", func(t *testing.T) {
+        carteira := Carteira{saldo: Bitcoin(20)}
+        carteira.Retirar(Bitcoin(10))
+        assertBalance(t, carteira, Bitcoin(10))
     })
 
 }
 ```
 
-O que aconteceria se você tentasse `Withdraw` mais do que há de saldo na conta? Por enquanto, nossos requisitos é assumir que não há nenhum tipo de cheque-especial.
+O que aconteceria se você tentasse `Retirar` mais do que há de saldo na conta? Por enquanto, nossos requisitos é assumir que não há nenhum tipo de cheque-especial.
 
-Como sinalizamos um problema quando estivermos usando `Withdraw` ?
+Como sinalizamos um problema quando estivermos usando `Retirar` ?
 
 Em Go, se você quiser indicar um erro, sua função deve retornar um `err` para que quem a chamou possar checar e tratar.
 
@@ -346,57 +346,57 @@ Vamos tentar isto em um teste.
 ## Escreva o primeiro teste
 
 ```go
-t.Run("Withdraw insufficient funds", func(t *testing.T) {
-    startingBalance := Bitcoin(20)
-    wallet := Wallet{startingBalance}
-    err := wallet.Withdraw(Bitcoin(100))
+t.Run("Retirar saldo insuficiente", func(t *testing.T) {
+    saldoInicial := Bitcoin(20)
+    carteira := Carteira{saldoInicial}
+    erro := carteira.Retirar(Bitcoin(100))
 
-    assertBalance(t, wallet, startingBalance)
+    assertBalance(t, carteira, saldoInicial)
 
-    if err == nil {
-        t.Error("wanted an error but didn't get one")
+    if erro == nil {
+        t.Error("Esperava um erro mas nenhum ocorreu.")
     }
 })
 ```
 
-Nós queremos que `Withdraw` retorne um erro se tentarmos retirar mais do que temos, e o saldo deverá continuar o mesmo.
+Nós queremos que `Retirar` retorne um erro se tentarmos retirar mais do que temos, e o saldo deverá continuar o mesmo.
 
 Nós checamos se um erro foi retornado falhando o teste se o valor for `nil`.
 
 `nil` é sinônimo de `null` de outras linguagens de programação.
-Erros podem ser `nil`, porque o tipo do retorno de `Withdraw` vai ser `error`, que é uma interface. Se você ver uma função que tem argumentos ou retornos que são interfaces, eles podem ser nulos.
+Erros podem ser `nil`, porque o tipo do retorno de `Retirar` vai ser `error`, que é uma interface. Se você ver uma função que tem argumentos ou retornos que são interfaces, eles podem ser nulos.
 
 Do mesmo jeito que `null`, se tentarmos acessar um valor que é `nil`, isto irá disparar um **runtime panic**. Isto é ruim! Devemos ter certeza que tratamos os valores nulos.
 
 ## Execute o teste
 
-`./wallet_test.go:31:25: wallet.Withdraw(Bitcoin(100)) used as value`
+`./wallet_test.go:31:25: carteira.Retirar(Bitcoin(100)) used as value`
 
-The wording is perhaps a little unclear, but our previous intent with `Withdraw` was just to call it, it will never return a value. To make this compile we will need to change it so it has a return type.
+The wording is perhaps a little unclear, but our previous intent with `Retirar` was just to call it, it will never return a value. To make this compile we will need to change it so it has a return type.
 
-Talvez não esteja tão claro, mas nossa intenção era apenas invocar a função `Withdraw`, ela nunca irá retornar um valor. Para fazer compilar, precisaremos mudar a função para que retorne um tipo.
+Talvez não esteja tão claro, mas nossa intenção era apenas invocar a função `Retirar`, ela nunca irá retornar um valor. Para fazer compilar, precisaremos mudar a função para que retorne um tipo.
 
-## Escreva o mínimo de código para o teste executar e veja o erro apresentado
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 ```go
-func (w *Wallet) Withdraw(amount Bitcoin) error {
-    w.balance -= amount
+func (c *Carteira) Retirar(quantidade Bitcoin) error {
+    c.saldo -= quantidade
     return nil
 }
 ```
 
-Novamente, é muito importante escrever apenas o suficiente para compilar. Nós corrigimos o método `Withdraw` para retornar `error` e por agora temos que retornar _alguma coisa_, então vamos apenas retornar `nil` .
+Novamente, é muito importante escrever apenas o suficiente para compilar. Nós corrigimos o método `Retirar` para retornar `error` e por agora temos que retornar _alguma coisa_, então vamos apenas retornar `nil` .
 
-## Escreva o suficiente para passar
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func (w *Wallet) Withdraw(amount Bitcoin) error {
+func (c *Carteira) Retirar(quantidade Bitcoin) error {
 
-    if amount > w.balance {
-        return errors.New("oh no")
+    if quantidade > c.saldo {
+        return errors.New("Ah não!")
     }
 
-    w.balance -= amount
+    c.saldo -= quantidade
     return nil
 }
 ```
@@ -413,7 +413,7 @@ Vamos fazer um rápido helper de teste para nossa checagem de erro, para deixar 
 assertError := func(t *testing.T, err error) {
     t.Helper()
     if err == nil {
-        t.Error("wanted an error but didnt get one")
+        t.Error("Esperava um erro mas nenhum ocorreu.")
     }
 }
 ```
@@ -421,12 +421,12 @@ assertError := func(t *testing.T, err error) {
 E em nosso teste
 
 ```go
-t.Run("Withdraw insufficient funds", func(t *testing.T) {
-    wallet := Wallet{Bitcoin(20)}
-    err := wallet.Withdraw(Bitcoin(100))
+t.Run("Retirar saldo insuficiente", func(t *testing.T) {
+    carteira := Carteira{Bitcoin(20)}
+    erro := carteira.Retirar(Bitcoin(100))
 
-    assertBalance(t, wallet, Bitcoin(20))
-    assertError(t, err)
+    assertBalance(t, carteira, Bitcoin(20))
+    assertError(t, erro)
 })
 ```
 
@@ -439,14 +439,14 @@ Assumindo que o erro enfim foi retornado para o usuário, vamos atualizar nosso 
 Atualize nosso helper para comparar com uma `string`.
 
 ```go
-assertError := func(t *testing.T, got error, want string) {
+assertError := func(t *testing.T, valor error, valorEsperado string) {
     t.Helper()
-    if got == nil {
-        t.Fatal("didn't get an error but wanted one")
+    if valor == nil {
+        t.Fatal("Esperava um erro mas nenhum ocorreu.")
     }
 
-    if got.Error() != want {
-        t.Errorf("got '%s', want '%s'", got, want)
+    if valor.Error() != valorEsperado {
+        t.Errorf("valor '%s', valorEsperado '%s'", valor, valorEsperado)
     }
 }
 ```
@@ -454,13 +454,13 @@ assertError := func(t *testing.T, got error, want string) {
 E então atualize o *invocador
 
 ```go
-t.Run("Withdraw insufficient funds", func(t *testing.T) {
-    startingBalance := Bitcoin(20)
-    wallet := Wallet{startingBalance}
-    err := wallet.Withdraw(Bitcoin(100))
+t.Run("Retirar saldo insuficiente", func(t *testing.T) {
+    saldoInicial := Bitcoin(20)
+    carteira := Carteira{saldoInicial}
+    erro := carteira.Retirar(Bitcoin(100))
 
-    assertBalance(t, wallet, startingBalance)
-    assertError(t, err, "cannot withdraw, insufficient funds")
+    assertBalance(t, carteira, saldoInicial)
+    assertError(t, erro, "Não pode retirar. Saldo insuficiente")
 })
 ```
 
@@ -469,91 +469,91 @@ Isto se deve ao fato de que não queremos fazer mais asserções no erro retorna
 
 ## Execute o teste
 
-`wallet_test.go:61: got err 'oh no' want 'cannot withdraw, insufficient funds'`
+`wallet_test.go:61: valor err 'Ah não' valorEsperado 'Não pode retirar. Saldo insuficiente'`
 
-## Escreva o suficiente para passar
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func (w *Wallet) Withdraw(amount Bitcoin) error {
+func (c *Carteira) Retirar(quantidade Bitcoin) error {
 
-    if amount > w.balance {
-        return errors.New("cannot withdraw, insufficient funds")
+    if quantidade > c.saldo {
+        return errors.New("Não pode retirar. Saldo insuficiente")
     }
 
-    w.balance -= amount
+    c.saldo -= quantidade
     return nil
 }
 ```
 
 ## Refatorando
 
-Nós temos duplicação da mensagem de erro tanto no código de teste, quanto no código de `Withdraw`.
+Nós temos duplicação da mensagem de erro tanto no código de teste, quanto no código de `Retirar`.
 
-Seria chato se alguém quisesse mudar a mensagem de quando o teste falhe, é muito detalhe para o nosso teste. Nós não _necessariamente_ nos importamos qual mensagem é exatamente, apenas que algum tipo de erro significativo sobre a função é retornado dado uma certa condição.
+Seria chato se o teste falhasse porque alguém ter mudado a mensagem do erro e é muito detalhe para o nosso test. Nós não _necessariamente_ nos importamos qual mensagem é exatamente, apenas que algum tipo de erro significativo sobre a função é retornado dado uma certa condição.
 
 Em Go, erros são valores, então podemos refatorar isso para ser uma variável e termos apenas uma fonte da verdade.
 
 ```go
-var ErrInsufficientFunds = errors.New("cannot withdraw, insufficient funds")
+var ErroSaldoInsuficiente = errors.New("Não pode retirar. Saldo insuficiente")
 
-func (w *Wallet) Withdraw(amount Bitcoin) error {
+func (c *Carteira) Retirar(amount Bitcoin) error {
 
-    if amount > w.balance {
-        return ErrInsufficientFunds
+    if quantidade > c.saldo {
+        return ErroSaldoInsuficiente
     }
 
-    w.balance -= amount
+    c.saldo -= quantidade
     return nil
 }
 ```
 
 A palavra-chave `var` nos permite definir valores globais para o pacote.
 
-Está uma é uma mudança positiva porque agora nossa função `Withdraw` parece mais limpa.
+Está uma é uma mudança positiva porque agora nossa função `Retirar` parece mais limpa.
 
 Agora, nós podemos refatorar nosso código para usar este valor em vez de uma string específica.
 
 ```go
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-    t.Run("Deposit", func(t *testing.T) {
-        wallet := Wallet{}
-        wallet.Deposit(Bitcoin(10))
-        assertBalance(t, wallet, Bitcoin(10))
+    t.Run("Depositar", func(t *testing.T) {
+        carteira := Carteira{}
+        carteira.Depositar(Bitcoin(10))
+        assertBalance(t, carteira, Bitcoin(10))
     })
 
-    t.Run("Withdraw with funds", func(t *testing.T) {
-        wallet := Wallet{Bitcoin(20)}
-        wallet.Withdraw(Bitcoin(10))
-        assertBalance(t, wallet, Bitcoin(10))
+    t.Run("Retirar com saldo suficiente", func(t *testing.T) {
+        carteira := Carteira{Bitcoin(20)}
+        carteira.Retirar(Bitcoin(10))
+        assertBalance(t, carteira, Bitcoin(10))
     })
 
-    t.Run("Withdraw insufficient funds", func(t *testing.T) {
-        wallet := Wallet{Bitcoin(20)}
-        err := wallet.Withdraw(Bitcoin(100))
+    t.Run("Retirar saldo insuficiente", func(t *testing.T) {
+        carteira := Carteira{Bitcoin(20)}
+        erro := carteira.Retirar(Bitcoin(100))
 
-        assertBalance(t, wallet, Bitcoin(20))
-        assertError(t, err, ErrInsufficientFunds)
+        assertBalance(t, carteira, Bitcoin(20))
+        assertError(t, erro, ErroSaldoInsuficiente)
     })
 }
 
-func assertBalance(t *testing.T, wallet Wallet, want Bitcoin) {
+func assertBalance(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
     t.Helper()
-    got := wallet.Balance()
+    valorEsperado := carteira.Saldo()
 
-    if got != want {
-        t.Errorf("got '%s' want '%s'", got, want)
+    if valor != valorEsperado {
+        t.Errorf("valor '%s' valorEsperado '%s'", valor, valorEsperado)
     }
 }
 
-func assertError(t *testing.T, got error, want error) {
+func assertError(t *testing.T, valor error, valoresperado error) {
     t.Helper()
-    if got == nil {
-        t.Fatal("didn't get an error but wanted one")
+    if valor == nil {
+        t.Fatal("Esperava um erro mas nenhum ocorreu.")
     }
 
-    if got != want {
-        t.Errorf("got '%s', want '%s'", got, want)
+    if valor != valorEsperado {
+        t.Errorf("valor '%s', valorEsperado '%s'", valor, valorEsperado)
     }
 }
 ```
@@ -562,7 +562,7 @@ Agora nosso teste está mais fácil para dar continuidade.
 
 Nós apenas movemos os helpers para fora da função principal de teste, então, quando alguém abrir o arquivo, começara lendo nossas asserções primeiro em vez de alguns helpers.
 
-Outra propriedade útil de testes, é que eles nos ajudam a entender o uso _real_ do nosso código, e assim podemos fazer códigos mais compreensivos. Podemos ver aqui que um desenvolvedor pode simplesmente chamar nosso código e fazer uma comparação de igualdade a `ErrInsufficientFunds`, e então agir de acordo.
+Outra propriedade útil de testes, é que eles nos ajudam a entender o uso _real_ do nosso código, e assim podemos fazer códigos mais compreensivos. Podemos ver aqui que um desenvolvedor pode simplesmente chamar nosso código e fazer uma comparação de igualdade a `ErroSaldoInsuficiente`, e então agir de acordo.
 
 ### Erros não checados
 
@@ -576,63 +576,63 @@ Então, dentro do diretório do seu código execute `errcheck .`
 
 Você deve receber algo assim
 
-`wallet_test.go:17:18: wallet.Withdraw(Bitcoin(10))`
+`wallet_test.go:17:18: carteira.Retirar(Bitcoin(10))`
 
-O que isso está nos dizendo é que nós não checamos o erro sendo retornado naquela linha de código. Aquela linha de código, no meu computador, corresponde para o nosso cenário normal de retirada, porque nós não checamos que se `Withdraw` é bem sucedido, um erro _não_ é retornado.
+O que isso está nos dizendo é que nós não checamos o erro sendo retornado naquela linha de código. Aquela linha de código, no meu computador, corresponde para o nosso cenário normal de retirada, porque nós não checamos que se `Retirar` é bem sucedido, um erro _não_ é retornado.
 
 Aqui está o código de teste final que resolve isto.
 
 ```go
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-    t.Run("Deposit", func(t *testing.T) {
-        wallet := Wallet{}
-        wallet.Deposit(Bitcoin(10))
+    t.Run("Depositar", func(t *testing.T) {
+        carteira := Carteira{}
+        carteira.Depositar(Bitcoin(10))
 
-        assertBalance(t, wallet, Bitcoin(10))
+        assertBalance(t, carteira, Bitcoin(10))
     })
 
-    t.Run("Withdraw with funds", func(t *testing.T) {
-        wallet := Wallet{Bitcoin(20)}
-        err := wallet.Withdraw(Bitcoin(10))
+    t.Run("Retirar com saldo suficiente", func(t *testing.T) {
+        carteira := Carteira{Bitcoin(20)}
+        erro := carteira.Retirar(Bitcoin(10))
 
-        assertBalance(t, wallet, Bitcoin(10))
-        assertNoError(t, err)
+        assertBalance(t, carteira, Bitcoin(10))
+        assertNoError(t, erro)
     })
 
-    t.Run("Withdraw insufficient funds", func(t *testing.T) {
-        wallet := Wallet{Bitcoin(20)}
-        err := wallet.Withdraw(Bitcoin(100))
+    t.Run("Retirar com saldo insuficiente", func(t *testing.T) {
+        carteira := Carteira{Bitcoin(20)}
+        erro := carteira.Retirar(Bitcoin(100))
 
-        assertBalance(t, wallet, Bitcoin(20))
-        assertError(t, err, ErrInsufficientFunds)
+        assertBalance(t, carteira, Bitcoin(20))
+        assertError(t, erro, ErroSaldoInsuficiente)
     })
 }
 
-func assertBalance(t *testing.T, wallet Wallet, want Bitcoin) {
+func assertBalance(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
     t.Helper()
-    got := wallet.Balance()
+    valorEsperado := carteira.Saldo()
 
-    if got != want {
-        t.Errorf("got %s want %s", got, want)
+    if valor != valorEsperado {
+        t.Errorf("valor %s valorEsperado %s", valor, valorEsperado)
     }
 }
 
-func assertNoError(t *testing.T, got error) {
+func assertNoError(t *testing.T, valor error) {
     t.Helper()
-    if got != nil {
-        t.Fatal("got an error but didnt want one")
+    if valor != nil {
+        t.Fatal("Esperava um erro mas nenhum ocorreu.")
     }
 }
 
-func assertError(t *testing.T, got error, want error) {
+func assertError(t *testing.T, valor error, valorEsperado error) {
     t.Helper()
-    if got == nil {
-        t.Fatal("didn't get an error but wanted one")
+    if valor == nil {
+        t.Fatal("Esperava um erro mas nenhum ocorreu.")
     }
 
-    if got != want {
-        t.Errorf("got %s, want %s", got, want)
+    if valor != valorEsperado {
+        t.Errorf("valor %s, valrEsperado %s", valor, valorEsperado)
     }
 }
 ```
@@ -642,7 +642,6 @@ func assertError(t *testing.T, got error, want error) {
 ### Ponteiros
 
 * Go copia os valores quando são passados para funções/métodos, então, se você está escrevendo uma função que precise mudar o estado, você precisará de um ponteiro para o valor que você quer mudar.
-* The fact that Go takes a copy of values is useful a lot of the time but sometimes you wont want your system to make a copy of something, in which case you need to pass a reference. Examples could be very large data or perhaps things you intend only to have one instance of \(like database connection pools\).
 * O fato que Go pega um cópia dos valores é muito útil na maior parte dos tempos, mas as vezes você não vai querer que o seu sistema faça cópia de alguma coisa, nesse caso você precisa passar uma referência. Podemos ser dados muito grandes por exemplo, ou talvez coisas que você pretende ter apenas uma instância \(como conexões a banco de dados\).
 
 ### nil
