@@ -155,7 +155,6 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 
 ## Feedback
 
--   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
 -   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
 
 [MIT license](https://github.com/larien/learn-go-with-tests/tree/09aafaeebaef4443e80a6216cc46fa3d7bfdabbb/LICENSE.md)
