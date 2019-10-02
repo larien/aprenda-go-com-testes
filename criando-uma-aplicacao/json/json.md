@@ -1,12 +1,12 @@
 # JSON, roteamento and embedding
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/criando-uma-aplicacao/json)
+[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/criando-uma-aplicacao/json)
 
-[In the previous chapter](servidor-http.md) we created a web server to store how many games players have won.
+[No capítulo anterior](../servidor-http/servidor-http.md) nós criamos um web server para armazenar quantos jogos nossos jogadores venceram.
 
-Our product owner has a new requirement; to have a new endpoint called `/league` which returns a list of all players stored. She would like this to be returned as JSON.
+Nossa gerente de produtos veio com um novo requisito;  criar um novo endpoint chamado `/league` que retorne uma lista contendo todos os jogadores armazenados. Ela gostaria que isto fosse retornado como um JSON. 
 
-## Here is the code we have so far
+## Este é o código que temos até agora
 
 ```go
 // server.go
@@ -92,15 +92,17 @@ func main() {
 }
 ```
 
-You can find the corresponding tests in the link at the top of the chapter.
+Você pode encontrar os testes correspondentes no link no topo do capítulo.
 
-We'll start by making the league table endpoint.
+Nós vamos começar criando o endpoint para a tabela de `league`.
 
-## Write the test first
+## Escreva os testes primeiro
 
-We'll extend the existing suite as we have some useful test functions and a fake `PlayerStore` to use.
+Ampliaremos a suite de testes existente, pois temos algumas funções de teste úteis e um `PlayerStore` falso para usar.
 
 ```go
+// server_test.go
+
 func TestLeague(t *testing.T) {
     store := StubPlayerStore{}
     server := &PlayerServer{&store}
@@ -115,6 +117,7 @@ func TestLeague(t *testing.T) {
     })
 }
 ```
+Antes de nos preocuparmos sobre as pontuações atuais e o JSON, nós vamos tentar manter as mudanças pequenas com o plano de iterar em direção ao nosso objetivo. O inicio mais simples é checar se nós conseguimos consultar `/league` e obter um `OK` de retorno. 
 
 Before worrying about actual scores and JSON we will try and keep the changes small with the plan to iterate toward our goal. The simplest start is to check we can hit `/league` and get an `OK` back.
 
