@@ -1,11 +1,11 @@
 # Ponteiros e erros
 
-[**Você pode encontrar todos os códigos deste capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/pointers)
+[**Você pode encontrar todos os códigos deste capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/pointers)
 
 
 Nós aprendemos sobre estruturas na última seção, o que nos possibilitou capturar valores com conceito relacionado.
 
-Em algum momento talvez você deseje utilizar estruturas para gerenciar valores, expondo métodos que permitam usuários muda-los de um jeito que você possa controlar.
+Em algum momento talvez você deseje utilizar estruturas para gerenciar valores, expondo métodos que permitam usuários mudá-los de um jeito que você possa controlar.
 
 **[Fintechs](https://www.infowester.com/fintech.php) amam Go** e uhh bitcoins? Então vamos mostrar um sistema bancário incrível que podemos construir.
 
@@ -37,7 +37,7 @@ No [exemplo anterior](structs-methods-and-interfaces.md) acessamos campos direta
 
 ## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
-O compilador não sabe o que uma `Carteira` é, então vamos declara-la.
+O compilador não sabe o que uma `Carteira` é, então vamos declará-la.
 
 ```go
 type Carteira struct { }
@@ -148,7 +148,7 @@ endereço do saldo no teste é is 0xc420012260
 
 Você pode ver que os endereços dos dois saldos são diferentes. Então, quando mudamos o valor de um dos saldos dentro do código, estamos trabalhando em uma cópia do que veio do teste. Portanto, o saldo no teste não é alterado.
 
-Podemos consertar isso com _ponteiros_. [Ponteiros](https://gobyexample.com/pointers) nos permite _apontar_ para alguns valores e então mudá-los. Então, em vez de termos uma cópia da Carteira, nós pegamos um ponteiro para a carteira para que possamos alterá-la.
+Podemos consertar isso com _ponteiros_. [Ponteiros](https://gobyexample.com/pointers) nos permitem _apontar_ para alguns valores e então mudá-los. Então, em vez de termos uma cópia da Carteira, nós pegamos um ponteiro para a carteira para que possamos alterá-la.
 
 ```go
 func (c *Carteira) Depositar(quantidade int) {
@@ -647,13 +647,13 @@ func assertError(t *testing.T, valor error, valorEsperado error) {
 ### nil
 
 * Ponteiros podem ser nil
-* Quando uma função retorna um ponteiro para ago, você precisa ter certeza de checar se é nil ou você precisa disparar uma execeção em tempo de execuçao, o compilador não te ajudará aqui.
+* Quando uma função retorna um ponteiro para algo, você precisa ter certeza de checar se é nil ou você precisa disparar uma exceção em tempo de execução, o compilador não te ajudará aqui.
 * Útil para quando você quer descrever um valor que pode estar faltando.
 ### Erros
 
-* Erros é a forma de sinalizar falhas quando executar um função/método.
-* Analisando nossos testes, concluímos que buscando por uma string em um erro poderia resultar em um teste não muito confiável. Então, nos refatoramos para usar um valor significativo, e isto resultou em um código mais fácil de ser testado, e concluímos que seria mais fácil para usuários de nossa API também.
-* Este não e o fim do assunto de tratamento de erros, você pode fazer coisas mais sofisticadas, mas esta é apenas uma introdução. Seções posteriores vão abordar mais estratégias.
+* Erros são a forma de sinalizar falhas quando executar um função/método.
+* Analisando nossos testes, concluímos que buscando por uma string em um erro poderia resultar em um teste não muito confiável. Então, nós refatoramos para usar um valor significativo, e isto resultou em um código mais fácil de ser testado, e concluímos que seria mais fácil para usuários de nossa API também.
+* Este não é o fim do assunto de tratamento de erros, você pode fazer coisas mais sofisticadas, mas esta é apenas uma introdução. Seções posteriores vão abordar mais estratégias.
 * [Não cheque erros apenas, trate os graciosamente](https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully)
 
 ### Crie novos tipos a partir de existentes
