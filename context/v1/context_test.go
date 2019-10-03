@@ -15,7 +15,7 @@ func (s *StubStore) Fetch() string {
 }
 
 func TestServer(t *testing.T) {
-	data := "hello, world"
+	data := "olá, mundo"
 	svr := Server(&StubStore{data})
 
 	request := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -24,6 +24,6 @@ func TestServer(t *testing.T) {
 	svr.ServeHTTP(response, request)
 
 	if response.Body.String() != data {
-		t.Errorf(`got "%s", want "%s"`, response.Body.String(), data)
+		t.Errorf(`recebi "%s", quero "%s"`, response.Body.String(), data)
 	}
 }
