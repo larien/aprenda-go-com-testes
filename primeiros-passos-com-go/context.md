@@ -366,7 +366,7 @@ t.Run("retorna dados da store", func(t *testing.T) {
 ```text
 === RUN   TestServer/retorna_dados_da_store
 --- FAIL: TestServer (0.00s)
-    --- FAIL: TestServer/returns_data_from_store (0.00s)
+    --- FAIL: TestServer/retorna_dados_da_store (0.00s)
         context_test.go:22: recebi "", quero "olá, mundo"
 ```
 
