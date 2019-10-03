@@ -42,7 +42,7 @@ func (s *StubStore) Fetch() string {
 }
 
 func TestHandler(t *testing.T) {
-    data := "hello, world"
+    data := "olá, mundo"
     svr := Server(&StubStore{data})
 
     request := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -51,7 +51,7 @@ func TestHandler(t *testing.T) {
     svr.ServeHTTP(response, request)
 
     if response.Body.String() != data {
-        t.Errorf(`got "%s", want "%s"`, response.Body.String(), data)
+        t.Errorf(`recebi "%s", quero "%s"`, response.Body.String(), data)
     }
 }
 ```
@@ -90,7 +90,7 @@ func (s *SpyStore) Cancel() {
 Vamos adicionar um novo teste onde cancelamos a requisição antes de 100 milissegundos e verificamos a store para ver se ela é cancelada.
 
 ```go
-t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
+t.Run("avisa a store para cancelar o trabalho se a requisicao for cancelada", func(t *testing.T) {
       store := &SpyStore{response: data}
       svr := Server(store)
 
@@ -105,7 +105,7 @@ t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
       svr.ServeHTTP(response, request)
 
       if !store.cancelled {
-          t.Errorf("store was not told to cancel")
+          t.Errorf("store nao foi avisada para cancelar")
       }
   })
 ```
@@ -124,8 +124,8 @@ O teste falha como seria de esperar.
 
 ```go
 --- FAIL: TestServer (0.00s)
-    --- FAIL: TestServer/tells_store_to_cancel_work_if_request_is_cancelled (0.00s)
-        context_test.go:62: store was not told to cancel
+    --- FAIL: TestServer/avisa_a_store_para_cancelar_o trabalho_se_a_requisicao_for_cancelada (0.00s)
+        context_test.go:62: store nao foi avisada para cancelar
 ```
 
 ## Escreva código suficiente para fazê-lo passar
@@ -148,7 +148,7 @@ Ao ser disciplinado ele destacou uma falha em nossos testes, isso é uma coisa b
 Vamos precisar atualizar nosso teste de caminho feliz para afirmar que ele não será cancelado.
 
 ```go
-t.Run("returns data from store", func(t *testing.T) {
+t.Run("retorna dados da store", func(t *testing.T) {
     store := SpyStore{response: data}
     svr := Server(&store)
 
@@ -158,11 +158,11 @@ t.Run("returns data from store", func(t *testing.T) {
     svr.ServeHTTP(response, request)
 
     if response.Body.String() != data {
-        t.Errorf(`got "%s", want "%s"`, response.Body.String(), data)
+        t.Errorf(`recebi "%s", quero "%s"`, response.Body.String(), data)
     }
 
     if store.cancelled {
-        t.Error("it should not have cancelled the store")
+        t.Error("nao deveria ter cancelado a store")
     }
 })
 ```
@@ -204,14 +204,14 @@ Podemos refatorar um pouco o nosso código de teste fazendo métodos de afirmaç
 func (s *SpyStore) assertWasCancelled() {
     s.t.Helper()
     if !s.cancelled {
-        s.t.Errorf("store was not told to cancel")
+        s.t.Errorf("store nao foi avisada para cancelar")
     }
 }
 
 func (s *SpyStore) assertWasNotCancelled() {
     s.t.Helper()
     if s.cancelled {
-        s.t.Errorf("store was told to cancel")
+        s.t.Errorf("store foi avisada para cancelar")
     }
 }
 ```
@@ -220,9 +220,9 @@ Lembre-se de passar o `*testing.T` ao criar o spy.
 
 ```go
 func TestServer(t *testing.T) {
-    data := "hello, world"
+    data := "olá, mundo"
 
-    t.Run("returns data from store", func(t *testing.T) {
+    t.Run("retorna dados da store", func(t *testing.T) {
         store := &SpyStore{response: data, t: t}
         svr := Server(store)
 
@@ -232,13 +232,13 @@ func TestServer(t *testing.T) {
         svr.ServeHTTP(response, request)
 
         if response.Body.String() != data {
-            t.Errorf(`got "%s", want "%s"`, response.Body.String(), data)
+            t.Errorf(`recebi "%s", quero "%s"`, response.Body.String(), data)
         }
 
         store.assertWasNotCancelled()
     })
 
-    t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
+    t.Run("avisa a store para cancelar o trabalho se a requisicao for cancelada", func(t *testing.T) {
         store := &SpyStore{response: data, t: t}
         svr := Server(store)
 
@@ -312,7 +312,7 @@ func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
         for _, c := range s.response {
             select {
             case <-ctx.Done():
-                s.t.Log("spy store got cancelled")
+                s.t.Log("spy store foi cancelado")
                 return
             default:
                 time.Sleep(10 * time.Millisecond)
@@ -346,7 +346,7 @@ Nós removemos a referência ao `ctx` dos campos do `SpyStore` porque não é ma
 Finalmente podemos atualizar nossos testes. Comente nosso teste de cancelamento para que possamos corrigir o teste do caminho feliz primeiro.
 
 ```go
-t.Run("returns data from store", func(t *testing.T) {
+t.Run("retorna dados da store", func(t *testing.T) {
     store := &SpyStore{response: data, t: t}
     svr := Server(store)
 
@@ -356,7 +356,7 @@ t.Run("returns data from store", func(t *testing.T) {
     svr.ServeHTTP(response, request)
 
     if response.Body.String() != data {
-        t.Errorf(`got "%s", want "%s"`, response.Body.String(), data)
+        t.Errorf(`recebi "%s", quero "%s"`, response.Body.String(), data)
     }
 })
 ```
@@ -364,10 +364,10 @@ t.Run("returns data from store", func(t *testing.T) {
 ## Tente executar o teste
 
 ```text
-=== RUN   TestServer/returns_data_from_store
+=== RUN   TestServer/retorna_dados_da_store
 --- FAIL: TestServer (0.00s)
     --- FAIL: TestServer/returns_data_from_store (0.00s)
-        context_test.go:22: got "", want "hello, world"
+        context_test.go:22: recebi "", quero "olá, mundo"
 ```
 
 ## Escreva código suficiente para fazê-lo passar
@@ -399,7 +399,7 @@ func (s *SpyResponseWriter) Header() http.Header {
 
 func (s *SpyResponseWriter) Write([]byte) (int, error) {
     s.written = true
-    return 0, errors.New("not implemented")
+    return 0, errors.New("nao implementado")
 }
 
 func (s *SpyResponseWriter) WriteHeader(statusCode int) {
@@ -410,7 +410,7 @@ func (s *SpyResponseWriter) WriteHeader(statusCode int) {
 Nosso `SpyResponseWriter` implementa `http.ResponseWriter` para que possamos usá-lo no teste.
 
 ```go
-t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
+t.Run("avisa a store para cancelar o trabalho se a requisicao for cancelada", func(t *testing.T) {
     store := &SpyStore{response: data, t: t}
     svr := Server(store)
 
@@ -425,7 +425,7 @@ t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
     svr.ServeHTTP(response, request)
 
     if response.written {
-        t.Error("a response should not have been written")
+        t.Error("uma resposta nao deveria ter sido escrita")
     }
 })
 ```
@@ -434,10 +434,10 @@ t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
 
 ```text
 === RUN   TestServer
-=== RUN   TestServer/tells_store_to_cancel_work_if_request_is_cancelled
+=== RUN   TestServer/avisa_a_store_para_cancelar_o_trabalho_se_a_requisicao_for_cancelada
 --- FAIL: TestServer (0.01s)
-    --- FAIL: TestServer/tells_store_to_cancel_work_if_request_is_cancelled (0.01s)
-        context_test.go:47: a response should not have been written
+    --- FAIL: TestServer/avisa_a_store_para_cancelar_o_trabalho_se_a_requisicao_for_cancelada (0.01s)
+        context_test.go:47: uma resposta nao deveria ter sido escrita
 ```
 
 ## Escreva código suficiente para fazê-lo passar
@@ -448,7 +448,7 @@ func Server(store Store) http.HandlerFunc {
         data, err := store.Fetch(r.Context())
 
         if err != nil {
-            return // todo: log error however you like
+            return // todo: registre o erro como você quiser
         }
 
         fmt.Fprint(w, data)
