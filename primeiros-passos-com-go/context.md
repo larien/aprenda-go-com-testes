@@ -480,7 +480,7 @@ A conveniência é muitas vezes a causa do código ruim.
 
 O problema com `context.Values` é que ele é apenas um mapa não tipado para que você não tenha nenhum tipo de segurança e você tem que lidar com ele não realmente contendo seu valor. Você tem que criar um acoplamento de chaves de mapa de um módulo para outro e se alguém muda alguma coisa começar a quebrar.
 
-Em suma, **se uma função necessita de alguns valores, coloque-os como parâmetros tipados em vez de tentar obtê-los a partir de `context.Value`**. Isto torna-o estaticamente verificado e documentado para que todos o vejam.
+Resumindo, **se uma função necessita de alguns valores, coloque-os como parâmetros tipados em vez de tentar obtê-los a partir de `context.Value`**. Isto torna-o estaticamente verificado e documentado para que todos o vejam.
 
 #### Mas...
 
