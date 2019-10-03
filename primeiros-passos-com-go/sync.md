@@ -15,14 +15,14 @@ Queremos que nossa API nos dê um método para incrementar o contador e depois r
 
 ```go
 func TesteContador(t *testing.T) {
-    t.Run("incrementing the counter 3 times leaves it at 3", func(t *testing.T) {
-        counter := Contador{}
-        counter.Inc()
-        counter.Inc()
-        counter.Inc()
+    t.Run("incrementar o contador 3 vezes o deixa com valor 3", func(t *testing.T) {
+        contador := Contador{}
+        contador.Inc()
+        contador.Inc()
+        contador.Inc()
 
-        if counter.Value() != 3 {
-            t.Errorf("got %d, want %d", counter.Value(), 3)
+        if contador.Valor() != 3 {
+            t.Errorf("recebido %d, desejado %d", contador.Valor(), 3)
         }
     })
 }
@@ -47,8 +47,8 @@ type Contador struct {
 Tente de novo e ele falhará com o seguinte
 
 ```text
-./sync_test.go:14:10: counter.Inc undefined (type Contador has no field or method Inc)
-./sync_test.go:18:13: counter.Value undefined (type Contador has no field or method Value)
+./sync_test.go:14:10: contador.Inc undefined (type Contador has no field or method Inc)
+./sync_test.go:18:13: contador.Valor undefined (type Contador has no field or method Valor)
 ```
 
 Então, pra finalmente fazer o teste rodar, podemos definir esses métodos
@@ -58,7 +58,7 @@ func (c *Contador) Inc() {
 
 }
 
-func (c *Contador) Value() int {
+func (c *Contador) Valor() int {
     return 0
 }
 ```
@@ -67,10 +67,10 @@ Agora tudo deve rodar e falhar
 
 ```text
 === RUN   TesteContador
-=== RUN   TesteContador/incrementing_the_counter_3_times_leaves_it_at_3
+=== RUN   TesteContador/incrementar_o_contador_3_vezes_o_deixa_com_valor_3
 --- FAIL: TesteContador (0.00s)
-    --- FAIL: TesteContador/incrementing_the_counter_3_times_leaves_it_at_3 (0.00s)
-        sync_test.go:27: got 0, want 3
+    --- FAIL: TesteContador/incrementar_o_contador_3_vezes_o_deixa_com_valor_3 (0.00s)
+        sync_test.go:27: recebido 0, desejado 3
 ```
 
 ## Escreva código o suficiente para fazer ele passar
@@ -82,15 +82,15 @@ estado do contador no nosso datatype e daí incrementá-lo em cada chamada do
 
 ```go
 type Contador struct {
-    value int
+    valor int
 }
 
 func (c *Contador) Inc() {
-    c.value++
+    c.valor++
 }
 
-func (c *Contador) Value() int {
-    return c.value
+func (c *Contador) Valor() int {
+    return c.valor
 }
 ```
 
@@ -102,19 +102,19 @@ para que o teste fique um pouco mais legível.
 
 
 ```go
-t.Run("incrementing the counter 3 times leaves it at 3", func(t *testing.T) {
-    counter := Contador{}
-    counter.Inc()
-    counter.Inc()
-    counter.Inc()
+t.Run("incrementar o contador 3 vezes o deixa com valor 3", func(t *testing.T) {
+    contador := Contador{}
+    contador.Inc()
+    contador.Inc()
+    contador.Inc()
 
-    assertContador(t, counter, 3)
+    assertContador(t, contador, 3)
 })
 
-func assertContador(t *testing.T, got Contador, want int)  {
+func assertContador(t *testing.T, recebido Contador, desejado int)  {
     t.Helper()
-    if got.Value() != want {
-        t.Errorf("got %d, want %d", got.Value(), want)
+    if recebido.Valor() != desejado {
+        t.Errorf("recebido %d, quero receber %d", recebido.Valor(), desejado)
     }
 }
 ```
@@ -128,26 +128,26 @@ criar um teste pra exercitar isso.
 ## Escreva o teste primeiro
 
 ```go
-t.Run("it runs safely concurrently", func(t *testing.T) {
-    wantedCount := 1000
-    counter := Contador{}
+t.Run("roda concorrentemente em segurança", func(t *testing.T) {
+    contadorDesejado := 1000
+    contador := Contador{}
 
     var wg sync.WaitGroup
-    wg.Add(wantedCount)
+    wg.Add(contadorDesejado)
 
-    for i:=0; i<wantedCount; i++ {
+    for i:=0; i<contadorDesejado; i++ {
         go func(w *sync.WaitGroup) {
-            counter.Inc()
+            contador.Inc()
             w.Done()
         }(&wg)
     }
     wg.Wait()
 
-    assertContador(t, counter, wantedCount)
+    assertContador(t, contador, contadorDesejado)
 })
 ```
 
-Isso vai iterar pelo nosso `wantedCount` e chamar uma *goroutine* pra chamar `counter.Inc()`.
+Isso vai iterar pelo nosso `contadorDesejado` e chamar uma *goroutine* pra chamar `contador.Inc()`.
 
 Nós estamos usando [`sync.WaitGroup`](https://golang.org/pkg/sync/#WaitGroup)
 que é uma maneira conveniente de sincronizar processos concorrentes.
@@ -164,10 +164,10 @@ podemos ter certeza que todas as nossas *goroutines* tentaram `Inc` o `Contador`
 ## Tente rodar o teste
 
 ```text
-=== RUN   TesteContador/it_runs_safely_in_a_concurrent_envionment
+=== RUN   TesteContador/roda_concorrentemente_em_seguranca
 --- FAIL: TesteContador (0.00s)
-    --- FAIL: TesteContador/it_runs_safely_in_a_concurrent_envionment (0.00s)
-        sync_test.go:26: got 939, want 1000
+    --- FAIL: TesteContador/roda_concorrentemente_em_seguranca (0.00s)
+        sync_test.go:26: recebido 939, desejado 1000
 FAIL
 ```
 
@@ -185,13 +185,13 @@ Uma solução simples é adicionar uma trava ao nosso `Contador`, um
 ```go
 type Contador struct {
     mu sync.Mutex
-    value int
+    valor int
 }
 
 func (c *Contador) Inc() {
     c.mu.Lock()
     defer c.mu.Unlock()
-    c.value++
+    c.valor++
 }
 ```
 
@@ -209,7 +209,7 @@ Você pode ver exemplos como esse
 ```go
 type Contador struct {
     sync.Mutex
-    value int
+    valor int
 }
 ```
 
@@ -219,7 +219,7 @@ type Contador struct {
 func (c *Contador) Inc() {
     c.Lock()
     defer c.Unlock()
-    c.value++
+    c.valor++
 }
 ```
 
@@ -247,8 +247,8 @@ Nossos testes passam, mas nosso código ainda é um pouco perigoso.
 Se você rodar `go vet` no seu código, deve receber um erro similar ao seguinte:
 
 ```text
-sync/v2/sync_test.go:16: call of assertContador copies lock value: v1.Contador contains sync.Mutex
-sync/v2/sync_test.go:39: assertContador passes lock by value: v1.Contador contains sync.Mutex
+sync/v2/sync_test.go:16: call of assertContador copies lock valor: v1.Contador contains sync.Mutex
+sync/v2/sync_test.go:39: assertContador passes lock by valor: v1.Contador contains sync.Mutex
 ```
 
 Uma rápida olhada na documentação do [`sync.Mutex`](https://golang.org/pkg/sync/#Mutex)
@@ -262,7 +262,7 @@ Para resolver isso, devemos passar um ponteiro para o nosso `Contador`. Vamos en
 `assertContador`.
 
 ```go
-func assertContador(t *testing.T, got *Contador, want int)
+func assertContador(t *testing.T, recebido *Contador, desejado int)
 ```
 
 Nossos testes não vão mais compilar porque estamos tentando passar um `Contador` em vez de um `*Contador`.
@@ -271,7 +271,7 @@ melhor não inicializar o tipo ele mesmo.
 
 
 ```go
-func NewContador() *Contador {
+func NovoContador() *Contador {
     return &Contador{}
 }
 ```
