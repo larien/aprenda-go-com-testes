@@ -385,7 +385,7 @@ O nosso caminho feliz deve estar... feliz. Agora podemos corrigir o outro teste.
 
 ## Escreva o teste primeiro
 
-Precisamos testar que não escrevemos qualquer tipo de resposta no caso de erro. Infelizmente o `httptest.ResponseRecorder` não tem uma maneira de descobrir isso, então nós teremos que usar nosso próprio spy para testar isso.
+Precisamos testar que não escrevemos qualquer tipo de resposta no caso de erro. Infelizmente o `httptest.ResponseRecorder` não tem uma maneira de descobrir isso, então nós teremos que usar nosso próprio spy para testar.
 
 ```go
 type SpyResponseWriter struct {
