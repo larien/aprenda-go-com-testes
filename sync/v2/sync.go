@@ -2,25 +2,26 @@ package v1
 
 import "sync"
 
-// Counter will increment a number
-type Counter struct {
+// Contador vai incrementar um número
+type Contador struct {
 	mu    sync.Mutex
-	value int
+	valor int
 }
 
-// NewCounter returns a new Counter
-func NewCounter() *Counter {
-	return &Counter{}
+// NovoContador retorna um novo Contador
+func NovoContador() *Contador {
+	return &Contador{}
 }
 
-// Inc the count
-func (c *Counter) Inc() {
+// Incrementa o contador
+func (c *Contador) Inc() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.value++
+	c.valor++
 }
 
 // Value returns the current count
-func (c *Counter) Value() int {
-	return c.value
+// Valor retorna o atual contador
+func (c *Contador) Valor() int {
+	return c.valor
 }
