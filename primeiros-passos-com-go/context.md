@@ -484,7 +484,7 @@ Em suma, **se uma função necessita de alguns valores, coloque-os como parâmet
 
 #### Mas...
 
-Por outro lado, pode ser útil incluir informações que sejam ortogonais a uma requisição em um context, como um trace id. Potencialmente esta informação não seria necessária para todas as funções do seu call-stack e tornaria as suas assinaturas funcionais muito confusas.
+Por outro lado, pode ser útil incluir informações que sejam ortogonais a uma requisição em um context, como um trace id. Potencialmente esta informação não seria necessária para todas as funções da sua pilha de chamadas (call-stack) e tornaria as suas assinaturas funcionais muito confusas.
 
 [Jack Lindamood diz que **Context.value deve informar, não controlar**](https://medium.com/@cep21/how-to-correctly-use-context-context-in-go-1-7-8f2c0fafdf39)
 
