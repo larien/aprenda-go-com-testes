@@ -124,7 +124,7 @@ O teste falha como seria de esperar.
 
 ```go
 --- FAIL: TestServer (0.00s)
-    --- FAIL: TestServer/avisa_a_store_para_cancelar_o trabalho_se_a_requisicao_for_cancelada (0.00s)
+    --- FAIL: TestServer/avisa_a_store_para_cancelar_o_trabalho_se_a_requisicao_for_cancelada (0.00s)
         context_test.go:62: store nao foi avisada para cancelar
 ```
 
