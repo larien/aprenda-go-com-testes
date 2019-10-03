@@ -339,7 +339,7 @@ Finalmente o código usa outro `select` para esperar que a goroutine termine seu
 
 É semelhante à nossa abordagem de antes, usamos as primitivas de simultaneidade do Go para fazerem dois processos assíncronos correrem uns contra os outros para determinar o que retornamos.
 
-Você usará uma aproximação similar ao escrever suas próprias funções e métodos que aceitam um `context`, por isso certifique-se de que você está entendendo o que está acontecendo.
+Você usará uma abordagem similar ao escrever suas próprias funções e métodos que aceitam um `context`, por isso certifique-se de que você está entendendo o que está acontecendo.
 
 Nós removemos a referência ao `ctx` dos campos do `SpyStore` porque não é mais interessante para nós. Estamos estritamente testando o comportamento agora, que preferimos em comparação aos detalhes da implementação dos testes, como "você passou um determinado valor para a função `foo`".
 
