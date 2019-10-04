@@ -38,7 +38,7 @@ func TestContador(t *testing.T) {
 
 func assertContador(t *testing.T, recebido *Contador, desejado int) {
 	t.Helper()
-	if recebido.Value() != desejado {
-		t.Errorf("recebido %d, desejado %d", recebido.Value(), desejado)
+	if recebido.Valor() != desejado {
+		t.Errorf("recebido %d, desejado %d", recebido.Valor(), desejado)
 	}
 }
