@@ -1,21 +1,35 @@
 # Websockets
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/criando-uma-aplicacao/websockets)
+[**Você pode encontrar os códigos desse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/criando-uma-aplicacao/websockets)
 
-In this chapter we'll learn how to use WebSockets to improve our application.
+Nesse capítulo, vamos aprender a utilizar WebSockets pra melhorar a nossa aplicação.
 
-## Project recap
+## Recapitulando o projeto
 
-We have two applications in our poker codebase
+Nós temos duas aplicações no nosso código-base de poquer.
 
-* _Command line app_. Prompts the user to enter the number of players in a game. From then on informs the players of what the "blind bet" value is, which increases over time. At any point a user can enter `"{Playername} wins"` to finish the game and record the victor in a store.
-* _Web app_. Allows users to record winners of games and displays a league table. Shares the same store as the command line app. 
+* _Aplicação de linha de comando_. Pede ao usuário para que insira o número
+de jogadores. A partir daí informa os jogadores o valor da "aposta cega", que
+aumenta em função do tempo. A qualquer momento, um usuário pode entrar com
+`"{Jogador} ganhou"` para encerrar o jogo e salvar a vitória em um armazenamento.
 
-## Next steps
+* _Aplicação Web_. Permite que os usuários salvem os ganhadores e mostrem uma tabela
+da liga. Divide o armazenamento com a aplicação de linha de comando.
 
-The product owner is thrilled with the command line application but would prefer it if we could bring that functionality to the browser. She imagines a web page with a text box that allows the user to enter the number of players and when they submit the form the page displays the blind value and automatically updates it when appropriate. Like the command line application the user can declare the winner and it'll get saved in the database.
+## Próximos passos
 
-On the face of it, it sounds quite simple but as always we must emphasise taking an _iterative_ approach to writing software.
+A dona do produto está muito contente com a aplicação por linha de comando, mas
+acharia melhor se conseguíssimos levar todas essas funcionalidades para o navegador.
+Ela imagina uma página web com uma caixa de texto que permite que o usuário coloque
+o número de jogadores e, após submeter esse dado, informe o valor da "aposta cega",
+atualizando automaticamente quando for apropriado. Assim como a aplicação por linha
+de comando, ela espera que o usuário possa declarar o vencedor e que isso faça com
+que as devidas informações sejam salvas no banco de dados.
+
+Descrevendo o projeto dessa forma parece bastante simples, mas sempre precisamos
+enfatizar que devemos ter uma abordagem _iterativa_ pra desenvolver os nossos
+programas.
+
 
 First of all we will need to serve HTML. So far all of our HTTP endpoints have returned either plaintext or JSON. We _could_ use the same techniques we know \(as they're all ultimately strings\) but we can also use the [html/template](https://golang.org/pkg/html/template/) package for a cleaner solution.
 
@@ -140,7 +154,7 @@ Now we need to make the endpoint return some HTML, here it is
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Let's play poker</title>
+    <title>Let's play poquer</title>
 </head>
 <body>
 <section id="game">
@@ -170,7 +184,7 @@ Now we need to make the endpoint return some HTML, here it is
 We have a very simple web page
 
 * A text input for the user to enter the winner into
-* A button they can click to declare the winner. 
+* A button they can click to declare the winner.
 * Some JavaScript to open a WebSocket connection to our server and handle the submit button being pressed
 
 `WebSocket` is built into most modern browsers so we don't need to worry about bringing in any libraries. The web page wont work for older browsers, but we're ok with that for this scenario.
@@ -181,7 +195,7 @@ There are a few ways. As has been emphasised throughout the book, it is importan
 
 1. Write a browser based test, using something like Selenium. These tests are the most "realistic" of all approaches because they start an actual web browser of some kind and simulates a user interacting with it. These tests can give you a lot of confidence your system works but are more difficult to write than unit tests and much slower to run. For the purposes of our product this is overkill.
 2. Do an exact string match. This _can_ be ok but these kind of tests end up being very brittle. The moment someone changes the markup you will have a test failing when in practice nothing has _actually broken_.
-3. Check we call the correct template. We will be using a templating library from the standard lib to serve the HTML \(discussed shortly\) and we could inject in the _thing_ to generate the HTML and spy on its call to check we're doing it right. This would have an impact on our code's design but doesn't actually test a great deal; other than we're calling it with the correct template file. Given we will only have the one template in our project the chance of failure here seems low. 
+3. Check we call the correct template. We will be using a templating library from the standard lib to serve the HTML \(discussed shortly\) and we could inject in the _thing_ to generate the HTML and spy on its call to check we're doing it right. This would have an impact on our code's design but doesn't actually test a great deal; other than we're calling it with the correct template file. Given we will only have the one template in our project the chance of failure here seems low.
 
 So in the book "Learn Go with Tests" for the first time, we're not going to write a test.
 
@@ -434,7 +448,7 @@ First of all update `game.html` to update our client side code for the new requi
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lets play poker</title>
+    <title>Lets play poquer</title>
 </head>
 <body>
 <section id="game">
@@ -454,7 +468,7 @@ First of all update `game.html` to update our client side code for the new requi
 </section>
 
 <section id="game-end">
-    <h1>Another great game of poker everyone!</h1>
+    <h1>Another great game of poquer everyone!</h1>
     <p><a href="/league">Go check the league table</a></p>
 </section>
 
@@ -610,9 +624,9 @@ t.Run("start game with 3 players and finish game with 'Chris' as winner", func(t
     out := &bytes.Buffer{}
     in := userSends("3", "Chris wins")
 
-    poker.NewCLI(in, out, game).PlayPoker()
+    poquer.NewCLI(in, out, game).PlayPoker()
 
-    assertMessagesSentToUser(t, out, poker.PlayerPrompt)
+    assertMessagesSentToUser(t, out, poquer.PlayerPrompt)
     assertGameStartedWith(t, game, 3)
     assertFinishCalledWith(t, game, "Chris")
 })
@@ -624,7 +638,7 @@ Replace the old websocket test with the following
 
 ```go
 t.Run("start a game with 3 players and declare Ruth the winner", func(t *testing.T) {
-    game := &poker.GameSpy{}
+    game := &poquer.GameSpy{}
     winner := "Ruth"
     server := httptest.NewServer(mustMakePlayerServer(t, dummyPlayerStore, game))
     ws := mustDialWS(t, "ws"+strings.TrimPrefix(server.URL, "http")+"/ws")
@@ -643,7 +657,7 @@ t.Run("start a game with 3 players and declare Ruth the winner", func(t *testing
 
 * As discussed we create a spy `Game` and pass it into `mustMakePlayerServer` \(be sure to update the helper to support this\).
 * We then send the web socket messages for a game.
-* Finally we assert that the game is started and finished with what we expect. 
+* Finally we assert that the game is started and finished with what we expect.
 
 ## Try to run the test
 
@@ -743,15 +757,15 @@ func main() {
         log.Fatalf("problem opening %s %v", dbFileName, err)
     }
 
-    store, err := poker.NewFileSystemPlayerStore(db)
+    store, err := poquer.NewFileSystemPlayerStore(db)
 
     if err != nil {
         log.Fatalf("problem creating file system player store, %v ", err)
     }
 
-    game := poker.NewTexasHoldem(poker.BlindAlerterFunc(poker.Alerter), store)
+    game := poquer.NewTexasHoldem(poquer.BlindAlerterFunc(poquer.Alerter), store)
 
-    server, err := poker.NewPlayerServer(store, game)
+    server, err := poquer.NewPlayerServer(store, game)
 
     if err != nil {
         log.Fatalf("problem creating player server %v", err)
@@ -834,7 +848,7 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
 
     numberOfPlayersMsg := ws.WaitForMsg()
     numberOfPlayers, _ := strconv.Atoi(numberOfPlayersMsg)
-    p.game.Start(numberOfPlayers, ws) 
+    p.game.Start(numberOfPlayers, ws)
     //etc...
 ```
 
@@ -1069,24 +1083,37 @@ func retryUntil(d time.Duration, f func() bool) bool {
 }
 ```
 
-## Wrapping up
+## Resumindo t
 
-Our application is now complete. A game of poker can be started via a web browser and the users are informed of the blind bet value as time goes by via WebSockets. When the game finishes they can record the winner which is persisted using code we wrote a few chapters ago. The players can find out who is the best \(or luckiest\) poker player using the website's `/league` endpoint.
+Nossa aplicação agora está completa. Um jogo de pôquer agora pode ser
+iniciado pelo navegador web e os usuários são informados sobre o valor
+da aposta cega enquanto o tempo passa por meio de WebSockets. Quando o
+jogo for encerrado, eles podem salvar o vencedor, o que é persistente
+uma vez que estamos usando o código que escrevemos há alguns capítulos
+atrás. Os jogadores podem descobrir quem é o melhor \(ou o mais sortudo\)
+jogador de pôquer utilizando o endpoint `/league` do nosso website.
 
-Through the journey we have made mistakes but with the TDD flow we have never been very far away from working software. We were free to keep iterating and experimenting.
 
-The final chapter will retrospect on the approach, the design we've arrived at and tie up some loose ends.
+No decorrer da nossa jornada cometemos diversos erros, mas com o fluxo de
+desenvolvimento orientado a testes (TDD) nunca estivemos com um programa
+que não rodava de jeito nenhum. Somos livres para continuar iterando e
+experimentando outras coisas.
 
-We covered a few things in this chapter
+O capítulo final vai recapitular o nosso método, o design que alcançamos e
+por fim apertar alguns nós que possam parecer soltos.
+
+Nós cobrimos algumas coisas nesse capítulo.
 
 ### WebSockets
 
-* Convenient way of sending messages between clients and servers that does not require the client to keep polling the server. Both the client and server code we have is very simple. 
-* Trivial to test, but you have to be wary of the asynchronous nature of the tests 
+* Maneira conveniente de enviar mensagens entre clientes e servidores sem precisar
+que o cliente fique sondando (?) o servidor. O código que fizemos tanto do cliente quanto
+do servidor são muito simples.
+* É trivial para testar, mas você tem que se atentar com a natureza assíncrona dos testes.
 
 ### Handling code in tests that can be delayed or never finish
 
-* Create helper functions to retry assertions and add timeouts. 
-* We can use go routines to ensure the assertions dont block anything and then use channels to let them signal that they have finished, or not. 
+* Create helper functions to retry assertions and add timeouts.
+* We can use go routines to ensure the assertions dont block anything and then use channels to let them signal that they have finished, or not.
 * The `time` package has some helpful functions which also send signals via channels about events in time so we can set timeouts
 
