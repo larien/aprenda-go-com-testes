@@ -1,7 +1,6 @@
 package corredor
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -20,8 +19,6 @@ func CorredorConfiguravel(a, b string, tempoLimite time.Duration) (vencedor stri
 		return a, nil
 	case <-ping(b):
 		return b, nil
-	case <-time.After(tempoLimite):
-		return "", fmt.Errorf("tempo limite de espera excedido para %s e %s", a, b)
 	}
 }
 
