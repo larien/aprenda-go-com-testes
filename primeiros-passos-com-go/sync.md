@@ -34,7 +34,7 @@ func TesteContador(t *testing.T) {
 ./sync_test.go:9:14: undefined: Contador
 ```
 
-## Escreva a quantidade mínima de código para o teste rodar e cheque a saída que falhou dele
+## Escreva a quantidade mínima de código para o teste rodar e verifique a saída que falhou dele
 
 Vamos definir `Contador`.
 
@@ -171,9 +171,9 @@ podemos ter certeza que todas as nossas *goroutines* tentaram `Inc` o `Contador`
 FAIL
 ```
 
-O teste _provavelmente_ vai falhar com um número diferente, mas de toda forma ele demonstra
-que não roda com várias *goroutines* estão tentando mudar o valor do contador ao mesmo
-tempo.
+O teste _provavelmente_ vai falhar com um número diferente, mas de toda forma
+ele demonstra que não roda corretamente quando várias *goroutines* tentam
+mudar o valor do contador ao mesmo tempo.
 
 ## Escreva código o suficiente para passar o teste
 
@@ -226,15 +226,15 @@ func (c *Contador) Inc() {
 Isso _parece_ legal, mas enquanto programação é uma disciplina altamente
 subjetiva, isso é **feio e errado**.
 
-Às vezes as pessoas esquecem que tipos embutidos significam que os métodos daquele
-tipo se tornam _parte da interface pública_; e você geralmente não quer isso. Não se
-esqueçam que devemos ser muito cuidados com as nossas APIs públicas. O momento que
-tornamos algo público é o momento que outros códigos podem acoplar-se a ele e nós
-queremos evitar acoplamentos desnecessários.
+Às vezes as pessoas esquecem que tipos embutidos significam que os métodos
+daquele tipo se tornam _parte da interface pública_; e você geralmente não
+quer isso. Não se esqueçam que devemos ser muito cuidadosos com as nossas APIs
+públicas. O momento que tornamos algo público é o momento que outros códigos
+podem acoplar-se a ele e nós queremos evitar acoplamentos desnecessários.
 
-Expor `Lock` e `Unlock` é no seu melhor muito confuso e no seu pior potencialmente
-perigoso para o seu software se quem chamar o seu tipo começar a chamar esses
-métodos diretamente.
+Expor `Lock` e `Unlock` é, no seu melhor caso, muito confuso e, no seu pior
+caso, potencialmente perigoso para o seu software se quem chamar o seu tipo
+começar a chamar esses métodos diretamente.
 
 ![Demonstração de como um usuário dessa API pode chamar erroneamente o estado da trava](https://i.imgur.com/SWYNpwm.png)
 
