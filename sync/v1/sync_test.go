@@ -4,21 +4,21 @@ import (
 	"testing"
 )
 
-func TestCounter(t *testing.T) {
+func TestContador(t *testing.T) {
 
-	t.Run("incrementing the counter 3 times leaves it at 3", func(t *testing.T) {
-		counter := Counter{}
-		counter.Inc()
-		counter.Inc()
-		counter.Inc()
+	t.Run("incrementar o contador 3 vezes o deixa com valor 3", func(t *testing.T) {
+		contador := Contador{}
+		contador.Inc()
+		contador.Inc()
+		contador.Inc()
 
-		assertCounter(t, counter, 3)
+		assertContador(t, contador, 3)
 	})
 }
 
-func assertCounter(t *testing.T, got Counter, want int) {
+func assertContador(t *testing.T, recebido Contador, desejado int) {
 	t.Helper()
-	if got.Value() != want {
-		t.Errorf("got %d, want %d", got.Value(), want)
+	if recebido.Valor() != desejado {
+		t.Errorf("recebido %d, desejado %d", recebido.Valor(), desejado)
 	}
 }
