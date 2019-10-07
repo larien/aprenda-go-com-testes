@@ -19,7 +19,7 @@ func CorredorTeste(t *testing.T) {
 	urlRapida := servidorRapido.URL
 
 	quer := urlRapida
-	obteve := Racer(urlLenta, urlRapida)
+	obteve := Corredor(urlLenta, urlRapida)
 
 	if obteve != quer {
 		t.Errorf("obteve '%s', quer '%s'", obteve, quer)
