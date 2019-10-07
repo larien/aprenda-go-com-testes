@@ -4,44 +4,44 @@ import (
 	"testing"
 )
 
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-	assertBalance := func(t *testing.T, wallet Wallet, want Bitcoin) {
+	confirmarSaldo := func(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
 		t.Helper()
-		got := wallet.Balance()
+		valor := carteira.Saldo()
 
-		if got != want {
-			t.Errorf("got %s want %s", got, want)
+		if valor != valorEsperado {
+			t.Errorf("valor %s valorEsperado %s", valor, valorEsperado)
 		}
 	}
 
-	assertError := func(t *testing.T, err error) {
+	confirmarErro := func(t *testing.T, erro error) {
 		t.Helper()
-		if err == nil {
-			t.Error("wanted an error but didnt get one")
+		if erro == nil {
+			t.Error("Esperava um erro mas nenhum ocorreu.")
 		}
 	}
 
 	t.Run("Deposit", func(t *testing.T) {
-		wallet := Wallet{}
-		wallet.Deposit(Bitcoin(10))
+		carteira := Carteira{}
+		carteira.Depositar(Bitcoin(10))
 
-		assertBalance(t, wallet, Bitcoin(10))
+		confirmarSaldo(t, carteira, Bitcoin(10))
 	})
 
-	t.Run("Withdraw with funds", func(t *testing.T) {
-		wallet := Wallet{Bitcoin(20)}
-		wallet.Withdraw(Bitcoin(10))
+	t.Run("Retirar com saldo suficiente", func(t *testing.T) {
+		carteira := Carteira{Bitcoin(20)}
+		carteira.Retirar(Bitcoin(10))
 
-		assertBalance(t, wallet, Bitcoin(10))
+		confirmarSaldo(t, carteira, Bitcoin(10))
 	})
 
-	t.Run("Withdraw insufficient funds", func(t *testing.T) {
-		startingBalance := Bitcoin(20)
-		wallet := Wallet{startingBalance}
-		err := wallet.Withdraw(Bitcoin(100))
+	t.Run("Retirar com saldo insuficiente", func(t *testing.T) {
+		saldoInicial := Bitcoin(20)
+		carteira := Carteira{saldoInicial}
+		erro := carteira.Retirar(Bitcoin(100))
 
-		assertBalance(t, wallet, startingBalance)
-		assertError(t, err)
+		confirmarSaldo(t, carteira, saldoInicial)
+		confirmarErro(t, erro)
 	})
 }

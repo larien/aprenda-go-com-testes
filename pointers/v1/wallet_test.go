@@ -4,17 +4,17 @@ import (
 	"testing"
 )
 
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-	wallet := Wallet{}
+	carteira := Carteira{}
 
-	wallet.Deposit(Bitcoin(10))
+	carteira.Depositar(Bitcoin(10))
 
-	got := wallet.Balance()
+	valor := carteira.Saldo()
 
-	want := Bitcoin(10)
+	valorEsperado := Bitcoin(10)
 
-	if got != want {
-		t.Errorf("got %s want %s", got, want)
+	if valor != valorEsperado {
+		t.Errorf("valor %s valorEsperado %s", valor, valorEsperado)
 	}
 }

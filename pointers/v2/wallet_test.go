@@ -4,27 +4,27 @@ import (
 	"testing"
 )
 
-func TestWallet(t *testing.T) {
+func TestCateira(t *testing.T) {
 
-	assertBalance := func(t *testing.T, wallet Wallet, want Bitcoin) {
+	confirmarSaldo := func(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
 		t.Helper()
-		got := wallet.Balance()
+		valor := carteira.Saldo()
 
-		if got != want {
-			t.Errorf("got %s want %s", got, want)
+		if valor != valorEsperado {
+			t.Errorf("valor %s valorEsperado %s", valor, valorEsperado)
 		}
 	}
 
-	t.Run("Deposit", func(t *testing.T) {
-		wallet := Wallet{}
-		wallet.Deposit(Bitcoin(10))
-		assertBalance(t, wallet, Bitcoin(10))
+	t.Run("Depositar", func(t *testing.T) {
+		carteira := Carteira{}
+		carteira.Depositar(Bitcoin(10))
+		confirmarSaldo(t, carteira, Bitcoin(10))
 	})
 
-	t.Run("Withdraw", func(t *testing.T) {
-		wallet := Wallet{balance: Bitcoin(20)}
-		wallet.Withdraw(10)
-		assertBalance(t, wallet, Bitcoin(10))
+	t.Run("Retirar", func(t *testing.T) {
+		carteira := Carteira{saldo: Bitcoin(20)}
+		carteira.Retirar(10)
+		confirmarSaldo(t, carteira, Bitcoin(10))
 	})
 
 }

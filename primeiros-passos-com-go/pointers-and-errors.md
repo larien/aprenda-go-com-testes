@@ -207,9 +207,9 @@ func TestCarteira(t *testing.T) {
 }
 ```
 
-Para criarmos `Bitcoin` basta usar a sintaxe `Bitcoin(999)`.
+Para criarmos `Bitcoin`, basta usar a sintaxe `Bitcoin(999)`.
 
-Ao fazermos isso, estamos criando um novo tipo e podemos declarar _métodos_ nele. Isto pode ser muito útil quando queremos adicionar funcionalidades de domínios específicos à tipos já existentes.
+Ao fazermos isso, estamos criando um novo tipo e podemos declarar _métodos_ nele. Isto pode ser muito útil quando queremos adicionar funcionalidades de domínios específicos a tipos já existentes.
 
 Vamos implementar [Stringer](https://golang.org/pkg/fmt/#Stringer) no Bitcoin
 
@@ -311,7 +311,7 @@ Há algumas duplicações em nossos testes, vamos refatorar isto.
 ```go
 func TestCarteira(t *testing.T) {
 
-    assertBalance := func(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
+    confirmarSaldo := func(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
         t.Helper()
         valor := carteira.Saldo()
 
@@ -323,13 +323,13 @@ func TestCarteira(t *testing.T) {
     t.Run("Depositar", func(t *testing.T) {
         carteira := Carteira{}
         carteira.Depositar(Bitcoin(10))
-        assertBalance(t, carteira, Bitcoin(10))
+        confirmarSaldo(t, carteira, Bitcoin(10))
     })
 
     t.Run("Retirar", func(t *testing.T) {
         carteira := Carteira{saldo: Bitcoin(20)}
         carteira.Retirar(Bitcoin(10))
-        assertBalance(t, carteira, Bitcoin(10))
+        confirmarSaldo(t, carteira, Bitcoin(10))
     })
 
 }
@@ -343,7 +343,7 @@ Em Go, se você quiser indicar um erro, sua função deve retornar um `err` para
 
 Vamos tentar isto em um teste.
 
-## Escreva o primeiro teste
+## Escreva o teste primeiro
 
 ```go
 t.Run("Retirar saldo insuficiente", func(t *testing.T) {
@@ -351,10 +351,10 @@ t.Run("Retirar saldo insuficiente", func(t *testing.T) {
     carteira := Carteira{saldoInicial}
     erro := carteira.Retirar(Bitcoin(100))
 
-    assertBalance(t, carteira, saldoInicial)
+    confirmarSaldo(t, carteira, saldoInicial)
 
     if erro == nil {
-        t.Error("Esperava um erro mas nenhum ocorreu.")
+        t.Error("Esperava um erro mas nenhum ocorreu")
     }
 })
 ```
@@ -366,7 +366,7 @@ Nós checamos se um erro foi retornado falhando o teste se o valor for `nil`.
 `nil` é sinônimo de `null` de outras linguagens de programação.
 Erros podem ser `nil`, porque o tipo do retorno de `Retirar` vai ser `error`, que é uma interface. Se você ver uma função que tem argumentos ou retornos que são interfaces, eles podem ser nulos.
 
-Do mesmo jeito que `null`, se tentarmos acessar um valor que é `nil`, isto irá disparar um **runtime panic**. Isto é ruim! Devemos ter certeza que tratamos os valores nulos.
+Do mesmo jeito que `null`, se tentarmos acessar um valor que é `nil`, isto irá disparar um **pânico em tempo de execução**. Isto é ruim! Devemos ter certeza que tratamos os valores nulos.
 
 ## Execute o teste
 
@@ -405,15 +405,15 @@ Lembre-se de importar `errors`.
 
 `errors.New` cria um novo `error` com a mensagem escolhida.
 
-## Refatorando
+## Refatoração
 
 Vamos fazer um rápido helper de teste para nossa checagem de erro, para deixar nosso teste mais legível.
 
 ```go
-assertError := func(t *testing.T, err error) {
+confirmarErro := func(t *testing.T, erro error) {
     t.Helper()
-    if err == nil {
-        t.Error("Esperava um erro mas nenhum ocorreu.")
+    if erro == nil {
+        t.Error("Esperava um erro mas nenhum ocorreu")
     }
 }
 ```
@@ -425,24 +425,24 @@ t.Run("Retirar saldo insuficiente", func(t *testing.T) {
     carteira := Carteira{Bitcoin(20)}
     erro := carteira.Retirar(Bitcoin(100))
 
-    assertBalance(t, carteira, Bitcoin(20))
-    assertError(t, erro)
+    confirmarSaldo(t, carteira, Bitcoin(20))
+    confirmarErro(t, erro)
 })
 ```
 
-Acredito, que quando retornamos um erro "oh no", você deve estar pensando que _devessemos_ ponderar melhor, aliás isto não parece tão útil para ser retornado.
+Espero que, ao retornamos um erro do tipo "oh no", você pense que _devessemos_ deixar mais claro o que ocorreu, já que esta não parece uma informação útil para nós.
 
 Assumindo que o erro enfim foi retornado para o usuário, vamos atualizar nosso teste para verificar em algum tipo de mensagem de erro em vez de apenas checar a existência de um erro.
 
-## Escreva o primeiro teste
+## Escreva o teste primeiro
 
 Atualize nosso helper para comparar com uma `string`.
 
 ```go
-assertError := func(t *testing.T, valor error, valorEsperado string) {
+confirmarErro := func(t *testing.T, valor error, valorEsperado string) {
     t.Helper()
     if valor == nil {
-        t.Fatal("Esperava um erro mas nenhum ocorreu.")
+        t.Fatal("Esperava um erro mas nenhum ocorreu")
     }
 
     if valor.Error() != valorEsperado {
@@ -451,7 +451,7 @@ assertError := func(t *testing.T, valor error, valorEsperado string) {
 }
 ```
 
-E então atualize o *invocador
+E então atualize o invocador
 
 ```go
 t.Run("Retirar saldo insuficiente", func(t *testing.T) {
@@ -459,8 +459,8 @@ t.Run("Retirar saldo insuficiente", func(t *testing.T) {
     carteira := Carteira{saldoInicial}
     erro := carteira.Retirar(Bitcoin(100))
 
-    assertBalance(t, carteira, saldoInicial)
-    assertError(t, erro, "Não pode retirar. Saldo insuficiente")
+    confirmarSaldo(t, carteira, saldoInicial)
+    confirmarErro(t, erro, "Não pode retirar. Saldo insuficiente")
 })
 ```
 
@@ -469,7 +469,7 @@ Isto se deve ao fato de que não queremos fazer mais asserções no erro retorna
 
 ## Execute o teste
 
-`wallet_test.go:61: valor err 'Ah não' valorEsperado 'Não pode retirar. Saldo insuficiente'`
+`wallet_test.go:61: valor erro 'Ah não' valorEsperado 'Não pode retirar. Saldo insuficiente'`
 
 ## Escreva código o suficiente para fazer o teste passar
 
@@ -485,7 +485,7 @@ func (c *Carteira) Retirar(quantidade Bitcoin) error {
 }
 ```
 
-## Refatorando
+## Refatoração
 
 Nós temos duplicação da mensagem de erro tanto no código de teste, quanto no código de `Retirar`.
 
@@ -519,25 +519,25 @@ func TestCarteira(t *testing.T) {
     t.Run("Depositar", func(t *testing.T) {
         carteira := Carteira{}
         carteira.Depositar(Bitcoin(10))
-        assertBalance(t, carteira, Bitcoin(10))
+        confirmarSaldo(t, carteira, Bitcoin(10))
     })
 
     t.Run("Retirar com saldo suficiente", func(t *testing.T) {
         carteira := Carteira{Bitcoin(20)}
         carteira.Retirar(Bitcoin(10))
-        assertBalance(t, carteira, Bitcoin(10))
+        confirmarSaldo(t, carteira, Bitcoin(10))
     })
 
     t.Run("Retirar saldo insuficiente", func(t *testing.T) {
         carteira := Carteira{Bitcoin(20)}
         erro := carteira.Retirar(Bitcoin(100))
 
-        assertBalance(t, carteira, Bitcoin(20))
-        assertError(t, erro, ErroSaldoInsuficiente)
+        confirmarSaldo(t, carteira, Bitcoin(20))
+        confirmarErro(t, erro, ErroSaldoInsuficiente)
     })
 }
 
-func assertBalance(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
+func confirmarSaldo(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
     t.Helper()
     valorEsperado := carteira.Saldo()
 
@@ -546,10 +546,10 @@ func assertBalance(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
     }
 }
 
-func assertError(t *testing.T, valor error, valoresperado error) {
+func confirmarErro(t *testing.T, valor error, valoresperado error) {
     t.Helper()
     if valor == nil {
-        t.Fatal("Esperava um erro mas nenhum ocorreu.")
+        t.Fatal("Esperava um erro mas nenhum ocorreu")
     }
 
     if valor != valorEsperado {
@@ -560,7 +560,7 @@ func assertError(t *testing.T, valor error, valoresperado error) {
 
 Agora nosso teste está mais fácil para dar continuidade.
 
-Nós apenas movemos os helpers para fora da função principal de teste, então, quando alguém abrir o arquivo, começara lendo nossas asserções primeiro em vez de alguns helpers.
+Nós apenas movemos os helpers para fora da função principal de teste, então, quando alguém abrir o arquivo, começará lendo nossas asserções primeiro em vez de alguns helpers.
 
 Outra propriedade útil de testes, é que eles nos ajudam a entender o uso _real_ do nosso código, e assim podemos fazer códigos mais compreensivos. Podemos ver aqui que um desenvolvedor pode simplesmente chamar nosso código e fazer uma comparação de igualdade a `ErroSaldoInsuficiente`, e então agir de acordo.
 
@@ -589,27 +589,27 @@ func TestCarteira(t *testing.T) {
         carteira := Carteira{}
         carteira.Depositar(Bitcoin(10))
 
-        assertBalance(t, carteira, Bitcoin(10))
+        confirmarSaldo(t, carteira, Bitcoin(10))
     })
 
     t.Run("Retirar com saldo suficiente", func(t *testing.T) {
         carteira := Carteira{Bitcoin(20)}
         erro := carteira.Retirar(Bitcoin(10))
 
-        assertBalance(t, carteira, Bitcoin(10))
-        assertNoError(t, erro)
+        confirmarSaldo(t, carteira, Bitcoin(10))
+        confirmarErroInexistente(t, erro)
     })
 
     t.Run("Retirar com saldo insuficiente", func(t *testing.T) {
         carteira := Carteira{Bitcoin(20)}
         erro := carteira.Retirar(Bitcoin(100))
 
-        assertBalance(t, carteira, Bitcoin(20))
-        assertError(t, erro, ErroSaldoInsuficiente)
+        confirmarSaldo(t, carteira, Bitcoin(20))
+        confirmarErro(t, erro, ErroSaldoInsuficiente)
     })
 }
 
-func assertBalance(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
+func confirmarSaldo(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
     t.Helper()
     valorEsperado := carteira.Saldo()
 
@@ -618,17 +618,17 @@ func assertBalance(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
     }
 }
 
-func assertNoError(t *testing.T, valor error) {
+func confirmarErroInexistente(t *testing.T, valor error) {
     t.Helper()
     if valor != nil {
-        t.Fatal("Esperava um erro mas nenhum ocorreu.")
+        t.Fatal("Recebeu um erro inesperado")
     }
 }
 
-func assertError(t *testing.T, valor error, valorEsperado error) {
+func confirmarErro(t *testing.T, valor error, valorEsperado error) {
     t.Helper()
     if valor == nil {
-        t.Fatal("Esperava um erro mas nenhum ocorreu.")
+        t.Fatal("Esperava um erro mas nenhum ocorreu")
     }
 
     if valor != valorEsperado {

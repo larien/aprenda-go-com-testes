@@ -2,24 +2,24 @@ package main
 
 import "fmt"
 
-// Bitcoin represents a number of Bitcoins
+// Bitcoin representa o número de Bitcoins
 type Bitcoin int
 
 func (b Bitcoin) String() string {
 	return fmt.Sprintf("%d BTC", b)
 }
 
-// Wallet stores the number of Bitcoin someone owns
-type Wallet struct {
-	balance Bitcoin
+// Carteira armazena o número de bitcoins que uma pessoa tem
+type Carteira struct {
+	saldo Bitcoin
 }
 
-// Deposit will add some Bitcoin to a wallet
-func (w *Wallet) Deposit(amount Bitcoin) {
-	w.balance += amount
+// Depositar vai adicionar Bitcoins a carteira
+func (c *Carteira) Depositar(quantidade Bitcoin) {
+	c.saldo += quantidade
 }
 
-// Balance returns the number of Bitcoin a wallet has
-func (w *Wallet) Balance() Bitcoin {
-	return w.balance
+// Saldo retorna o número de Bitcoins que uma carteira tem
+func (c *Carteira) Saldo() Bitcoin {
+	return c.saldo
 }

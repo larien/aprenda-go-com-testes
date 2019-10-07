@@ -4,56 +4,56 @@ import (
 	"testing"
 )
 
-func TestWallet(t *testing.T) {
+func TestCarteira(t *testing.T) {
 
-	t.Run("Deposit", func(t *testing.T) {
-		wallet := Wallet{}
-		wallet.Deposit(Bitcoin(10))
+	t.Run("Depositar", func(t *testing.T) {
+		carteira := Carteira{}
+		carteira.Depositar(Bitcoin(10))
 
-		assertBalance(t, wallet, Bitcoin(10))
+		confirmarSaldo(t, carteira, Bitcoin(10))
 	})
 
-	t.Run("Withdraw with funds", func(t *testing.T) {
-		wallet := Wallet{Bitcoin(20)}
-		err := wallet.Withdraw(Bitcoin(10))
+	t.Run("Retirar saldo suficiente", func(t *testing.T) {
+		carteira := Carteira{Bitcoin(20)}
+		erro := carteira.Retirar(Bitcoin(10))
 
-		assertBalance(t, wallet, Bitcoin(10))
-		assertNoError(t, err)
+		confirmarSaldo(t, carteira, Bitcoin(10))
+		confirmarErroInexistente(t, err)
 	})
 
-	t.Run("Withdraw insufficient funds", func(t *testing.T) {
-		startingBalance := Bitcoin(20)
-		wallet := Wallet{startingBalance}
-		err := wallet.Withdraw(Bitcoin(100))
+	t.Run("Retirar saldo insuficiente", func(t *testing.T) {
+		saldoInicial  := Bitcoin(20)
+		carteira := Carteira{saldoInicial }
+		erro := carteira.Retirar(Bitcoin(100))
 
-		assertBalance(t, wallet, startingBalance)
-		assertError(t, err, ErrInsufficientFunds)
+		confirmarSaldo(t, carteira, saldoInicial )
+		confirmarErro(t, err, ErrInsufficientFunds)
 	})
 }
 
-func assertBalance(t *testing.T, wallet Wallet, want Bitcoin) {
+func confirmarSaldo(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
 	t.Helper()
-	got := wallet.Balance()
+	valor := carteira.Balance()
 
-	if got != want {
-		t.Errorf("got '%s' want '%s'", got, want)
+	if valor!= valoresperado {
+		t.Errorf("valor'%s' valorEsperado '%s'", got, want)
 	}
 }
 
-func assertNoError(t *testing.T, got error) {
+func confirmarErroInexistente(t *testing.T, valorerror) {
 	t.Helper()
-	if got != nil {
-		t.Fatal("got an error but didnt want one")
+	if valor!= nil {
+		t.Fatal("Recebeu um erro inesperado")
 	}
 }
 
-func assertError(t *testing.T, got error, want error) {
+func confirmarErro(t *testing.T, valorerror, valorEsperado error) {
 	t.Helper()
-	if got == nil {
-		t.Fatal("didn't get an error but wanted one")
+	if valor== nil {
+		t.Fatal("Esperava um erro mas nenhum ocorreu")
 	}
 
-	if got != want {
-		t.Errorf("got '%s', want '%s'", got, want)
+	if valor!= valorEsperado {
+		t.Errorf("valor'%s', valorEsperado '%s'", got, want)
 	}
 }
