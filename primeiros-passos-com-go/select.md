@@ -16,7 +16,7 @@ Para isso, vamos utilizar:
 Vamos começar com algo simples.
 
 ```go
-func CorredorTeste(t *testing.T) {
+func TestCorredor(t *testing.T) {
     urlLenta := "http://www.facebook.com"
     urlRapida := "http://www.quii.co.uk"
 
@@ -89,7 +89,7 @@ Na biblioteca padrão, existe um pacote chamado [`net/http/httptest`](https://go
 Vamos alterar nosso teste para usar essas simulações, assim teremos servidores confiáveis para testar sob nosso controle.
 
 ```go
-func CorredorTeste(t *testing.T) {
+func TestCorredor(t *testing.T) {
 
     servidorLento := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         time.Sleep(20 * time.Millisecond)
@@ -155,7 +155,7 @@ func medirTempoResposta(url string) time.Duration {
 Essa "enxugada" torna nosso código `Corredor` bem mais legível.
 
 ```go
-func CorredorTeste(t *testing.T) {
+func TestCorredor(t *testing.T) {
 
     servidorLento := criarServidorDemorado(20 * time.Millisecond)
     servidorRapido := criarServidorDemorado(0 * time.Millisecond)
@@ -286,8 +286,8 @@ O compilador vai reclamar sobre seu _ primeiro teste_ apenas olhando para um val
 Se executar isso agora, após 11 segundos irá falhar.
 
 ```text
---- FAIL: CorredorTeste (12.00s)
-    --- FAIL: CorredorTeste/retorna_um_erro_se_o_teste_não_responder_dentro_de_10s (12.00s)
+--- FAIL: TestCorredor (12.00s)
+    --- FAIL: TestCorredor/retorna_um_erro_se_o_teste_não_responder_dentro_de_10s (12.00s)
         corredor_test.go:40: esperava um erro, mas não obtive um.
 ```
 
@@ -360,7 +360,7 @@ func CorredorConfiguravel(a, b string, tempoLimite time.Duration) (vencedor stri
 Nossos usuários e nosso primeiro teste podem utilizar `Corredor` \(que usa `CorredorConfiguravel` por baixo dos panos\) e nosso caminho triste pode usar `CorredorConfiguravel`.
 
 ```go
-func CorredorTeste(t *testing.T) {
+func TestCorredor(t *testing.T) {
 
     t.Run("compara a velocidade de servidores, retornando o endereço do mais rapido", func(t *testing.T) {
         servidorLento := criarServidorDemorado(20 * time.Millisecond)

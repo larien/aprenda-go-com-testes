@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func CorredorTeste(t *testing.T) {
+func TestCorredor(t *testing.T) {
 
 	servidorLento := criarServidorDemorado(20 * time.Millisecond)
 	servidorRapido := criarServidorDemorado(0 * time.Millisecond)
