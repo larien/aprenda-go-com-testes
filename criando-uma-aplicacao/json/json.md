@@ -117,11 +117,9 @@ func TestLeague(t *testing.T) {
     })
 }
 ```
-Antes de nos preocuparmos sobre as pontuações atuais e o JSON, nós vamos tentar manter as mudanças pequenas com o plano de iterar em direção ao nosso objetivo. O inicio mais simples é checar se nós conseguimos consultar `/league` e obter um `OK` de retorno. 
+Antes de nos preocuparmos sobre as pontuações atuais e o JSON, nós vamos tentar manter as mudanças pequenas com o plano de ir passo a passo rumo ao nosso objetivo. O inicio mais simples é checar se nós conseguimos consultar `/league` e obter um `OK` de retorno. 
 
-Before worrying about actual scores and JSON we will try and keep the changes small with the plan to iterate toward our goal. The simplest start is to check we can hit `/league` and get an `OK` back.
-
-## Try to run the test
+## Tente rodar os testes
 
 ```text
 === RUN   TestLeague/it_returns_200_on_/league
@@ -137,19 +135,19 @@ github.com/quii/learn-go-with-tests/json-and-io/v2.(*PlayerServer).ServeHTTP(0xc
     /Users/quii/go/src/github.com/quii/learn-go-with-tests/json-and-io/v2/server.go:20 +0xec
 ```
 
-Your `PlayerServer` should be panicking like this. Go to the line of code in the stack trace which is pointing to `server.go`.
+Seu `PlayerServer` deve estar sendo abortado por um panic como acima. Vá para a linha de código que está apontando para `server.go` no stack trace.  
 
 ```go
 player := r.URL.Path[len("/players/"):]
 ```
 
-In the previous chapter, we mentioned this was a fairly naive way of doing our routing. What is happening is it's trying to split the string of the path starting at an index beyond `/league` so it is `slice bounds out of range`.
+No capítulo anterior, nós mencionamos que isto era uma maneira bastante ingênua de fazer o nosso roteamento. O que está acontecendo é que ele está tentando cortar a string do caminho da URL começando do índice após `/league` e então, isto nos dá um `slice bounds out of range`.
 
-## Write enough code to make it pass
+## Escreva somente o código suficiente para fazê-lo passar
 
-Go has a built-in routing mechanism called [`ServeMux`](https://golang.org/pkg/net/http/#ServeMux) \(request multiplexer\) which lets you attach `http.Handler`s to particular request paths.
+Go têm um mecanismo de rotas nativo (built-in) chamado [`ServeMux`](https://golang.org/pkg/net/http/#ServeMux) \(request multiplexer\) que nos permite atracar um `http.Handler`s para caminhos de uma requisição em específico.
 
-Let's commit some sins and get the tests passing in the quickest way we can, knowing we can refactor it with safety once we know the tests are passing.
+Vamos cometer alguns pecados e obter os testes passando da maneira mais rápida que pudermos, sabendo que nós podemos refatorar isto com segurança uma vez que nós soubermos que os testes estão passando.
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -175,16 +173,14 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-* When the request starts we create a router and then we tell it for `x` path use `y` handler.
-* So for our new endpoint, we use `http.HandlerFunc` and an _anonymous function_ to `w.WriteHeader(http.StatusOK)` when `/league` is requested to make our new test pass.
-* For the `/players/` route we just cut and paste our code into another `http.HandlerFunc`.
-* Finally, we handle the request that came in by calling our new router's `ServeHTTP` \(notice how `ServeMux` is _also_ an `http.Handler`?\)
+* Quando a requisição começa nós criamos um router e então dizemos para o caminho `x` usar o handler `y`.
+* Então para nosso novo endpoint, nós usamos `http.HandlerFunc` e uma _função anônima_ para `w.WriteHeader(http.StatusOK)` quando `/league` é requisitada para fazer nosso novo teste passar.
+* Para a rota `/players/` nós somente recortamos e colamos nosso codigo dentro de outro `http.HandlerFunc`.
+* Finalmente, nós lidamos com a requisição que está vindo chamando nosso novo router `ServeHTTP` \(notou como `ServeMux` é _também_ um `http.Handler`?\)
 
-The tests should now pass.
+## Refatorando
 
-## Refactor
-
-`ServeHTTP` is looking quite big, we can separate things out a bit by refactoring our handlers into separate methods.
+`ServeHTTP` parece um pouco grande, nós podemos separar as coisas um pouco refatorando nossos handlers em métodos separados.
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -212,7 +208,7 @@ func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-It's quite odd \(and inefficient\) to be setting up a router as a request comes in and then calling it. What we ideally want to do is have some kind of `NewPlayerServer` function which will take our dependencies and do the one-time setup of creating the router. Each request can then just use that one instance of the router.
+É um pouco estranho \(e ineficiente\) estar configurando um router quando uma requisição chegar e então chama-lo. O que idealmente queremos fazer é uma função do tipo `NewPlayerServer` que pegará nossas dependências e ao ser chamada, irá fazer a configuração única da criação do router. Desta forma, cada requisição pode usar somente uma instância do nosso router.
 
 ```go
 type PlayerServer struct {
@@ -237,13 +233,13 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-* `PlayerServer` now needs to store a router.
-* We have moved the routing creation out of `ServeHTTP` and into our `NewPlayerServer` so this only has to be done once, not per request.
-* You will need to update all the test and production code where we used to do `PlayerServer{&store}` with `NewPlayerServer(&store)`.
+* `PlayerServer` agora precisa armazenar um roteador.
+* Nós movemos a criação do roteador para fora de `ServeHTTP` e colocamos dentro do nosso `NewPlayerServer`, então isto só será feito uma vez, não por requisição.
+* Você vai precisar atualizar todos os testes e código de produção onde nós costumávamos fazer `PlayerServer{&store}` por `NewPlayerServer(&store)`.
 
-### One final refactor
+### Uma refatoração final
 
-Try changing the code to the following.
+Tente mudar o codigo para o seguinte:
 
 ```go
 type PlayerServer struct {
@@ -266,23 +262,25 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 }
 ```
 
-Finally make sure you **delete** `func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request)` as it is no longer needed!
+finalmente, se certifique de que você **deletou** `func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request)` por não ser mais necessária!
 
-## Embedding
+## Incorporando
 
-We changed the second property of `PlayerServer`, removing the named property `router http.ServeMux` and replaced it with `http.Handler`; this is called _embedding_.
+Nós mudamos a segunda propriedade de `PlayerServer` removendo a propriedade nomeada `router http.ServeMux` e substituindo por `http.Handler`; isto é chamado de _incorporar_. 
 
+
+        todo, fiquei sem saber como traduzir este trecho abaixo:
 > Go does not provide the typical, type-driven notion of subclassing, but it does have the ability to “borrow” pieces of an implementation by embedding types within a struct or interface.
 
 [Effective Go - Embedding](https://golang.org/doc/effective_go.html#embedding)
 
-What this means is that our `PlayerServer` now has all the methods that `http.Handler` has, which is just `ServeHTTP`.
+O que isto quer dizer é que nosso `PlayerServer` agora tem todos os métodos que `http.Handler` têm, que é somente o `ServeHTTP`.
 
-To "fill in" the `http.Handler` we assign it to the `router` we create in `NewPlayerServer`. We can do this because `http.ServeMux` has the method `ServeHTTP`.
+Para "preencher" o `http.Handler` nós atribuimos ele para o `router` que nós criamos em `NewPlayerServer`. Nós podemos fazer isso porque `http.ServeMux` tem o método `ServeHTTP`.
 
-This lets us remove our own `ServeHTTP` method, as we are already exposing one via the embedded type.
+Isto nos permite remover nosso próprio método `ServeHTTP`, pois nós já estamos expondo um via o tipo incorporado. 
 
-Embedding is a very interesting language feature. You can use it with interfaces to compose new interfaces.
+Incorporamento é um recurso muito interessante da linguagem. Você pode usar isto com interfaces para compor novas interfaces.
 
 ```go
 type Animal interface {
@@ -291,21 +289,21 @@ type Animal interface {
 }
 ```
 
-And you can use it with concrete types too, not just interfaces. As you'd expect if you embed a concrete type you'll have access to all its public methods and fields.
+E você pode usar isto com tipos concretos também, não somente interfaces. Como você pode esperar, se você incorporar um tipo concreto você vai ter acesso a todos os seus métodos e campos publicos. 
 
-### Any downsides?
+### Alguma desvantágem?
 
-You must be careful with embedding types because you will expose all public methods and fields of the type you embed. In our case, it is ok because we embedded just the _interface_ that we wanted to expose \(`http.Handler`\).
+Você deve ter cuidado ao incorporar tipos porque você vai expor todos os métodos e campos públicos do tipo que você incorporou. Em nosso caso, está tudo bem porque nós haviamos incorporado apenas a _interface_ que nós queremos expôr \(`http.Handler`\).
 
-If we had been lazy and embedded `http.ServeMux` instead \(the concrete type\) it would still work _but_ users of `PlayerServer` would be able to add new routes to our server because `Handle(path, handler)` would be public.
+Se nós tivéssemos sido "preguiçosos" e incorporado `http.ServeMux` \(o tipo concreto\) por exemplo, também funcionaria _porém_ os usuários de `PlayerServer` seriam capazes de adicionar novas rotas ao nosso servidor porque o método `Handle(path, handler)` seria público.
 
-**When embedding types, really think about what impact that has on your public API.**
+**Quando incorporamos tipos, realmente devemos pensar sobre qual o impacto que isto terá em nossa API pública**
 
-It is a _very_ common mistake to misuse embedding and end up polluting your APIs and exposing the internals of your type.
+Isto é um erro _muito_ comum de mau uso de incorporamento, que termina poluindo nossas APIs e expondo os métodos internos dos seus tipos incorporados.
 
-Now we've restructured our application we can easily add new routes and have the start of the `/league` endpoint. We now need to make it return some useful information.
+Agora que nós reestruturamos nossa aplicação, nós podemos facilmente adicionar novas rotas e botar para funcionar nosso endpoint `/league`. Agora precisamos fazê-lo retornar algumas informações úteis.
 
-We should return some JSON that looks something like this.
+Nós poderíamos retornar um JSON semelhante a este:
 
 ```javascript
 [
@@ -320,7 +318,7 @@ We should return some JSON that looks something like this.
 ]
 ```
 
-## Write the test first
+## Escreva o teste primeiro
 
 We'll start by trying to parse the response into something meaningful.
 
