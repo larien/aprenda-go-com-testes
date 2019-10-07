@@ -2,7 +2,7 @@
 
 [**Você pode encontrar todos os códigos desse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/select)
 
-Te pediram para fazer uma função chamada `WebsiteRacer` que recebe duas URLs que "competirão" entre elas através de uma chamada HTTP GET em cada, devolvendo a URL que retornar primeiro. Se nenhuma delas retornar dentro de 10 segundos, então a função deve retornar `error` 
+Te pediram para fazer uma função chamada `Corredor` que recebe duas URLs que "competirão" entre elas através de uma chamada HTTP GET em cada, devolvendo a URL que retornar primeiro. Se nenhuma delas retornar dentro de 10 segundos, então a função deve retornar `erro` 
 
 Para isso, vamos utilizar:
 
@@ -16,15 +16,15 @@ Para isso, vamos utilizar:
 Vamos pegar com algo simples pra começar.
 
 ```go
-func TestRacer(t *testing.T) {
-    slowURL := "http://www.facebook.com"
-    fastURL := "http://www.quii.co.uk"
+func CorredorTeste(t *testing.T) {
+    urlLenta := "http://www.facebook.com"
+    urlRapida := "http://www.quii.co.uk"
 
-    want := fastURL
-    got := Racer(slowURL, fastURL)
+    quer := urlRapida
+    obteve := Corredor(urlLenta, urlRapida)
 
-    if got != want {
-        t.Errorf("got '%s', want '%s'", got, want)
+    if obteve != quer {
+        t.Errorf("obteve '%s', quer '%s'", obteve, quer)
     }
 }
 ```
@@ -33,31 +33,31 @@ Sabemos que não está perfeito e que existem problemas, mas é um bom início. 
 
 ## Tente rodar o teste
 
-`./racer_test.go:14:9: undefined: Racer`
+`./corredor_teste.go:14:9: undefined: Corredor`
 
 ## Escreva a menor quantidade de código para rodar o teste e verifique a saída do teste que falhou
 
 ```go
-func Racer(a, b string) (winner string) {
+func Corredor(a, b string) (vencedor string) {
     return
 }
 ```
 
-`racer_test.go:25: got '', want 'http://www.quii.co.uk'`
+`corredor_teste.go:25: obteve '', quer 'http://www.quii.co.uk'`
 
 ## Escreva código suficiente para que o teste passe
 
 ```go
-func Racer(a, b string) (winner string) {
-    startA := time.Now()
+func Corredor(a, b string) (vencedor string) {
+    inicioA := time.Now()
     http.Get(a)
-    aDuration := time.Since(startA)
+    duracaoA := time.Since(inicioA)
 
-    startB := time.Now()
+    inicioB := time.Now()
     http.Get(b)
-    bDuration := time.Since(startB)
+    duracaoB := time.Since(inicioB)
 
-    if aDuration < bDuration {
+    if duracaoA < duracaoB {
         return a
     }
 
@@ -67,7 +67,7 @@ func Racer(a, b string) (winner string) {
 para cada URL:
 
 1. Usamos `time.Now()` para marcar o tempo antes de tentarmos pegar a `URL`.
-2. Então usamos [`http.Get`](https://golang.org/pkg/net/http/#Client.Get) para tentar capturar os conteúdos da `URL`. Essa função retorna [`http.Response`](https://golang.org/pkg/net/http/#Response) e um `error`mas não estamos interessados nesses valores.
+2. Então usamos [`http.Get`](https://golang.org/pkg/net/http/#Client.Get) para tentar capturar os conteúdos da `URL`. Essa função retorna [`http.Response`](https://golang.org/pkg/net/http/#Response) e um `erro`mas não estamos interessados nesses valores.
 3. `time.Since` pega o tempo inicial e retorna a diferença como `time.Duration`
 
 Uma vez que fazemos isso, podemos simplesmente comparar as durações e ver qual é mais rápida.
@@ -89,29 +89,29 @@ Na biblioteca padrão, existe um pacote chamado [`net/http/httptest`](https://go
 Vamos alterar nosso teste para usar essas simulações, assim teremos servidores confiáveis para testar sob nosso controle.
 
 ```go
-func TestRacer(t *testing.T) {
+func CorredorTeste(t *testing.T) {
 
-    slowServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    servidorLento := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         time.Sleep(20 * time.Millisecond)
         w.WriteHeader(http.StatusOK)
     }))
 
-    fastServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    servidorRapido := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusOK)
     }))
 
-    slowURL := slowServer.URL
-    fastURL := fastServer.URL
+    urlLenta := servidorLento.URL
+    urlRapida := servidorRapido.URL
 
-    want := fastURL
-    got := Racer(slowURL, fastURL)
+    quer := urlRapida
+    obteve := Corredor(urlLenta, urlRapida)
 
-    if got != want {
-        t.Errorf("got '%s', want '%s'", got, want)
+    if obteve != quer {
+        t.Errorf("obteve '%s', quer '%s'", obteve, quer)
     }
 
-    slowServer.Close()
-    fastServer.Close()
+    servidorLento.Close()
+    servidorRapido.Close()
 }
 ```
 
@@ -134,55 +134,55 @@ Se você rodar o teste novamente agora ele definitivamente irá passar e deve se
 Temos algumas duplicações tanto em nosso código de produção quanto em nosso código de teste.
 
 ```go
-func Racer(a, b string) (winner string) {
-    aDuration := measureResponseTime(a)
-    bDuration := measureResponseTime(b)
+func Corredor(a, b string) (vencedor string) {
+    duracaoA := medirTempoResposta(a)
+    duracaoB := medirTempoResposta(b)
 
-    if aDuration < bDuration {
+    if duracaoA < duracaoB {
         return a
     }
 
     return b
 }
 
-func measureResponseTime(url string) time.Duration {
-    start := time.Now()
+func medirTempoResposta(url string) time.Duration {
+    inicio := time.Now()
     http.Get(url)
-    return time.Since(start)
+    return time.Since(inicio)
 }
 ```
 
-Essa "secagem" torna nosso código `Racer` bem mais legível.
+Essa "enxugada" torna nosso código `Corredor` bem mais legível.
 
 ```go
-func TestRacer(t *testing.T) {
+func CorredorTeste(t *testing.T) {
 
-    slowServer := makeDelayedServer(20 * time.Millisecond)
-    fastServer := makeDelayedServer(0 * time.Millisecond)
+    servidorLento := criarServidorDemorado(20 * time.Millisecond)
+    servidorRapido := criarServidorDemorado(0 * time.Millisecond)
 
-    defer slowServer.Close()
-    defer fastServer.Close()
+    defer servidorLento.Close()
+    defer servidorRapido.Close()
 
-    slowURL := slowServer.URL
-    fastURL := fastServer.URL
+    urlLenta := servidorLento.URL
+    urlRapida := servidorRapido.URL
 
-    want := fastURL
-    got := Racer(slowURL, fastURL)
+    quer := urlRapida
+    obteve := Corredor(urlLenta, urlRapida)
 
-    if got != want {
-        t.Errorf("got '%s', want '%s'", got, want)
+    if obteve != quer {
+        t.Errorf("obteve '%s', quer '%s'", obteve, quer)
     }
 }
 
-func makeDelayedServer(delay time.Duration) *httptest.Server {
+func criarServidorDemorado(demora time.Duration) *httptest.Server {
     return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        time.Sleep(delay)
+        time.Sleep(demora)
         w.WriteHeader(http.StatusOK)
     }))
 }
 ```
 
-Nós refatoramos criando nossos servidores falsos numa função chamada `makeDelayedServer`para remover alguns códigos desnecessários do nosso teste e reduzir repetições.
+Nós refatoramos criando nossos servidores falsos numa função chamada `criarServidorDemorado`para remover alguns códigos desnecessários do nosso teste e reduzir repetições.
 
 ### `defer`
 
@@ -201,7 +201,7 @@ Nossa refatoração é uma melhoria e uma solução razoável dados os recursos 
 Para fazer isso, vamos introduzir uma nova construção chamada `select` que nos ajudará a sincronizar processes de forma mais fácil e clara.
 
 ```go
-func Racer(a, b string) (winner string) {
+func Corredor(a, b string) (vencedor string) {
     select {
     case <-ping(a):
         return a
@@ -238,38 +238,38 @@ Nós usamos `ping` em nosso `select` para configurar um canal para cada uma de n
 
 Após essas mudanças, a intenção por trás de nosso código é bem clara e sua implementação efetivamente mais simples.
 
-### Timeouts
+### Limites de tempo
 
-Nosso último requisito era retornar um erro se o `Racer` demorar mais que 10 segundos.
+Nosso último requisito era retornar um erro se o `Corredor` demorar mais que 10 segundos.
 
 ## Escreva o teste primeiro
 
 ```go
 t.Run("retorna um erro se o teste não responder dentro de 10s", func(t *testing.T) {
-    serverA := makeDelayedServer(11 * time.Second)
-    serverB := makeDelayedServer(12 * time.Second)
+    servidorA := criarServidorDemorado(11 * time.Second)
+    servidorB := criarServidorDemorado(12 * time.Second)
 
-    defer serverA.Close()
-    defer serverB.Close()
+    defer servidorA.Close()
+    defer servidorB.Close()
 
-    _, err := Racer(serverA.URL, serverB.URL)
+    _, err := Corredor(servidorA.URL, servidorB.URL)
 
     if err == nil {
-        t.Error("esperava um erro, mas não consegui um.")
+        t.Error("esperava um erro, mas não obtive um.")
     }
 })
 ```
 
-Fizemos nossos servidores de teste demorarem mais que 10s para retornar para exercitar esse cenário e estamos esperando que `Racer` retorne dois valores agora, a URL vencedora \(que ignoramos nesse teste com `_`\) e um `erro`.
+Fizemos nossos servidores de teste demorarem mais que 10s para retornar para exercitar esse cenário e estamos esperando que `Corredor` retorne dois valores agora, a URL vencedora \(que ignoramos nesse teste com `_`\) e um `erro`.
 
 ## Tente rodar o teste
 
-`./racer_test.go:37:10: assignment mismatch: 2 variables but 1 values`
+`./corredor_teste.go:37:10: assignment mismatch: 2 variables but 1 values`
 
 ## Escreva a menor quantidade de código para rodar o teste e verifique a saída do teste que falhou
 
 ```go
-func Racer(a, b string) (winner string, error error) {
+func Corredor(a, b string) (vencedor string, erro error) {
     select {
     case <-ping(a):
         return a, nil
@@ -279,29 +279,29 @@ func Racer(a, b string) (winner string, error error) {
 }
 ```
 
-Altere a assinatura de `Racer` para retornar o vencedor e um `erro`. Retorne `nil` para nossos casos felizes.
+Altere a assinatura de `Corredor` para retornar o vencedor e um `erro`. Retorne `nil` para nossos casos felizes.
 
-O compilador vai reclamar sobre seu _ primeiro teste_ apenas olhando para um valor, então altere essa linha para `got, _ := Racer(slowURL, fastURL)`, sabendo disso devemos verificar se _não_ obteremos um erro em nosso cenário feliz.
+O compilador vai reclamar sobre seu _ primeiro teste_ apenas olhando para um valor, então altere essa linha para `obteve, _ := Corredor(urlLenta, urlRapida)`, sabendo disso devemos verificar se _não_ obteremos um erro em nosso cenário feliz.
 
 Se executar isso agora, após 11 segundos irá falhar.
 
 ```text
---- FAIL: TestRacer (12.00s)
-    --- FAIL: TestRacer/returns_an_error_if_a_server_doesn't_respond_within_10s (12.00s)
-        racer_test.go:40: expected an error but didn't get one
+--- FAIL: CorredorTeste (12.00s)
+    --- FAIL: CorredorTeste/returns_an_error_if_a_servidor_doesn't_respond_within_10s (12.00s)
+        corredor_teste.go:40: esperava um erro, mas não obtive um.
 ```
 
 ## Escreva código suficiente para que o teste passe
 
 ```go
-func Racer(a, b string) (winner string, error error) {
+func Corredor(a, b string) (vencedor string, erro error) {
     select {
     case <-ping(a):
         return a, nil
     case <-ping(b):
         return b, nil
     case <-time.After(10 * time.Second):
-        return "", fmt.Errorf("tempo de espera excedido para %s e %s", a, b)
+        return "", fmt.Errorf("tempo limite de espera excedido para %s e %s", a, b)
     }
 }
 ```
@@ -317,14 +317,14 @@ O problema que temos é que esses teste demora 10 segundos para rodar. Para uma 
 O que podemos fazer é deixar esse esgotamento de tempo configurável. Então em nosso teste, podemos ter um tempo bem curto e quando utilizado no mundo real esse tempo ser definido em 10 segundos.
 
 ```go
-func Racer(a, b string, timeout time.Duration) (winner string, error error) {
+func Corredor(a, b string, tempoLimite time.Duration) (vencedor string, erro error) {
     select {
     case <-ping(a):
         return a, nil
     case <-ping(b):
         return b, nil
-    case <-time.After(timeout):
-        return "", fmt.Errorf("tempo de espera excedido para %s e %s", a, b)
+    case <-time.After(tempoLimite):
+        return "", fmt.Errorf("tempo limite de espera excedido para %s e %s", a, b)
     }
 }
 ```
@@ -339,60 +339,60 @@ Antes de nos apressar para adicionar esse valor padrão a ambos os testes, vamos
 Dado esse conhecimento, vamos fazer uma pequena refatoração para ser simpático aos nossos testes e aos usuários de nosso código.
 
 ```go
-var tenSecondTimeout = 10 * time.Second
+var limiteDezSegundos = 10 * time.Second
 
-func Racer(a, b string) (winner string, error error) {
-    return ConfigurableRacer(a, b, tenSecondTimeout)
+func Corredor(a, b string) (vencedor string, erro error) {
+    return CorredorConfiguravel(a, b, limiteDezSegundos)
 }
 
-func ConfigurableRacer(a, b string, timeout time.Duration) (winner string, error error) {
+func CorredorConfiguravel(a, b string, tempoLimite time.Duration) (vencedor string, erro error) {
     select {
     case <-ping(a):
         return a, nil
     case <-ping(b):
         return b, nil
-    case <-time.After(timeout):
-        return "", fmt.Errorf("tempo de espera excedido para %s e %s", a, b)
+    case <-time.After(tempoLimite):
+        return "", fmt.Errorf("tempo limite de espera excedido para %s e %s", a, b)
     }
 }
 ```
 
-Nossos usuários e nosso primeiro teste podem utilizar `Racer` \(que usa `ConfigurableRacer` por baixo dos panos\) e nosso caminho triste pode usar `ConfigurableRacer`.
+Nossos usuários e nosso primeiro teste podem utilizar `Corredor` \(que usa `CorredorConfiguravel` por baixo dos panos\) e nosso caminho triste pode usar `CorredorConfiguravel`.
 
 ```go
-func TestRacer(t *testing.T) {
+func CorredorTeste(t *testing.T) {
 
     t.Run("compara a velocidade de servidores, retornando o endereço do mais rapido", func(t *testing.T) {
-        slowServer := makeDelayedServer(20 * time.Millisecond)
-        fastServer := makeDelayedServer(0 * time.Millisecond)
+        servidorLento := criarServidorDemorado(20 * time.Millisecond)
+        servidorRapido := criarServidorDemorado(0 * time.Millisecond)
 
-        defer slowServer.Close()
-        defer fastServer.Close()
+        defer servidorLento.Close()
+        defer servidorRapido.Close()
 
-        slowURL := slowServer.URL
-        fastURL := fastServer.URL
+        urlLenta := servidorLento.URL
+        urlRapida := servidorRapido.URL
 
-        want := fastURL
-        got, err := Racer(slowURL, fastURL)
+        quer := urlRapida
+        obteve, err := Corredor(urlLenta, urlRapida)
 
         if err != nil {
-            t.Fatalf("did not expect an error but got one %v", err)
+            t.Fatalf("não esperava um erro, mas obteve um %v", err)
         }
 
-        if got != want {
-            t.Errorf("got '%s', want '%s'", got, want)
+        if obteve != quer {
+            t.Errorf("obteve '%s', quer '%s'", obteve, quer)
         }
     })
 
-    t.Run("retorna um erro se o teste não responder dentro de 10s", func(t *testing.T) {
-        server := makeDelayedServer(25 * time.Millisecond)
+    t.Run("retorna um erro se o servidor não responder dentro de 10s", func(t *testing.T) {
+        servidor := criarServidorDemorado(25 * time.Millisecond)
 
-        defer server.Close()
+        defer servidor.Close()
 
-        _, err := ConfigurableRacer(server.URL, server.URL, 20*time.Millisecond)
+        _, err := CorredorConfiguravel(servidor.URL, servidor.URL, 20*time.Millisecond)
 
         if err == nil {
-            t.Error("expected an error but didn't get one")
+            t.Error("esperava um erro, mas não obtive um.")
         }
     })
 }
