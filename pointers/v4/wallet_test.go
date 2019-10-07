@@ -18,42 +18,42 @@ func TestCarteira(t *testing.T) {
 		erro := carteira.Retirar(Bitcoin(10))
 
 		confirmarSaldo(t, carteira, Bitcoin(10))
-		confirmarErroInexistente(t, err)
+		confirmarErroInexistente(t, erro)
 	})
 
 	t.Run("Retirar saldo insuficiente", func(t *testing.T) {
-		saldoInicial  := Bitcoin(20)
-		carteira := Carteira{saldoInicial }
+		saldoInicial := Bitcoin(20)
+		carteira := Carteira{saldoInicial}
 		erro := carteira.Retirar(Bitcoin(100))
 
-		confirmarSaldo(t, carteira, saldoInicial )
-		confirmarErro(t, err, ErrInsufficientFunds)
+		confirmarSaldo(t, carteira, saldoInicial)
+		confirmarErro(t, erro, ErroSaldoInsuficiente)
 	})
 }
 
 func confirmarSaldo(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
 	t.Helper()
-	valor := carteira.Balance()
+	valor := carteira.Saldo()
 
-	if valor!= valoresperado {
-		t.Errorf("valor'%s' valorEsperado '%s'", got, want)
+	if valor != valorEsperado {
+		t.Errorf("valor'%s' valorEsperado '%s'", valor, valorEsperado)
 	}
 }
 
-func confirmarErroInexistente(t *testing.T, valorerror) {
+func confirmarErroInexistente(t *testing.T, valor error) {
 	t.Helper()
-	if valor!= nil {
+	if valor != nil {
 		t.Fatal("Recebeu um erro inesperado")
 	}
 }
 
-func confirmarErro(t *testing.T, valorerror, valorEsperado error) {
+func confirmarErro(t *testing.T, valor error, valorEsperado error) {
 	t.Helper()
-	if valor== nil {
+	if valor == nil {
 		t.Fatal("Esperava um erro mas nenhum ocorreu")
 	}
 
-	if valor!= valorEsperado {
-		t.Errorf("valor'%s', valorEsperado '%s'", got, want)
+	if valor != valorEsperado {
+		t.Errorf("valor'%s', valorEsperado '%s'", valor, valorEsperado)
 	}
 }
