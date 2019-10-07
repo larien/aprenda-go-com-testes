@@ -107,16 +107,16 @@ Os exemplos de Go são executados da mesma forma que os testes, para que você p
 
 Exemplos são compilados \(e opcionalmente executados\) como parte do conjunto de testes de um pacote.
 
-Como nos testes comuns, os exemplos são funções que residem nos arquivos \_test.go de um pacote. Adicione a seguinte função ExampleAdiciona no arquivo `adicionador_test.go`.
+Como nos testes comuns, os exemplos são funções que residem nos arquivos \_test.go de um pacote. Adicione a seguinte função ExemploAdiciona no arquivo `adicionador_test.go`.
 
 ```go
-func ExampleAdiciona() {
+func ExemploAdiciona() {
     soma := Adiciona(1, 5)
     fmt.Println(soma)
-    // Output: 6
+    // Saida: 6
 }
 ```
-> obs: As palavras Example e Output foram mantidas em inglês para a execução correta do código.
+> obs: As palavras `Exemplo` e `Saida` devem ser alteradas para `Example` e `Output` para a execução correta do código.
 
 (Se o seu editor não importar os pacotes automaticamente, a etapa de compilação irá falhar porque você não colocou o `import "fmt"` no `adicionador_test.go`. É altamente recomendável que você pesquise como ter esses tipos de erros corrigidos automaticamente em qualquer editor que esteja usando.)
 
@@ -128,8 +128,8 @@ Executando os testes do pacote, podemos ver que a função de exemplo é executa
 $ go test -v
 === RUN   TestAdicionador
 --- PASS: TestAdicionador (0.00s)
-=== RUN   ExampleAdiciona
---- PASS: ExampleAdiciona (0.00s)
+=== RUN   ExemploAdiciona
+--- PASS: ExemploAdiciona (0.00s)
 ```
 
 Note que a função de exemplo não será executada se você remover o comentário "// Output: 6". Embora a função seja compilada, ela não será executada.

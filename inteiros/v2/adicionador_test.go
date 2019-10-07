@@ -14,8 +14,8 @@ func TestAdicionador(t *testing.T) {
 	}
 }
 
-func ExampleAdiciona() {
+func ExemploAdiciona() {
 	soma := Adiciona(1, 5)
 	fmt.Println(soma)
-	// Output: 6
+	// Saida: 6
 }
