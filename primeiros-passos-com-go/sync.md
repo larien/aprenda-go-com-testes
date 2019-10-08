@@ -1,6 +1,6 @@
 # Sync
 
-[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/sync)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/sync)
 
 Queremos fazer um contador que é seguro para se usar concorrentemente.
 
@@ -34,7 +34,7 @@ func TesteContador(t *testing.T) {
 ./sync_test.go:9:14: undefined: Contador
 ```
 
-## Escreva a quantidade mínima de código para o teste rodar e verifique a saída que falhou dele
+## Escreva a quantidade mínima de código para o teste rodar e verifique a saída do teste que falhou
 
 Vamos definir `Contador`.
 
@@ -73,7 +73,7 @@ Agora tudo deve rodar e falhar
         sync_test.go:27: recebido 0, desejado 3
 ```
 
-## Escreva código o suficiente para fazer ele passar
+## Escreva código o suficiente para fazer o teste passar
 
 Isso deve ser trivial para experts em Go como nós. Precisamos manter algum
 estado do contador no nosso datatype e daí incrementá-lo em cada chamada do
@@ -121,7 +121,7 @@ func assertContador(t *testing.T, recebido Contador, desejado int)  {
 
 ## Próximos passos
 
-Isso foi muito fácil, mas agora nós agora temos uma requisição que é: ele precisa
+Isso foi muito fácil, mas agora nós temos uma requisição que é: ele precisa
 ser seguro o suficiente para usar em um ambiente com acesso concorrente. Vamos precisar
 criar um teste pra exercitar isso.
 
@@ -147,16 +147,16 @@ t.Run("roda concorrentemente em segurança", func(t *testing.T) {
 })
 ```
 
-Isso vai iterar pelo nosso `contadorDesejado` e chamar uma *goroutine* pra chamar `contador.Inc()`.
+Isso vai iterar pelo nosso `contadorDesejado` e disparar uma *goroutine* pra chamar `contador.Inc()`.
 
 Nós estamos usando [`sync.WaitGroup`](https://golang.org/pkg/sync/#WaitGroup)
 que é uma maneira conveniente de sincronizar processos concorrentes.
 
 > Um WaitGroup aguarda por uma coleção *goroutines* terminar seu processamento.
 A *goroutine* principal faz a chamada para o Add definir o número de *goroutines*
-serão esperadas. Então, cada uma das *goroutines* rodam novamente e chamam Done
-quando terminam sua execução. Ao mesmo tempo, Wait pode ser usada para bloquear até
-que todas as *goroutines* tenham terminado.
+que serão esperadas. Então, cada uma das *goroutines* roda novamente e chama
+Done quando terminar sua execução. Ao mesmo tempo, Wait pode ser usada para
+bloquear até que todas as *goroutines* tenham terminado.
 
 Ao esperar por `wg.Wait()` terminar sua execução antes de fazer nossas asserções, nós
 podemos ter certeza que todas as nossas *goroutines* tentaram `Inc` o `Contador`.
@@ -175,7 +175,7 @@ O teste _provavelmente_ vai falhar com um número diferente, mas de toda forma
 ele demonstra que não roda corretamente quando várias *goroutines* tentam
 mudar o valor do contador ao mesmo tempo.
 
-## Escreva código o suficiente para passar o teste
+## Escreva código o suficiente para fazer o teste passar
 
 Uma solução simples é adicionar uma trava ao nosso `Contador`, um
 [`Mutex`](https://golang.org/pkg/sync/#Mutex)
@@ -196,7 +196,7 @@ func (c *Contador) Inc() {
 ```
 
 Isso significa que qualquer *goroutine* chamando `Inc` vai receber a trava em `Contador`
-se eles forem o primeiro. Todas as outras *goroutines* vão ter que esperar por ele até
+se for a primeira. Todas as outras *goroutines* vão ter que esperar por ele até
 que ele esteja `Unlock`, ou destravado, antes de ganhar o acesso.
 
 Agora se você rodar o teste novamente, ele deve funcionar porque cada uma das *goroutines*
@@ -238,7 +238,7 @@ começar a chamar esses métodos diretamente.
 
 ![Demonstração de como um usuário dessa API pode chamar erroneamente o estado da trava](https://i.imgur.com/SWYNpwm.png)
 
-_Isso parece como uma ideia muito ruim_
+_Isso parece uma péssima ideia_
 
 ## Copiando mutexes
 
@@ -283,7 +283,7 @@ Use essa função em seus teste quando for inicializar o `Contador`.
 Cobrimos algumas coisas no [pacote sync](https://golang.org/pkg/sync/):
 
 * `Mutex` que nos permite adicionar travas aos nossos dados
-* `Waitgroup` que é uma maneira de esperar as *goroutines* terminar suas tarefas
+* `Waitgroup` que é uma maneira de esperar as *goroutines* terminarem suas tarefas
 
 ### Quando usar travas em vez de *channels* e *goroutines*?
 
@@ -293,7 +293,7 @@ que nos permite escrever código concorrente e seguro, então por que usar trava
 
 > Um erro comum de um iniciante em Go é usar demais os *channels* e *goroutines* apenas
 porque é possível e/ou porque é divertido. Não tenha medo de usar um `sync.Mutex` se
-ele se encaixa melhor no seu problema. Go é pragmático em deixar você escolhar as
+ele se encaixa melhor no seu problema. Go é pragmático em deixar você escolher as
 ferramentas que melhor resolvem o seu problema e não te forçar em um único estilo
 de código.
 
