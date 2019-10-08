@@ -20,7 +20,6 @@ func (c *Contador) Inc() {
 	c.valor++
 }
 
-// Value returns the current count
 // Valor retorna o atual contador
 func (c *Contador) Valor() int {
 	return c.valor
