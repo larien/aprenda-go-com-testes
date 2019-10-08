@@ -11,23 +11,23 @@ Não há nenhuma novidade até aqui, então tente escrever você mesmo para prat
 ## Escreva o teste primeiro
 
 ```go
-package iteration
+package iteracao
 
 import "testing"
 
-func TestRepeat(t *testing.T) {
-    repeated := Repeat("a")
-    expected := "aaaaa"
+func TestRepetir(t *testing.T) {
+    repeticoes := Repetir("a")
+    esperado := "aaaaa"
 
-    if repeated != expected {
-        t.Errorf("expected '%s' but got '%s'", expected, repeated)
+    if repeticoes != esperado {
+        t.Errorf("esperado '%s' mas obteve '%s'", esperado, repeticoes)
     }
 }
 ```
 
 ## Execute o teste
 
-`./repeat_test.go:6:14: undefined: Repeat`
+`./repetir_test.go:6:14: undefined: Repetir`
 
 ## Escreva a quantidade mínima de código para o teste rodar e verifique o erro na saída
 
@@ -36,28 +36,28 @@ _Mantenha a disciplina!_ Você não precisa saber nada de diferente agora para f
 Tudo o que foi feito até agora é o suficiente para compilar, para que você possa verificar se escreveu o teste corretamente.
 
 ```go
-package iteration
+package iteracao
 
-func Repeat(character string) string {
+func Repetir(caractere string) string {
     return ""
 }
 ```
 
 Não é legal saber que você já conhece o bastante em Go para escrever testes para problemas simples? Isso significa que agora você pode mexer no código de produção o quanto quiser sabendo que ele se comportará da maneira que você desejar.
 
-`repeat_test.go:10: expected 'aaaaa' but got ''`
+`repetir_test.go:10: esperado 'aaaaa' mas obteve ''`
 
 ## Escreva código o suficiente para fazer o teste passar
 
 A sintaxe do `for` é muito fácil de lembrar e segue a maioria das linguagens baseadas em `C`:
 
 ```go
-func Repeat(character string) string {
-    var repeated string
+func Repetir(caractere string) string {
+    var repeticoes string
     for i := 0; i < 5; i++ {
-        repeated = repeated + character
+        repeticoes = repeticoes + caractere
     }
-    return repeated
+    return repeticoes
 }
 ```
 
@@ -72,14 +72,14 @@ Variações adicionais do loop `for` podem ser vistas [aqui](https://gobyexample
 Agora é hora de refatorarmos e apresentarmos outro operador de atribuição: o `+=`.
 
 ```go
-const repeatCount = 5
+const quantidadeRepeticoes = 5
 
-func Repeat(character string) string {
-    var repeated string
-    for i := 0; i < repeatCount; i++ {
-        repeated += character
+func Repetir(caractere string) string {
+    var repeticoes string
+    for i := 0; i < quantidadeRepeticoes; i++ {
+        repeticoes += caractere
     }
-    return repeated
+    return repeticoes
 }
 ```
 
@@ -90,9 +90,9 @@ O operador adicionar & atribuir `+=` adiciona o valor que está à direita no va
 Escrever [benchmarks](https://golang.org/pkg/testing/#hdr-Benchmarks) em Go é outro recurso disponível nativamente na linguagem e é tão facil quanto escrever testes.
 
 ```go
-func BenchmarkRepeat(b *testing.B) {
+func BenchmarkRepetir(b *testing.B) {
     for i := 0; i < b.N; i++ {
-        Repeat("a")
+        Repetir("a")
     }
 }
 ```
@@ -110,7 +110,7 @@ Para executar o benchmark, digite `go test -bench=.` no terminal (ou se estiver 
 ```bash
 goos: darwin
 goarch: amd64
-pkg: github.com/quii/learn-go-with-tests/for/v4
+pkg: github.com/larien/learn-go-with-tests/for/v4
 10000000           136 ns/op
 PASS
 ```
@@ -122,7 +122,7 @@ _NOTA_ por padrão, o benchmark é executado sequencialmente.
 ## Exercícios para praticar
 
 -   Altere o teste para que a função possa especificar quantas vezes o caractere deve ser repetido e então corrija o código para passar no teste.
--   Escreva `ExampleRepeat` para documentar sua função.
+-   Escreva `ExampleRepetir` para documentar sua função.
 -   Veja também o pacote [strings](https://golang.org/pkg/strings). Encontre funções que você considera serem úteis e experimente-as escrevendo testes como fizemos aqui. Investir tempo aprendendo a biblioteca padrão irá te recompensar com o tempo.
 
 ## Resumindo
