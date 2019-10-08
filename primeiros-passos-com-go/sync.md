@@ -14,7 +14,7 @@ ele via teste e consertar essa falha.
 Queremos que nossa API nos dê um método para incrementar o contador e depois recuperar esse valor.
 
 ```go
-func TesteContador(t *testing.T) {
+func TestContador(t *testing.T) {
     t.Run("incrementar o contador 3 vezes o deixa com valor 3", func(t *testing.T) {
         contador := Contador{}
         contador.Inc()
@@ -66,10 +66,10 @@ func (c *Contador) Valor() int {
 Agora tudo deve rodar e falhar
 
 ```text
-=== RUN   TesteContador
-=== RUN   TesteContador/incrementar_o_contador_3_vezes_o_deixa_com_valor_3
---- FAIL: TesteContador (0.00s)
-    --- FAIL: TesteContador/incrementar_o_contador_3_vezes_o_deixa_com_valor_3 (0.00s)
+=== RUN   TestContador
+=== RUN   TestContador/incrementar_o_contador_3_vezes_o_deixa_com_valor_3
+--- FAIL: TestContador (0.00s)
+    --- FAIL: TestContador/incrementar_o_contador_3_vezes_o_deixa_com_valor_3 (0.00s)
         sync_test.go:27: recebido 0, desejado 3
 ```
 
@@ -164,9 +164,9 @@ podemos ter certeza que todas as nossas *goroutines* tentaram `Inc` o `Contador`
 ## Tente rodar o teste
 
 ```text
-=== RUN   TesteContador/roda_concorrentemente_em_seguranca
---- FAIL: TesteContador (0.00s)
-    --- FAIL: TesteContador/roda_concorrentemente_em_seguranca (0.00s)
+=== RUN   TestContador/roda_concorrentemente_em_seguranca
+--- FAIL: TestContador (0.00s)
+    --- FAIL: TestContador/roda_concorrentemente_em_seguranca (0.00s)
         sync_test.go:26: recebido 939, desejado 1000
 FAIL
 ```
