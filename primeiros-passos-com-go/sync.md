@@ -51,7 +51,7 @@ Tente de novo e ele falhará com o seguinte
 ./sync_test.go:18:13: contador.Valor undefined (type Contador has no field or method Valor)
 ```
 
-Então, pra finalmente fazer o teste rodar, podemos definir esses métodos
+Então, para finalmente fazer o teste rodar, podemos definir esses métodos
 
 ```go
 func (c *Contador) Inc() {
@@ -123,7 +123,7 @@ func assertContador(t *testing.T, recebido Contador, desejado int)  {
 
 Isso foi muito fácil, mas agora nós temos uma requisição que é: ele precisa
 ser seguro o suficiente para usar em um ambiente com acesso concorrente. Vamos precisar
-criar um teste pra exercitar isso.
+criar um teste para exercitar isso.
 
 ## Escreva o teste primeiro
 
@@ -147,7 +147,7 @@ t.Run("roda concorrentemente em segurança", func(t *testing.T) {
 })
 ```
 
-Isso vai iterar pelo nosso `contadorDesejado` e disparar uma *goroutine* pra chamar `contador.Inc()`.
+Isso vai iterar pelo nosso `contadorDesejado` e disparar uma *goroutine* para chamar `contador.Inc()`.
 
 Nós estamos usando [`sync.WaitGroup`](https://golang.org/pkg/sync/#WaitGroup)
 que é uma maneira conveniente de sincronizar processos concorrentes.
@@ -300,7 +300,7 @@ de código.
 Paraphrasing:
 
 * **Use channels quando for passar a propridade de um dado**
-* **Use mutexes pra gerenciar estados**
+* **Use mutexes para gerenciar estados**
 
 ### go vet
 
