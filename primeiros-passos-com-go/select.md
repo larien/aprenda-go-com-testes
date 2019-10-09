@@ -2,7 +2,7 @@
 
 [**Você pode encontrar todos os códigos desse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/select)
 
-Te pediram para fazer uma função chamada `Corredor` que recebe duas URLs que "competirão" entre elas através de uma chamada HTTP GET em cada devolvendo a URL que retornar primeiro. Se nenhuma delas retornar dentro de 10 segundos, então a função deve retornar `erro`. 
+Te pediram para fazer uma função chamada `Corredor` que recebe duas URLs que "competirão" entre si através de uma chamada HTTP GET onde a primeira URL a responder será retornada. Se nenhuma delas responder dentro de 10 segundos, então a função deve retornar um `erro`. 
 
 Para isso, vamos utilizar:
 
@@ -35,7 +35,7 @@ Sabemos que não está perfeito e que existem problemas, mas é um bom início. 
 
 `./corredor_test.go:14:9: undefined: Corredor`
 
-## Escreva a menor quantidade de código para rodar o teste e verifique a saída do teste que falhou
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
 ```go
 func Corredor(a, b string) (vencedor string) {
@@ -279,9 +279,9 @@ func Corredor(a, b string) (vencedor string, erro error) {
 }
 ```
 
-Altere a assinatura de `Corredor` para retornar o vencedor e um `erro`. Retorne `nil` para nossos casos felizes.
+Altere a assinatura de `Corredor` para retornar o vencedor e um `erro`. Retorne `nil` para nossos casos de sucesso.
 
-O compilador vai reclamar sobre seu _ primeiro teste_ apenas olhando para um valor, então altere essa linha para `obteve, _ := Corredor(urlLenta, urlRapida)`, sabendo disso devemos verificar se _não_ obteremos um erro em nosso cenário feliz.
+O compilador vai reclamar sobre seu _ primeiro teste_ apenas olhando para um valor, então altere essa linha para `obteve, _ := Corredor(urlLenta, urlRapida)`, sabendo disso devemos verificar se _não_ obteremos um erro em nosso cenário de sucesso.
 
 Se executar isso agora, após 11 segundos irá falhar.
 
@@ -291,7 +291,7 @@ Se executar isso agora, após 11 segundos irá falhar.
         corredor_test.go:40: esperava um erro, mas não obtive um.
 ```
 
-## Escreva código suficiente para que o teste passe
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
 func Corredor(a, b string) (vencedor string, erro error) {
@@ -305,7 +305,7 @@ func Corredor(a, b string) (vencedor string, erro error) {
     }
 }
 ```
-`time.After` é uma função muito conveniente quando usamos `select`. Embora não ocorra em nosso caso, você pode escrever um código que bloqueia pra sempre se os canais que estiver ouvindo nunca retornarem um valor.
+`time.After` é uma função muito conveniente quando usamos `select`. Embora não ocorra em nosso caso, você pode escrever um código que bloqueia para sempre se os canais que estiver ouvindo nunca retornarem um valor.
  `time.After` retorna um `chan` \(como `ping`\) e te enviará um sinal após a quantidade de tempo definida.
 
  Para nós isso é perfeito; se `a` ou `b` conseguir retornar vencerá, mas se chegar a 10 segundos então nosso `time.After` nos enviará um sinal e retornaremos um `erro`.
@@ -314,7 +314,7 @@ func Corredor(a, b string) (vencedor string, erro error) {
 
 O problema que temos é que esse teste demora 10 segundos para rodar. Para uma lógica tão simples, isso não parece ótimo.
 
-O que podemos fazer é deixar esse esgotamento de tempo configurável. Então em nosso teste podemos ter um tempo bem curto e quando utilizado no mundo real esse tempo ser definido em 10 segundos.
+O que podemos fazer é deixar esse esgotamento de tempo configurável. Então, em nosso teste, podemos ter um tempo bem curto e, quando utilizado no mundo real, esse tempo ser definido para 10 segundos.
 
 ```go
 func Corredor(a, b string, tempoLimite time.Duration) (vencedor string, erro error) {
@@ -329,7 +329,7 @@ func Corredor(a, b string, tempoLimite time.Duration) (vencedor string, erro err
 }
 ```
 
-Nosso teste não irá compilar pois não fornecemos um tempo.
+Nosso teste não irá compilar pois não fornecemos um tempo de expiração.
 
 Antes de nos apressar para adicionar esse valor padrão a ambos os testes, vamos _ouvi-los_.
 
@@ -404,7 +404,7 @@ Adicionei uma verificação final ao primeiro teste para saber se não pegamos u
 ### `select`
 
 * Ajuda você a esperar em vários canais.
-* As vezes você gostaria de incluir `time.After` em um de seus `cases` para prevenir que seu sistema bloqueie pra sempre.
+* As vezes você gostaria de incluir `time.After` em um de seus `cases` para prevenir que seu sistema bloqueie para sempre.
 
 ### `httptest`
 
