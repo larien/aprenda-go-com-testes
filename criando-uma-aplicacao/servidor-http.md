@@ -17,7 +17,7 @@ Vamos seguir com a abordagem do TDD, criando software que funciona o mais rápid
 
 Por todo o livro, enfatizamos o processo TDD de escrever um teste e ver a falha \(vermelho\), escrever a _menor_ quantidade de código para fazer o teste passar/funcionar \(verde\), e então fazemos a reescrita (refatoração).
 
-A disciplina de escrever a menor quantidade de código é importante para garantir a seguraça que o TDD proporciona. Você deve se empenhar em sair do "vermelho" o quanto antes.
+A disciplina de escrever a menor quantidade de código é importante para garantir a seguraça que o TDD proporciona. Você deve se empenhar em sair do _vermelho_ o quanto antes.
 
 Kent Beck descreve essa prática como:
 
@@ -25,21 +25,25 @@ Kent Beck descreve essa prática como:
 
 E você pode cometer estes pecados porque vai reescrever o código logo depois, com a segurança garantida pelos testes.
 
-### What if you don't do this?
+### E se você não fizer assim?
 
-The more changes you make while in red, the more likely you are to add more problems, not covered by tests.
+Quanto mais alterações você fizer enquanto seu código estiver em _vermelho_, maiores as chances de você adicionar mais problemas, não cobertos por testes.
 
-The idea is to be iteratively writing useful code with small steps, driven by tests so that you don't fall into a rabbit hole for hours.
+A ideia é escrever, interativamente, código útil em pequenos passos, e guiados pelos testes, para que você não perca foco no objetivo principal. 
 
-### Chicken and egg
+### Galinha e ovo
 
-How can we incrementally build this? We can't `GET` a player without having stored something and it seems hard to know if `POST` has worked without the `GET` endpoint already existing.
+Como podemos construir isso de forma incremental? Não podemos obter (`GET`) um nome de jogador sem ter registrado nada anteriormente, e parece complicado saber se o `POST` funcionou sem o endpoint `GET` já implementado.
 
-This is where _mocking_ shines.
+E é nesse ponto que o _mocking_ vai nos ajudar.
 
-* `GET` will need a `PlayerStore` _thing_ to get scores for a player. This should be an interface so when we test we can create a simple stub to test our code without needing to have implemented any actual storage code.
-* For `POST` we can _spy_ on its calls to `PlayerStore` to make sure it stores players correctly. Our implementation of saving won't be coupled to retrieval.
-* For having some working software quickly we can make a very simple in-memory implementation and then later we can create an implementation backed by whatever storage mechanism we prefer.
+(Nota do tradutor: A expressão _mocking_ significa "zombar", "fazer piada" ou "enganar". Mantemos a expressão original por ser uma expressão comum na literatura em português, por falta de tradução melhor)
+
+* o `GET` precisa de uma _coisa_ `JogadorArmazenamento` para obter pontuações de um nome de jogador. Isso deve ser uma interface, para que quando rodar os testes, seja possível criar um código simples de esboço para testar o código sem implementar o código final que será usado para armazenar os dados.
+
+* para o `POST`, podemos _olhar_ em suas chamadas a `JogadorArmazenamento` para ter certeza de que os dados são armazenados corretamente. Nossa implementação de gravação dos dados não estará vinculada à busca dos dados.
+
+* para ver código rodando rapidamente vamos fazer uma implementação simples de armazenamento dos dados na memória, e depois podemos criar uma implementação que dá suporte ao mecanismo de armazenamento de preferência.
 
 ## Write the test first
 
