@@ -195,7 +195,7 @@ Você deseja que isso seja executado ao final de uma função, mas mantenha a in
 Nossa refatoração é uma melhoria e uma solução razoável dados os recursos de Go que vimos até aqui, mas podemos deixar essa solução ainda mais simples.
 
 ### Sincronizando processos
-* Por quê estamos testando a velocidade dos sites sequencialmente quando GO é ótimo com concorrência? Devemos conseguir verificar ambos ao mesmo tempo.
+* Por quê estamos testando a velocidade dos sites sequencialmente quando Go é ótimo com concorrência? Devemos conseguir verificar ambos ao mesmo tempo.
 * Não nos preocupamos com o _tempo exato de resposta_ das requisições, apenas queremos saber qual retorna primeiro.
 
 Para fazer isso, vamos introduzir uma nova construção chamada `select` que nos ajudará a sincronizar os processos de forma mais fácil e clara.
