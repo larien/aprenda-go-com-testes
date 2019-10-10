@@ -182,7 +182,7 @@ func criarServidorDemorado(demora time.Duration) *httptest.Server {
 }
 ```
 
-Nós refatoramos criando nossos servidores falsos numa função chamada `criarServidorDemorado`para remover alguns códigos desnecessários do nosso teste e reduzir repetições.
+Nós refatoramos criando nossos servidores falsos numa função chamada `criarServidorDemorado` para remover alguns códigos desnecessários do nosso teste e reduzir repetições.
 
 ### `defer`
 
