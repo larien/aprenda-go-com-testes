@@ -45,19 +45,19 @@ E é nesse ponto que o _mocking_ vai nos ajudar.
 
 * para ver código rodando rapidamente vamos fazer uma implementação simples de armazenamento dos dados na memória, e depois podemos criar uma implementação que dá suporte ao mecanismo de armazenamento de preferência.
 
-## Write the test first
+## Escrevendo o teste primeiro
 
-We can write a test and make it pass by returning a hard-coded value to get us started. Kent Beck refers this as "Faking it". Once we have a working test we can then write more tests to help us remove that constant.
+Podemos escrever um teste e fazer passar retornando um valor predeterminado para nos ajudar a começar. Kent Beck se refere a isso como "Fazer de conta". Uma vez que temos um teste funcionando podemos escrever mais testes que nos ajudem a remover este valor predeterminado (constante).
 
-By doing this very small step, we can make the important start of getting an overall project structure working correctly without having to worry too much about our application logic.
+Com este pequeno, mas importante, passo, nós começamos a ter uma estrutura inicial para o projeto funcionando corretamente, sem nos preocuparmos demais com a lógica da aplicação. 
 
-To create a web server in Go you will typically call [ListenAndServe](https://golang.org/pkg/net/http/#ListenAndServe).
+Para criar um servidor web (uma aplicação que recebe chamadas via protocolo HTTP) em Go, você vai chamar, normalmente, a função [ListenAndServe](https://golang.org/pkg/net/http/#ListenAndServe).
 
 ```go
-func ListenAndServe(addr string, handler Handler) error
+func ListenAndServe(endereco string, handler Handler) error
 ```
 
-This will start a web server listening on a port, creating a goroutine for every request and running it against a [`Handler`](https://golang.org/pkg/net/http/#Handler).
+Isso vai iniciar um servidor web disponível em uma porta, criando uma gorotina para cada requisição e repassando para um [`Handler`](https://golang.org/pkg/net/http/#Handler).
 
 ```go
 type Handler interface {
@@ -65,9 +65,9 @@ type Handler interface {
 }
 ```
 
-It has one function which expects two arguments, the first being where we _write our response_ and the second being the HTTP request that was sent to us.
+Esta interface tem uma única função que espera dois argumentos, o primeiro que indica onde _escrevemos a resposta_ e o outro com a requisição HTTP que nos foi enviada. 
 
-Let's write a test for a function `PlayerServer` that takes in those two arguments. The request sent in will be to get a player's score, which we expect to be `"20"`.
+Vamos escrever um teste para a função `JogadorServidor` que recebe estes dois argumentos. A requisição enviada serve para obter a pontuação de um Nome de Jogador, que esperamos que seja `"20"`.
 
 ```go
 func TestGETPlayers(t *testing.T) {
