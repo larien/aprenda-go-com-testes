@@ -69,7 +69,28 @@ go version
 go version go1.13 linux/amd64
 ```
 
-Nos próximos passos vamos configurar o ambiente Go. As instruções abaixo valem tanto para sistema operacional OSX quanto para o Linux.
+Nos próximos passos vamos configurar o ambiente Go. As [instruções abaixo](#o-ambiente-go) valem tanto para sistema operacional OSX quanto para o Linux.
+
+### Windows
+
+Para usuários de Windows existem duas formas de instalação, através de um arquivo ZIP que requer que você configure algumas variáveis de ambiente ou uma arquivo MSI que faz toda a configuração automaticamente.
+Primeiro você deve fazer download da versão que você deseja instalar. Para isso [acesse o site oficial](https://golang.org/) da linguagem e copie o da versão desejada (Ex.: [https://dl.google.com/go/go1.13.1.windows-amd64.msi](https://dl.google.com/go/go1.13.1.windows-amd64.msi)). Recomendamos instalar sempre a versão mais atual.
+
+#### Instalação via MSI
+
+Abra o arquivo MSI e siga os passos da instalação. Por padrão o instalador adiciona o Go na pasta `C:\Go`
+
+O instalador adiciona o caminho `C:\Go\bin` na variável de ambiente "Path" e cria a variável de usuário "GOPATH" com o caminho `C:\Users\%USER%\go`.
+
+#### Instalação via ZIP
+
+Extraia os arquivos do arquivo ZIP no diretório de sua preferência.
+
+Adicione na variável de ambiente "Path" o caminho para a pasta bin dos arquivos de Go.
+Na busca do menu Iniciar, digite "Variáveis" escolha a opção "Editar as variáveis de ambiente do sistema. Na aba "Avançado" clique em "Variáveis de Ambiente", localize a variável "Path" e clique em Editar > Novo e preencha com o caminho escolhido (Ex: `C:/minha-pasta-go/bin`).
+
+Quando ocorre alteração nas variáveis de ambiente no Windows é necessário reiniciar o sistema.
+
 
 ## O Ambiente Go
 
