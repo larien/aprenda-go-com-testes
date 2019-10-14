@@ -74,7 +74,7 @@ Nos próximos passos vamos configurar o ambiente Go. As [instruções abaixo](#o
 ### Windows
 
 Para usuários de Windows existem duas formas de instalação, através de um arquivo ZIP que requer que você configure algumas variáveis de ambiente ou uma arquivo MSI que faz toda a configuração automaticamente.
-Primeiro você deve fazer download da versão que você deseja instalar. Para isso [acesse o site oficial](https://golang.org/) da linguagem e copie o da versão desejada (Ex.: [https://dl.google.com/go/go1.13.1.windows-amd64.msi](https://dl.google.com/go/go1.13.1.windows-amd64.msi)). Recomendamos instalar sempre a versão mais atual.
+Primeiro você deve fazer download da versão que você deseja instalar. Para isso [acesse o site oficial](https://golang.org/) da linguagem e copie o arquivo da versão desejada (Ex.: [https://dl.google.com/go/go1.13.1.windows-amd64.msi](https://dl.google.com/go/go1.13.1.windows-amd64.msi)). Recomendamos instalar sempre a versão mais atual.
 
 #### Instalação via MSI
 
