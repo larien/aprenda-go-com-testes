@@ -57,9 +57,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
         defer limpaBancoDeDados()
 
-		armazenamento, err := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
-
-		defineSemErro(t, err)
+        armazenamento, err := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
         recebido := armazenamento.PegaPontuacaoDoJogador("Chris")
         esperado := 33
@@ -72,9 +70,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
         defer limpaBancoDeDados()
 
-		armazenamento, err := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
-
-		defineSemErro(t, err)
+		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		armazenamento.SalvaVitoria("Chris")
 
@@ -89,9 +85,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
         defer limpaBancoDeDados()
 
-		armazenamento, err := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
-
-		defineSemErro(t, err)
+		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		armazenamento.SalvaVitoria("Pepper")
 

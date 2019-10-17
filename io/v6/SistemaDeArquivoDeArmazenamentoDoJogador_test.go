@@ -1,17 +1,18 @@
 package main
 
 import (
+	"io"
 	"io/ioutil"
 	"os"
 	"testing"
 )
 
-func criaArquivoTemporario(t *testing.T, dadoInicial string) (*os.File, func()) {
-	t.Helper()
+func criaArquivoTemporario(t *testing.T, dadoInicial string) (io.ReadWriteSeeker, func()) {
+    t.Helper()
 
-	arquivotmp, err := ioutil.TempFile("", "db")
+   arquivotmp, err := ioutil.TempFile("", "db")
 
-	if err != nil {
+    if err != nil {
         t.Fatalf("não foi possivel escrever o arquivo temporário %v", err)
     }
 
@@ -27,29 +28,27 @@ func criaArquivoTemporario(t *testing.T, dadoInicial string) (*os.File, func()) 
 
 func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
-	t.Run("liga de um leitor", func(t *testing.T) {
+    t.Run("liga de um leitor", func(t *testing.T) {
         bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
             {"Nome": "Cleo", "Vitorias": 10},
             {"Nome": "Chris", "Vitorias": 33}]`)
         defer limpaBancoDeDados()
 
-		armazenamento, err := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+        armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
-		defineSemErro(t, err)
+        recebido := armazenamento.PegaLiga()
 
-		got := store.GetLeague()
-
-		esperado := []Jogador{
+        esperado := []Jogador{
             {"Cleo", 10},
             {"Chris", 33},
         }
 
-		defineLiga(t, recebido, esperado)
+        defineLiga(t, recebido, esperado)
 
-		 // ler novamente
-		 recebido = armazenamento.PegaLiga()
-		 defineLiga(t, recebido, esperado)
-	})
+        // ler novamente
+        recebido = armazenamento.PegaLiga()
+        defineLiga(t, recebido, esperado)
+    })
 
 	t.Run("retorna pontuação do jogador", func(t *testing.T) {
         bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
@@ -57,9 +56,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
         defer limpaBancoDeDados()
 
-		armazenamento, err := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
-
-		defineSemErro(t, err)
+        armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
         recebido := armazenamento.PegaPontuacaoDoJogador("Chris")
         esperado := 33
@@ -72,9 +69,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
         defer limpaBancoDeDados()
 
-		armazenamento, err := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
-
-		defineSemErro(t, err)
+		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		armazenamento.SalvaVitoria("Chris")
 
@@ -89,24 +84,13 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
         defer limpaBancoDeDados()
 
-		armazenamento, err := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
-
-		defineSemErro(t, err)
+		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		armazenamento.SalvaVitoria("Pepper")
 
 		recebido := armazenamento.PegaPontuacaoDoJogador("Pepper")
 		esperado := 1
 		definePontuacaoIgual(t, recebido, esperado)
-	})
-
-	t.Run("trabalha com um arquivo vazio", func(t *testing.T) {
-		bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, "")
-		defer limpaBancoDeDados()
-
-		_, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
-
-		defineSemErro(t, err)
 	})
 }
 
@@ -115,10 +99,4 @@ func definePontuacaoIgual(t *testing.T, recebido, esperado int) {
 	if recebido != esperado {
         t.Errorf("recebido '%s' esperado '%s'", recebido, esperado)
     }
-}
-func defineSemErro(t *testing.T, err error) {
-	t.Helper()
-	if err != nil {
-		t.Fatalf("nao esperava erro mas recebeu um, %v", err)
-	}
 }

@@ -1,12 +1,12 @@
-# IO e sorting
+# IO e Ordenação
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/io)
+[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/io)
 
-[In the previous chapter](json.md) we continued iterating on our application by adding a new endpoint `/league`. Along the way we learned about how to deal with JSON, embedding types and routing.
+[No capitulo anterior](json.md) continuamos interagindo com nossa aplicação pela adição de um novo endpoint `/liga`. Durante o caminho aprendemos como lidar com JSON, tipos embutidos e roteamento.
 
-Our product owner is somewhat perturbed by the software losing the scores when the server was restarted. This is because our implementation of our store is in-memory. She is also not pleased that we didn't interpret the `/league` endpoint should return the players ordered by the number of wins!
+Nossa dona do produto está de certa forma preocupada, por conta do software perder as pontuações quando o servidor é reiniciado. Ela também não se agradou que nós não interpretamos o endpoint `/liga` que deveria retornar os jogadores ordenados pelo número de vitórias!
 
-## The code so far
+## O código até agora
 
 ```go
 // server.go
@@ -18,101 +18,101 @@ import (
     "net/http"
 )
 
-// PlayerStore stores score information about players
-type PlayerStore interface {
-    GetPlayerScore(name string) int
-    RecordWin(name string)
-    GetLeague() []Player
+// GuardaJogador armazena informações sobre os jogadores
+type GuardaJogador interface {
+    PegaPontosJogador(nome string) int
+    SalvaVitoria(nome string)
+    PegaLiga() []Jogador
 }
 
-// Player stores a name with a number of wins
-type Player struct {
-    Name string
-    Wins int
+// Jogador guarda o nome com o número de vitorias
+type Jogador struct {
+    Nome string
+    Vitorias int
 }
 
-// PlayerServer is a HTTP interface for player information
-type PlayerServer struct {
-    store PlayerStore
+// ServidorDoJogador é uma interface HTTP para informações dos jogadores
+type ServidorDoJogador struct {
+    armazenamento GuardaJogador
     http.Handler
 }
 
 const jsonContentType = "application/json"
 
-// NewPlayerServer creates a PlayerServer with routing configured
-func NewPlayerServer(store PlayerStore) *PlayerServer {
-    p := new(PlayerServer)
+// NovoServidorDoJogador cria um ServidorDoJogador com roteamento configurado
+func NovoServidorDoJogador(armazenamento GuardaJogador) *ServidorDoJogador {
+    p := new( ServidorDoJogador)
 
-    p.store = store
+    p.armazenamento = armazenamento
 
-    router := http.NewServeMux()
-    router.Handle("/league", http.HandlerFunc(p.leagueHandler))
-    router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+    roteador := http.NewServeMux()
+    roteador.Handle("/liga", http.HandlerFunc(p.ManipulaLiga))
+    roteador.Handle("/jogadores/", http.HandlerFunc(p.ManipulaJogador))
 
-    p.Handler = router
+    p.Handler = roteador
 
     return p
 }
 
-func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-    json.NewEncoder(w).Encode(p.store.GetLeague())
+func (p *ServidorDoJogador) ManipulaLiga(w http.ResponseWriter, r *http.Request) {
+    json.NewEncoder(w).Encode(p.armazenamento.PegaLiga())
     w.Header().Set("content-type", jsonContentType)
     w.WriteHeader(http.StatusOK)
 }
 
-func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/players/"):]
+func (p *ServidorDoJogador) ManipulaJogador(w http.ResponseWriter, r *http.Request) {
+    jogador := r.URL.Path[len("/jogadores/"):]
 
     switch r.Method {
     case http.MethodPost:
-        p.processWin(w, player)
+        p.processaVitoria(w, jogador)
     case http.MethodGet:
-        p.showScore(w, player)
+        p.mostraPontuacao(w, jogador)
     }
 }
 
-func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
-    score := p.store.GetPlayerScore(player)
+func (p *ServidorDoJogador) mostraPontuacao(w http.ResponseWriter, jogador string) {
+    pontuacao := p.armazenamento.PegaPontosJogador(jogador)
 
-    if score == 0 {
+    if pontuacao == 0 {
         w.WriteHeader(http.StatusNotFound)
     }
 
-    fmt.Fprint(w, score)
+    fmt.Fprint(w, pontuacao)
 }
 
-func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
-    p.store.RecordWin(player)
+func (p *ServidorDoJogador) processaVitoria(w http.ResponseWriter, jogador string) {
+    p.armazenamento.RecordeDeVitorias(jogador)
     w.WriteHeader(http.StatusAccepted)
 }
 ```
 
 ```go
-// InMemoryPlayerStore.go
+// ArmazenamentoDeJogadorNaMemoria.go
 package main
 
-func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-    return &InMemoryPlayerStore{map[string]int{}}
+func NovoArmazenamentoDeJogadorNaMemoria() *ArmazenamentoDeJogadorNaMemoria {
+    return &ArmazenamentoDeJogadorNaMemoria{map[string]int{}}
 }
 
-type InMemoryPlayerStore struct {
-    store map[string]int
+type ArmazenamentoDeJogadorNaMemoria struct {
+    armazenamento map[string]int
 }
 
-func (i *InMemoryPlayerStore) GetLeague() []Player {
-    var league []Player
-    for name, wins := range i.store {
-        league = append(league, Player{name, wins})
+func (i *ArmazenamentoDeJogadorNaMemoria) PegaLiga() []Jogador {
+    var liga []Jogador
+    for nome, vitorias := range i.armazenamento {
+        liga = append(liga, Jogador{nome, vitorias})
     }
-    return league
+    return liga
 }
 
-func (i *InMemoryPlayerStore) RecordWin(name string) {
-    i.store[name]++
+func (i *ArmazenamentoDeJogadorNaMemoria) SalvaVitoria(nome string) {
+    i.armazenamento[nome]++
 }
 
-func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-    return i.store[name]
+func (i *ArmazenamentoDeJogadorNaMemoria) PegarPontuacaoJogador(nome string) int {
+    return i.armazenamento[nome]
 }
 ```
 
@@ -126,147 +126,147 @@ import (
 )
 
 func main() {
-    server := NewPlayerServer(NewInMemoryPlayerStore())
+    servidor:= NovoServidorDoJogador(NovoArmazenamentoDeJogadorNaMemoria())
 
-    if err := http.ListenAndServe(":5000", server); err != nil {
-        log.Fatalf("could not listen on port 5000 %v", err)
+    if err := http.ListenAndServe(":5000", servidor); err != nil {
+        log.Fatalf("Não foi possivel ouvir na porta 5000 %v", err)
     }
 }
 ```
 
-You can find the corresponding tests in the link at the top of the chapter.
+Você pode encontrar todos os testes relacionados no link no começo desse capítulo.
 
-## Store the data
+## Armazene os dados
 
-There are dozens of databases we could use for this but we're going to go for a very simple approach. We're going to store the data for this application in a file as JSON.
+Existem diversos bancos de dados que poderíamos usar para isso, mas nós vamos por uma abordagem mais simples. Nós iremos armazenar os dados para essa aplicação em um arquivo como JSON.
 
-This keeps the data very portable and is relatively simple to implement.
+Isso mantém os dados bastante manipuláveis e é relativamente simples de implementar.
 
-It won't scale especially well but given this is a prototype it'll be fine for now. If our circumstances change and it's no longer appropriate it'll be simple to swap it out for something different because of the `PlayerStore` abstraction we have used.
+Não será bem escalável mas, dado que isto é um protótipo, vai funcionar para agora. Se nossas circunstâncias mudarem e isto não for mais apropriado, será simples trocar para algo diferente por conta da abstração de `GuardarJogadores` que nós usamos.
 
-We will keep the `InMemoryPlayerStore` for now so that the integration tests keep passing as we develop our new store. Once we are confident our new implementation is sufficient to make the integration test pass we will swap it in and then delete `InMemoryPlayerStore`.
+Nós vamos manter o `NovoArmazenamentoDeJogadorNaMemoria` por enquanto para que os testes de integração continuem passando a medida que formos desenvolvendo nossa armazenamento. Quando estivermos confiantes que nossa implementação é suficiente para fazer os testes de integração passarem , nós iremos trocar e apagar `NovoArmazenamentoDeJogadorNaMemoria`
 
-## Write the test first
+## Escreva os testes primeiro
 
-By now you should be familiar with the interfaces around the standard library for reading data \(`io.Reader`\), writing data \(`io.Writer`\) and how we can use the standard library to test these functions without having to use real files.
+Por agora você deve estar familiar com as interfaces em torno da biblioteca padrão para leitura de dados \(`io.Reader`\), escrita de dados \(`io.Writer`\) e como nós podemos usar a biblioteca padrão para testar essas funções sem ter que usar arquivos de verdade.
 
-For this work to be complete we'll need to implement `PlayerStore` so we'll write tests for our store calling the methods we need to implement. We'll start with `GetLeague`.
+Para esse trabalho ser completo precisamos implementar `GuardaJogador` , então escreveremos testes para nossa armazenamento chamando os métodos que nós precisamos implementar. Começaremos com `PegaLiga`.
 
 ```go
-func TestFileSystemStore(t *testing.T) {
+func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 
-    t.Run("/league from a reader", func(t *testing.T) {
-        database := strings.NewReader(`[
-            {"Name": "Cleo", "Wins": 10},
-            {"Name": "Chris", "Wins": 33}]`)
+    t.Run("/liga de um leitor", func(t *testing.T) {
+        bancoDeDados := strings.NewReader(`[
+            {"Nome": "Cleo", "Vitorias": 10},
+            {"Nome": "Chris", "Vitorias": 33}]`)
 
-        store := FileSystemPlayerStore{database}
+        armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-        got := store.GetLeague()
+        recebido := armazenamento.PegaLiga()
 
-        want := []Player{
+        esperado := []Jogador{
             {"Cleo", 10},
             {"Chris", 33},
         }
 
-        assertLeague(t, got, want)
+        defineLiga(t, recebido, esperado)
     })
 }
 ```
 
-We're using `strings.NewReader` which will return us a `Reader`, which is what our `FileSystemPlayerStore` will use to read data. In `main` we will open a file, which is also a `Reader`.
+Estamos usando `strings.NewReader` que irá nos retornar um `Reader`, que é o que nosso `SistemaDeArquivoDeArmazenamentoDoJogador` irá usar para ler os dados. Em `main` abriremos um arquivo, que também é um `Reader`.
 
-## Try to run the test
-
-```text
-# github.com/quii/learn-go-with-tests/json-and-io/v7
-./FileSystemStore_test.go:15:12: undefined: FileSystemPlayerStore
-```
-
-## Write the minimal amount of code for the test to run and check the failing test output
-
-Let's define `FileSystemPlayerStore` in a new file
-
-```go
-type FileSystemPlayerStore struct {}
-```
-
-Try again
+## Tente rodar o teste
 
 ```text
 # github.com/quii/learn-go-with-tests/json-and-io/v7
-./FileSystemStore_test.go:15:28: too many values in struct initializer
-./FileSystemStore_test.go:17:15: store.GetLeague undefined (type FileSystemPlayerStore has no field or method GetLeague)
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:15:12: undefined: SistemaDeArquivoDeArmazenamentoDoJogador
 ```
 
-It's complaining because we're passing in a `Reader` but not expecting one and it doesn't have `GetLeague` defined yet.
+## Escreva código suficiente para fazer o teste rodar e veja o retorno do erro do teste
+
+Vamos definir `SistemaDeArquivoDeArmazenamentoDoJogador` em um novo arquivo
 
 ```go
-type FileSystemPlayerStore struct {
-    database io.Reader
+type SistemaDeArquivoDeArmazenamentoDoJogador struct {}
+```
+
+Tente de novo
+
+```text
+# github.com/quii/learn-go-with-tests/json-and-io/v7
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:15:28: too many values in struct initializer
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:17:15: armazenamento.PegaLiga undefined (type SistemaDeArquivoDeArmazenamentoDoJogador has no field or method PegaLiga)
+```
+
+Está reclamando porque estamos passando para ele um `Reader` mas não está esperando um e não tem `PegaLiga` definida ainda.
+
+```go
+type SistemaDeArquivoDeArmazenamentoDoJogador struct {
+    bancoDeDados io.Reader
 }
 
-func (f *FileSystemPlayerStore) GetLeague() []Player {
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() []Jogador {
     return nil
 }
 ```
 
-One more try...
+Tente mais uma vez...
 
 ```text
-=== RUN   TestFileSystemStore//league_from_a_reader
-    --- FAIL: TestFileSystemStore//league_from_a_reader (0.00s)
-        FileSystemStore_test.go:24: got [] want [{Cleo 10} {Chris 33}]
+=== RUN   TestSistemaDeArquivoDeArmazenamentoDoJogador//league_from_a_reader
+    --- FAIL: TestSistemaDeArquivoDeArmazenamentoDoJogador//league_from_a_reader (0.00s)
+        SistemaDeArquivoDeArmazenamentoDoJogador_test.go:24: recebido [] esperado [{Cleo 10} {Chris 33}]
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer passar
 
-We've read JSON from a reader before
+Nós lemos JSON de um leitor antes
 
 ```go
-func (f *FileSystemPlayerStore) GetLeague() []Player {
-    var league []Player
-    json.NewDecoder(f.database).Decode(&league)
-    return league
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() []Jogador {
+    var liga []Jogador
+    json.NewDecoder(f.bancoDeDados).Decode(&liga)
+    return liga
 }
 ```
 
-The test should pass.
+O teste deve passar.
 
-## Refactor
+## Refatore
 
-We _have_ done this before! Our test code for the server had to decode the JSON from the response.
+_Fizemos_ isso antes! Nosso código de teste para o servidor tinha que decodificar o JSON da resposta.
 
-Let's try DRYing this up into a function.
+Vamos tentar DRYando isso em uma função.
 
-Create a new file called `league.go` and put this inside.
+Crie um novo arquivo chamado `liga.go` e coloque isso nele.
 
 ```go
-func NewLeague(rdr io.Reader) ([]Player, error) {
-    var league []Player
-    err := json.NewDecoder(rdr).Decode(&league)
+func NovaLiga(rdr io.Reader) ([]Jogador, error) {
+    var liga []Jogador
+    err := json.NewDecoder(rdr).Decode(&liga)
     if err != nil {
-        err = fmt.Errorf("problem parsing league, %v", err)
+        err = fmt.Errorf("Problema parseando a liga, %v", err)
     }
 
-    return league, err
+    return liga, err
 }
 ```
 
-Call this in our implementation and in our test helper `getLeagueFromResponse` in `server_test.go`
+Chame isso em nossa implementação e em nosso teste helper `getLeagueFromResponse` in `server_test.go`
 
 ```go
-func (f *FileSystemPlayerStore) GetLeague() []Player {
-    league, _ := NewLeague(f.database)
-    return league
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() []Jogador {
+    liga, _ := NovaLiga(f.bancoDeDados)
+    return liga
 }
 ```
 
-We haven't got a strategy yet for dealing with parsing errors but let's press on.
+Ainda não temos a estratégia para lidar com a análise de erros mas vamos continuar.
 
-### Seeking problems
+### Procurando problemas
 
-There is a flaw in our implementation. First of all, let's remind ourselves how `io.Reader` is defined.
+Existe um problema na nossa implementação . Primeiramente, vamos relembrar como `io.Reader` é definida.
 
 ```go
 type Reader interface {
@@ -274,21 +274,21 @@ type Reader interface {
 }
 ```
 
-With our file, you can imagine it reading through byte by byte until the end. What happens if you try and `Read` a second time?
+Com nosso arquivo, você consegue imagina-lo lendo byte por byte até o fim. O que acontece se você tentar e `ler` uma segunda vez?
 
-Add the following to the end of our current test.
+Adicione o seguinte no final do seu teste atual.
 
 ```go
 // read again
-got = store.GetLeague()
-assertLeague(t, got, want)
+recebido = armazenamento.PegaLiga()
+defineLiga(t, recebido, esperado)
 ```
 
-We want this to pass, but if you run the test it doesn't.
+Queremos que passe, mas se você rodar o teste ele não passa.
 
-The problem is our `Reader` has reached the end so there is nothing more to read. We need a way to tell it to go back to the start.
+O problema é nosso `Reader` chegou no final, então não tem mais nada para ser lido. Precisamos de um jeito de avisar para voltar ao inicio.
 
-[ReadSeeker](https://golang.org/pkg/io/#ReadSeeker) is another interface in the standard library that can help.
+[ReadSeeker](https://golang.org/pkg/io/#ReadSeeker) é outra interface na biblioteca padrão que pode ajudar.
 
 ```go
 type ReadSeeker interface {
@@ -297,7 +297,7 @@ type ReadSeeker interface {
 }
 ```
 
-Remember embedding? This is an interface comprised of `Reader` and [`Seeker`](https://golang.org/pkg/io/#Seeker)
+Lembra-se do incorporamento? Esta é uma interface composta de `Reader` e [`Seeker`](https://golang.org/pkg/io/#Seeker)
 
 ```go
 type Seeker interface {
@@ -305,287 +305,286 @@ type Seeker interface {
 }
 ```
 
-This sounds good, can we change `FileSystemPlayerStore` to take this interface instead?
+Parece bom, podemos mudar `SistemaDeArquivoDeArmazenamentoDoJogador` para pegar essa interface no lugar?
 
 ```go
-type FileSystemPlayerStore struct {
-    database io.ReadSeeker
+type SistemaDeArquivoDeArmazenamentoDoJogador struct {
+    bancoDeDados io.ReadSeeker
 }
 
-func (f *FileSystemPlayerStore) GetLeague() []Player {
-    f.database.Seek(0, 0)
-    league, _ := NewLeague(f.database)
-    return league
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() []Jogador {
+    f.bancoDeDados.Seek(0, 0)
+    liga, _ := NovaLiga(f.bancoDeDados)
+    return liga
 }
 ```
 
-Try running the test, it now passes! Happily for us `string.NewReader` that we used in our test also implements `ReadSeeker` so we didn't have to make any other changes.
+Tente rodar o teste,agora passa! Ainda bem que `string.NewReader` que nós usamos em nosso teste também implementa `ReadSeeker` então não precisamos mudar nada.
 
-Next we'll implement `GetPlayerScore`.
+A seguir vamos implementar `PegarPontuacaooDoJogador`.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
-t.Run("get player score", func(t *testing.T) {
-    database := strings.NewReader(`[
-        {"Name": "Cleo", "Wins": 10},
-        {"Name": "Chris", "Wins": 33}]`)
+t.Run("pegar pontuação do jogador", func(t *testing.T) {
+    bancoDeDados := strings.NewReader(`[
+        {"Nome": "Cleo", "Vitorias": 10},
+        {"Nome": "Chris", "Vitorias": 33}]`)
 
-    store := FileSystemPlayerStore{database}
+    armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-    got := store.GetPlayerScore("Chris")
+    recebido := armazenamento.("Chris")
 
-    want := 33
+    esperado := 33
 
-    if got != want {
-        t.Errorf("got %d want %d", got, want)
+    if recebido != esperado {
+        t.Errorf("recebido %d esperado %d", recebido, esperado)
     }
 })
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
-`./FileSystemStore_test.go:38:15: store.GetPlayerScore undefined (type FileSystemPlayerStore has no field or method GetPlayerScore)`
+`./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:38:15: armazenamento. undefined (type SistemaDeArquivoDeArmazenamentoDoJogador has no field or method )`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva código suficiente para fazer o teste rodar e veja o retorno do erro do teste
 
-We need to add the method to our new type to get the test to compile.
+Precisamos adicionar o método para o novo tipo para fazer o teste compilar.
 
 ```go
-func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) (nome string) int {
     return 0
 }
 ```
 
-Now it compiles and the test fails
+Agora compila e o teste falha
 
 ```text
-=== RUN   TestFileSystemStore/get_player_score
-    --- FAIL: TestFileSystemStore//get_player_score (0.00s)
-        FileSystemStore_test.go:43: got 0 want 33
+=== RUN   TestSistemaDeArquivoDeArmazenamentoDoJogador/get_player_score
+    --- FAIL: TestSistemaDeArquivoDeArmazenamentoDoJogador//get_player_score (0.00s)
+        SistemaDeArquivoDeArmazenamentoDoJogador_test.go:43: recebido 0 esperado 33
 ```
 
-## Write enough code to make it pass
+## Escreva código sufience para fazer passar
 
-We can iterate over the league to find the player and return their score
+Podemos iterar sobre a liga para encontrar o jogador e retornar a pontuação dele.
 
 ```go
-func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) (nome string) int {
 
-    var wins int
+    var vitorias int
 
-    for _, player := range f.GetLeague() {
-        if player.Name == name {
-            wins = player.Wins
+    for _, jogador := range f.PegaLiga() {
+        if jogador.Nome == nome {
+            vitorias = jogador.Vitorias
             break
         }
     }
 
-    return wins
+    return vitorias
 }
 ```
 
-## Refactor
+## Refatore
 
-You will have seen dozens of test helper refactorings so I'll leave this to you to make it work
+Você terá visto vários refatoramentos de teste helper, então deixarei este para você fazer funcionar
 
 ```go
-t.Run("/get player score", func(t *testing.T) {
-    database := strings.NewReader(`[
-        {"Name": "Cleo", "Wins": 10},
-        {"Name": "Chris", "Wins": 33}]`)
+t.Run("/pega pontuacao do  jogador", func(t *testing.T) {
+    bancoDeDados := strings.NewReader(`[
+        {"Nome": "Cleo", "Vitorias": 10},
+        {"Nome": "Chris", "Vitorias": 33}]`)
 
-    store := FileSystemPlayerStore{database}
+    armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-    got := store.GetPlayerScore("Chris")
-    want := 33
-    assertScoreEquals(t, got, want)
+    recebido := armazenamento.("Chris")
+    esperado := 33
+    definePontuacaoIgual(t, recebido, esperado)
 })
 ```
 
-Finally, we need to start recording scores with `RecordWin`.
+Finalmente, precisamos começar a salvar pontuações com `SalvaVitoria`.
 
-## Write the test first
+## Escreva o teste primeiro
 
-Our approach is fairly short-sighted for writes. We can't \(easily\) just update one "row" of JSON in a file. We'll need to store the _whole_ new representation of our database on every write.
+Nossa abordagem é até .Não podemos \(facilmente\) apenas atualizar uma "linha" de JSON em um arquivo. Precisaremos armazenar a _inteira_ nova representação de nosso banco de dados em cada escrita.
 
-How do we write? We'd normally use a `Writer` but we already have our `ReadSeeker`. Potentially we could have two dependencies but the standard library already has an interface for us `ReadWriteSeeker` which lets us do all the things we'll need to do with a file.
+Como escrevemos? Normalmente usaríamos um `Writer`mas já temos nosso `ReadSeeker`. Potencialmente, podemos ter duas dependências mas a biblioteca padrão já tem uma interface para nós `ReadWriteSeeker` que permite fazermos tudo que precisamos com um arquivo.
 
-Let's update our type
+Vamos atualizar nosso tipo
 
 ```go
-type FileSystemPlayerStore struct {
-    database io.ReadWriteSeeker
+type SistemaDeArquivoDeArmazenamentoDoJogador struct {
+    bancoDeDados io.ReadWriteSeeker
 }
 ```
 
-See if it compiles
+Veja se compila
 
 ```go
-./FileSystemStore_test.go:15:34: cannot use database (type *strings.Reader) as type io.ReadWriteSeeker in field value:
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:15:34: cannot use bancoDeDados (type *strings.Reader) as type io.ReadWriteSeeker in field value:
     *strings.Reader does not implement io.ReadWriteSeeker (missing Write method)
-./FileSystemStore_test.go:36:34: cannot use database (type *strings.Reader) as type io.ReadWriteSeeker in field value:
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:36:34: cannot use bancoDeDados (type *strings.Reader) as type io.ReadWriteSeeker in field value:
     *strings.Reader does not implement io.ReadWriteSeeker (missing Write method)
 ```
 
-It's not too surprising that `strings.Reader` does not implement `ReadWriteSeeker` so what do we do?
+Não é tão surpreendente que `strings.Reader` não implementa `ReadWriteSeeker`, então o que vamos fazer?
 
-We have two choices
+Temos duas opções
 
-* Create a temporary file for each test. `*os.File` implements `ReadWriteSeeker`. The pro of this is it becomes more of an integration test, we're really reading and writing from the file system so it will give us a very high level of confidence. The cons are we prefer unit tests because they are faster and generally simpler. We will also need to do more work around creating temporary files and then making sure they're removed after the test.
-* We could use a third party library. [Mattetti](https://github.com/mattetti) has written a library [filebuffer](https://github.com/mattetti/filebuffer) which implements the interface we need and doesn't touch the file system.
+-   Criar um arquivo temporário para cada teste. `*os.File` implementa `ReadWriteSeeker`. O pró disso é que isso se torna mais um teste de integração, mas nós realmente estamos lendo e escrevendo de um sistema de arquivos então isso nos dará um alto nível de confiança. Os contras são que preferimos testes unitários porque são mais rápidos e normalmente mais simples. Também precisaremos trabalhar mais criando arquivos temporários e então ter certeza que serão removidos após o teste.
+-   Poderíamos usar uma biblioteca externa. [Mattetti](https://github.com/mattetti) escreveu uma biblioteca [filebuffer](https://github.com/mattetti/filebuffer) que implementa a interface que precisamos e assim não precisariamos modificar o sistema de arquivos.
 
-I don't think there's an especially wrong answer here, but by choosing to use a third party library I would have to explain dependency management! So we will use files instead.
+Não acredito que exista uma resposta especialmente errada aqui, mas ao escolher usar uma biblioteca externa eu teria que explicar o gerenciamento de dependências! Então usaremos os arquivos.
 
-Before adding our test we need to make our other tests compile by replacing the `strings.Reader` with an `os.File`.
+Antes de adicionarmos nosso teste precisamos fazer nossos outros testes compilarem substituindo o `strings.Reader` com um `os.File`.
 
-Let's create a helper function which will create a temporary file with some data inside it
+Vamos criar uma função auxiliar que irá criar um arquivo temporário com alguns dados dentro dele
 
 ```go
-func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+func criaArquivoTemporario(t *testing.T, dadoInicial string) (io.ReadWriteSeeker, func()) {
     t.Helper()
 
-    tmpfile, err := ioutil.TempFile("", "db")
+   arquivotmp, err := ioutil.TempFile("", "db")
 
     if err != nil {
-        t.Fatalf("could not create temp file %v", err)
+        t.Fatalf("não foi possivel escrever o arquivo temporário %v", err)
     }
 
-    tmpfile.Write([]byte(initialData))
+    arquivotmp.Write([]byte(dadoInicial))
 
-    removeFile := func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
+    removeArquivo := func() {
+        arquivotmp.Close()
+        os.Remove(arquivotmp.Name())
     }
 
-    return tmpfile, removeFile
+    return arquivotmp, removeArquivo
 }
 ```
 
-[TempFile](https://golang.org/pkg/io/ioutil/#TempDir) creates a temporary file for us to use. The `"db"` value we've passed in is a prefix put on a random file name it will create. This is to ensure it won't clash with other files by accident.
+[TempFile](https://golang.org/pkg/io/ioutil/#TempDir) cria um arquivo temporário para usarmos. O valor `"db"` que passamos é um prefixo colocado em um arquivo de nome aleatório que vai criar. Isto é para garantir que não vai dar conflito acidental com outros arquivos.
 
-You'll notice we're not only returning our `ReadWriteSeeker` \(the file\) but also a function. We need to make sure that the file is removed once the test is finished. We don't want to leak details of the files into the test as it's prone to error and uninteresting for the reader. By returning a `removeFile` function, we can take care of the details in our helper and all the caller has to do is run `defer cleanDatabase()`.
+Você irá notar que não estamos retornando apenas nosso `ReadWriteSeeker` \(o arquivo\) mas também uma função. Precisamos garantir que o arquivo é removido uma vez que o teste é finalizado. Não queremos que dados sejam vazados dos arquivos no teste como é possível acontecer e desinteressante para o leitor. Ao retornar uma função `removeArquivo` , cuidamos dos detalhes no nosso auxiliar e tudo que a chamada precisa fazer é executar `defer limpaBancoDeDados()`.
 
 ```go
-func TestFileSystemStore(t *testing.T) {
+func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
-    t.Run("league from a reader", func(t *testing.T) {
-        database, cleanDatabase := createTempFile(t, `[
-            {"Name": "Cleo", "Wins": 10},
-            {"Name": "Chris", "Wins": 33}]`)
-        defer cleanDatabase()
+    t.Run("liga de um leitor", func(t *testing.T) {
+        bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
+            {"Nome": "Cleo", "Vitorias": 10},
+            {"Nome": "Chris", "Vitorias": 33}]`)
+        defer limpaBancoDeDados()
 
-        store := FileSystemPlayerStore{database}
+        armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-        got := store.GetLeague()
+        recebido := armazenamento.PegaLiga()
 
-        want := []Player{
+        esperado := []Jogador{
             {"Cleo", 10},
             {"Chris", 33},
         }
 
-        assertLeague(t, got, want)
+        defineLiga(t, recebido, esperado)
 
-        // read again
-        got = store.GetLeague()
-        assertLeague(t, got, want)
+        // ler novamente
+        recebido = armazenamento.PegaLiga()
+        defineLiga(t, recebido, esperado)
     })
 
-    t.Run("get player score", func(t *testing.T) {
-        database, cleanDatabase := createTempFile(t, `[
-            {"Name": "Cleo", "Wins": 10},
-            {"Name": "Chris", "Wins": 33}]`)
-        defer cleanDatabase()
+    t.Run("retorna pontuação do jogador", func(t *testing.T) {
+        bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
+            {"Nome": "Cleo", "Vitorias": 10},
+            {"Nome": "Chris", "Vitorias": 33}]`)
+        defer limpaBancoDeDados()
 
-        store := FileSystemPlayerStore{database}
+        armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-        got := store.GetPlayerScore("Chris")
-        want := 33
-        assertScoreEquals(t, got, want)
+        recebido := armazenamento.("Chris")
+        esperado := 33
+        definePontuacaoIgual(t, recebido, esperado)
     })
 }
 ```
 
-Run the tests and they should be passing! There were a fair amount of changes but now it feels like we have our interface definition complete and it should be very easy to add new tests from now.
+Rode os testes e eles devem estar passando! Teve uma quantidade razoável de mudanças mas agora parece que nossa definição de interface completa e deve ser muito fáci adicionar novos testes de agora em diante.
 
-Let's get the first iteration of recording a win for an existing player
+Vamos pegar a primeira iteração de gravar uma vitória de um jogador existente
 
 ```go
-t.Run("store wins for existing players", func(t *testing.T) {
-    database, cleanDatabase := createTempFile(t, `[
-        {"Name": "Cleo", "Wins": 10},
-        {"Name": "Chris", "Wins": 33}]`)
-    defer cleanDatabase()
+t.Run("armazena vitórias de um jogador existente", func(t *testing.T) {
+    bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
+        {"Nome": "Cleo", "Vitorias": 10},
+        {"Nome": "Chris", "Vitorias": 33}]`)
+    defer limpaBancoDeDados()
 
-    store := FileSystemPlayerStore{database}
+    armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-    store.RecordWin("Chris")
+    armazenamento.SalvaVitoria("Chris")
 
-    got := store.GetPlayerScore("Chris")
-    want := 34
-    assertScoreEquals(t, got, want)
+    recebido := armazenamento.("Chris")
+    esperado := 34
+    definePontuacaoIgual(t, recebido, esperado)
 })
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
-`./FileSystemStore_test.go:67:8: store.RecordWin undefined (type FileSystemPlayerStore has no field or method RecordWin)`
+`./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:67:8: armazenamento.SalvaVitoria undefined (type SistemaDeArquivoDeArmazenamentoDoJogador has no field or method SalvaVitoria)`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva código suficiente para fazer o teste rodar e veja o retorno do erro do teste
 
-Add the new method
+Adicione um novo método
 
 ```go
-func (f *FileSystemPlayerStore) RecordWin(name string) {
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
 
 }
 ```
 
 ```text
-=== RUN   TestFileSystemStore/store_wins_for_existing_players
-    --- FAIL: TestFileSystemStore/store_wins_for_existing_players (0.00s)
-        FileSystemStore_test.go:71: got 33 want 34
+=== RUN   TestSistemaDeArquivoDeArmazenamentoDoJogador/store_wins_for_existing_players
+    --- FAIL: TestSistemaDeArquivoDeArmazenamentoDoJogador/store_wins_for_existing_players (0.00s)
+        SistemaDeArquivoDeArmazenamentoDoJogador_test.go:71: recebido 33 esperado 34
 ```
 
-Our implementation is empty so the old score is getting returned.
+Nossa implementação está vazia então a pontuação anterior está sendo retornada.
 
-## Write enough code to make it pass
+## Escreva código sufience para fazer passar
 
 ```go
-func (f *FileSystemPlayerStore) RecordWin(name string) {
-    league := f.GetLeague()
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
+    liga := f.PegaLiga()
 
-    for i, player := range league {
-        if player.Name == name {
-            league[i].Wins++
+    for i, jogador := range liga {
+        if jogador.Nome == nome {
+            liga[i].Vitorias++
         }
     }
 
-    f.database.Seek(0,0)
-    json.NewEncoder(f.database).Encode(league)
+    f.bancoDeDados.Seek(0,0)
+    json.NewEncoder(f.bancoDeDados).Encode(liga)
 }
 ```
 
-You may be asking yourself why I am doing `league[i].Wins++` rather than `player.Wins++`.
+Você deve está se perguntando por que estou fazendo `liga[i].Vitorias++` invés de `jogador.Vitorias++`.
 
-When you `range` over a slice you are returned the current index of the loop \(in our case `i`\) and a _copy_ of the element at that index. Changing the `Wins` value of a copy won't have any effect on the `league` slice that we iterate on. For that reason, we need to get the reference to the actual value by doing `league[i]` and then changing that value instead.
+Quando você `percorre` sobre um pedaço é retornado o índice atual do laço \(no nosso caso `i`\) e uma _cópia_ do elemento naquele índice. Mudando o valor `Vitorias` não irá afetar no pedaço `liga` que iteramos sobre. Por este motivo, precisamos pegar a referência do valor atual fazendo `liga[i]` e então mudando este valor.
 
-If you run the tests, they should now be passing.
+Se rodar os testes, eles devem estar passando.
 
-## Refactor
+## Refatore
 
-In `GetPlayerScore` and `RecordWin`, we are iterating over `[]Player` to find a player by name.
+Em `PegaPontuacaoDoJogador` e `SalvaVitoria`, estamos iterando sobre `[]Jogador` para encontrar um jogador pelo nome.
 
-We could refactor this common code in the internals of `FileSystemStore` but to me, it feels like this is maybe useful code we can lift into a new type. Working with a "League" so far has always been with `[]Player` but we can create a new type called `League`. This will be easier for other developers to understand and then we can attach useful methods onto that type for us to use.
+Poderíamos refatorar esse código comum nos internos de `SistemaDeArquivoDeArmazenamentoDoJogador` mas para mim, parece que talvez seja um código util então poderíamos colocar em um novo tipo. Trabalhando com uma "Liga" até agora tem sido com `[]Jogador` mas podemos criar um novo tipo chamado `Liga`. Será mais fácil para outros desenvolvedores entenderem e assim podemos anexar métodos utéis dentro desse tipo para usarmos.
 
-Inside `league.go` add the following
+Dentro de `liga.go` adicionamos o seguinte
 
 ```go
-type League []Player
-
-func (l League) Find(name string) *Player {
+type Liga []Jogador
+func (l Liga) Find(nome string) *Jogador {
     for i, p := range l {
-        if p.Name==name {
+        if p.Nome==nome {
             return &l[i]
         }
     }
@@ -593,99 +592,99 @@ func (l League) Find(name string) *Player {
 }
 ```
 
-Now if anyone has a `League` they can easily find a given player.
+Agora se qualquer um tiver uma `Liga` facilmente será encontrado um dado jogador.
 
-Change our `PlayerStore` interface to return `League` rather than `[]Player`. Try and re-run the tests, you'll get a compilation problem because we've changed the interface but it's very easy to fix; just change the return type from `[]Player` to `League`.
+Mude nossa interface `GuardaJogador` para retornar `Liga` invés de `[]Jogador`. Tente e rode novamente os teste, você terá um problema de compilação por termos modificado a interface mas é fácil de resolver; apenas modifique o tipo de retorno de `[]Jogador` to `Liga`.
 
-This lets us simplify our methods in `FileSystemStore`.
+Isso nos permite simplificar os métodos em `SistemaDeArquivoDeArmazenamentoDoJogador`.
 
 ```go
-func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) (nome string) int {
 
-    player := f.GetLeague().Find(name)
+    jogador := f.PegaLiga().Find(nome)
 
-    if player != nil {
-        return player.Wins
+    if  jogador != nil {
+        return  jogador.Vitorias
     }
 
     return 0
 }
 
-func (f *FileSystemPlayerStore) RecordWin(name string) {
-    league := f.GetLeague()
-    player := league.Find(name)
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
+    liga := f.PegaLiga()
+    jogador :=liga.Find(nome)
 
-    if player != nil {
-        player.Wins++
+    if  jogador != nil {
+        jogador.Vitorias++
     }
 
-    f.database.Seek(0, 0)
-    json.NewEncoder(f.database).Encode(league)
+    f.bancoDeDados.Seek(0, 0)
+    json.NewEncoder(f.bancoDeDados).Encode(liga)
 }
 ```
 
-This is looking much better and we can see how we might be able to find other useful functionality around `League` can be refactored.
+Isto parece bem melhor and podemos ver como talvez possamos encontrar como outras funcionalidades úteis em torno de `Liga` podem ser refatoradas.
 
-We now need to handle the scenario of recording wins of new players.
+Agora precisamos tratar o cenário de salvar vitórias de novos jogadores.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
-t.Run("store wins for new players", func(t *testing.T) {
-    database, cleanDatabase := createTempFile(t, `[
-        {"Name": "Cleo", "Wins": 10},
-        {"Name": "Chris", "Wins": 33}]`)
-    defer cleanDatabase()
+t.Run("armazena vitorias de novos jogadores", func(t *testing.T) {
+    bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
+        {"Nome": "Cleo", "Vitorias": 10},
+        {"Nome": "Chris", "Vitorias": 33}]`)
+    defer limpaBancoDeDados()
 
-    store := FileSystemPlayerStore{database}
+    armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-    store.RecordWin("Pepper")
+    armazenamento.SalvaVitoria("Pepper")
 
-    got := store.GetPlayerScore("Pepper")
-    want := 1
-    assertScoreEquals(t, got, want)
+    recebido := armazenamento.("Pepper")
+    esperado := 1
+    definePontuacaoIgual(t, recebido, esperado)
 })
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
-=== RUN   TestFileSystemStore/store_wins_for_new_players#01
-    --- FAIL: TestFileSystemStore/store_wins_for_new_players#01 (0.00s)
-        FileSystemStore_test.go:86: got 0 want 1
+=== RUN   TestSistemaDeArquivoDeArmazenamentoDoJogador/store_wins_for_new_players#01
+    --- FAIL: TestSistemaDeArquivoDeArmazenamentoDoJogador/store_wins_for_new_players#01 (0.00s)
+        SistemaDeArquivoDeArmazenamentoDoJogador_test.go:86: recebido 0 esperado 1
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer passar
 
-We just need to handle the scenario where `Find` returns `nil` because it couldn't find the player.
+Apenas precisamos tratar o caso onde `Find` returna `nil` por não ter conseguido encontrar o jogador.
 
 ```go
-func (f *FileSystemPlayerStore) RecordWin(name string) {
-    league := f.GetLeague()
-    player := league.Find(name)
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
+    liga := f.PegaLiga()
+    jogador := liga.Find(nome)
 
-    if player != nil {
-        player.Wins++
+    if jogador != nil {
+        jogador.Wins++
     } else {
-        league = append(league, Player{name, 1})
+        liga = append(liga, Jogador{nome, 1})
     }
 
-    f.database.Seek(0, 0)
-    json.NewEncoder(f.database).Encode(league)
+    f.bancoDeDados.Seek(0, 0)
+    json.NewEncoder(f.bancoDeDados).Encode(liga)
 }
 ```
 
-The happy path is looking ok so we can now try using our new `Store` in the integration test. This will give us more confidence that the software works and then we can delete the redundant `InMemoryPlayerStore`.
+O caminho feliz parece bom então agora vamos tentar usar nossa nova `armazenamento` no teste de integração. Isto nos dará mais confiança que o software funciona e então podemos deletar o redundante `NovoArmazenamentoDeJogadorNaMemoria`.
 
-In `TestRecordingWinsAndRetrievingThem` replace the old store.
+Em `TestRecordingWinsAndRetrievingThem` substitui a velha armazenamento.
 
 ```go
-database, cleanDatabase := createTempFile(t, "")
-defer cleanDatabase()
-store := &FileSystemPlayerStore{database}
+bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, "")
+defer limpaBancoDeDados()
+armazenamento := &SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 ```
 
-If you run the test it should pass and now we can delete `InMemoryPlayerStore`. `main.go` will now have compilation problems which will motivate us to now use our new store in the "real" code.
+Se você rodar o teste ele deve passar e agora podemos deletar `NovoArmazenamentoDeJogadorNaMemoria`. `main.go` terá problemas de compilação que nos motivará para agora usar nossa nova armazenamento no código "real".
 
 ```go
 package main
@@ -702,239 +701,239 @@ func main() {
     db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
 
     if err != nil {
-        log.Fatalf("problem opening %s %v", dbFileName, err)
+        log.Fatalf("problema abrindo %s %v", dbFileName, err)
     }
 
-    store := &FileSystemPlayerStore{db}
-    server := NewPlayerServer(store)
+    armazenamento := &SistemaDeArquivoDeArmazenamentoDoJogador{db}
+    server := NovoServidorDoJogador(armazenamento)
 
     if err := http.ListenAndServe(":5000", server); err != nil {
-        log.Fatalf("could not listen on port 5000 %v", err)
+        log.Fatalf("não foi possivel escutar na porta 5000 %v", err)
     }
 }
 ```
 
-* We create a file for our database.
-* The 2nd argument to `os.OpenFile` lets you define the permissions for opening the file, in our case `O_RDWR` means we want to read and write _and_ `os.O_CREATE` means create the file if it doesn't exist.
-* The 3rd argument means sets permissions for the file, in our case, all users can read and write the file. [\(See superuser.com for a more detailed explanation\)](https://superuser.com/questions/295591/what-is-the-meaning-of-chmod-666).
+-   Nós criamos um arquivo para nosso banco de dados.
+-   O 2º argumento para `os.OpenFile` permite definir as permissões para abrir um arquivo, no nosso caso `O_RDWR` significa que queremos ler e escrever _e_ `os.O_CREATE` significa criar um arquivo se ele não existe.
+-   O 3º argumento significa definir as permissões para o arquivo, no nosso caso, todos os usuários podem ler e escrever o arquivo. [\(Veja superuser.com para uma explicação mais detalhada\)](https://superuser.com/questions/295591/what-is-the-meaning-of-chmod-666).
 
-Running the program now persists the data in a file in between restarts, hooray!
+Rodando o programa agora os dados permanecem em um arquivo entre reinicializações, uhu!
 
-## More refactoring and performance concerns
+## Mais refatoramento e preocupações com performance
 
-Every time someone calls `GetLeague()` or `GetPlayerScore()` we are reading the file from the start, and parsing it into JSON. We should not have to do that because `FileSystemStore` is entirely responsible for the state of the league; we just want to use the file at the start to get the current state and updating it when data changes.
+Toda vez que alguém chama `PegaLiga()` ou `()` estamos lendo o arquivo do ínicio, e transformando ele em JSON. Não deveríamos ter que fazer isso porque `SistemaDeArquivoDeArmazenamentoDoJogador` é inteiramente responsável pelo estado da liga; apenas queremos usar o arquivo para pegar o estado atual e atualiza-lo quando os dados mudarem.
 
-We can create a constructor which can do some of this initialisation for us and store the league as a value in our `FileSystemStore` to be used on the reads instead.
+Podemos criar um construtor que pode fazer parte dessa inicialização para nós e armazena a liga como um valor em nosso `SistemaDeArquivoDeArmazenamentoDoJogador` para ser usado nas leitura então.
 
 ```go
-type FileSystemPlayerStore struct {
-    database io.ReadWriteSeeker
-    league League
+type SistemaDeArquivoDeArmazenamentoDoJogador struct {
+    bancoDeDados io.ReadWriteSeeker
+    liga Liga
 }
 
-func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStore {
-    database.Seek(0, 0)
-    league, _ := NewLeague(database)
-    return &FileSystemPlayerStore{
-        database:database,
-        league:league,
+func NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados io.ReadWriteSeeker) *SistemaDeArquivoDeArmazenamentoDoJogador {
+    bancoDeDados.Seek(0, 0)
+    liga, _ := NovaLiga(bancoDeDados)
+    return &SistemaDeArquivoDeArmazenamentoDoJogador{
+        bancoDeDados:bancoDeDados,
+        liga:liga,
     }
 }
 ```
 
-This way we only have to read from disk once. We can now replace all of our previous calls to getting the league from disk and just use `f.league` instead.
+Desta maneira precisamos ler do disco apenas uma vez . Podemos agora substituir todas as nossas chamadas anteriores para pegar a liga do disco e apenas usar `f.liga` no lugar.
 
 ```go
-func (f *FileSystemPlayerStore) GetLeague() League {
-    return f.league
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() Liga {
+    return f.liga
 }
 
-func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) (nome string) int {
 
-    player := f.league.Find(name)
+    jogador := f.liga.Find(nome)
 
-    if player != nil {
-        return player.Wins
+    if jogador != nil {
+        return jogador.Vitorias
     }
 
     return 0
 }
 
-func (f *FileSystemPlayerStore) RecordWin(name string) {
-    player := f.league.Find(name)
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
+    jogador := f.liga.Find(nome)
 
-    if player != nil {
-        player.Wins++
+    if jogador != nil {
+        jogador.Vitorias++
     } else {
-        f.league = append(f.league, Player{name, 1})
+        f.liga = append(f.liga, Jogador{nome, 1})
     }
 
-    f.database.Seek(0, 0)
-    json.NewEncoder(f.database).Encode(f.league)
+    f.bancoDeDados.Seek(0, 0)
+    json.NewEncoder(f.bancoDeDados).Encode(f.liga)
 }
 ```
 
-If you try and run the tests it will now complain about initialising `FileSystemPlayerStore` so just fix them by calling our new constructor.
+Se você tentar e rodar os testes eles agora vão reclamar sobre inicializar `SistemaDeArquivoDeArmazenamentoDoJogador` então fixe-o chamando nosso construtor.
 
-### Another problem
+### Outro problema
 
-There is some more naivety in the way we are dealing with files which _could_ create a very nasty bug down the line.
+Existe mais alguma ingenuidade na maneira como estamos lidando com arquivos que _poderiamos_ criar um erro bem bobo futuramente.
 
-When we `RecordWin` we `Seek` back to the start of the file and then write the new data but what if the new data was smaller than what was there before?
+Quando nós chamamos `SalvaVitoria` nós `procuramos` no ínicio do arquivo e então escrevemos o novo dado mas e se o novo dado for menor que o que estava lá antes?
 
-In our current case, this is impossible. We never edit or delete scores so the data can only get bigger but it would be irresponsible for us to leave the code like this, it's not unthinkable that a delete scenario could come up.
+Na nossa situação atual, isso é impossível. Nunca editamos ou apagamos pontuações, então os dados apenas podem aumentar, mas seria irresponsabilidade nossa deixar o código desse jeito, não é inimaginável que um cenário de apagamento poderia aparecer.
 
-How will we test for this though? What we need to do is first refactor our code so we separate out the concern of the _kind of data we write, from the writing_. We can then test that separately to check it works how we hope.
+Como iremos testar isso então? O que precisamos fazer primeiro é refatorar nosso código, então separamos nossa preocupação do _tipo de dados que escrevemos, da escrita_. Podemos então testar isso separadamente para verificar se funciona como esperamos.
 
-We'll create a new type to encapsulate our "when we write we go from the beginning" functionality. I'm going to call it `Tape`. Create a new file with the following
+Agora iremos criar um novo tipo para encapsular nossa funcionalidade "quando escrevemos, vamos para o começo". Vou chama-la de `Fita`. Criamos um novo arquivo com o seguinte
 
 ```go
 package main
 
 import "io"
 
-type tape struct {
-    file io.ReadWriteSeeker
+type fita struct {
+    arquivo io.ReadWriteSeeker
 }
 
-func (t *tape) Write(p []byte) (n int, err error) {
-    t.file.Seek(0, 0)
-    return t.file.Write(p)
-}
-```
-
-Notice that we're only implementing `Write` now, as it encapsulates the `Seek` part. This means our `FileSystemStore` can just have a reference to a `Writer` instead.
-
-```go
-type FileSystemPlayerStore struct {
-    database io.Writer
-    league   League
+func (t *fita) Write(p []byte) (n int, err error) {
+    t.arquivo.Seek(0, 0)
+    return t.arquivo.Write(p)
 }
 ```
 
-Update the constructor to use `Tape`
+Note que apenas implementamos `Write` agora, já que encapsula a parte de `Procura` . Isso que dizer que `SistemaDeArquivoDeArmazenamentoDoJogador` pode ter uma referência a `Writer` invés disso.
 
 ```go
-func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStore {
-    database.Seek(0, 0)
-    league, _ := NewLeague(database)
+type SistemaDeArquivoDeArmazenamentoDoJogador struct {
+    bancoDeDados io.Writer
+    liga   Liga
+}
+```
 
-    return &FileSystemPlayerStore{
-        database: &tape{database},
-        league:   league,
+Atualize o construtor para usar `fita`
+
+```go
+func NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados io.ReadWriteSeeker) *SistemaDeArquivoDeArmazenamentoDoJogador {
+    bancoDeDados.Seek(0, 0)
+    liga, _ := NovaLiga(bancoDeDados)
+
+    return &SistemaDeArquivoDeArmazenamentoDoJogador{
+        bancoDeDados: &fita{bancoDeDados},
+        liga:   liga,
     }
 }
 ```
 
-Finally, we can get the amazing payoff we wanted by removing the `Seek` call from `RecordWin`. Yes, it doesn't feel much, but at least it means if we do any other kind of writes we can rely on our `Write` to behave how we need it to. Plus it will now let us test the potentially problematic code separately and fix it.
+Finalmente, podemos ter o incrível beneficio que queríamos removendo `Procura` de `SalvaVitoria`. Sim, não parece muito, mas pelo menos isso significa que, se fizermos qualquer outro tipo de escritas, podemos confiar no nosso `Write` para se comportar como precisamos. Além disso, agora podemos testar o potencial código problemático separadamente e corrigi-lo.
 
-Let's write the test where we want to update the entire contents of a file with something that is smaller than the original contents. In `tape_test.go`:
+Agora vamos escrever o teste onde atualizamos todo o conteúdo de um arquivo com algo menor que o conteúdo original . Em `fita_test.go`:
 
-## Write the test first
+## Escreva o teste primeiro
 
-We'll just create a file, try and write to it using our tape, read it all again and see what's in the file
+Vamos apenas criar um arquivo, tentar e escrever nele usando nossa fita, ler todo novamente e visualizar o que está no arquivo
 
 ```go
-func TestTape_Write(t *testing.T) {
-    file, clean := createTempFile(t, "12345")
-    defer clean()
+func TestaFita_Escrita(t *testing.T) {
+    arquivo, limpa := criaArquivoTemporario(t, "12345")
+    defer limpa()
 
-    tape := &tape{file}
+    fita := &fita{arquivo}
 
-    tape.Write([]byte("abc"))
+    fita.Write([]byte("abc"))
 
-    file.Seek(0, 0)
-    newFileContents, _ := ioutil.ReadAll(file)
+    arquivo.Seek(0, 0)
+    novoConteudoDoArquivo, _ := ioutil.ReadAll(arquivo)
 
-    got := string(newFileContents)
-    want := "abc"
+    recebido := string(novoConteudoDoArquivo)
+    esperado := "abc"
 
-    if got != want {
-        t.Errorf("got '%s' want '%s'", got, want)
+    if recebido != esperado {
+        t.Errorf("recebido '%s' esperado '%s'", recebido, esperado)
     }
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
-=== RUN   TestTape_Write
---- FAIL: TestTape_Write (0.00s)
-    tape_test.go:23: got 'abc45' want 'abc'
+=== RUN   TestaFita_Escrita
+--- FAIL: TestaFita_Escrita (0.00s)
+    fita_test.go:23: recebido 'abc45' esperado 'abc'
 ```
 
-As we thought! It simply writes the data we want, leaving over the rest.
+Como pensamos! Ele apenas escreve os dados que queremos, deixando todo o resto.
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer passar
 
-`os.File` has a truncate function that will let us effectively empty the file. We should be able to just call this to get what we want.
+`os.File` tem uma função truncada que vai permitir que o arquivo seja esvaziado eficientemente. Devemos ser capazes de apenas chama-la para conseguir o que queremos.
 
-Change `tape` to the following
+Mude `fita` para o seguinte
 
 ```go
-type tape struct {
+type fita struct {
     file *os.File
 }
 
-func (t *tape) Write(p []byte) (n int, err error) {
+func (t *fita) Write(p []byte) (n int, err error) {
     t.file.Truncate(0)
     t.file.Seek(0, 0)
     return t.file.Write(p)
 }
 ```
 
-The compiler will fail in a number of places where we are expecting an `io.ReadWriteSeeker` but we are sending in `*os.File`. You should be able to fix these problems yourself by now but if you get stuck just check the source code.
+O compilador irá falhar em alguns lugares quando esperamos um `io.ReadWriteSeeker` mas estamos mandando um `*os.File`. Você deve ser capaz de corrigir esses problemas por conta própria, mas se ficar preso basta checar o código fonte.
 
-Once you get it refactoring our `TestTape_Write` test should be passing!
+Uma vez que você tenha refatorado nosso teste `TestaFita_Escrita` deve estar passando!
 
-### One other small refactor
+### Uma outra pequena refatoração
 
-In `RecordWin` we have the line `json.NewEncoder(f.database).Encode(f.league)`.
+Em `SalvaVitoria` temos uma linha`json.NewEncoder(f.bancoDeDados).Encode(f.league)`.
 
-We don't need to create a new encoder every time we write, we can initialise one in our constructor and use that instead.
+Não precisamos criar um novo codificador toda vez que escrevemos, podemos inicializar um em nosso construtor e usa-lo.
 
-Store a reference to an `Encoder` in our type.
+Armazena uma referência para um `Encoder` para nosso tipo.
 
 ```go
-type FileSystemPlayerStore struct {
-    database *json.Encoder
-    league   League
+type SistemaDeArquivoDeArmazenamentoDoJogador struct {
+    bancoDeDados *json.Encoder
+    liga   Liga
 }
 ```
 
-Initialise it in the constructor
+Inicialize no construtor
 
 ```go
-func NewFileSystemPlayerStore(file *os.File) *FileSystemPlayerStore {
-    file.Seek(0, 0)
-    league, _ := NewLeague(file)
+func NovoSistemaDeArquivoDeArmazenamentoDoJogador(arquivo *os.File) *SistemaDeArquivoDeArmazenamentoDoJogador {
+    arquivo.Seek(0, 0)
+    liga, _ := NovaLiga(arquivo)
 
-    return &FileSystemPlayerStore{
-        database: json.NewEncoder(&tape{file}),
-        league:   league,
+    return &SistemaDeArquivoDeArmazenamentoDoJogador{
+        bancoDeDados: json.NewEncoder(&fita{arquivo}),
+        liga:   liga,
     }
 }
 ```
 
-Use it in `RecordWin`.
+Use em `SalvaVitoria`.
 
-## Didn't we just break some rules there? Testing private things? No interfaces?
+## Não quebramos algumas regras ali? Testando coisas privadas? Sem interfaces?
 
-### On testing private types
+### Testando tipos privados
 
-It's true that _in general_ you should favour not testing private things as that can sometimes lead to your tests being too tightly coupled to the implementation; which can hinder refactoring in future.
+É verdade que _no geral_ deve ser favorecido não testar coisas privadas, uma vez que isso, as vezes, leva a testar coisas bastante acopladas para a implementação; que pode impedir refatoramento no futuro.
 
-However, we must not forget that tests should give us _confidence_.
+Entretanto,não devemos esquecer que testes nos dá _confiança_.
 
-We were not confident that our implementation would work if we added any kind of edit or delete functionality. We did not want to leave the code like that, especially if this was being worked on by more than one person who may not be aware of the shortcomings of our initial approach.
+Não estamos confiantes que nossa implementação funcionaria se tivéssemos adicionado algum tipo de funcionalidade para editar ou deletar. Não queremos deixar o código assim, especialmente se isso foi trabalhado por mais de uma pessoa que talvez não estivesse ciente dos defeitos da nossa abordagem.
 
-Finally, it's just one test! If we decide to change the way it works it won't be a disaster to just delete the test but we have at the very least captured the requirement for future maintainers.
+Finalmente, é apenas um teste! Se decidirmos mudar a maneira como funciona não será um desastre deletar o teste, mas teremos que ter pego o requisito para futuro mantenedores.
 
 ### Interfaces
 
-We started off the code by using `io.Reader` as that was the easiest path for us to unit test our new `PlayerStore`. As we developed the code we moved on to `io.ReadWriter` and then `io.ReadWriteSeeker`. We then found out there was nothing in the standard library that actually implemented that apart from `*os.File`. We could've taken the decision to write our own or use an open source one but it felt pragmatic just to make temporary files for the tests.
+Começamos o código usando `io.Reader` como o caminho mais fácil para testar de forma unitária nosso novo `GuardaJogador`. A medida que desenvolvemos nosso código, movemos para `io.ReadWriter` e então para `io.ReadWriteSeeker`. Descobrimos então que não tinha nada na biblioteca padrão que implementasse isso além de `*os.File`. Poderiamos ter decidido escrever o nosso ou usar um de código aberto, mas isso pareceu pragmático apenas para fazer arquivos temporários para os testes.
 
-Finally, we needed `Truncate` which is also on `*os.File`. It would've been an option to create our own interface capturing these requirements.
+Finalmente, precisamos de `Truncate` que também está no `*os.File`. Isso seria uma opção para criar nossa própria interface pegando esses requisitos.
 
 ```go
 type ReadWriteSeekTruncate interface {
@@ -943,39 +942,39 @@ type ReadWriteSeekTruncate interface {
 }
 ```
 
-But what is this really giving us? Bear in mind we are _not mocking_ and it is unrealistic for a **file system** store to take any type other than an `*os.File` so we don't need the polymorphism that interfaces give us.
+Mas o que isso está realmente nos dando? Lembre-se que _não estamos mockando_ e isso é irrealista para um armazenamento de **sistema de arquivos** receber outro tipo além que um `*os.File` então não precisamos do polimorfismo que interface nos dá.
 
-Don't be afraid to chop and change types and experiment like we have here. The great thing about using a statically typed language is the compiler will help you with every change.
+Não tenha medo de cortar e mudar tipos e experimentar como temos aqui. O bom de usar uma linguagem tipada estaticamente é o compilador que ajudará você com toda mudança.
 
-## Error handling
+## Tratamento de erros
 
-Before we start working on sorting we should make sure we're happy with our current code and remove any technical debt we may have. It's an important principle to get to working software as quickly as possible \(stay out of the red state\) but that doesn't mean we should ignore error cases!
+Antes de começarmos no ordenamento, devemos ter certeza que estamos contentes com nosso código atual e remover qualquer débito técnico que ainda resta. É um principio importante para trabalhar com software o mais rápido possível \(mantenha-se fora do estado vermelho\) mas isso não quer dizer que devemos ignorar os casos de erro!
 
-If we go back to `FileSystemStore.go` we have `league, _ := NewLeague(f.database)` in our constructor.
+Se voltarmos para `SistemaDeArquivoDeArmazenamentoDoJogador.go` temos `liga, _ := NovaLiga(f.bancoDeDados)` no nosso construtor.
 
-`NewLeague` can return an error if it is unable to parse the league from the `io.Reader` that we provide.
+`NovaLiga`pode retornar um erro se é instável passar a liga do `io.Reader` que fornecemos.
 
-It was pragmatic to ignore that at the time as we already had failing tests. If we had tried to tackle it at the same time we would be juggling two things at once.
+Era pragmático ignorar isso naquela hora como já tinhamos testes falhando. Se tivemos tentado lidar com isso ao mesmo tempo estamos lidando com duas coisas de uma vez.
 
-Let's make it so if our constructor is capable of returning an error.
+Vamos fazer com que nosso construtor seja capaz de retornar um erro.
 
 ```go
-func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
-    file.Seek(0, 0)
-    league, err := NewLeague(file)
+func NovoSistemaDeArquivoDeArmazenamentoDoJogador(arquivo *os.File) (*SistemaDeArquivoDeArmazenamentoDoJogador, error) {
+    arquivo.Seek(0, 0)
+    liga, err := NovaLiga(arquivo)
 
     if err != nil {
-        return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+        return nil, fmt.Errorf("problema carregando o armazenamento do jogador  de arquivo %s, %v", arquivo.Nome(), err)
     }
 
-    return &FileSystemPlayerStore{
-        database: json.NewEncoder(&tape{file}),
-        league:   league,
+    return &SistemaDeArquivoDeArmazenamentoDoJogador{
+        bancoDeDados: json.NewEncoder(&fita{arquivo}),
+        liga:   liga,
     }, nil
 }
 ```
 
-Remember it is very important to give helpful error messages \(just like your tests\). People jokingly on the internet say most Go code is
+Lembre-se que é importante retornar mensagens de erro úteis \(assim como nossos testes\). As pessoas na internet dizem que a maioria dos códigos em Go é
 
 ```go
 if err != nil {
@@ -983,94 +982,94 @@ if err != nil {
 }
 ```
 
-**That is 100% not idiomatic.** Adding contextual information \(i.e what you were doing to cause the error\) to your error messages makes operating your software far easier.
+**Isso é 100% não idiomático.** Adicionando informação contextual \(i.e o que você estava fazendo que causou o erro\\) para suas mensagens de erro facilita manipular o software.
 
-If you try and compile you'll get some errors.
+Se você tentar e compilar, vai ver alguns erros.
 
 ```text
-./main.go:18:35: multiple-value NewFileSystemPlayerStore() in single-value context
-./FileSystemStore_test.go:35:36: multiple-value NewFileSystemPlayerStore() in single-value context
-./FileSystemStore_test.go:57:36: multiple-value NewFileSystemPlayerStore() in single-value context
-./FileSystemStore_test.go:70:36: multiple-value NewFileSystemPlayerStore() in single-value context
-./FileSystemStore_test.go:85:36: multiple-value NewFileSystemPlayerStore() in single-value context
-./server_integration_test.go:12:35: multiple-value NewFileSystemPlayerStore() in single-value context
+./main.go:18:35: multiple-value NovoSistemaDeArquivoDeArmazenamentoDoJogador() in single-value context
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:35:36: multiple-value NovoSistemaDeArquivoDeArmazenamentoDoJogador() in single-value context
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:57:36: multiple-value NovoSistemaDeArquivoDeArmazenamentoDoJogador() in single-value context
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:70:36: multiple-value NovoSistemaDeArquivoDeArmazenamentoDoJogador() in single-value context
+./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:85:36: multiple-value NovoSistemaDeArquivoDeArmazenamentoDoJogador() in single-value context
+./server_integration_test.go:12:35: multiple-value NovoSistemaDeArquivoDeArmazenamentoDoJogador() in single-value context
 ```
 
-In main we'll want to exit the program, printing the error.
+Em main vamos querer sair do programa, imprimindo o erro.
 
 ```go
-store, err := NewFileSystemPlayerStore(db)
+armazenamento, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(db)
 
 if err != nil {
-    log.Fatalf("problem creating file system player store, %v ", err)
+    log.Fatalf("problema criando o sistema de arquivo do armazenamento do jogador, %v ", err)
 }
 ```
 
-In the tests we should assert there is no error. We can make a helper to help with this.
+Nos nossos testes podemos garantir que não exista erro . Podemos fazer uma função auxiliar para ajudar com isto.
 
 ```go
-func assertNoError(t *testing.T, err error) {
+func defineSemErro(t *testing.T, err error) {
     t.Helper()
     if err != nil {
-        t.Fatalf("didnt expect an error but got one, %v", err)
+        t.Fatalf("não esperava um erro mas obteve um, %v", err)
     }
 }
 ```
 
-Work through the other compilation problems using this helper. Finally, you should have a failing test
+Trabalhe nos outros problemas de compilação usando essa auxiliar. Finalmente, você deve ter um teste falhando
 
 ```text
 === RUN   TestRecordingWinsAndRetrievingThem
 --- FAIL: TestRecordingWinsAndRetrievingThem (0.00s)
-    server_integration_test.go:14: didnt expect an error but got one, problem loading player store from file /var/folders/nj/r_ccbj5d7flds0sf63yy4vb80000gn/T/db841037437, problem parsing league, EOF
+    server_integration_test.go:14: não esperava um erro mas obteve um, problema carregando o armazenamento do jogador  de arquivo /var/folders/nj/r_ccbj5d7flds0sf63yy4vb80000gn/T/db841037437, problem parsing league, EOF
 ```
 
-We cannot parse the league because the file is empty. We weren't getting errors before because we always just ignored them.
+Não podemos analisar a liga porque o arquivo está vazio.Não estávamos obtendo erros antes porque sempre os ignoramos.
 
-Let's fix our big integration test by putting some valid JSON in it and then we can write a specific test for this scenario.
+Vamos corrigir nosso grande teste de integração colocando algum JSON válido nele e então podemos escrever um teste específico para este cenário.
 
 ```go
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-    database, cleanDatabase := createTempFile(t, `[]`)
+    bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[]`)
     //etc...
 ```
 
-Now all the tests are passing we need to handle the scenario where the file is empty.
+Agora todos os testes estão passando, precisamos então lidar com o cenário onde o arquivo está vazio.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
-t.Run("works with an empty file", func(t *testing.T) {
-    database, cleanDatabase := createTempFile(t, "")
-    defer cleanDatabase()
+t.Run("funciona com um arquivo vazio", func(t *testing.T) {
+    bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, "")
+    defer limpaBancoDeDados()
 
-    _, err := NewFileSystemPlayerStore(database)
+    _, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
-    assertNoError(t, err)
+    defineSemErro(t, err)
 })
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
-=== RUN   TestFileSystemStore/works_with_an_empty_file
-    --- FAIL: TestFileSystemStore/works_with_an_empty_file (0.00s)
-        FileSystemStore_test.go:108: didnt expect an error but got one, problem loading player store from file /var/folders/nj/r_ccbj5d7flds0sf63yy4vb80000gn/T/db019548018, problem parsing league, EOF
+=== RUN   TestSistemaDeArquivoDeArmazenamentoDoJogador/works_with_an_empty_file
+    --- FAIL: TestSistemaDeArquivoDeArmazenamentoDoJogador/works_with_an_empty_file (0.00s)
+        SistemaDeArquivoDeArmazenamentoDoJogador_test.go:108: não esperava um erro mas obteve um, problema carregando o armazenamento do jogador  de arquivo /var/folders/nj/r_ccbj5d7flds0sf63yy4vb80000gn/T/db019548018, problem parsing league, EOF
 ```
 
-## Write enough code to make it pass
+## Escreva código sufience para fazer passar
 
-Change our constructor to the following
+Mude nosso construtor para o seguinte
 
 ```go
-func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
+func NovoSistemaDeArquivoDeArmazenamentoDoJogador(arquivo *os.File) (*SistemaDeArquivoDeArmazenamentoDoJogador, error) {
 
-    file.Seek(0, 0)
+    arquivo.Seek(0, 0)
 
-    info, err := file.Stat()
+    info, err := arquivo.Stat()
 
     if err != nil {
-        return nil, fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+        return nil, fmt.Errorf("problema ao usar o arquivo  %s, %v", arquivo.Nome(), err)
     }
 
     if info.Size() == 0 {
@@ -1078,38 +1077,38 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
         file.Seek(0, 0)
     }
 
-    league, err := NewLeague(file)
+    liga, err := NovaLiga(file)
 
     if err != nil {
-        return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+        return nil, fmt.Errorf("problema carregando armazenamento de jogador do aquivo %s, %v", arquivo.Nome(), err)
     }
 
-    return &FileSystemPlayerStore{
-        database: json.NewEncoder(&tape{file}),
-        league:   league,
+    return &SistemaDeArquivoDeArmazenamentoDoJogador{
+        bancoDeDados: json.NewEncoder(&fita{file}),
+        liga:   liga,
     }, nil
 }
 ```
 
-`file.Stat` returns stats on our file. This lets us check the size of the file, if it's empty we `Write` an empty JSON array and `Seek` back to the start ready for the rest of the code.
+`Arquivo.Stat` retorna estatísticas do nosso arquivo. Isto nos permite checar o tamanho do arquivo, se está vazio podemos `Escrever` um array JSON vazio e `Busca` de volta para o ínicio, pronto para o resto do arquivo.
 
-## Refactor
+## Refatore
 
-Our constructor is a bit messy now, we can extract the initialise code into a function
+Nosso construtor está um pouco bagunçado, podemos extrair o código de inicialização em uma função
 
 ```go
-func initialisePlayerDBFile(file *os.File) error {
-    file.Seek(0, 0)
+func iniciaArquivoBDDeJogador(arquivo *os.File) error {
+    arquivo.Seek(0, 0)
 
-    info, err := file.Stat()
+    info, err := arquivo.Stat()
 
     if err != nil {
-        return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+        return fmt.Errorf("problema ao usar arquivo %s, %v", file.Name(), err)
     }
 
     if info.Size()==0 {
-        file.Write([]byte("[]"))
-        file.Seek(0, 0)
+        arquivo.Write([]byte("[]"))
+        arquivo.Seek(0, 0)
     }
 
     return nil
@@ -1117,109 +1116,108 @@ func initialisePlayerDBFile(file *os.File) error {
 ```
 
 ```go
-func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
+func NovoSistemaDeArquivoDeArmazenamentoDoJogador(arquivo *os.File) (*SistemaDeArquivoDeArmazenamentoDoJogador, error) {
 
-    err := initialisePlayerDBFile(file)
-
-    if err != nil {
-        return nil, fmt.Errorf("problem initialising player db file, %v", err)
-    }
-
-    league, err := NewLeague(file)
+    err := iniciaArquivoBDDeJogador(file)
 
     if err != nil {
-        return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+        return nil, fmt.Errorf("problema inicializando arquivo do jogador, %v", err)
     }
 
-    return &FileSystemPlayerStore{
-        database: json.NewEncoder(&tape{file}),
-        league:   league,
+    liga, err := Nova(liga)
+
+    if err != nil {
+        return nil, fmt.Errorf("problema carregando armazenamento de jogador do arquivo %s, %v", arquivo.Nome(), err)
+    }
+
+    return &SistemaDeArquivoDeArmazenamentoDoJogador{
+        bancoDeDados: json.NewEncoder(&fita{file}),
+        liga:   liga,
     }, nil
 }
 ```
 
-## Sorting
+## Ordenação
 
-Our product owner wants `/league` to return the players sorted by their scores.
+Nossa dona do produto quer que `/liga` retorne os jogadores ordenados pela pontuação.
 
-The main decision to make here is where in the software should this happen. If we were using a "real" database we would use things like `ORDER BY` so the sorting is super fast so for that reason it feels like implementations of `PlayerStore` should be responsible.
+A principal decisão a ser feita é onde isso deve acontecer no software. Se estamos usando um "verdadeiro" banco de dados usariamos coisas como `ORDER BY` , então o ordenamento é super rápido por esse motivo parece que a implementção de `GuardaJogador` deve ser responsável.
 
-## Write the test first
+## Escreva o teste primeiro
 
-We can update the assertion on our first test in `TestFileSystemStore`
+Podemos atualizar a inserção no nosso primeiro teste em `TestaArmazenamentoDeSistemaDeArquivo`
 
 ```go
-t.Run("league sorted", func(t *testing.T) {
-    database, cleanDatabase := createTempFile(t, `[
-        {"Name": "Cleo", "Wins": 10},
-        {"Name": "Chris", "Wins": 33}]`)
-    defer cleanDatabase()
+t.Run("liga ordernada", func(t *testing.T) {
+    bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
+        {"Nome": "Cleo", "Vitorias": 10},
+        {"Nome": "Chris", "Vitorias": 33}]`)
+    defer limpaBancoDeDados()
 
-    store := FileSystemPlayerStore{database}
+    armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-    got := store.GetLeague()
+   recebido := armazenamento.PegaLiga()
 
-    want := []Player{
+   esperado:= []Jogador{
         {"Chris", 33},
         {"Cleo", 10},
     }
 
-    assertLeague(t, got, want)
+    defineLiga(t, recebido, esperado)
 
     // read again
-    got = store.GetLeague()
-    assertLeague(t, got, want)
+    recebido = armazenamento.PegaLiga()
+    defineLiga(t, recebido, esperado)
 })
 ```
 
-The order of the JSON coming in is in the wrong order and our `want` will check that it is returned to the caller in the correct order.
+A ordem que está sendo recebida do JSON está errada e nosso `esperado` vai checar que é retornado para o chamador na ordem correta.
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
-=== RUN   TestFileSystemStore/league_from_a_reader,_sorted
-    --- FAIL: TestFileSystemStore/league_from_a_reader,_sorted (0.00s)
-        FileSystemStore_test.go:46: got [{Cleo 10} {Chris 33}] want [{Chris 33} {Cleo 10}]
-        FileSystemStore_test.go:51: got [{Cleo 10} {Chris 33}] want [{Chris 33} {Cleo 10}]
+=== RUN   TestSistemaDeArquivoDeArmazenamentoDoJogador/league_from_a_reader,_sorted
+    --- FAIL: TestSistemaDeArquivoDeArmazenamentoDoJogador/league_from_a_reader,_sorted (0.00s)
+        SistemaDeArquivoDeArmazenamentoDoJogador_test.go:46: recebido [{Cleo 10} {Chris 33}] esperado [{Chris 33} {Cleo 10}]
+        SistemaDeArquivoDeArmazenamentoDoJogador_test.go:51: recebido [{Cleo 10} {Chris 33}] esperado [{Chris 33} {Cleo 10}]
 ```
 
-## Write enough code to make it pass
+## Escreva código sufience para fazer passar
 
 ```go
-func (f *FileSystemPlayerStore) GetLeague() League {
-    sort.Slice(f.league, func(i, j int) bool {
-        return f.league[i].Wins > f.league[j].Wins
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() League {
+    sort.Slice(f.liga, func(i, j int) bool {
+        return f.liga[i].Vitorias > f.liga[j].Vitorias
     })
-    return f.league
+    return f.liga
 }
 ```
 
 [`sort.Slice`](https://golang.org/pkg/sort/#Slice)
 
-> Slice sorts the provided slice given the provided less function.
+> Slice ordena a parte fornecida dada a menor função fornecida
 
-Easy!
+Moleza!
 
-## Wrapping up
+## Finalizando
 
-### What we've covered
+### O que cobrimos
 
-* The `Seeker` interface and its relation with `Reader` and `Writer`.
-* Working with files.
-* Creating an easy to use helper for testing with files that hides all the messy stuff.
-* `sort.Slice` for sorting slices.
-* Using the compiler to help us make structural changes to the application safely.
+-   A interface `Seeker` e sua relação com `Reader` e `Writer`.
+-   Trabalhando com arquivos.
+-   Criando uma auxiliar fácil de usar para testes com arquivos que escondem todas as bagunças.
+-   `sort.Slice` para ordenar partes.
+-   Usando o compilador para nos ajudar a fazer mudanças estruturais de forma segura na aplicação.
 
-### Breaking rules
+### Quebrando regras
 
-* Most rules in software engineering aren't really rules, just best practices that work 80% of the time.
-* We discovered a scenario where one of our previous "rules" of not testing internal functions was not helpful for us so we broke the rule.
-* It's important when breaking rules to understand the trade-off you are making. In our case, we were ok with it because it was just one test and would've been very difficult to exercise the scenario otherwise.
-* In order to be able to break the rules **you must understand them first**. An analogy is with learning guitar. It doesn't matter how creative you think you are, you must understand and practice the fundamentals.
+-   Maior partes das regras em engenharia de software não são realmente regras, apenas boas práticas que funcionam 80% do tempo.
+-   Descobrimos um cenário onde nos "regras" anteriores de não testar funções internas não foi útil, então quebramos essa regra.
+-   É importante entender o que estamos perdendo e ganhado ao quebrar as regras . No nosso caso, não tinha problema porque era apenas um teste e seria muito difícil exercitar o cenário contrário.
+-   Para poder quebrar as regras, **você deve entende-las**. Uma analogia é com aprender a tocar violão. Não importa quão criativo você seja, você deve entender e praticar os fundamentos.
 
-### Where our software is at
+### Onde nosso software está
 
-* We have an HTTP API where you can create players and increment their score.
-* We can return a league of everyone's scores as JSON.
-* The data is persisted as a JSON file.
-
+-   Temos uma API HTTP onde é possível criar jogadores e aumentar a pontuação deles..
+-   Podemos retornar uma liga das pontuações de todos como JSON.
+-   O dado é mantindo com um arquivo JSON.
