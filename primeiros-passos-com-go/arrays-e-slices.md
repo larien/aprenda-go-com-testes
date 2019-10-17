@@ -305,16 +305,16 @@ Volte o teste da forma como estava e execute-o. Você deve ter a saída do teste
 O que precisamos fazer é percorrer as variáveis recebidas como argumento, calcular a soma com nossa função `Soma` de antes e adicioná-la ao slice que vamos retornar:
 
 ```go
-func SomaTudo(numerosParaSomar ...[]int) []int {
+func SomaTudo(numerosParaSomar ...[]int) (somas []int) {
     quantidadeDeNumeros := len(numerosParaSomar)
-    somas := make([]int, quantidadeDeNumeros)
+    somas = make([]int, quantidadeDeNumeros)
 
     for i, numeros := range numerosParaSomar {
         somas[i] = Soma(numeros)
     }
 
-    return somas
-}
+    return
+ }
 ```
 
 Muitas coisas novas para aprender!
