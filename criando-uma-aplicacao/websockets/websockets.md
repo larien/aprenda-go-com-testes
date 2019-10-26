@@ -31,7 +31,15 @@ enfatizar que devemos ter uma abordagem _iterativa_ pra desenvolver os nossos
 programas.
 
 
-First of all we will need to serve HTML. So far all of our HTTP endpoints have returned either plaintext or JSON. We _could_ use the same techniques we know \(as they're all ultimately strings\) but we can also use the [html/template](https://golang.org/pkg/html/template/) package for a cleaner solution.
+Em primeiro lugar, vamos precisar apresentar um HTML. Até agora, todos os
+nossos _endpoints_ HTTP retornaram texto puro ou JSON. Nós _poderíamos_ usar
+as mesmas técnicas que conhecemos \(porque, no fim, tanto o texto puro quanto
+o JSON são strings\), mas nós também podemos usar o pacote
+[html/template](https://golang.org/pkg/html/template/) para uma solução mais
+limpa.
+
+Nós também temos que ser capazes de enviar mensagens assíncronas para o usuário
+dizendo
 
 We also need to be able to asynchronously send messages to the user saying `The blind is now *y*` without having to refresh the browser. We can use [WebSockets](https://en.wikipedia.org/wiki/WebSocket) to facilitate this.
 
@@ -1047,9 +1055,11 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## Refactor
+## Refatorar
 
-The server code was a very small change so there's not a lot to change here but the test code still has a `time.Sleep` call because we have to wait for our server to do its work asynchronously.
+O código do servidor sofreu uma mudança bem pequena, então não tem muito o
+que mudar aqui, mas o código de teste ainda tem uma chamada `time.Sleep`
+porque temos que esperar até que o nosso servidor termina sua tarefa assíncronamente.
 
 We can refactor our helpers `assertGameStartedWith` and `assertFinishCalledWith` so that they can retry their assertions for a short period before failing.
 
