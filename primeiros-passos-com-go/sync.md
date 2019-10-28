@@ -276,7 +276,7 @@ func NovoContador() *Contador {
 }
 ```
 
-Use essa função em seus teste quando for inicializar o `Contador`.
+Use essa função em seus testes quando for inicializar o `Contador`.
 
 ## Resumindo
 
