@@ -305,39 +305,38 @@ Agora, estamos felizes com o código. Eu adicionaria mais um commit ao anterior,
 
 Vamos repassar o ciclo novamente
 
-* Write a test
-* Make the compiler pass
-* Run the test, see that it fails and check the error message is meaningful
-* Write enough code to make the test pass
-* Refactor
+* Escreva um teste
+* Compile o código
+* Rode o teste, e veja o teste falhar, depois verifique a mensagem de erro
+* Escreva um código mínimo necessário para o teste passar
+* Refatore
 
-On the face of it this may seem tedious but sticking to the feedback loop is important.
+Este ciclo pode parecer tedioso, mas manter de feedback é importante.
 
-Not only does it ensure that you have _relevant tests_, it helps ensure _you design good software_ by refactoring with the safety of tests.
+Ele não apenas garante que você tenha _testes relevantes_, como também ajuda a _projetar um bom software_ refatorando-o com a segurança dos testes.
 
-Seeing the test fail is an important check because it also lets you see what the error message looks like. As a developer it can be very hard to work with a codebase when failing tests do not give a clear idea as to what the problem is.
+Ver a falha no teste é uma verificação importante porque também permite que você veja como é a mensagem de erro. Como desenvolvedor, pode ser muito difícil trabalhar com uma base de código que, quando há falha nos testes, não fornece uma idéia clara de qual é o problema.
 
-By ensuring your tests are _fast_ and setting up your tools so that running tests is simple you can get in to a state of flow when writing your code.
+Assegurando que seus testes sejam rápidos e configurando suas ferramentas para que a execução de testes sejam simples, você pode entrar em um estado de fluxo ao escrever seu código.
 
-By not writing tests you are committing to manually checking your code by running your software which breaks your state of flow and you won't be saving yourself any time, especially in the long run.
+Ao não escrever testes, você está comprometendo-se a verificar manualmente seu código executando o software que interrompe seu estado de fluxo e não economiza tempo, especialmente a longo prazo.
 
-## Keep going! More requirements
+## Continue! Mais requisitos
 
-Goodness me, we have more requirements. We now need to support a second parameter, specifying the language of the greeting. If a language is passed in that we do not recognise, just default to English.
-
+Meu Deus, temos mais requisitos. Agora precisamos suportar um segundo parâmetro, especificando o idioma da saudação. Se for passado um idioma que não reconhecemos, use como padrão o inglês.
 We should be confident that we can use TDD to flesh out this functionality easily!
 
-Write a test for a user passing in Spanish. Add it to the existing suite.
+Escreva um teste para um usuário, passando espanhol. Adicione-o ao conjunto de testes existente.
 
 ```go
-    t.Run("in Spanish", func(t *testing.T) {
-        got := Hello("Elodie", "Spanish")
+    t.Run("em Espanhol", func(t *testing.T) {
+        got := Hello("Elodie", "Espanhol")
         want := "Hola, Elodie"
         assertCorrectMessage(t, got, want)
     })
 ```
 
-Remember not to cheat! _Test first_. When you try and run the test, the compiler _should_ complain because you are calling `Hello` with two arguments rather than one.
+Lembre-se, sempre trapacear! _Primeiro Testes_. Quando você tenta executar o teste, o compilador deve reclamar porque está sendo chamando `Hello` com dois argumentos ao invés de um.
 
 ```text
 ./hello_test.go:27:19: too many arguments in call to Hello
