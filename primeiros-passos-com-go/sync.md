@@ -97,7 +97,7 @@ func (c *Contador) Valor() int {
 ## Refatoração
 
 Não há muito o que refatorar, mas, dado que iremos escrever mais testes em
-torno do `Contador`, vamos escrever uma pequena função de asserção `assertCount`
+torno do `Contador`, vamos escrever uma pequena função de asserção `assertContador`
 para que o teste fique um pouco mais legível.
 
 
@@ -297,7 +297,7 @@ ele se encaixa melhor no seu problema. Go é pragmático em deixar você escolhe
 ferramentas que melhor resolvem o seu problema e não te forçar em um único estilo
 de código.
 
-Paraphrasing:
+Parafraseando:
 
 * **Use channels quando for passar a propridade de um dado**
 * **Use mutexes para gerenciar estados**
