@@ -14,7 +14,7 @@ type Carteira struct {
 	saldo Bitcoin
 }
 
-// Depositar vai adicionar Bitcoins a carteira
+// Depositar vai adicionar Bitcoins à carteira
 func (c *Carteira) Depositar(quantidade Bitcoin) {
 	c.saldo += quantidade
 }
