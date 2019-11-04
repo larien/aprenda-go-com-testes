@@ -1,6 +1,6 @@
 # Olá, mundo
 
-**[Você pode encontrar os códigos abordados nesse capítulo aqui](https://github.com/larienmf/learn-go-with-tests/tree/master/hello-world)**
+**[Você pode encontrar os códigos abordados nesse capítulo aqui](https://github.com/larien/learn-go-with-tests)**
 
 É comum o primeiro programa em uma nova linguagem ser um _Olá, mundo_.
 
@@ -24,11 +24,11 @@ func main() {
 
 ## Como isso funciona?
 
-Quando você um programa em Go, você irá ter um pacote `main` definido com uma função(`func`) `main` dentro dele. Os pacotes são maneiras de agrupar códigos escritos em Go.
+Quando você escreve um programa em Go, você irá ter um pacote `main` definido com uma função(`func`) `main` dentro dele. Os pacotes são maneiras de agrupar códigos escritos em Go.
 
 A palavra reservada `func` é utilizada para que você defina uma função com um nome e um corpo.
 
-Usando `import "fmt"` nós estamos importando um pacote que contém a função `Println` que será utilizada para imprimir(escrever) um valor na tela.
+Usando `import "fmt"` nós estamos importando um pacote que contém a função `Println` que será utilizada para imprimir (escrever) um valor na tela.
 
 ## Como testar isso?
 
@@ -315,9 +315,9 @@ Este ciclo pode parecer tedioso, mas manter de feedback é importante.
 
 Ele não apenas garante que você tenha _testes relevantes_, como também ajuda a _projetar um bom software_ refatorando-o com a segurança dos testes.
 
-Ver a falha no teste é uma verificação importante porque também permite que você veja como é a mensagem de erro. Como desenvolvedor, pode ser muito difícil trabalhar com uma base de código que, quando há falha nos testes, não fornece uma idéia clara de qual é o problema.
+Ver a falha no teste é uma verificação importante porque também permite que você veja como é a mensagem de erro. Para quem programa, pode ser muito difícil trabalhar com uma base de código que, quando há falha nos testes, não fornece uma idéia clara de qual é o problema.
 
-Assegurando que seus testes sejam rápidos e configurando suas ferramentas para que a execução de testes sejam simples, você pode entrar em um estado de fluxo ao escrever seu código.
+Assegurando que seus testes sejam rápidos e configurando suas ferramentas para que a execução de testes seja simples, você pode entrar em um estado de fluxo ao escrever seu código.
 
 Ao não escrever testes, você está comprometendo-se a verificar manualmente seu código executando o software que interrompe seu estado de fluxo e não economiza tempo, especialmente a longo prazo.
 
@@ -337,7 +337,7 @@ Escreva um teste para um usuário, passando espanhol. Adicione-o ao conjunto de 
     })
 ```
 
-Lembre-se, de não trapacear! _Primeiro os Testes_. Quando você tenta executar o teste, o compilador deve reclamar porque está sendo chamando `Ola` com dois argumentos ao invés de um.
+Lembre-se de não trapacear! _Primeiro os Testes_. Quando você tenta executar o teste, o compilador deve reclamar porque está sendo chamando `Ola` com dois argumentos ao invés de um.
 
 ```text
 ./ola_test.go:27:19: too many arguments in call to Ola
@@ -412,7 +412,7 @@ func Ola(nome string, idioma string) string {
 
 * Escreva um teste que verifique que quando passamos o idioma `"Francês"` obtemos `"Bonjour, "`
 * Veja o teste falhar, verifique que a mensagem de erro é fácil de ler
-* Faça a mínima altrção de código o suficiente para que o teste passe
+* Faça a mínima alteração de código o suficiente para que o teste passe
 
 Você pode ter escrito algo parecido com isto.
 
@@ -493,7 +493,7 @@ Alguns novos conceitos:
     * Você pode retornar o que quer que esteja definido, apenas chamando `return` ao invés de `return prefixo`.
   * Isso será exibido no Go Doc para sua função, para que possa tornar mais clara a intenção do seu código.
 * `default` será escolhido caso nenhuma das outras instruções `case` do `switch` corresponder.
-* O nome da função começa com uma letra minúscula. As funções públicas do em _Go_ começam com uma letra maiúscula e as privadas, com minúsculas. Não queremos que as partes internas do nosso algoritmo sejam expostas ao mundo, portanto tornamos essa função privada.
+* O nome da função começa com uma letra minúscula. As funções públicas em _Go_ começam com uma letra maiúscula e as privadas, com minúsculas. Não queremos que as partes internas do nosso algoritmo sejam expostas ao mundo, portanto tornamos essa função privada.
 
 ## Resumindo
 
