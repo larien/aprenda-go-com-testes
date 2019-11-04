@@ -6,11 +6,11 @@
 
 No [capítulo anterior](install-go.md#go-environment) discutimos sobre como Go pode ser dogmático como onde você coloca seus arquivos.
 
-Crie um diretório no seguinte caminho `$GOPATH/src/github.com/{seu-lindo-nome-de-usuario}/hello`.
+Crie um diretório no seguinte caminho `$GOPATH/src/github.com/{seu-lindo-nome-de-usuario}/ola`.
 
-Se você estiver num ambiente baseado em unix e seu nome de usuário do Sistema Operacional for "bob" e você está motivado em seguir as convenções do Go sobre `$GOPATH` (que é a maneira mais fácil de configurar) você pode rodar `mkdir -p $GOPATH/src/github.com/bob/hello`.
+Se você estiver num ambiente baseado em unix e seu nome de usuário do Sistema Operacional for "bob" e você está motivado em seguir as convenções do Go sobre `$GOPATH` (que é a maneira mais fácil de configurar) você pode rodar `mkdir -p $GOPATH/src/github.com/bob/ola`.
 
-Crie um arquivo chamado `hello.go` no diretório mencionado e escreva o seguinte código. Para rodá-lo, basta digitar no console `go run hello.go`.
+Crie um arquivo chamado `ola.go` no diretório mencionado e escreva o seguinte código. Para rodá-lo, basta digitar no console `go run ola.go`.
 
 ```go
 package main
@@ -52,7 +52,7 @@ func main() {
 
 Nós criamos uma nova função usando `func`, mas dessa vez nós adicionamos outra palavra reservada `string` na sua definição. Isso significa que essa função irá ter como retorno uma `string` (_cadeia de caracteres_).
 
-Agora, criaremos outro arquivo chamado `hello_test.go` onde nós iremos escrever um teste para nossa função `Ola`.
+Agora, criaremos outro arquivo chamado `ola_test.go` onde nós iremos escrever um teste para nossa função `Ola`.
 
 ```go
 package main
@@ -120,7 +120,7 @@ package main
 import "testing"
 
 func TestOla(t *testing.T) {
-    obtido := Hello("Chris")
+    obtido := Ola("Chris")
     esperado := "Olá, Chris"
 
     if obtido != esperado {
@@ -132,7 +132,7 @@ func TestOla(t *testing.T) {
 Agora, rodando `go test`, deve ter aparecido um erro de compilação
 
 ```text
-./hello_test.go:6:18: too many arguments in call to Ola
+./ola_test.go:6:18: too many arguments in call to Ola
     have (string)
     want ()
 ```
@@ -153,14 +153,14 @@ Se você tentar rodar seus testes novamente, seu arquivo `main.go` irá falhar d
 
 ```go
 func main() {
-    fmt.Println(Hello("mundo"))
+    fmt.Println(Ola("mundo"))
 }
 ```
 
 Agora, quando você for rodar seus testes você verá algo parecido com isso
 
 ```text
-hello_test.go:10: got 'Olá, mundo' want 'Olá, Chris''
+ola_test.go:10: got 'Olá, mundo' want 'Olá, Chris''
 ```
 
 Agora, finalmente temos um programa que compila mas não está satisfazendo os requisitos de acordo com o teste.
@@ -168,8 +168,8 @@ Agora, finalmente temos um programa que compila mas não está satisfazendo os r
 Vamos então fazer o teste passar usando o argumento `nome` e concatenar com `Olá,`
 
 ```go
-func Hello(name string) string {
-    return "Hello, " + name
+func Ola(name string) string {
+    return "Olá, " + name
 }
 ```
 
@@ -188,7 +188,7 @@ Não tem muita coisa para refatorar aqui, mas nós podemos introduzir outro recu
 Constantes podem ser definidas como o exemplo abaixo:
 
 ```go
-const prefixoOlaIngles = "Hello, "
+const prefixoOlaPortugues = "Olá, "
 ```
 
 Agora, podemos refatorar nosso código
@@ -340,7 +340,7 @@ Escreva um teste para um usuário, passando espanhol. Adicione-o ao conjunto de 
 Lembre-se, de não trapacear! _Primeiro os Testes_. Quando você tenta executar o teste, o compilador deve reclamar porque está sendo chamando `Ola` com dois argumentos ao invés de um.
 
 ```text
-./hello_test.go:27:19: too many arguments in call to Hello
+./ola_test.go:27:19: too many arguments in call to Ola
     have (string, string)
     want (string)
 ```
@@ -356,10 +356,10 @@ func Ola(nome string, idioma string) string {
 }
 ```
 
-Quando você tentar executar o teste novamente, ele se queixará de não ter sido passado argumentos suficientes para `Ola` nos seus outros testes em `hello.go`
+Quando você tentar executar o teste novamente, ele se queixará de não ter sido passado argumentos suficientes para `Ola` nos seus outros testes em `ola.go`
 
 ```text
-./hello.go:15:19: not enough arguments in call to Hello
+./ola.go:15:19: not enough arguments in call to Ola
     have (string)
     want (string, string)
 ```
@@ -367,7 +367,7 @@ Quando você tentar executar o teste novamente, ele se queixará de não ter sid
 Corrija-os passando `strings` vazia. Agora todos os seus testes devem compilar _e_ passar, além do nosso novo cenário
 
 ```text
-hello_test.go:29: got 'Hello, Elodie' want 'Hola, Elodie'
+ola_test.go:29: got 'Olá, Elodie' want 'Hola, Elodie'
 ```
 
 Podemos usar `if` aqui para verificar se o idioma é igual a "espanhol" e, em caso afirmativo, alterar a mensagem
@@ -414,7 +414,7 @@ func Ola(nome string, idioma string) string {
 * Veja o teste falhar, verifique que a mensagem de erro é fácil de ler
 * Faça a mínima altrção de código o suficiente para que o teste passe
 
-You may have written something that looks roughly like this
+Você pode ter escrito algo parecido com isto.
 
 ```go
 func Ola(nome string, idioma string) string {
