@@ -1,4 +1,4 @@
-# Olá, mundo
+# Hello, mundo
 
 **[Você pode encontrar os códigos abordados nesse capítulo aqui](https://github.com/larienmf/learn-go-with-tests/tree/master/hello-world)**
 
