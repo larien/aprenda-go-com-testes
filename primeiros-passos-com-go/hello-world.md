@@ -1,16 +1,16 @@
-# Hello, mundo
+# Olá, mundo
 
 **[Você pode encontrar os códigos abordados nesse capítulo aqui](https://github.com/larienmf/learn-go-with-tests/tree/master/hello-world)**
 
-É comum o primeiro programa em uma nova linguagem ser um Olá, mundo.
+É comum o primeiro programa em uma nova linguagem ser um _Olá, mundo_.
 
 No [capítulo anterior](install-go.md#go-environment) discutimos sobre como Go pode ser dogmático como onde você coloca seus arquivos.
 
-Crie um diretório no seguinte caminho `$GOPATH/src/github.com/{seu-lindo-nome-de-usuario}/hello`.
+Crie um diretório no seguinte caminho `$GOPATH/src/github.com/{seu-lindo-nome-de-usuario}/hello`.
 
-Se você estiver num ambiente baseado em unix e seu nome de usuário do SO for "bob" e você está motivado em seguir as convenções do Go sobre `$GOPATH` (que é a maneira mais fácil de configurar) você pode rodar `mkdir -p $GOPATH/src/github.com/bob/hello`.
+Se você estiver num ambiente baseado em unix e seu nome de usuário do Sistema Operacional for "bob" e você está motivado em seguir as convenções do Go sobre `$GOPATH` (que é a maneira mais fácil de configurar) você pode rodar `mkdir -p $GOPATH/src/github.com/bob/hello`.
 
-Crie um arquivo no diretório mencionado chamado `hello.go` e escreva o seguinte código. Para rodar-lo, basta executar `go run hello.go`.
+Crie um arquivo chamado `hello.go` no diretório mencionado e escreva o seguinte código. Para rodá-lo, basta digitar no console `go run hello.go`.
 
 ```go
 package main
@@ -24,17 +24,17 @@ func main() {
 
 ## Como isso funciona?
 
-Quando tu escreves um programa em Go, você irá ter um pacote `main` definido com uma função(`func`) `main` dentro disso. Os pacotes são maneiras de agrupar códigos de Go juntos.
+Quando você um programa em Go, você irá ter um pacote `main` definido com uma função(`func`) `main` dentro dele. Os pacotes são maneiras de agrupar códigos escritos em Go.
 
-A palavra reservada `func` é como você define uma função com um nome e um corpo.
+A palavra reservada `func` é utiliza para que você defina uma função com um nome e um corpo.
 
-Usando `import "fmt"` nós estamos a importar um pacote que contém a função `Println` que irá ser utilizada para imprimir um valor na tela.
+Usando `import "fmt"` nós estamos importando um pacote que contém a função `Println` que será utilizada para imprimir(escrever) um valor na tela.
 
 ## Como testar isso?
 
-Como você testaria isso? É bom separar seu "domínio"(seu código) do resto do mundo \(side-effects\). A função `fmt.Println` é um side effect \(que está imprimindo um valor no stdout\) e a string, nós estamos enviando dentro do seu próprio domínio.
+Como você testaria isso? É bom separar seu "domínio"(suas regras de negócio) do resto do mundo \(efeitos colaterais\). A função `fmt.Println` é um efeito colateral \(que está imprimindo um valor no _**stdout** [saída padrão do terminal]_ \) e a string, nós estamos enviando dentro do seu próprio domínio.
 
-Então, vamos separar essas referencias para ficar mais fácil para testarmos
+Então, vamos separar essas referências para ficar mais fácil para testarmos.
 
 ```go
 package main
@@ -50,9 +50,9 @@ func main() {
 }
 ```
 
-Nós criamos uma nova função usando `func` mas dessa vez nós adicionamos outra palavra reservada `string` na definição. Isso significa que essa função irá ter como retorno uma `string`.
+Nós criamos uma nova função usando `func`, mas dessa vez nós adicionamos outra palavra reservada `string` na sua definição. Isso significa que essa função irá ter como retorno uma `string` (_cadeia de caracteres_).
 
-Agora, criaremos outro arquivo chamado `hello_test.go` onde nós iremos escrever um teste para nossa função `hello`.
+Agora, criaremos outro arquivo chamado `hello_test.go` onde nós iremos escrever um teste para nossa função `Ola`.
 
 ```go
 package main
@@ -69,9 +69,9 @@ func TestOla(t *testing.T) {
 }
 ```
 
-Antes de explicar, vamos rodar o código. Rode `go test` no seu terminal. Isso deve passar! Para checar, tente quebrar de alguma forma o teste mudando a string `want`.
+Antes de explicar, vamos rodar o código. Execute `go test` no seu terminal. Isso deve passar! Para checar, tente quebrar de alguma forma o teste mudando a string `esperado`.
 
-Perceba que você nào precisa usar várias frameworks de testes e ficar se complicando tentando instalar-las. Tudo o que você precisa é feito na mesma linguagem e a sintaxe é a mesma para o resto dos códigos que você irá escrever.
+Perceba que você nào precisa usar várias frameworks (ou bibliotecas) de testes e ficar se complicando tentando instalá-las. Tudo o que você precisa está pronto na linguagem e a sintaxe é a mesma para o resto dos códigos que você irá escrever.
 
 ### Escrevendo testes
 
@@ -81,20 +81,20 @@ Escrever um teste é como escrever uma função, com algumas regras
 * A função de teste precisa começar com a palavra `Test`
 * A função de teste recebe apenas um único argumento `t *testing.T`
 
-Por agora é o bastante para saber que o nosso `t` do tipo `*testing.T` é o nosso "hook"(gancho) dentro da framework de testes e assim você poderá fazer coisas como `t.Fail()` quando você precisar testar um erro.
+Por agora é o bastante para saber que o nosso `t` do tipo `*testing.T` é o nosso "hook"(gancho) dentro do framework de testes e assim você poderá utilizar o `t.Fail()` quando você precisar relatar um erro.
 
-We've covered some new topics:
+### Abordando alguns novos tópicos:
 
 #### `if`
-Instruções If em Go são muito parecidas com a de outras linguagens.
+Instruções `If` em Go são muito parecidas com a de outras linguagens.
 
 #### Declarando Variáveis
 
-Nós estamos declarando algumas variáveis com a sintaxe  `varName := value`, que nos permite reutilizar alguns valores nos nossos testes de maneira legível.
+Nós estamos declarando algumas variáveis com a sintaxe  `nomeDaVariavel := valor`, que nos permite reutilizar alguns valores nos nossos testes de maneira legível.
 
 #### `t.Errorf`
 
-Nós estamos chamando o _method_(método) `Errorf` no nosso `t` que irá imprimir uma mensagem e falhar o teste. O prefixo `f` significa que podemos formatar e montar uma string com valores inseridos dentro de valores de preenchimentos `%s`. Quando tu fizeres um teste falhar, deves ser bastante claro como isso tudo aconteceu.
+Nós estamos chamando o _método_ `Errorf` em nosso `t` que irá imprimir uma mensagem e falhar o teste. O prefixo `f` significa que podemos formatar e montar uma string com valores inseridos dentro de valores de preenchimentos `%s`. Quando fazemos um teste falhar, devemos ser bastante claros como isso tudo aconteceu.
 
 Nós iremos explorar mais na frente a diferença entre métodos e funções.
 
@@ -112,7 +112,7 @@ No último exemplo, nós escrevemos o teste somente _depois_ do código ser escr
 
 Nosso próximo requisito é nos deixar especificar quem recebe a saudação.
 
-Vamos começar especificando esses requisitos em um teste. Estamos fazendo um TDD(desenvolvimento orientado a testes) bastante simples e que nos permite ter certeza que nosso teste está _testando_ o que nós precisamos. Quando você escreve testes retroativamente existe o risco que seu test pode continuar passando mesmo que o código não esteja funcionando como esperado.
+Vamos começar especificando esses requisitos em um teste. Estamos fazendo um TDD(desenvolvimento orientado a testes) bastante simples e que nos permite ter certeza que nosso teste está _testando_ o que nós precisamos. Quando você escreve testes retroativamente existe o risco que seu teste pode continuar passando mesmo que o código não esteja funcionando como esperado.
 
 ```go
 package main
@@ -177,7 +177,7 @@ Quando você rodar os testes eles irão passar. É comum como parte do ciclo do 
 
 ### Uma nota sobre versionamento de código
 
-Nesse ponto, se você estiver usando um versionamento de código \(que você deveria estar fazendo!\) Eu faria um `commit` do código no estado atual. Agora, temos um software funcional suportado por um teste.
+Nesse ponto, se você estiver usando um versionamento de código \(que você deveria estar fazendo!\) Eu faria um `commit` do código no estado atual. Agora, temos um software funcional suportado por um teste.
 
 Apesar de que eu _não faria_ um push para a master, por que eu planejo refatorar em breve. É legal fazer um commit nesse ponto porque você pode se perder com o refactoring, fazendo um commit você pode sempre voltar para a última versão funcional do seu software.
 
@@ -323,8 +323,9 @@ Ao não escrever testes, você está comprometendo-se a verificar manualmente se
 
 ## Continue! Mais requisitos
 
-Meu Deus, temos mais requisitos. Agora precisamos suportar um segundo parâmetro, especificando o idioma da saudação. Se for passado um idioma que não reconhecemos, use como padrão o inglês.
-We should be confident that we can use TDD to flesh out this functionality easily!
+Meu Deus, temos mais requisitos. Agora precisamos suportar um segundo parâmetro, especificando o idioma da saudação. Se for passado um idioma que não reconhecemos, use como padrão o português.
+
+Devemos ter certeza de que podemos usar o TDD para aprimorar essa funcionalidade facilmente!
 
 Escreva um teste para um usuário, passando espanhol. Adicione-o ao conjunto de testes existente.
 
@@ -336,7 +337,7 @@ Escreva um teste para um usuário, passando espanhol. Adicione-o ao conjunto de 
     })
 ```
 
-Lembre-se, sempre trapacear! _Primeiro Testes_. Quando você tenta executar o teste, o compilador deve reclamar porque está sendo chamando `Ola` com dois argumentos ao invés de um.
+Lembre-se, de não trapacear! _Primeiro os Testes_. Quando você tenta executar o teste, o compilador deve reclamar porque está sendo chamando `Ola` com dois argumentos ao invés de um.
 
 ```text
 ./hello_test.go:27:19: too many arguments in call to Hello
@@ -355,7 +356,7 @@ func Ola(nome string, idioma string) string {
 }
 ```
 
-Quando você tentar executar o teste novamente, ele se queixará de ter sido passado argumentos suficientes para `Ola` nos seus outros testes em `hello.go`
+Quando você tentar executar o teste novamente, ele se queixará de não ter sido passado argumentos suficientes para `Ola` nos seus outros testes em `hello.go`
 
 ```text
 ./hello.go:15:19: not enough arguments in call to Hello
@@ -410,7 +411,7 @@ func Ola(nome string, idioma string) string {
 ### Francês
 
 * Escreva um teste que verifique que quando passamos o idioma `"Francês"` obtemos `"Bonjour, "`
-* Veja o teste falhar, verifique que a mensagem de erro é fácil de ler 
+* Veja o teste falhar, verifique que a mensagem de erro é fácil de ler
 * Faça a mínima altrção de código o suficiente para que o teste passe
 
 You may have written something that looks roughly like this
