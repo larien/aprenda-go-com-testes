@@ -26,7 +26,7 @@ func main() {
 
 Quando você um programa em Go, você irá ter um pacote `main` definido com uma função(`func`) `main` dentro dele. Os pacotes são maneiras de agrupar códigos escritos em Go.
 
-A palavra reservada `func` é utiliza para que você defina uma função com um nome e um corpo.
+A palavra reservada `func` é utilizada para que você defina uma função com um nome e um corpo.
 
 Usando `import "fmt"` nós estamos importando um pacote que contém a função `Println` que será utilizada para imprimir(escrever) um valor na tela.
 
