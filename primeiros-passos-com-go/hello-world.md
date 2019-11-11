@@ -280,8 +280,6 @@ Refatoramos nossa asserção em uma função. Isso reduz a duplicação e melhor
 
 `t.Helper ()` é necessário para dizermos ao conjunto de testes que este é método auxiliar. Ao fazer isso, quando o teste falhar, o número da linha relatada estará em nossa chamada de função, e não dentro do nosso auxiliar de teste. Isso ajudará outros desenvolvedores a rastrear os problemas com maior facilidade. Se você ainda não entender, comente, faça um teste falhar e observe a saída do teste.
 
-Now that we have a well-written failing test, let's fix the code, using an `if`.
-
 Agora que temos um teste bem escrito falhando, vamos corrigir o código, usando um `if`.
 
 ```go
@@ -311,7 +309,7 @@ Vamos repassar o ciclo novamente
 * Escreva um código mínimo necessário para o teste passar
 * Refatore
 
-Este ciclo pode parecer tedioso, mas manter de feedback é importante.
+Este ciclo pode parecer tedioso, mas se manter nesse ciclo de feedback é importante.
 
 Ele não apenas garante que você tenha _testes relevantes_, como também ajuda a _projetar um bom software_ refatorando-o com a segurança dos testes.
 
