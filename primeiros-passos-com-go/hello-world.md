@@ -94,7 +94,7 @@ Nós estamos declarando algumas variáveis com a sintaxe  `nomeDaVariavel := val
 
 #### `t.Errorf`
 
-Nós estamos chamando o _método_ `Errorf` em nosso `t` que irá imprimir uma mensagem e falhar o teste. O prefixo `f` significa que podemos formatar e montar uma string com valores inseridos dentro de valores de preenchimentos `%s`. Quando fazemos um teste falhar, devemos ser bastante claros como isso tudo aconteceu.
+Nós estamos chamando o _método_ `Errorf` em nosso `t` que irá imprimir uma mensagem e falhar o teste. O sufixo `f` significa que podemos formatar e montar uma string com valores inseridos dentro de valores de preenchimentos `%s`. Quando fazemos um teste falhar, devemos ser bastante claros como isso tudo aconteceu.
 
 Nós iremos explorar mais na frente a diferença entre métodos e funções.
 
@@ -177,9 +177,9 @@ Quando você rodar os testes eles irão passar. É comum como parte do ciclo do 
 
 ### Uma nota sobre versionamento de código
 
-Nesse ponto, se você estiver usando um versionamento de código \(que você deveria estar fazendo!\) Eu faria um `commit` do código no estado atual. Agora, temos um software funcional suportado por um teste.
+Nesse ponto, se você estiver usando um versionamento de código \(que você deveria estar fazendo!\) eu faria um `commit` do código no estado atual. Agora, temos um software funcional suportado por um teste.
 
-Apesar de que eu _não faria_ um push para a master, por que eu planejo refatorar em breve. É legal fazer um commit nesse ponto porque você pode se perder com o refactoring, fazendo um commit você pode sempre voltar para a última versão funcional do seu software.
+Apesar de que eu _não faria_ um push para a master, por que eu planejo refatorar em breve. É legal fazer um commit nesse ponto porque você pode se perder com a refatoração, fazendo um commit você pode sempre voltar para a última versão funcional do seu software.
 
 Não tem muita coisa para refatorar aqui, mas nós podemos introduzir outro recurso da linguagem: _constantes_.
 
@@ -203,7 +203,7 @@ func Ola(nome string) string {
 
 Depois da refatoração, rode novamente os seus testes para ter certeza que você não quebrou nada.
 
-Constantes melhoraram a performance da nossa aplicação assim como evitam com que você crie uma string `"Ola, "` para cada vez que `Ola` é chamado.
+Constantes devem melhorar a performance da nossa aplicação assim como evitam com que você crie uma string `"Ola, "` para cada vez que `Ola` é chamado.
 
 Sendo mais claro, o aumento de performance é incrivelmente insignificante para esse exemplo! Mas vale a pena pensar em criar constantes para capturar o significado dos valores e, às vezes, para ajudar no desempenho.
 
