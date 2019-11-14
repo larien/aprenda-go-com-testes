@@ -14,7 +14,7 @@ func NovoContador() *Contador {
 }
 
 // Incrementa o contador
-func (c *Contador) Inc() {
+func (c *Contador) Incrementa() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.valor++

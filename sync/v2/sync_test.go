@@ -9,11 +9,11 @@ func TestContador(t *testing.T) {
 
 	t.Run("incrementar o contador 3 vezes o deixa com valor 3", func(t *testing.T) {
 		contador := NovoContador()
-		contador.Inc()
-		contador.Inc()
-		contador.Inc()
+		contador.Incrementa()
+		contador.Incrementa()
+		contador.Incrementa()
 
-		assertContador(t, contador, 3)
+		verificaContador(t, contador, 3)
 	})
 
 	t.Run("roda concorrentemente em seguranca", func(t *testing.T) {
@@ -25,18 +25,18 @@ func TestContador(t *testing.T) {
 
 		for i := 0; i < contadorDesejado; i++ {
 			go func(w *sync.WaitGroup) {
-				contador.Inc()
+				contador.Incrementa()
 				w.Done()
 			}(&wg)
 		}
 		wg.Wait()
 
-		assertContador(t, contador, contadorDesejado)
+		verificaContador(t, contador, contadorDesejado)
 	})
 
 }
 
-func assertContador(t *testing.T, recebido *Contador, desejado int) {
+func verificaContador(t *testing.T, recebido *Contador, desejado int) {
 	t.Helper()
 	if recebido.Valor() != desejado {
 		t.Errorf("recebido %d, desejado %d", recebido.Valor(), desejado)

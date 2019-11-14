@@ -6,7 +6,7 @@ type Contador struct {
 }
 
 // Incrementa o Contador
-func (c *Contador) Inc() {
+func (c *Contador) Incrementa() {
 	c.valor++
 }
 
