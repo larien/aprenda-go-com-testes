@@ -295,7 +295,7 @@ func Ola(nome string) string {
 
 Se executarmos nossos testes, veremos que ele satisfaz o novo requisito e não quebramos acidentalmente a outra funcionalidade.
 
-### De volta controle de versão
+### De volta ao controle de versão
 
 Agora, estamos felizes com o código. Eu adicionaria mais um commit ao anterior, então apenas verifique o quão adorável ficou o nosso código com os testes.
 
