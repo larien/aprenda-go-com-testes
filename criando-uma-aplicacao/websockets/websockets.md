@@ -38,32 +38,43 @@ o JSON são strings\), mas nós também podemos usar o pacote
 [html/template](https://golang.org/pkg/html/template/) para uma solução mais
 limpa.
 
+> **FIXME: **Não tenho certeza sobre a tradução dessa frase do "The blind is now *y*
+
 Nós também temos que ser capazes de enviar mensagens assíncronas para o usuário
-dizendo
+dizendo `O cego agora é *y*` sem ter que recarregar o navegador. Para facilitar
+isso, podemos usar [WebSockets](https://pt.wikipedia.org/wiki/WebSocket).
 
-We also need to be able to asynchronously send messages to the user saying `The blind is now *y*` without having to refresh the browser. We can use [WebSockets](https://en.wikipedia.org/wiki/WebSocket) to facilitate this.
+> WebSocket é uma tecnologia que permite a comunicação bidirecional por canais full-duplex
+sobre um único socket TCP (Transmission Control Protocol)
 
-> WebSocket is a computer communications protocol, providing full-duplex communication channels over a single TCP connection
+Como estamos adotando várias técnicas, é ainda mais importante que façamos o menor
+trabalho possível primeiro e só então iteramos.
 
-Given we are taking on a number of techniques it's even more important we do the smallest amount of useful work possible first and then iterate.
+Por causa disso, a primeira coisa que faremos é criar uma página web com um formulário
+para o usuário salvar um vencedor. Em vez de usar um formulário simples, vamos usar os
+WebSockets para enviar os dados para o nosso servidor o salvar.
 
-For that reason the first thing we'll do is create a web page with a form for the user to record a winner. Rather than using a plain form, we will use WebSockets to send that data to our server for it to record.
+Depois disso, iremos trabalhaor nos alertas cegos, uma vez que já teremos algum
+código de infraestrutura pronto.
 
-After that we'll work on the blind alerts by which point we will have a bit of infrastructure code set up.
+### E os testes para o JavaScript?
 
-### What about tests for the JavaScript ?
+Haverá algum JavaScript escrito pra cumprir nossa tarefa, mas não vamos
+escrever testes para ele.
 
-There will be some JavaScript written to do this but I wont go in to writing tests.
+É claro que é possível, mas, em nome da breviedade, não incluíremos quaisquer
+explicações para isso.
 
-It is of course possible but for the sake of brevity I wont be including any explanations for it.
+Desculpem, amigos. Peçam para a O'Reilly me pagar para fazer um "Aprenda
+JavaScript com testes".
 
-Sorry folks. Lobby O'Reilly to pay me to make a "Learn JavaScript with tests".
+## Escreva o teste primeiro
 
-## Write the test first
+**FIXME: **Traduzir os endpoints também?
+A primeira coisa que precisamos fazer é montar algum HTML para os usuários
+quando eles acessarem `/game`.
 
-First thing we need to do is serve up some HTML to users when they hit `/game`.
-
-Here's a reminder of the pertinent code in our web server
+Aqui está um lembrete do código no nosso servidor we
 
 ```go
 type PlayerServer struct {
@@ -88,7 +99,8 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 }
 ```
 
-The _easiest_ thing we can do for now is check when we `GET /game` that we get a `200`.
+A maneira _mais fácil_ que podemos fazer por agora é checar que recebemos um
+código `200` quando acessamos o `GET /game`.
 
 ```go
 func TestGame(t *testing.T) {
@@ -105,7 +117,7 @@ func TestGame(t *testing.T) {
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 --- FAIL: TestGame (0.00s)
@@ -114,7 +126,7 @@ func TestGame(t *testing.T) {
         server_test.go:109: did not get correct status, got 404, want 200
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer o teste passar
 
 Our server has a router setup so it's relatively easy to fix.
 
