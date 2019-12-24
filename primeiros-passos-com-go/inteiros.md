@@ -52,7 +52,7 @@ Agora execute os testes. Devemos ficar felizes que o teste esteja relatando corr
 
 `adicionador_test.go:10: esperado '4', resultado '0'`
 
-Você deve ter percebido que aprendemos sobre o _valor de retorno nomeado_ na [última](hello-world.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto. No nosso caso, é muito claro que a função `Adiciona` irá adicionar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
+Você deve ter percebido que aprendemos sobre o _valor de retorno nomeado_ na [última](ola-mundo.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto. No nosso caso, é muito claro que a função `Adiciona` irá adicionar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
 
 ## Escreva código o suficiente para fazer o teste passar
 

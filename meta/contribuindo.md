@@ -13,7 +13,7 @@ Se não se sentir confiante para submeter seu próprio guia, criar uma issue par
 ## Estilo a ser seguido
 
 -   Sempre reforce o ciclo TDD. Dê uma olhada no capítulo de [Template](template.md).
--   Dê ênfase em iterar sobre funcionalidades orientadas por testes. O exemplo [Olá, mundo](primeiros-passos-com-go/hello-world.md) funciona bem porque aos poucos tornamos o código mais sofisticado e aprendemos novas técnicas _orientadas por testes_. Por exemplo:
+-   Dê ênfase em iterar sobre funcionalidades orientadas por testes. O exemplo [Olá, mundo](primeiros-passos-com-go/ola-mundo.md) funciona bem porque aos poucos tornamos o código mais sofisticado e aprendemos novas técnicas _orientadas por testes_. Por exemplo:
     -   `Hello()` &lt;- como escrever funções e retornar tipos.
     -   `Hello(name string)` &lt;- argumentos, constantes.
     -   `Hello(name string)` &lt;- padrão para "mundo" usando `if`.
