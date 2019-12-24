@@ -69,8 +69,6 @@ go version
 go version go1.13 linux/amd64
 ```
 
-Nos próximos passos vamos configurar o ambiente Go. As [instruções abaixo](#o-ambiente-go) valem tanto para sistema operacional OSX quanto para o Linux.
-
 ### Windows
 
 Para usuários de Windows existem duas formas de instalação, através de um arquivo ZIP que requer que você configure algumas variáveis de ambiente ou uma arquivo MSI que faz toda a configuração automaticamente.
@@ -91,6 +89,7 @@ Na busca do menu Iniciar, digite "Variáveis" escolha a opção "Editar as vari�
 
 Quando ocorre alteração nas variáveis de ambiente no Windows é necessário reiniciar o sistema.
 
+Nos próximos passos vamos configurar o ambiente Go. As [instruções abaixo](#o-ambiente-go) valem tanto para sistema operacional OSX quanto para o Linux. O ambiente Windows pode requisitar configurações a mais e por isso é importante seguir a documentação oficial.
 
 ## O Ambiente Go
 
