@@ -2,11 +2,11 @@ package main
 
 import "fmt"
 
-// Hello returns a personalised greeting
-func Hello(name string) string {
-	return "Hello, " + name
+// Ola retorna uma saudação personalizada
+func Ola(nome string) string {
+	return "Olá, " + nome
 }
 
 func main() {
-	fmt.Println(Hello("world"))
+	fmt.Println(Ola("mundo"))
 }

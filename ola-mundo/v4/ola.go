@@ -2,13 +2,13 @@ package main
 
 import "fmt"
 
-const englishHelloPrefix = "Hello, "
+const prefixoOlaPortugues = "Olá, "
 
-// Hello returns a personalised greeting
-func Hello(name string) string {
-	return englishHelloPrefix + name
+// Ola retorna uma saudação personalizada
+func Ola(nome string) string {
+	return prefixoOlaPortugues + nome
 }
 
 func main() {
-	fmt.Println(Hello("world"))
+	fmt.Println(Ola("mundo"))
 }

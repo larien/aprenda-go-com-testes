@@ -2,33 +2,33 @@ package main
 
 import "fmt"
 
-const spanish = "Spanish"
-const french = "French"
-const englishHelloPrefix = "Hello, "
-const spanishHelloPrefix = "Hola, "
-const frenchHelloPrefix = "Bonjour, "
+const espanhol = "espanhol"
+const frances = "francês"
+const prefixoOlaPortugues = "Olá, "
+const prefixoOlaEspanhol = "Hola, "
+const prefixoOlaFrances = "Bonjour, "
 
-// Hello returns a personalised greeting in a given language
-func Hello(name string, language string) string {
-	if name == "" {
-		name = "World"
+// Ola retorna uma saudação personalizada em determinado idiota
+func Ola(nome string, idioma string) string {
+	if nome == "" {
+		nome = "Mundo"
 	}
 
-	return greetingPrefix(language) + name
+	return prefixodeSaudacao(idioma) + nome
 }
 
-func greetingPrefix(language string) (prefix string) {
-	switch language {
-	case french:
-		prefix = frenchHelloPrefix
-	case spanish:
-		prefix = spanishHelloPrefix
+func prefixodeSaudacao(idioma string) (prefixo string) {
+	switch idioma {
+	case frances:
+		prefixo = prefixoOlaFrances
+	case espanhol:
+		prefixo = prefixoOlaEspanhol
 	default:
-		prefix = englishHelloPrefix
+		prefixo = prefixoOlaPortugues
 	}
 	return
 }
 
 func main() {
-	fmt.Println(Hello("world", ""))
+	fmt.Println(Ola("mundo", ""))
 }

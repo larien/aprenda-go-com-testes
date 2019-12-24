@@ -2,16 +2,16 @@ package main
 
 import "fmt"
 
-const englishHelloPrefix = "Hello, "
+const prefixoOlaPortugues = "Olá, "
 
-// Hello returns a personalised greeting, defaulting to Hello, world if an empty name is passed
-func Hello(name string) string {
-	if name == "" {
-		name = "World"
+// Ola retorna uma saudação personalizada, com "Olá, Mundo" como padrão de um nome vazio for passado
+func Ola(nome string) string {
+	if nome == "" {
+		nome = "Mundo"
 	}
-	return englishHelloPrefix + name
+	return prefixoOlaPortugues + nome
 }
 
 func main() {
-	fmt.Println(Hello("world"))
+	fmt.Println(Ola("mundo"))
 }

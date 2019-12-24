@@ -60,12 +60,12 @@ package main
 import "testing"
 
 func TestOla(t *testing.T) {
-    obtido := Ola()
-    esperado := "Olá, mundo"
+	resultado := Ola()
+	esperado := "Olá, mundo"
 
-    if got != want {
-        t.Errorf("obtido '%s' esperado '%s'", obtido, esperado)
-    }
+	if resultado != esperado {
+		t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+	}
 }
 ```
 
@@ -120,12 +120,12 @@ package main
 import "testing"
 
 func TestOla(t *testing.T) {
-    obtido := Ola("Chris")
-    esperado := "Olá, Chris"
+	resultado := Ola("Chris")
+	esperado := "Olá, Chris"
 
-    if obtido != esperado {
-        t.Errorf("obtido '%s' esperado '%s'", obtido, esperado)
-    }
+	if resultado != esperado {
+		t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+	}
 }
 ```
 
@@ -160,7 +160,7 @@ func main() {
 Agora, quando você for rodar seus testes você verá algo parecido com isso
 
 ```text
-ola_test.go:10: got 'Olá, mundo' want 'Olá, Chris''
+ola_test.go:10: resultado 'Olá, mundo', esperado 'Olá, Chris''
 ```
 
 Agora, finalmente temos um programa que compila mas não está satisfazendo os requisitos de acordo com o teste.
@@ -168,8 +168,8 @@ Agora, finalmente temos um programa que compila mas não está satisfazendo os r
 Vamos então fazer o teste passar usando o argumento `nome` e concatenar com `Olá,`
 
 ```go
-func Ola(name string) string {
-    return "Olá, " + name
+func Ola(nome string) string {
+    return "Olá, " + nome
 }
 ```
 
@@ -191,7 +191,7 @@ Constantes podem ser definidas como o exemplo abaixo:
 const prefixoOlaPortugues = "Olá, "
 ```
 
-Agora, podemos refatorar nosso código
+Agora, podemos refatorar nosso código:
 
 ```go
 const prefixoOlaPortugues = "Olá, "
@@ -216,24 +216,23 @@ Começaremos escrevendo um novo teste que irá falhar
 ```go
 func TestOla(t *testing.T) {
 
-    t.Run("diga olá para as pessoas", func(t *testing.T) {
-        obtido := Ola("Chris")
+    t.Run("diz olá para as pessoas", func(t *testing.T) {
+        resultado := Ola("Chris")
         esperado := "Olá, Chris"
 
-        if obtido != esperado {
-            t.Errorf("obtido '%s' esperado '%s'", got, want)
+        if resultado != esperado {
+            t.Errorf("resultado '%s', esperado '%s'", got, want)
         }
     })
 
-    t.Run("diga 'Olá, mundo' quando uma string vazia for passada", func(t *testing.T) {
-        obtido := Ola("")
+    t.Run("diz 'Olá, mundo' quando uma string vazia for passada", func(t *testing.T) {
+        resultado := Ola("")
         esperado := "Olá, mundo"
 
-        if obtido != esperado {
-            t.Errorf("obtido '%s' esperado '%s'", obtido, esperado)
+        if resultado != esperado {
+            t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
         }
     })
-
 }
 ```
 
@@ -251,26 +250,24 @@ Podemos e devemos refatorar nossos testes.
 
 ```go
 func TestOla(t *testing.T) {
-
-    verificaMensagemCorreta := func(t *testing.T, got, want string) {
+    verificaMensagemCorreta := func(t *testing.T, resultado, esperado string) {
         t.Helper()
-        if obtido != esperado {
-            t.Errorf("obtido '%s' esperado '%s'", got, want)
+        if resultado != esperado {
+            t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
         }
     }
 
-    t.Run("dizendo ola para as pessoas", func(t *testing.T) {
-        obtido := Ola("Chris")
+    t.Run("diz olá para as pessoas", func(t *testing.T) {
+        resultado := Ola("Chris")
         esperado := "Olá, Chris"
-        verificaMensagemCorreta(t, obtido, esperado)
+        verificaMensagemCorreta(t, resultado, esperado)
     })
 
     t.Run("'Mundo' como padrão para 'string' vazia", func(t *testing.T) {
-        obtido := Ola("")
-        want := "Olá, Mundo"
-        verificaMensagemCorreta(t, obtido, esperado)
+        resultado := Ola("")
+        esperado := "Olá, Mundo"
+        verificaMensagemCorreta(t, resultado, esperado)
     })
-
 }
 ```
 
@@ -329,13 +326,13 @@ Escreva um teste para um usuário, passando espanhol. Adicione-o ao conjunto de 
 
 ```go
     t.Run("em Espanhol", func(t *testing.T) {
-        obtido := Ola("Elodie", "Espanhol")
+        resultado := Ola("Elodie", "Espanhol")
         esperado := "Hola, Elodie"
-        verificaMensagemCorreta(t, obtido, esperado)
+        verificaMensagemCorreta(t, resultado, esperado)
     })
 ```
 
-Lembre-se de não trapacear! _Primeiro os Testes_. Quando você tenta executar o teste, o compilador deve reclamar porque está sendo chamando `Ola` com dois argumentos ao invés de um.
+Lembre-se de não trapacear! _Primeiro os testes_. Quando você tenta executar o teste, o compilador deve reclamar porque está sendo chamando `Ola` com dois argumentos ao invés de um.
 
 ```text
 ./ola_test.go:27:19: too many arguments in call to Ola
@@ -365,7 +362,7 @@ Quando você tentar executar o teste novamente, ele se queixará de não ter sid
 Corrija-os passando `strings` vazia. Agora todos os seus testes devem compilar _e_ passar, além do nosso novo cenário
 
 ```text
-ola_test.go:29: got 'Olá, Elodie' want 'Hola, Elodie'
+ola_test.go:29: resultado 'Olá, Elodie', esperado 'Hola, Elodie'
 ```
 
 Podemos usar `if` aqui para verificar se o idioma é igual a "espanhol" e, em caso afirmativo, alterar a mensagem
@@ -464,13 +461,13 @@ Você poderia argumentar que talvez nossa função esteja ficando um pouco grand
 ```go
 func Ola(nome string, idioma string) string {
     if nome == "" {
-        name = "Mundo"
+        nome = "Mundo"
     }
 
-    return prefixoDaSaudacao(idioma) + nome
+    return prefixodeSaudacao(idioma) + nome
 }
 
-func prefixoDaSaudacao(idioma string) (prefixo string) {
+func prefixodeSaudacao(idioma string) (prefixo string) {
     switch idioma {
     case frances:
         prefixo = prefixoOlaFrances

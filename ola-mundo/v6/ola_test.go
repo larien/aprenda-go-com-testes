@@ -2,37 +2,35 @@ package main
 
 import "testing"
 
-func TestHello(t *testing.T) {
-
-	assertCorrectMessage := func(t *testing.T, got, want string) {
+func TestOla(t *testing.T) {
+	verificaMensagemCorreta := func(t *testing.T, resultado, esperado string) {
 		t.Helper()
-		if got != want {
-			t.Errorf("got '%s' want '%s'", got, want)
+		if resultado != esperado {
+			t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
 		}
 	}
 
-	t.Run("to a person", func(t *testing.T) {
-		got := Hello("Chris", "")
-		want := "Hello, Chris"
-		assertCorrectMessage(t, got, want)
+	t.Run("para uma pessoa", func(t *testing.T) {
+		resultado := Ola("Chris", "")
+		esperado := "Olá, Chris"
+		verificaMensagemCorreta(t, resultado, esperado)
 	})
 
-	t.Run("empty string", func(t *testing.T) {
-		got := Hello("", "")
-		want := "Hello, World"
-		assertCorrectMessage(t, got, want)
+	t.Run("string vazia", func(t *testing.T) {
+		resultado := Ola("", "")
+		esperado := "Olá, Mundo"
+		verificaMensagemCorreta(t, resultado, esperado)
 	})
 
-	t.Run("in Spanish", func(t *testing.T) {
-		got := Hello("Elodie", spanish)
-		want := "Hola, Elodie"
-		assertCorrectMessage(t, got, want)
+	t.Run("em espanhol", func(t *testing.T) {
+		resultado := Ola("Elodie", espanhol)
+		esperado := "Hola, Elodie"
+		verificaMensagemCorreta(t, resultado, esperado)
 	})
 
-	t.Run("in French", func(t *testing.T) {
-		got := Hello("Lauren", french)
-		want := "Bonjour, Lauren"
-		assertCorrectMessage(t, got, want)
+	t.Run("em francês", func(t *testing.T) {
+		resultado := Ola("Lauren", frances)
+		esperado := "Bonjour, Lauren"
+		verificaMensagemCorreta(t, resultado, esperado)
 	})
-
 }
