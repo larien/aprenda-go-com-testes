@@ -22,14 +22,11 @@ func (c *Carteira) Depositar(quantidade Bitcoin) {
 	c.saldo += quantidade
 }
 
-// ErroSaldoInsuficiente significa que uma carteira não tem Bitcoins suficientes para fazer uma retirada
-var ErroSaldoInsuficiente = errors.New("Não pode retirar. Saldo insuficiente")
-
-// Retirar substrai alguns Bitcoins da carteira, retorna um erro se não puder ser executado
+// Retirar substrai alguns Bitcoins da carteira
 func (c *Carteira) Retirar(quantidade Bitcoin) error {
 
 	if quantidade > c.saldo {
-		return ErroSaldoInsuficiente
+		return errors.New("eita")
 	}
 
 	c.saldo -= quantidade

@@ -27,7 +27,7 @@
 4. [Iteração](primeiros-passos-com-go/iteracao.md) - Aprenda sobre `for` e benchmarking.
 5. [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md) - Aprenda sobre arrays, slices, `len`, variáveis recebidas como argumentos, `range` e cobertura de testes.
 6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
-7. [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
+7. [Ponteiros e erros](primeiros-passos-com-go/ponteiros-e-erros.md) - Aprenda sobre ponteiros e erros.
 8. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
 9. [Injeção de dependência](primeiros-passos-com-go/injecao-de-dependencia.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
 10. [Mocking](primeiros-passos-com-go/mocks.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
