@@ -2,7 +2,7 @@
 
 set -e
 
-go get github.com/gorilla/websocket
+# go get github.com/gorilla/websocket
 
 go test ./...
 go vet ./...
