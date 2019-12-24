@@ -6,7 +6,7 @@
 
 ![Build Status](https://travis-ci.org/larien/learn-go-with-tests.svg?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/larien/learn-go-with-tests)](https://goreportcard.com/report/github.com/quii/learn-go-with-tests)
 
--   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB or PDF](https://github.com/larien/learn-go-with-tests/releases)
+-   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB ou PDF](https://github.com/larien/learn-go-with-tests/releases)
 -   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
 -   Traduções: [中文](https://studygolang.gitbook.io/learn-go-with-tests)
 
@@ -37,7 +37,7 @@
 14. [Sync](primeiros-passos-com-go/sync.md) - Conheça algumas funcionalidades do pacote `sync`, como `WaitGroup` e `Mutex`.
 15. [Context](primeiros-passos-com-go/context.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
 
-### Crie uma aplicação
+### Criando uma aplicação
 
 Agora que você já deu seus _Primeiros Passos com Go_, esperamos que você tenha uma base sólida das principais funcionalidades da linguagem e como TDD funciona.
 
