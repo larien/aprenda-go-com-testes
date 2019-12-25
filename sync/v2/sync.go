@@ -2,7 +2,7 @@ package v1
 
 import "sync"
 
-// Contador vai incrementar um número
+// Contador incrementa um número
 type Contador struct {
 	mu    sync.Mutex
 	valor int
@@ -20,7 +20,7 @@ func (c *Contador) Incrementa() {
 	c.valor++
 }
 
-// Valor retorna o atual contador
+// Valor retorna a contagem atual
 func (c *Contador) Valor() int {
 	return c.valor
 }

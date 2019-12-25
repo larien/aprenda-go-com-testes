@@ -5,7 +5,6 @@ import (
 )
 
 func TestContador(t *testing.T) {
-
 	t.Run("incrementar o contador 3 vezes o deixa com valor 3", func(t *testing.T) {
 		contador := Contador{}
 		contador.Incrementa()
@@ -16,9 +15,9 @@ func TestContador(t *testing.T) {
 	})
 }
 
-func verificaContador(t *testing.T, recebido Contador, desejado int) {
+func verificaContador(t *testing.T, resultado Contador, esperado int) {
 	t.Helper()
-	if recebido.Valor() != desejado {
-		t.Errorf("recebido %d, desejado %d", recebido.Valor(), desejado)
+	if resultado.Valor() != esperado {
+		t.Errorf("resultado %d, esperado %d", resultado.Valor(), esperado)
 	}
 }
