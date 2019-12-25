@@ -6,15 +6,15 @@ import (
 	"time"
 )
 
-var limiteDezSegundos = 10 * time.Second
+var limiteDeDezSegundos = 10 * time.Second
 
-// Corredor compara os tempos de resposta de a e b, retornando o mais rapido
+// Corredor compara os tempos de resposta de a e b, retornando o mais rápido com tempo limite de 10s
 func Corredor(a, b string) (vencedor string, error error) {
-	return CorredorConfiguravel(a, b, limiteDezSegundos)
+	return Configuravel(a, b, limiteDeDezSegundos)
 }
 
-// CorredorConfiguravel compara os tempos de resposta de a e b, retornando o mais rapido
-func CorredorConfiguravel(a, b string, tempoLimite time.Duration) (vencedor string, error error) {
+// Configuravel compara os tempos de resposta de a e b, retornando o mais rápido
+func Configuravel(a, b string, tempoLimite time.Duration) (vencedor string, error error) {
 	select {
 	case <-ping(a):
 		return a, nil
@@ -25,10 +25,10 @@ func CorredorConfiguravel(a, b string, tempoLimite time.Duration) (vencedor stri
 	}
 }
 
-func ping(url string) chan bool {
+func ping(URL string) chan bool {
 	ch := make(chan bool)
 	go func() {
-		http.Get(url)
+		http.Get(URL)
 		close(ch)
 	}()
 	return ch

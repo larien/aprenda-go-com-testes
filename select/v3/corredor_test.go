@@ -8,45 +8,44 @@ import (
 )
 
 func TestCorredor(t *testing.T) {
-
-	t.Run("compara a velocidade de servidores, retornando o endereço do mais rapido", func(t *testing.T) {
-		servidorLento := criarServidorDemorado(20 * time.Millisecond)
-		servidorRapido := criarServidorDemorado(0 * time.Millisecond)
+	t.Run("compara a velocidade de servidores, retornando o endereço do mais rápido", func(t *testing.T) {
+		servidorLento := criarServidorComAtraso(20 * time.Millisecond)
+		servidorRapido := criarServidorComAtraso(0 * time.Millisecond)
 
 		defer servidorLento.Close()
 		defer servidorRapido.Close()
 
-		urlLenta := servidorLento.URL
-		urlRapida := servidorRapido.URL
+		URLLenta := servidorLento.URL
+		URLRapida := servidorRapido.URL
 
-		esperado := urlRapida
-		obteve, err := Corredor(urlLenta, urlRapida)
+		esperado := URLRapida
+		resultado, err := Corredor(URLLenta, URLRapida)
 
 		if err != nil {
 			t.Fatalf("não esperava um erro, mas obteve um %v", err)
 		}
 
-		if obteve != esperado {
-			t.Errorf("obteve '%s', esperado '%s'", obteve, esperado)
+		if resultado != esperado {
+			t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
 		}
 	})
 
 	t.Run("retorna um erro se o servidor não responder dentro de 10s", func(t *testing.T) {
-		servidor := criarServidorDemorado(25 * time.Millisecond)
+		servidor := criarServidorComAtraso(25 * time.Millisecond)
 
 		defer servidor.Close()
 
-		_, err := CorredorConfiguravel(servidor.URL, servidor.URL, 20*time.Millisecond)
+		_, err := Configuravel(servidor.URL, servidor.URL, 20*time.Millisecond)
 
 		if err == nil {
-			t.Error("esperava um erro, mas não obtive um.")
+			t.Error("esperava um erro, mas não obtive um")
 		}
 	})
 }
 
-func criarServidorDemorado(demora time.Duration) *httptest.Server {
+func criarServidorComAtraso(atraso time.Duration) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(demora)
+		time.Sleep(atraso)
 		w.WriteHeader(http.StatusOK)
 	}))
 }

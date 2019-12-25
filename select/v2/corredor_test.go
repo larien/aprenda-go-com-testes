@@ -9,26 +9,26 @@ import (
 
 func TestCorredor(t *testing.T) {
 
-	servidorLento := criarServidorDemorado(20 * time.Millisecond)
-	servidorRapido := criarServidorDemorado(0 * time.Millisecond)
+	servidorLento := criarServidorComAtraso(20 * time.Millisecond)
+	servidorRapido := criarServidorComAtraso(0 * time.Millisecond)
 
 	defer servidorLento.Close()
 	defer servidorRapido.Close()
 
-	urlLenta := servidorLento.URL
-	urlRapida := servidorRapido.URL
+	URLLenta := servidorLento.URL
+	URLRapida := servidorRapido.URL
 
-	esperado := urlRapida
-	obteve := Corredor(urlLenta, urlRapida)
+	esperado := URLRapida
+	resultado := Corredor(URLLenta, URLRapida)
 
-	if obteve != esperado {
-		t.Errorf("obteve '%s', esperado '%s'", obteve, esperado)
+	if resultado != esperado {
+		t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
 	}
 }
 
-func criarServidorDemorado(demora time.Duration) *httptest.Server {
+func criarServidorComAtraso(atraso time.Duration) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(demora)
+		time.Sleep(atraso)
 		w.WriteHeader(http.StatusOK)
 	}))
 }
