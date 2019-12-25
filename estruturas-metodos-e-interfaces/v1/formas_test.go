@@ -7,6 +7,6 @@ func TestPerimetro(t *testing.T) {
 	esperado := 40.0
 
 	if resultado != esperado {
-		t.Errorf("resultado %.2f esperado %.2f", resultado, esperado)
+		t.Errorf("resultado %.2f, esperado %.2f", resultado, esperado)
 	}
 }
