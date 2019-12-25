@@ -5,7 +5,7 @@ import (
 )
 
 func TestContador(t *testing.T) {
-	t.Run("incrementar o contador 3 vezes o deixa com valor 3", func(t *testing.T) {
+	t.Run("incrementar o contador 3 vezes resulta no valor 3", func(t *testing.T) {
 		contador := Contador{}
 		contador.Incrementa()
 		contador.Incrementa()
