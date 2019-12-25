@@ -11,7 +11,7 @@ Há muitos mal entendidos relacionados à injeção de dependência na comunidad
 -   Facilita seus testes
 -   Permite que você escreva funções ótimas para propósitos diversos.
 
-Queremos criar uma função que cumprimenta alguém, assim como a que fizemos no capítulo [Olá, mundo](https://github.com/larien/learn-go-with-tests/tree/master/hello-world), mas dessa vez vamos testar o _print de verdade_.
+Queremos criar uma função que cumprimenta alguém, assim como a que fizemos no capítulo [Olá, mundo](https://github.com/larien/learn-go-with-tests/tree/master/ola-mundo), mas dessa vez vamos testar o _print de verdade_.
 
 Para recapitular, a função era parecida com isso:
 

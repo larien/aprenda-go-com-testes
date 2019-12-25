@@ -46,13 +46,13 @@ func Adiciona(x, y int) int {
 }
 ```
 
-Quando você tem mais de um argumento do mesmo tipo (no nosso caso dois inteiros) ao invés de ter `(x int e int)` você pode encurtá-lo para `(x, y int)`.
+Quando você tem mais de um argumento do mesmo tipo (no nosso caso dois inteiros) ao invés de ter `(x int, y int)` você pode encurtá-lo para `(x, y int)`.
 
 Agora execute os testes. Devemos ficar felizes que o teste esteja relatando corretamente o que está errado.
 
 `adicionador_test.go:10: esperado '4', resultado '0'`
 
-Você deve ter percebido que aprendemos sobre o _valor de retorno nomeado_ na [última](hello-world.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto. No nosso caso, é muito claro que a função `Adiciona` irá adicionar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
+Você deve ter percebido que aprendemos sobre o _valor de retorno nomeado_ na [última](ola-mundo.md#one...last...refactor?) seção, mas não estamos usando aqui. Ele geralmente deve ser usado quando o significado do resultado não está claro no contexto. No nosso caso, é muito claro que a função `Adiciona` irá adicionar os parâmetros. Você pode consultar [esta](https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters) wiki para mais detalhes.
 
 ## Escreva código o suficiente para fazer o teste passar
 
@@ -101,22 +101,24 @@ func Adiciona(x, y int) int {
 
 Se realmente quer ir além, você pode fazer [exemplos](https://blog.golang.org/examples). Você encontrará muitos exemplos na documentação da biblioteca padrão.
 
-Muitas vezes, exemplos de código que podem ser encontrados fora da base de código, como um arquivo readme, ficam desatualizados e incorretos em comparação com o código real, porque eles não são verificados.
+Muitas vezes, exemplos encontrados fora da base de código, como um arquivo readme, ficam desatualizados e incorretos em comparação com o código real, porque eles não são verificados.
 
 Os exemplos de Go são executados da mesma forma que os testes, para que você possa ter certeza de que eles refletem o que o código realmente faz.
+
 Exemplos são compilados \(e opcionalmente executados\) como parte do conjunto de testes de um pacote.
 
-Como nos testes comuns, os exemplos são funções que residem nos arquivos \_test.go de um pacote. Adicione a seguinte função ExemploAdiciona no arquivo `adicionador_test.go`.
+Como nos testes comuns, os exemplos são funções que residem nos arquivos \_test.go de um pacote. Adicione a seguinte função ExampleAdiciona no arquivo `adicionador_test.go`.
 
 ```go
-func ExemploAdiciona() {
+func ExampleAdiciona() {
     soma := Adiciona(1, 5)
     fmt.Println(soma)
-    // Saida: 6
+    // Output: 6
 }
 ```
+> obs: As palavras Example e Output foram mantidas em inglês para a execução correta do código.
 
-(Se o seu editor não importar os pacotes automaticamente para você, a etapa de compilação irá falhar porque você não colocou o `import "fmt"` no `adicionador_test.go`. É altamente recomendável que você pesquise como ter esses tipos de erros corrigidos automaticamente em qualquer editor que esteja usando.)
+(Se o seu editor não importar os pacotes automaticamente, a etapa de compilação irá falhar porque você não colocou o `import "fmt"` no `adicionador_test.go`. É altamente recomendável que você pesquise como ter esses tipos de erros corrigidos automaticamente em qualquer editor que esteja usando.)
 
 Se o seu código mudar fazendo com que o exemplo não seja mais válido, você vai ter um erro de compilação.
 
@@ -126,8 +128,8 @@ Executando os testes do pacote, podemos ver que a função de exemplo é executa
 $ go test -v
 === RUN   TestAdicionador
 --- PASS: TestAdicionador (0.00s)
-=== RUN   ExemploAdiciona
---- PASS: ExemploAdiciona (0.00s)
+=== RUN   ExampleAdiciona
+--- PASS: ExampleAdiciona (0.00s)
 ```
 
 Note que a função de exemplo não será executada se você remover o comentário "// Output: 6". Embora a função seja compilada, ela não será executada.
@@ -138,7 +140,7 @@ Para ver como isso funciona, execute `godoc -http=:6060` e navegue para `http://
 
 Aqui você vai ver uma lista de todos os pacotes em seu `$GOPATH`. Então, supondo que tenha escrito esse código em algum lugar como `$GOPATH/src/github.com/{seu_id}`, você poderá encontrar uma documentação com seus exemplos.
 
-Se você publicar seu código com exemplos em uma URL pública, poderá compartilhar a documentação em [godoc.org](https://godoc.org). Por exemplo, aqui está a API finalizada deste capítulo [https://godoc.org/github.com/larien/learn-go-with-tests/inteiros/v2](https://godoc.org/github.com/larien/learn-go-with-tests/inteiros/v).
+Se você publicar seu código com exemplos em uma URL pública, poderá compartilhar a documentação em [godoc.org](https://godoc.org). Por exemplo, aqui está a API finalizada deste capítulo [https://godoc.org/github.com/larien/learn-go-with-tests/inteiros/v2](https://godoc.org/github.com/larien/learn-go-with-tests/inteiros/v2).
 
 ## Resumindo
 

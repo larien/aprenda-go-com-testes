@@ -6,7 +6,7 @@
 
 ![Build Status](https://travis-ci.org/larien/learn-go-with-tests.svg?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/larien/learn-go-with-tests)](https://goreportcard.com/report/github.com/quii/learn-go-with-tests)
 
--   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB or PDF](https://github.com/larien/learn-go-with-tests/releases)
+-   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB ou PDF](https://github.com/larien/learn-go-with-tests/releases)
 -   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
 -   Traduções: [中文](https://studygolang.gitbook.io/learn-go-with-tests)
 
@@ -22,14 +22,14 @@
 ### Primeiros Passos com Go
 
 1. [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md) - Prepare o ambiente para produtividade.
-2. [Olá, mundo](primeiros-passos-com-go/hello-world.md) - Declarando variáveis, constantes, declarações `if`/`else`, switch, escreva seu primeiro programa em Go e seu primeiro teste. Sintaxe de subteste e closures.
+2. [Olá, mundo](primeiros-passos-com-go/ola-mundo.md) - Declarando variáveis, constantes, declarações `if`/`else`, switch, escreva seu primeiro programa em Go e seu primeiro teste. Sintaxe de subteste e closures.
 3. [Inteiros](primeiros-passos-com-go/inteiros.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
 4. [Iteração](primeiros-passos-com-go/iteracao.md) - Aprenda sobre `for` e benchmarking.
 5. [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md) - Aprenda sobre arrays, slices, `len`, variáveis recebidas como argumentos, `range` e cobertura de testes.
-6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
-7. [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md) - Aprenda sobre ponteiros e erros.
+6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
+7. [Ponteiros e erros](primeiros-passos-com-go/ponteiros-e-erros.md) - Aprenda sobre ponteiros e erros.
 8. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
-9. [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
+9. [Injeção de dependência](primeiros-passos-com-go/injecao-de-dependencia.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
 10. [Mocking](primeiros-passos-com-go/mocks.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
 11. [Concorrência](primeiros-passos-com-go/concorrencia.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
 12. [Select](primeiros-passos-com-go/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
@@ -37,7 +37,7 @@
 14. [Sync](primeiros-passos-com-go/sync.md) - Conheça algumas funcionalidades do pacote `sync`, como `WaitGroup` e `Mutex`.
 15. [Context](primeiros-passos-com-go/context.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
 
-### Crie uma aplicação
+### Criando uma aplicação
 
 Agora que você já deu seus _Primeiros Passos com Go_, esperamos que você tenha uma base sólida das principais funcionalidades da linguagem e como TDD funciona.
 
@@ -155,7 +155,6 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 
 ## Feedback
 
--   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
 -   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
 
 [MIT license](https://github.com/larien/learn-go-with-tests/tree/09aafaeebaef4443e80a6216cc46fa3d7bfdabbb/LICENSE.md)
