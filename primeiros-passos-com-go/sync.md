@@ -1,276 +1,280 @@
 # Sync
 
-[**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/sync)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/sync)
 
-We want to make a counter which is safe to use concurrently.
+Queremos fazer um contador que é seguro para ser usado concorrentemente.
 
-We'll start with an unsafe counter and verify its behaviour works in a single-threaded environment.
+Vamos começar com um contador não seguro e verificar se seu comportamento funciona em um ambiente com apenas uma _thread_.
 
-Then we'll exercise it's unsafeness with multiple goroutines trying to use it via a test and fix it.
+Em seguida, vamos testar sua falta de segurança com várias *goroutines* tentando usar o contador dentro dos testes e consertar essa falha.
 
-## Write the test first
+## Escreva o teste primeiro
 
-We want our API to give us a method to increment the counter and then retrieve its value.
+Queremos que nossa API nos dê um método para incrementar o contador e depois recupere esse valor.
 
 ```go
-func TestCounter(t *testing.T) {
-    t.Run("incrementing the counter 3 times leaves it at 3", func(t *testing.T) {
-        counter := Counter{}
-        counter.Inc()
-        counter.Inc()
-        counter.Inc()
+func TestContador(t *testing.T) {
+    t.Run("incrementar o contador 3 vezes resulta no valor 3", func(t *testing.T) {
+        contador := Contador{}
+        contador.Incrementa()
+        contador.Incrementa()
+        contador.Incrementa()
 
-        if counter.Value() != 3 {            
-            t.Errorf("got %d, want %d", counter.Value(), 3)
-        }
+        if contador.Valor() != 3 {
+		t.Errorf("resultado %d, esperado %d", contador.Valor(), 3)
+	}
     })
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
-./sync_test.go:9:14: undefined: Counter
+./sync_test.go:9:14: undefined: Contador
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
-Let's define `Counter`.
+Vamos definir `Contador`.
 
 ```go
-type Counter struct {
+type Contador struct {
 
 }
 ```
 
-Try again and it fails with the following
+Tente rodar o teste de novo e ele falhará com o seguinte erro:
 
 ```text
-./sync_test.go:14:10: counter.Inc undefined (type Counter has no field or method Inc)
-./sync_test.go:18:13: counter.Value undefined (type Counter has no field or method Value)
+./sync_test.go:14:10: contador.Incrementa undefined (type Contador has no field or method Incrementa)
+./sync_test.go:18:13: contador.Valor undefined (type Contador has no field or method Valor)
 ```
 
-So to finally make the test run we can define those methods
+Então, para finalmente fazer o teste rodar, podemos definir esses métodos:
 
 ```go
-func (c *Counter) Inc() {
+func (c *Contador) Incrementa() {
 
 }
 
-func (c *Counter) Value() int {
+func (c *Contador) Valor() int {
     return 0
 }
 ```
 
-It should now run and fail
+Agora tudo deve rodar e falhar:
 
 ```text
-=== RUN   TestCounter
-=== RUN   TestCounter/incrementing_the_counter_3_times_leaves_it_at_3
---- FAIL: TestCounter (0.00s)
-    --- FAIL: TestCounter/incrementing_the_counter_3_times_leaves_it_at_3 (0.00s)
-        sync_test.go:27: got 0, want 3
+=== RUN   TestContador
+=== RUN   TestContador/incrementar_o_contador_3_vezes_resulta_no_valor_3
+--- FAIL: TestContador (0.00s)
+    --- FAIL: TestContador/incrementar_o_contador_3_vezes_resulta_no_valor_3 (0.00s)
+        sync_test.go:27: resultado 0, esperado 3
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
-This should be trivial for Go experts like us. We need to keep some state for the counter in our datatype and then increment it on every `Inc` call
+Isso deve ser simples para _experts_ em Go como nós. Precisamos criar uma instância do tipo Contador e incrementá-lo com cada chamada de `Incrementa`.
+
 
 ```go
-type Counter struct {
-    value int
+type Contador struct {
+    valor int
 }
 
-func (c *Counter) Inc() {
-    c.value++
+func (c *Contador) Incrementa() {
+    c.valor++
 }
 
-func (c *Counter) Value() int {
-    return c.value
+func (c *Contador) Valor() int {
+    return c.valor
 }
 ```
 
-## Refactor
+## Refatoração
 
-There's not a lot to refactor but given we're going to write more tests around `Counter` we'll write a small assertion function `assertCount` so the test reads a bit clearer.
+Não há muito o que refatorar, mas já que iremos escrever mais testes em torno do `Contador`, vamos escrever uma pequena função de asserção `verificaContador` para que o teste fique um pouco mais legível.
+
 
 ```go
-t.Run("incrementing the counter 3 times leaves it at 3", func(t *testing.T) {
-    counter := Counter{}
-    counter.Inc()
-    counter.Inc()
-    counter.Inc()
+t.Run("incrementar o contador 3 vezes resulta no valor 3", func(t *testing.T) {
+	contador := Contador{}
+	contador.Incrementa()
+	contador.Incrementa()
+	contador.Incrementa()
 
-    assertCounter(t, counter, 3)
+	verificaContador(t, contador, 3)
 })
 
-func assertCounter(t *testing.T, got Counter, want int)  {
-    t.Helper()
-    if got.Value() != want {
-        t.Errorf("got %d, want %d", got.Value(), want)
-    }
+func verificaContador(t *testing.T, resultado Contador, esperado int) {
+	t.Helper()
+	if resultado.Valor() != esperado {
+		t.Errorf("resultado %d, esperado %d", resultado.Valor(), esperado)
+	}
 }
 ```
 
-## Next steps
+## Próximos passos
 
-That was easy enough but now we have a requirement that it must be safe to use in a concurrent environment. We will need to write a failing test to exercise this.
+Isso foi muito fácil, mas agora temos um requerimento que é: o programa precisa ser seguro o suficiente para ser usado em um ambiente com acesso concorrente. Vamos precisar criar um teste para exercitar isso.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
-t.Run("it runs safely concurrently", func(t *testing.T) {
-    wantedCount := 1000
-    counter := Counter{}
+t.Run("roda concorrentemente em segurança", func(t *testing.T) {
+	contagemEsperada := 1000
+	contador := NovoContador()
 
-    var wg sync.WaitGroup
-    wg.Add(wantedCount)
+	var wg sync.WaitGroup
+	wg.Add(contagemEsperada)
 
-    for i:=0; i<wantedCount; i++ {
-        go func(w *sync.WaitGroup) {
-            counter.Inc()
-            w.Done()
-        }(&wg)
-    }
-    wg.Wait()
+	for i := 0; i < contagemEsperada; i++ {
+		go func(w *sync.WaitGroup) {
+			contador.Incrementa()
+			w.Done()
+		}(&wg)
+	}
+	wg.Wait()
 
-    assertCounter(t, counter, wantedCount)
+	verificaContador(t, contador, contagemEsperada)
 })
 ```
 
-This will loop through our `wantedCount` and fire a goroutine to call `counter.Inc()`.
+Isso vai iterar até a nossa `contagemEsperada` e disparar uma *goroutine* para chamar `contador.Incrementa()` a cada iteração.
 
-We are using [`sync.WaitGroup`](https://golang.org/pkg/sync/#WaitGroup) which is a convenient way of synchronising concurrent processes.
+Estamos usando [`sync.WaitGroup`](https://golang.org/pkg/sync/#WaitGroup), que é uma maneira simples de sincronizar processos concorrentes.
 
-> A WaitGroup waits for a collection of goroutines to finish. The main goroutine calls Add to set the number of goroutines to wait for. Then each of the goroutines runs and calls Done when finished. At the same time, Wait can be used to block until all goroutines have finished.
+> Um WaitGroup aguarda por uma coleção de *goroutines* terminar seu processamento. A *goroutine* principal faz a chamada para o `Add` definir o número de *goroutines* que serão esperadas. Então, cada uma das *goroutines* é executada e chama `Done` quando termina sua execução. Ao mesmo tempo, `Wait` pode ser usado para bloquear a execução até que todas as *goroutines* tenham terminado.
 
-By waiting for `wg.Wait()` to finish before making our assertions we can be sure all of our goroutines have attempted to `Inc` the `Counter`,
+Ao esperar por `wg.Wait()` terminar sua execução antes de fazer nossas asserções, podemos ter certeza que todas as nossas *goroutines* tentaram chamar o `Incrementa` no `Contador`.
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
-=== RUN   TestCounter/it_runs_safely_in_a_concurrent_envionment
---- FAIL: TestCounter (0.00s)
-    --- FAIL: TestCounter/it_runs_safely_in_a_concurrent_envionment (0.00s)
-        sync_test.go:26: got 939, want 1000
+=== RUN   TestContador/roda_concorrentemente_em_seguranca
+--- FAIL: TestContador (0.00s)
+    --- FAIL: TestContador/roda_concorrentemente_em_seguranca (0.00s)
+        sync_test.go:26: resultado 939, esperado 1000
 FAIL
 ```
 
-The test will _probably_ fail with a different number, but nonetheless it demonstrates it does not work when multiple goroutines are trying to mutate the value of the counter at the same time.
+O teste _provavelmente_ vai falhar com um número diferente, mas de qualquer forma demonstra que não roda corretamente quando várias *goroutines* tentam mudar o valor do contador ao mesmo tempo.
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
-A simple solution is to add a lock to our `Counter`, a [`Mutex`](https://golang.org/pkg/sync/#Mutex)
+Uma solução simples é adicionar uma trava ao nosso `Contador`, um [`Mutex`](https://golang.org/pkg/sync/#Mutex).
 
-> A Mutex is a mutual exclusion lock. The zero value for a Mutex is an unlocked mutex.
+> Um Mutex é uma trava de exclusão mútua. O valor zero de um Mutex é um Mutex destravado.
 
 ```go
-type Counter struct {
+type Contador struct {
     mu sync.Mutex
-    value int
+    valor int
 }
 
-func (c *Counter) Inc() {
+func (c *Contador) Incrementa() {
     c.mu.Lock()
     defer c.mu.Unlock()
-    c.value++
+    c.valor++
 }
 ```
 
-What this means is any goroutine calling `Inc` will acquire the lock on `Counter` if they are first. All the other goroutines will have to wait for it to be `Unlock`ed before getting access.
+Isso significa que qualquer *goroutine* chamando `Incrementa` vai receber a trava em `Contador` se for a primeira chamando essa função. Todas as outras *goroutines* vão ter que esperar por essa primeira execução até que ele esteja `Unlock`, ou destravado, antes de ganhar o acesso à instância de `Contador` alterada pela primeira chamada de função.
 
-If you now re-run the test it should now pass because each goroutine has to wait its turn before making a change.
+Agora, se você rodar o teste novamente, ele deve funcionar porque cada uma das *goroutines* tem que esperar até que seja sua vez antes de fazer alguma mudança.
 
-## I've seen other examples where the `sync.Mutex` is embedded into the struct.
+## Já vi outros exemplos em que o `sync.Mutex` está embutido dentro da struct.
 
-You may see examples like this
+Você pode ver exemplos como esse:
 
 ```go
-type Counter struct {
+type Contador struct {
     sync.Mutex
-    value int
+    valor int
 }
 ```
 
-It can be argued that it can make the code a bit more elegant.
+Há quem diga que isso torna o código um pouco mais elegante.
 
 ```go
-func (c *Counter) Inc() {
+func (c *Contador) Incrementa() {
     c.Lock()
     defer c.Unlock()
-    c.value++
+    c.valor++
 }
 ```
 
-This _looks_ nice but while programming is a hugely subjective discipline, this is **bad and wrong**.
+Isso _parece_ legal, mas, apesar de programação ser uma área altamente subjetiva, isso é **feio e errado**.
 
-Sometimes people forget that embedding types means the methods of that type becomes _part of the public interface_; and you often will not want that. Remember that we should be very careful with our public APIs, the moment we make something public is the moment other code can couple themselves to it. We always want to avoid unnecessary coupling.
+Às vezes as pessoas esquecem que tipos embutidos significam que os métodos daquele tipo se tornam _parte da interface pública_; e você geralmente não quer isso. Não se esqueçam que devemos ter muito cuidado com as nossas APIs públicas. O momento que tornamos algo público é o momento que outros códigos podem acoplar-se a ele e queremos evitar acoplamentos desnecessários.
 
-Exposing `Lock` and `Unlock` is at best confusing but at worst potentially very harmful to your software if callers of your type start calling these methods.
+Expôr `Lock` e `Unlock` é, no seu melhor caso, muito confuso e, no seu pior caso, potencialmente perigoso para o seu software se quem chamar o seu tipo começar a chamar esses métodos diretamente.
 
-![Showing how a user of this API can wrongly change the state of the lock](https://i.imgur.com/SWYNpwm.png)
+![Demonstração de como um usuário dessa API pode chamar erroneamente o estado da trava](https://i.imgur.com/SWYNpwm.png)
 
-_This seems like a really bad idea_
+_Isso parece uma péssima ideia._
 
-## Copying mutexes
+## Copiando mutexes
 
-Our test passes but our code is still a bit dangerous
+Nossos testes passam, mas nosso código ainda é um pouco perigoso.
 
-If you run `go vet` on your code you should get an error like the following
+Se você rodar `go vet` no seu código, deve receber um erro similar ao seguinte:
 
 ```text
-sync/v2/sync_test.go:16: call of assertCounter copies lock value: v1.Counter contains sync.Mutex
-sync/v2/sync_test.go:39: assertCounter passes lock by value: v1.Counter contains sync.Mutex
+sync/v2/sync_test.go:16: call of verificaContador copies lock valor: v1.Contador contains sync.Mutex
+sync/v2/sync_test.go:39: verificaContador passes lock by valor: v1.Contador contains sync.Mutex
 ```
 
-A look at the documentation of [`sync.Mutex`](https://golang.org/pkg/sync/#Mutex) tells us why
+Uma rápida olhada na documentação do [`sync.Mutex`](https://golang.org/pkg/sync/#Mutex) nos diz o porquê:
 
-> A Mutex must not be copied after first use.
+> Um Mutex não deve ser copiado depois do primeiro uso.
 
-When we pass our `Counter` \(by value\) to `assertCounter` it will try and create a copy of the mutex.
+Quando passamos nosso `Contador` \(por valor\) para `verificaContador`, ele vai tentar criar uma cópia do mutex.
 
-To solve this we should pass in a pointer to our `Counter` instead, so change the signature of `assertCounter`
+Para resolver isso, devemos passar um ponteiro para o nosso `Contador`. Vamos, então, mudar a assinatura de `verificaContador`.
 
 ```go
-func assertCounter(t *testing.T, got *Counter, want int)
+func verificaContador(t *testing.T, resultado *Contador, esperado int)
 ```
 
-Our tests will no longer compile because we are trying to pass in a `Counter` rather than a `*Counter`. To solve this I prefer to create a constructor which shows readers of your API that it would be better to not initialise the type yourself.
+Nossos testes não vão mais compilar porque estamos tentando passar um `Contador` ao invés de um `*Contador`. Para resolver isso, é melhor criar um construtor que mostra aos usuários da nossa API que seria melhor ele mesmo não inicializar seu tipo.
+
 
 ```go
-func NewCounter() *Counter {
-    return &Counter{}
+func NovoContador() *Contador {
+    return &Contador{}
 }
 ```
 
-Use this function in your tests when initialising `Counter`.
+Use essa função em seus testes quando for inicializar o `Contador`.
 
-## Wrapping up
+## Resumo
 
-We've covered a few things from the [sync package](https://golang.org/pkg/sync/)
+Falamos sobre algumas coisas do [pacote sync](https://golang.org/pkg/sync/):
 
-* `Mutex` allows us to add locks to our data
-* `Waitgroup` is a means of waiting for goroutines to finish jobs
+* `Mutex` nos permite adicionar travas aos nossos dados
+* `WaitGroup` é uma maneira de esperar as *goroutines* terminarem suas tarefas
 
-### When to use locks over channels and goroutines?
+### Quando usar travas em vez de *channels* e *goroutines*?
 
-[We've previously covered goroutines in the first concurrency chapter](concorrencia.md) which let us write safe concurrent code so why would you use locks?  
-[The go wiki has a page dedicated to this topic; Mutex Or Channel](https://github.com/golang/go/wiki/MutexOrChannel)
+[Anteriormente falamos sobre *goroutines* no primeiro capítulo sobre concorrência](concorrencia.md)
+que nos permite escrever código concorrente e seguro, então por que usar travas?
+[A wiki do Go tem uma página dedicada para esse tópico: Mutex ou Channel?](https://github.com/golang/go/wiki/MutexOrChannel)
 
-> A common Go newbie mistake is to over-use channels and goroutines just because it's possible, and/or because it's fun. Don't be afraid to use a sync.Mutex if that fits your problem best. Go is pragmatic in letting you use the tools that solve your problem best and not forcing you into one style of code.
+> Um erro comum de um iniciante em Go é usar demais os *channels* e *goroutines* apenas porque é possível e/ou porque é divertido. Não tenha medo de usar um `sync.Mutex` se for uma solução melhor para o seu problema. Go é pragmático em deixar você escolher as ferramentas que melhor resolvem o seu problema e não te força em um único estilo de código.
 
-Paraphrasing:
+Resumindo:
 
-* **Use channels when passing ownership of data** 
-* **Use mutexes for managing state**
+* **Use channels quando for passar a propriedade de um dado**
+* **Use mutexes para gerenciar estados**
 
 ### go vet
 
-Remember to use go vet in your build scripts as it can alert you to some subtle bugs in your code before they hit your poor users.
+Não se esqueça de usar `go vet` nos seus scripts de _build_ porque ele pode te alertar a respeito de bugs mais sutis no seu código antes que eles atinjam seus pobres usuários.
 
-### Dont use embedding because it's convenient
+### Não use códigos embutidos apenas porque é conveniente
 
-* Think about the effect embedding has on your public API.
-* Do you _really_ want to expose these methods and have people coupling their own code to them?
-* With respect to mutexes, this could be potentially disastrous in very unpredictable and weird ways, imagine some nefarious code unlocking a mutex when it shouldn't be; this would cause some very strange bugs that will be hard to track down.
+* Pense a respeito do efeito que embutir códigos tem na sua API pública.
+* Você _realmente_ quer expôr esses métodos e ter pessoas acoplando o código próprio delas a ele?
+* Mutexes podem se tornar um desastre de maneiras muito imprevisíveis e estranhas. Imagine um código inesperado destravando um mutex quando não deveria? Isso causaria erros muito estranhos que seriam muito difíceis de encontrar.
 

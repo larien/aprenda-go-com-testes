@@ -1,16 +1,16 @@
 package v1
 
-// Counter will increment a number
-type Counter struct {
-	value int
+// Contador incrementa um número
+type Contador struct {
+	valor int
 }
 
-// Inc the count
-func (c *Counter) Inc() {
-	c.value++
+// Incrementa o contador
+func (c *Contador) Incrementa() {
+	c.valor++
 }
 
-// Value returns the current count
-func (c *Counter) Value() int {
-	return c.value
+// Valor retorna a contagem atual
+func (c *Contador) Valor() int {
+	return c.valor
 }

@@ -5,40 +5,38 @@ import (
 	"testing"
 )
 
-func TestCounter(t *testing.T) {
+func TestContador(t *testing.T) {
+	t.Run("incrementar o contador 3 vezes o deixa com valor 3", func(t *testing.T) {
+		contador := NovoContador()
+		contador.Incrementa()
+		contador.Incrementa()
+		contador.Incrementa()
 
-	t.Run("incrementing the counter 3 times leaves it at 3", func(t *testing.T) {
-		counter := NewCounter()
-		counter.Inc()
-		counter.Inc()
-		counter.Inc()
-
-		assertCounter(t, counter, 3)
+		verificaContador(t, contador, 3)
 	})
 
-	t.Run("it runs safely concurrently", func(t *testing.T) {
-		wantedCount := 1000
-		counter := NewCounter()
+	t.Run("roda concorrentemente em segurança", func(t *testing.T) {
+		contagemEsperada := 1000
+		contador := NovoContador()
 
 		var wg sync.WaitGroup
-		wg.Add(wantedCount)
+		wg.Add(contagemEsperada)
 
-		for i := 0; i < wantedCount; i++ {
+		for i := 0; i < contagemEsperada; i++ {
 			go func(w *sync.WaitGroup) {
-				counter.Inc()
+				contador.Incrementa()
 				w.Done()
 			}(&wg)
 		}
 		wg.Wait()
 
-		assertCounter(t, counter, wantedCount)
+		verificaContador(t, contador, contagemEsperada)
 	})
-
 }
 
-func assertCounter(t *testing.T, got *Counter, want int) {
+func verificaContador(t *testing.T, resultado *Contador, esperado int) {
 	t.Helper()
-	if got.Value() != want {
-		t.Errorf("got %d, want %d", got.Value(), want)
+	if resultado.Valor() != esperado {
+		t.Errorf("resultado %d, esperado %d", resultado.Valor(), esperado)
 	}
 }
