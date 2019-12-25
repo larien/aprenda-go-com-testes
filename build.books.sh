@@ -10,7 +10,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     primeiros-passos-com-go/inteiros.md \
     primeiros-passos-com-go/iteracao.md \
     primeiros-passos-com-go/arrays-e-slices.md \
-    primeiros-passos-com-go/structs-methods-and-interfaces.md \
+    primeiros-passos-com-go/estruturas-metodos-e-interfaces.md \
     primeiros-passos-com-go/ponteiros-e-erros.md \
     primeiros-passos-com-go/maps.md \
     primeiros-passos-com-go/injecao-de-dependencia.md \
@@ -38,7 +38,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     primeiros-passos-com-go/inteiros.md \
     primeiros-passos-com-go/iteracao.md \
     primeiros-passos-com-go/arrays-e-slices.md \
-    primeiros-passos-com-go/structs-methods-and-interfaces.md \
+    primeiros-passos-com-go/estruturas-metodos-e-interfaces.md \
     primeiros-passos-com-go/ponteiros-e-erros.md \
     primeiros-passos-com-go/maps.md \
     primeiros-passos-com-go/injecao-de-dependencia.md \

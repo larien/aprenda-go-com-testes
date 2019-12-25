@@ -27,7 +27,7 @@ func TestCarteira(t *testing.T) {
 }
 ```
 
-No [exemplo anterior](structs-methods-and-interfaces.md) acessamos campos diretamente pelo nome. Entretanto, na nossa _carteira super protegida_, não queremos expor o valor interno para o resto do mundo. Queremos controlar o acesso por meio de métodos.
+No [exemplo anterior](estruturas-metodos-e-interfaces.md) acessamos campos diretamente pelo nome. Entretanto, na nossa _carteira super protegida_, não queremos expor o valor interno para o resto do mundo. Queremos controlar o acesso por meio de métodos.
 
 ## Execute o teste
 
