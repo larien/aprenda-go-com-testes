@@ -1,11 +1,11 @@
-package racer
+package corredor
 
 import (
 	"net/http"
 )
 
-// Racer compares the response times of a and b, returning the fastest one
-func Racer(a, b string) (winner string) {
+// Corredor compara os tempos de resposta de a e b, retornando o mais rapido
+func Corredor(a, b string) (vencedor string) {
 	select {
 	case <-ping(a):
 		return a
