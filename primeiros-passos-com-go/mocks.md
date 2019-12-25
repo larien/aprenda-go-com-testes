@@ -1,4 +1,4 @@
-# Mocking
+# Mocks
 
 [**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/mocks)
 

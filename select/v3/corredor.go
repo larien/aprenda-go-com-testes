@@ -14,7 +14,7 @@ func Corredor(a, b string) (vencedor string, error error) {
 }
 
 // Configuravel compara os tempos de resposta de a e b, retornando o mais rápido
-func Configuravel(a, b string, tempoLimite time.Duration) (vencedor string, error error) {
+func Configuravel(a, b string, tempoLimite time.Duration) (vencedor string, erro error) {
 	select {
 	case <-ping(a):
 		return a, nil

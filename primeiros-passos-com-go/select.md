@@ -2,7 +2,7 @@
 
 [**Você pode encontrar todos os códigos desse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/select)
 
-Te pediram para fazer uma função chamada `Corredor` que recebe duas URLs que "competirão" entre si através de uma chamada HTTP GET onde a primeira URL a responder será retornada. Se nenhuma delas responder dentro de 10 segundos, então a função deve retornar um `erro`. 
+Te pediram para fazer uma função chamada `Corredor` que recebe duas URLs que "competirão" entre si através de uma chamada HTTP GET onde a primeira URL a responder será retornada. Se nenhuma delas responder dentro de 10 segundos a função deve retornar um `erro`. 
 
 Para isso, vamos utilizar:
 
@@ -17,21 +17,21 @@ Vamos começar com algo simples.
 
 ```go
 func TestCorredor(t *testing.T) {
-    urlLenta := "http://www.facebook.com"
-    urlRapida := "http://www.quii.co.uk"
+    URLLenta := "http://www.facebook.com"
+    URLRapida := "http://www.quii.co.uk"
 
-    esperado := urlRapida
-    obteve := Corredor(urlLenta, urlRapida)
+    esperado := URLRapida
+    resultado := Corredor(URLLenta, urlRapida)
 
-    if obteve != esperado {
-        t.Errorf("obteve '%s', esperado '%s'", obteve, esperado)
+    if resultado != esperado {
+        t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
     }
 }
 ```
 
 Sabemos que não está perfeito e que existem problemas, mas é um bom início. É importante não perder tanto tempo deixando as coisas perfeitas de primeira.
 
-## Tente rodar o teste
+## Execute o teste
 
 `./corredor_test.go:14:9: undefined: Corredor`
 
@@ -43,7 +43,7 @@ func Corredor(a, b string) (vencedor string) {
 }
 ```
 
-`corredor_test.go:25: obteve '', esperado 'http://www.quii.co.uk'`
+`corredor_test.go:25: resultado '', esperado 'http://www.quii.co.uk'`
 
 ## Escreva código suficiente para que o teste passe
 
@@ -64,13 +64,13 @@ func Corredor(a, b string) (vencedor string) {
     return b
 }
 ```
-para cada URL:
+Para cada URL:
 
 1. Usamos `time.Now()` para marcar o tempo antes de tentarmos pegar a `URL`.
-2. Então usamos [`http.Get`](https://golang.org/pkg/net/http/#Client.Get) para tentar capturar os conteúdos da `URL`. Essa função retorna [`http.Response`](https://golang.org/pkg/net/http/#Response) e um `erro` mas não estamos interessados nesses valores.
-3. `time.Since` pega o tempo inicial e retorna a diferença como `time.Duration`
+2. Então usamos [`http.Get`](https://golang.org/pkg/net/http/#Client.Get) para tentar capturar os conteúdos da `URL`. Essa função retorna [`http.Response`](https://golang.org/pkg/net/http/#Response) e um `erro`, mas não temos interesse nesses valores.
+3. `time.Since` pega o tempo inicial e retorna a diferença na forma de `time.Duration`.
 
-Uma vez que fazemos isso, podemos simplesmente comparar as durações e ver qual é mais rápida.
+Feito isso, podemos simplesmente comparar as durações e ver qual é mais rápida.
 
 ### Problemas
 
@@ -78,15 +78,15 @@ Isso pode ou não fazer com que o teste passe para você. O problema é que esta
 
 Testar códigos que usam HTTP é tão comum que Go tem ferramentas na biblioteca padrão para te ajudar a testá-los.
 
-Nos capítulos de mock e injeção de dependências, cobrimos como idealmente não queremos depender de serviços externos para testar nosso código pois:
+Nos capítulos de [mock](mocks.md) e [injeção de dependências](injecao-de-dependencia.md), falamos sobre como idealmente não queremos depender de serviços externos para testar nosso código, pois:
 
 * Podem ser lentos
-* Podem ser inconsistentes (Flaky)
-* Não podemos testar casos extremos
+* Podem ser inconsistentes
+* Não conseguimos testar casos extremos
 
-Na biblioteca padrão, existe um pacote chamado [`net/http/httptest`](https://golang.org/pkg/net/http/httptest/) onde é possível simular facilmente um servidor HTTP.
+Na biblioteca padrão, existe um pacote chamado [`net/http/httptest`](https://golang.org/pkg/net/http/httptest/) onde é possível simular um servidor HTTP facilmente.
 
-Vamos alterar nosso teste para usar essas simulações, assim teremos servidores confiáveis para testar sob nosso controle.
+Vamos alterar nosso teste para usar essas simulações para termos servidores confiáveis para testar sob nosso controle.
 
 ```go
 func TestCorredor(t *testing.T) {
@@ -100,14 +100,14 @@ func TestCorredor(t *testing.T) {
         w.WriteHeader(http.StatusOK)
     }))
 
-    urlLenta := servidorLento.URL
-    urlRapida := servidorRapido.URL
+    URLLenta := servidorLento.URL
+    URLRapida := servidorRapido.URL
 
-    esperado := urlRapida
-    obteve := Corredor(urlLenta, urlRapida)
+    esperado := URLRapida
+    resultado := Corredor(URLLenta, URLRapida)
 
-    if obteve != esperado {
-        t.Errorf("obteve '%s', esperado '%s'", obteve, esperado)
+    if resultado != esperado {
+        t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
     }
 
     servidorLento.Close()
@@ -115,40 +115,40 @@ func TestCorredor(t *testing.T) {
 }
 ```
 
-A sintaxe pode parecer um tanto complicada mas não tenha pressa.
+A sintaxe pode parecer um pouco complicada, mas não tenha pressa.
 
-`httptest.NewServer` recebe um `http.HandlerFunc` que estaremos enviando através de uma função _anonima_.
+`httptest.NewServer` recebe um `http.HandlerFunc` que vamos enviar para uma função _anônima_.
 
 `http.HandlerFunc` é um tipo que se parece com isso: `type HandlerFunc func(ResponseWriter, *Requisicao)`.
 
-Tudo que está realmente dizendo é que ele precisa de uma função que recebe um `ResponseWriter` e uma `Requisição`, o que não é muito surpreendente para um servidor HTTP.
+Tudo o que assinatura diz é que ela precisa de uma função que recebe um `ResponseWriter` e uma `Requisição`, o que não é novidade para um servidor HTTP.
 
-Acontece que não existe nenhuma mágica aqui, **também é assim que você escreveria um servidor HTTP** __**real**__ **em Go**. A única diferença é que estamos utilizando ele dentro de um `httptest.NewServer` o que nos facilita de usá-lo em testes, por ele encontrar uma porta aberta para escutar e você poder fechá-lo quando os teste estiverem concluídos.
+Acontece que não existe nenhuma mágica aqui, **também é assim que você escreveria um servidor HTTP** __**real**__ **em Go**. A única diferença é que estamos utilizando ele dentro de um `httptest.NewServer` ,o que facilita seu uso em testes por ele encontrar uma porta aberta para escutar e você poder fechá-la quando estiverem concluídos dentro dos próprios testes.
 
-Dentro de nossos dois servidores, fazemos com que um deles tenha um `time.Sleep` quando receber a requisição para fazê-lo mais lento que o outro. Ambos servidores então devolvem uma resposta `OK` com `w.WriteHeader(http.StatusOK)` a quem realizou a chamada.
+Dentro de nossos dois servidores, fazemos com que um deles tenha um `time.Sleep` quando receber a requisição para torná-lo propositalmente mais lento que o outro. Ambos os servidores, então, devolvem uma resposta `OK` com `w.WriteHeader(http.StatusOK)` a quem realizou a chamada.
 
-Se você rodar o teste novamente agora ele definitivamente irá passar e deve ser mais rápido. Brinque com os __sleeps__ para quebrar o teste propositalmente.
+Se você rodar o teste novamente, ele definitivamente irá passar e deve ser mais rápido. Brinque com os __sleeps__ para quebrar o teste propositalmente.
 
-## Refatorar
+## Refatoração
 
 Temos algumas duplicações tanto em nosso código de produção quanto em nosso código de teste.
 
 ```go
 func Corredor(a, b string) (vencedor string) {
-    duracaoA := medirTempoResposta(a)
-    duracaoB := medirTempoResposta(b)
+	duracaoA := medirTempoDeResposta(a)
+	duracaoB := medirTempoDeResposta(b)
 
-    if duracaoA < duracaoB {
-        return a
-    }
+	if duracaoA < duracaoB {
+		return a
+	}
 
-    return b
+	return b
 }
 
-func medirTempoResposta(url string) time.Duration {
-    inicio := time.Now()
-    http.Get(url)
-    return time.Since(inicio)
+func medirTempoDeResposta(URL string) time.Duration {
+	inicio := time.Now()
+	http.Get(URL)
+	return time.Since(inicio)
 }
 ```
 
@@ -157,48 +157,48 @@ Essa "enxugada" torna nosso código `Corredor` bem mais legível.
 ```go
 func TestCorredor(t *testing.T) {
 
-    servidorLento := criarServidorDemorado(20 * time.Millisecond)
-    servidorRapido := criarServidorDemorado(0 * time.Millisecond)
+	servidorLento := criarServidorComAtraso(20 * time.Millisecond)
+	servidorRapido := criarServidorComAtraso(0 * time.Millisecond)
 
-    defer servidorLento.Close()
-    defer servidorRapido.Close()
+	defer servidorLento.Close()
+	defer servidorRapido.Close()
 
-    urlLenta := servidorLento.URL
-    urlRapida := servidorRapido.URL
+	URLLenta := servidorLento.URL
+	URLRapida := servidorRapido.URL
 
-    esperado := urlRapida
-    obteve := Corredor(urlLenta, urlRapida)
+	esperado := URLRapida
+	resultado := Corredor(URLLenta, URLRapida)
 
-    if obteve != esperado {
-        t.Errorf("obteve '%s', esperado '%s'", obteve, esperado)
-    }
+	if resultado != esperado {
+		t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+	}
 }
 
-func criarServidorDemorado(demora time.Duration) *httptest.Server {
-    return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        time.Sleep(demora)
-        w.WriteHeader(http.StatusOK)
-    }))
+func criarServidorComAtraso(atraso time.Duration) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(atraso)
+		w.WriteHeader(http.StatusOK)
+	}))
 }
 ```
 
-Nós refatoramos criando nossos servidores falsos numa função chamada `criarServidorDemorado` para remover alguns códigos desnecessários do nosso teste e reduzir repetições.
+Fizemos a refatoração criando nossos servidores falsos numa função chamada `criarServidorComAtraso` para remover alguns códigos desnecessários do nosso teste e reduzir repetições.
 
 ### `defer`
 
-Ao chamar uma função com o prefixo `defer`, ela será chamada _ao final da função que a contém_.
+Ao chamar uma função com o prefixo `defer`, ela será chamada _após o término da função que a contém_.
 
-As vezes você vai precisar liberar recursos, como fechar um arquivo ou, como no nosso caso, fechar um servidor para que esse não continue escutando a uma porta.
+Às vezes você vai precisar liberar recursos, como fechar um arquivo ou, como no nosso caso, fechar um servidor para que esse não continue escutando a uma porta.
 
-Você deseja que isso seja executado ao final de uma função, mas mantenha a instrução próxima de onde foi criado o servidor para o benefício de futuros leitores do código.
+Utilizamos o `defer` quando queremos que a função seja executada no final de uma função, mas mantendo essa instrução próxima de onde o servidor foi criado para facilitar a vida das pessoas que forem ler o código futuramente.
 
 Nossa refatoração é uma melhoria e uma solução razoável dados os recursos de Go que vimos até aqui, mas podemos deixar essa solução ainda mais simples.
 
 ### Sincronizando processos
-* Por quê estamos testando a velocidade dos sites sequencialmente quando Go é ótimo com concorrência? Devemos conseguir verificar ambos ao mesmo tempo.
+* Por que estamos testando a velocidade dos sites sequencialmente quando Go é ótimo com concorrência? Devemos conseguir verificar ambos ao mesmo tempo.
 * Não nos preocupamos com o _tempo exato de resposta_ das requisições, apenas queremos saber qual retorna primeiro.
 
-Para fazer isso, vamos introduzir uma nova construção chamada `select` que nos ajudará a sincronizar os processos de forma mais fácil e clara.
+Para fazer isso, vamos apresentar uma nova construção chamada `select` que nos ajudará a sincronizar os processos de forma mais fácil e clara.
 
 ```go
 func Corredor(a, b string) (vencedor string) {
@@ -210,10 +210,10 @@ func Corredor(a, b string) (vencedor string) {
     }
 }
 
-func ping(url string) chan bool {
+func ping(URL string) chan bool {
     ch := make(chan bool)
     go func() {
-        http.Get(url)
+        http.Get(URL)
         ch <- true
     }()
     return ch
@@ -224,19 +224,19 @@ func ping(url string) chan bool {
 
 Definimos a função `ping` que cria um `chan bool` e a retorna.
 
-No nosso caso, não nos _importamos_ com o tipo enviado no canal, _só queremos enviar um sinal_ para dizer que terminamos então booleanos já servem.
+No nosso caso, não nos _importamos_ com o tipo enviado no canal, _só queremos enviar um sinal_ para dizer que terminamos, então booleanos já servem.
 
-Dentro da mesma função, iniciamos a goroutine que enviará um sinal a esse canal uma vez que esteja completa a `http.Get(url)`.
+Dentro da mesma função, iniciamos a goroutine que enviará um sinal a esse canal uma vez que a função `http.Get(URL)` tenha sido finalizada.
 
 #### `select`
 
-Se você se lembrar do capítulo de concorrência, é possível esperar os valores serem enviados a um canal com `variavel := <-ch`. Isso é uma chamada _bloqueante_, pois está aguardando por um valor.
+Se você se lembrar do capítulo de [concorrência](concorrencia.md), é possível esperar os valores serem enviados a um canal com `variavel := <-ch`. Isso é uma chamada _bloqueante_, pois está aguardando por um valor.
 
-O que o `select` te premite fazer é aguardar _múltiplos_ canais. O primeiro a enviar um valor "vence" e o código abaixo do `case` é executado.
+O que o `select` te permite fazer é aguardar _múltiplos_ canais. O primeiro a enviar um valor "vence" e o código abaixo do `case` é executado.
 
-Nós usamos `ping` em nosso `select` para configurar um canal para cada uma de nossas `URL`s. Qualquer um que escrever a esse canal primeiro vai ter seu código executado no `select`, que resultará nessa `URL` sendo retornada \(e consequentemente a vencedora\).
+Nós usamos `ping` em nosso `select` para configurar um canal para cada uma de nossas `URL`s. Qualquer um que enviar para esse canal primeiro vai ter seu código executado no `select`, que resultará nessa `URL` sendo retornada \(que consequentemente será a vencedora\).
 
-Após essas mudanças a intenção por trás de nosso código é bem clara e sua implementação efetivamente mais simples.
+Após essas mudanças, a intenção por trás de nosso código fica bem clara e sua implementação efetivamente mais simples.
 
 ### Limites de tempo
 
@@ -245,9 +245,9 @@ Nosso último requisito era retornar um erro se o `Corredor` demorar mais que 10
 ## Escreva o teste primeiro
 
 ```go
-t.Run("retorna um erro se o teste não responder dentro de 10s", func(t *testing.T) {
-    servidorA := criarServidorDemorado(11 * time.Second)
-    servidorB := criarServidorDemorado(12 * time.Second)
+t.Run("retorna um erro se o servidor não responder dentro de 10s", func(t *testing.T) {
+    servidorA := criarServidorComAtraso(11 * time.Second)
+    servidorB := criarServidorComAtraso(12 * time.Second)
 
     defer servidorA.Close()
     defer servidorB.Close()
@@ -255,14 +255,14 @@ t.Run("retorna um erro se o teste não responder dentro de 10s", func(t *testing
     _, err := Corredor(servidorA.URL, servidorB.URL)
 
     if err == nil {
-        t.Error("esperava um erro, mas não obtive um.")
+        t.Error("esperava um erro, mas não obtive um")
     }
 })
 ```
 
-Fizemos nossos servidores de teste demorarem mais que 10s para retornar para exercitar esse cenário e estamos esperando que `Corredor` retorne dois valores agora, a URL vencedora \(que ignoramos nesse teste com `_`\) e um `erro`.
+Fizemos nossos servidores de teste demorarem mais que 10s para retornar para exercitar esse cenário e agora estamos esperando que `Corredor` retorne dois valores: a URL vencedora \(que ignoramos nesse teste com `_`\) e um `erro`.
 
-## Tente rodar o teste
+## Execute o teste
 
 `./corredor_test.go:37:10: assignment mismatch: 2 variables but 1 values`
 
@@ -279,11 +279,11 @@ func Corredor(a, b string) (vencedor string, erro error) {
 }
 ```
 
-Altere a assinatura de `Corredor` para retornar o vencedor e um `erro`. Retorne `nil` para nossos casos de sucesso.
+Alteramos a assinatura de `Corredor` para retornar o vencedor e um `erro`. Retornamos `nil` para nossos casos de sucesso.
 
-O compilador vai reclamar sobre seu _ primeiro teste_ apenas olhando para um valor, então altere essa linha para `obteve, _ := Corredor(urlLenta, urlRapida)`, sabendo disso devemos verificar se _não_ obteremos um erro em nosso cenário de sucesso.
+O compilador vai reclamar sobre seu _primeiro teste_ esperar apenas um valor, então altere essa linha para `obteve, _ := Corredor(urlLenta, urlRapida)`. Sabendo disso devemos verificar se _não_ obteremos um erro em nosso caso de sucesso.
 
-Se executar isso agora, após 11 segundos irá falhar.
+Se executar isso agora, o teste irá falhar após 11 segundos.
 
 ```text
 --- FAIL: TestCorredor (12.00s)
@@ -305,10 +305,10 @@ func Corredor(a, b string) (vencedor string, erro error) {
     }
 }
 ```
-`time.After` é uma função muito conveniente quando usamos `select`. Embora não ocorra em nosso caso, você pode escrever um código que bloqueia para sempre se os canais que estiver ouvindo nunca retornarem um valor.
+`time.After` é uma função muito útil quando usamos `select`. Embora não ocorra em nosso caso, você pode escrever um código que bloqueia para sempre se os canais que o `select` estiver ouvindo nunca retornarem um valor.
  `time.After` retorna um `chan` \(como `ping`\) e te enviará um sinal após a quantidade de tempo definida.
 
- Para nós isso é perfeito; se `a` ou `b` conseguir retornar vencerá, mas se chegar a 10 segundos então nosso `time.After` nos enviará um sinal e retornaremos um `erro`.
+ Para nós isso é perfeito; se `a` ou `b` conseguir retornar teremos um vencedor, mas se chegar a 10 segundos nosso `time.After` nos enviará um sinal e retornaremos um `erro`.
 
 ### Testes lentos
 
@@ -333,19 +333,19 @@ Nosso teste não irá compilar pois não fornecemos um tempo de expiração.
 
 Antes de nos apressar para adicionar esse valor padrão a ambos os testes, vamos _ouvi-los_.
 
-* Nos importamos com o tempo excedido em nosso teste "feliz"?
+* Nos importamos com o tempo excedido em nosso caso de teste de sucesso?
 * Os requisitos foram explícitos sobre o tempo limite?
 
 Dado esse conhecimento, vamos fazer uma pequena refatoração para ser simpático aos nossos testes e aos usuários de nosso código.
 
 ```go
-var limiteDezSegundos = 10 * time.Second
+var limiteDeDezSegundos = 10 * time.Second
 
 func Corredor(a, b string) (vencedor string, erro error) {
-    return CorredorConfiguravel(a, b, limiteDezSegundos)
+    return Configuravel(a, b, limiteDeDezSegundos)
 }
 
-func CorredorConfiguravel(a, b string, tempoLimite time.Duration) (vencedor string, erro error) {
+func Configuravel(a, b string, tempoLimite time.Duration) (vencedor string, erro error) {
     select {
     case <-ping(a):
         return a, nil
@@ -357,56 +357,56 @@ func CorredorConfiguravel(a, b string, tempoLimite time.Duration) (vencedor stri
 }
 ```
 
-Nossos usuários e nosso primeiro teste podem utilizar `Corredor` \(que usa `CorredorConfiguravel` por baixo dos panos\) e nosso caminho triste pode usar `CorredorConfiguravel`.
+Nossos usuários e nosso primeiro teste podem utilizar `Corredor` \(que usa `Configuravel` por baixo dos panos\) e nosso caminho triste pode usar `Configuravel`.
 
 ```go
 func TestCorredor(t *testing.T) {
+	t.Run("compara a velocidade de servidores, retornando o endereço do mais rápido", func(t *testing.T) {
+		servidorLento := criarServidorComAtraso(20 * time.Millisecond)
+		servidorRapido := criarServidorComAtraso(0 * time.Millisecond)
 
-    t.Run("compara a velocidade de servidores, retornando o endereço do mais rapido", func(t *testing.T) {
-        servidorLento := criarServidorDemorado(20 * time.Millisecond)
-        servidorRapido := criarServidorDemorado(0 * time.Millisecond)
+		defer servidorLento.Close()
+		defer servidorRapido.Close()
 
-        defer servidorLento.Close()
-        defer servidorRapido.Close()
+		URLLenta := servidorLento.URL
+		URLRapida := servidorRapido.URL
 
-        urlLenta := servidorLento.URL
-        urlRapida := servidorRapido.URL
+		esperado := URLRapida
+		resultado, err := Corredor(URLLenta, URLRapida)
 
-        esperado := urlRapida
-        obteve, err := Corredor(urlLenta, urlRapida)
+		if err != nil {
+			t.Fatalf("não esperava um erro, mas obteve um %v", err)
+		}
 
-        if err != nil {
-            t.Fatalf("não esperava um erro, mas obteve um %v", err)
-        }
+		if resultado != esperado {
+			t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+		}
+	})
 
-        if obteve != esperado {
-            t.Errorf("obteve '%s', esperado '%s'", obteve, esperado)
-        }
-    })
+	t.Run("retorna um erro se o servidor não responder dentro de 10s", func(t *testing.T) {
+		servidor := criarServidorComAtraso(25 * time.Millisecond)
 
-    t.Run("retorna um erro se o servidor não responder dentro de 10s", func(t *testing.T) {
-        servidor := criarServidorDemorado(25 * time.Millisecond)
+		defer servidor.Close()
 
-        defer servidor.Close()
+		_, err := Configuravel(servidor.URL, servidor.URL, 20*time.Millisecond)
 
-        _, err := CorredorConfiguravel(servidor.URL, servidor.URL, 20*time.Millisecond)
-
-        if err == nil {
-            t.Error("esperava um erro, mas não obtive um.")
-        }
-    })
+		if err == nil {
+			t.Error("esperava um erro, mas não obtive um")
+		}
+	})
 }
 ```
+
 Adicionei uma verificação final ao primeiro teste para saber se não pegamos um `erro`.
 
-## Resumindo
+## Resumo
 
 ### `select`
 
-* Ajuda você a esperar em vários canais.
-* As vezes você gostaria de incluir `time.After` em um de seus `cases` para prevenir que seu sistema bloqueie para sempre.
+* Ajuda você a escutar vários canais.
+* Às vezes você pode precisar incluir `time.After` em um de seus `cases` para prevenir que seu sistema fique bloqueado para sempre.
 
 ### `httptest`
 
 * Uma forma conveniente de criar servidores de teste para que se tenha testes confiáveis e controláveis.
-* Usando as mesmas interfaces que servidores `net/http` reais, o que é consistente e menos para você aprender.
+* Usa as mesmas interfaces que servidores `net/http` reais, o que torna seu sistema consistente e gera menos coisas para você aprender.
