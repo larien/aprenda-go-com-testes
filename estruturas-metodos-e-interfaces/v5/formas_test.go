@@ -33,5 +33,4 @@ func TestArea(t *testing.T) {
 		circulo := Circulo{10}
 		verificaArea(t, circulo, 314.1592653589793)
 	})
-
 }

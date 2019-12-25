@@ -34,5 +34,4 @@ func TestArea(t *testing.T) {
 			t.Errorf("resultado %.2f, esperado %.2f", resultado, esperado)
 		}
 	})
-
 }
