@@ -6,12 +6,12 @@
 ## Primeiros Passos com Go
 
 -   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
--   [Olá, mundo](primeiros-passos-com-go/hello-world.md)
+-   [Olá, mundo](primeiros-passos-com-go/ola-mundo.md)
 -   [Inteiros](primeiros-passos-com-go/inteiros.md)
 -   [Iteração](primeiros-passos-com-go/iteracao.md)
 -   [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md)
--   [Structs, métodos e interfaces](primeiros-passos-com-go/structs-methods-and-interfaces.md)
--   [Ponteiros e erros](primeiros-passos-com-go/pointers-and-errors.md)
+-   [Estruturas, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces.md)
+-   [Ponteiros e erros](primeiros-passos-com-go/ponteiros-e-erros.md)
 -   [Maps](primeiros-passos-com-go/maps.md)
 -   [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md)
 -   [Mocking](primeiros-passos-com-go/mocks.md)

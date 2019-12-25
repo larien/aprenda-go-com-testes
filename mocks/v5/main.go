@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-/// Sleeper te permite definir pausas
+// Sleeper te permite definir pausas
 type Sleeper interface {
 	Pausa()
 }
