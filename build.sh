@@ -2,7 +2,7 @@
 
 set -e
 
-go get github.com/gorilla/websocket #todo vendor this or learn about the module stuff!
+# go get github.com/gorilla/websocket
 
 go test ./...
 go vet ./...
