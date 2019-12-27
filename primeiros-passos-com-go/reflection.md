@@ -1,137 +1,144 @@
 # Reflection
 
-[From Twitter](https://twitter.com/peterbourgon/status/1011403901419937792?s=09)
+[Do Twitter](https://twitter.com/peterbourgon/status/1011403901419937792?s=09)
 
-> golang challenge: write a function `walk(x interface{}, fn func(string))` which takes a struct `x` and calls `fn` for all strings fields found inside. difficulty level: recursively.
+> desafio golang: escreva uma função `percorre(x interface{}, fn func(string))` que recebe uma struct `x` e chama `fn` para todos os campos string encontrados dentro dela. nível de dificuldade: recursivamente.
 
-To do this we will need to use _reflection_.
+Para fazer isso vamos precisar usar a `reflection`.
 
-> Reflection in computing is the ability of a program to examine its own structure, particularly through types; it's a form of metaprogramming. It's also a great source of confusion.
+> A reflexão em computação é a habilidade de um programa examinar sua própria estrutura, particularmente através de tipos; é uma forma de metaprogramação. Também é uma ótima fonte de confusão.
 
-From [The Go Blog: Reflection](https://blog.golang.org/laws-of-reflection)
+De [The Go Blog: Reflection](https://blog.golang.org/laws-of-reflection)
 
-## What is `interface`?
+## O que é `interface`?
 
-We have enjoyed the type-safety that Go has offered us in terms of functions that work with known types, such as `string`, `int` and our own types like `BankAccount`.
+Aproveitamos a segurança de tipos que o Go nos ofereceu em termos de funções que funcionam com tipos conhecidos, como `string`, `int` e nossos próprios tipos como `ContaBancaria`.
 
-This means that we get some documentation for free and the compiler will complain if you try and pass the wrong type to a function.
+Isso significa que temos documentação de praxe e o compilador vai reclamar se você tentar passar o tipo errado para uma função.
 
-You may come across scenarios though where you want to write a function where you don't know the type at compile time.
+Você pode se deparar com situações em que você quer escrever uma função, só que não sabe o tipo em tempo de compilação.
 
-Go lets us get around this with the type `interface{}` which you can think of as just _any_ type.
+Go nos permite contornar isso com o tipo `interface{}` que você pode relacionar com _qualquer_ tipo.
 
-So `walk(x interface{}, fn func(string))` will accept any value for `x`.
+Logo, `percorre(x interface{}, fn func(string))` aceitará qualquer valor para `x`.
 
-### So why not use `interface` for everything and have really flexible functions?
+### Então por que não usar `interface` para tudo e ter funções bem flexíveis?
 
-* As a user of a function that takes `interface` you lose type safety. What if you meant to pass `Foo.bar` of type `string` into a function but instead did `Foo.baz` which is an `int`? The compiler won't be able to inform you of your mistake. You also have no idea _what_ you're allowed to pass to a function. Knowing that a function takes a `UserService` for instance is very useful.
-* As a writer of such a function, you have to be able to inspect _anything_ that has been passed to you and try and figure out what the type is and what you can do with it. This is done using _reflection_. This can be quite clumsy and difficult to read and is generally less performant \(as you have to do checks at runtime\).
+* Como usuário de uma função que usa `interface`, você perde a segurança de tipos. E se você quisesse passar `Foo.bar` do tipo `string` para uma função, mas ao invés disso passa `Foo.baz` do tipo `int`? O compilador não vai ser capaz de te informar do seu erro. Você também não tem ideia _do que_ pode passar para uma função. Saber que uma função recebe um `ServicoDeUsuario`, por exemplo, é muito útil.
 
-In short only use reflection if you really need to.
+Resumindo, só use _reflection_ quando realmente precisar.
 
-If you want polymorphic functions, consider if you could design it around an interface \(not `interface`, confusingly\) so that users can use your function with multiple types if they implement whatever methods you need for your function to work.
+Se quiser funções polimórficas, considere desenvolvê-la em torno de uma interface (não `interface{}`, só para esclarecer) para que os usuários possam usar sua função com vários tipos se implementarem os métodos que você precisar para a sua função funcionar.
 
-Our function will need to be able to work with lots of different things. As always we'll take an iterative approach, writing tests for each new thing we want to support and refactoring along the way until we're done.
+Nossa função vai precisar ser capaz de trabalhar com várias coisas diferentes. Como sempre, vamos usar uma abordagem iterativa, escrevendo testes para cada coisa nova que quisermos dar suporte e refatorando ao longo do caminho até finalizarmos.
 
-## Write the test first
+# Escreva o teste primeiro
 
-We'll want to call our function with a struct that has a string field in it \(`x`\). Then we can spy on the function \(`fn`\) passed in to see if it is called.
+Vamos chamar nossa função com uma estrutura que tem um campo string dentro (`x`). Depois, podemos espiar a função (`fn`) passada para ela para ver se ela foi chamada.
 
 ```go
-func TestWalk(t *testing.T) {
+func TestPercorre(t *testing.T) {
 
-    expected := "Chris"
-    var got []string
+    esperado := "Chris"
+    var resultado []string
 
     x := struct {
-        Name string
-    }{expected}
+        Nome string
+    }{esperado}
 
-    walk(x, func(input string) {
-        got = append(got, input)
+    percorre(x, func(entrada string) {
+        resultado = append(resultado, entrada)
     })
 
-    if len(got) != 1 {
-        t.Errorf("wrong number of function calls, got %d want %d", len(got), 1)
+    if len(resultado) != 1 {
+        t.Errorf("número incorreto de chamadas de função: resultado %d, esperado %d", len(resultado), 1)
     }
 }
 ```
 
-* We want to store a slice of strings \(`got`\) which stores which strings were passed into `fn` by `walk`. Often in previous chapters, we have made dedicated types for this to spy on function/method invocations but in this case, we can just pass in an anonymous function for `fn` that closes over `got`.
-* We use an anonymous `struct` with a `Name` field of type string to go for the simplest "happy" path.
-* Finally, call `walk` with `x` and the spy and for now just check the length of `got`, we'll be more specific with our assertions once we've got something very basic working.
-
-## Try to run the test
+* Queremos armazenas um sice de strings (`resultado`) que armazena quais strings foram passadas dentro de `fn` pelo `percorre`. Algumas vezes, nos capítulos anteriores, criamos tipos dedicados para isso para espionar chamadas de função/método, mas nesse caso vamos apenas passá-lo em uma função anônima para `fn` que acaba em `resultado`.
+* Usamos uma `struct` anônima com um campo `Nome` do tipo string para partir para caminho "feliz" e mais simples.
+* Finalmente, chamamos `percorre` com `x` e o espião e por enquanto só verificamos o tamanho de `resultado`. Teremos mais precisão nas nossas verificações quando tivermos algo bem básico funcionando.
+  
+## Tente executar o teste
 
 ```text
-./reflection_test.go:21:2: undefined: walk
+./reflection_test.go:21:2: undefined: percorre
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
-We need to define `walk`
+Precisamos definir `percorre`.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
+func percorre(x interface{}, fn func(entrada string)) {
 
 }
 ```
 
-Try and run the test again
+Execute o teste novamente:
 
 ```text
-=== RUN   TestWalk
---- FAIL: TestWalk (0.00s)
-    reflection_test.go:19: wrong number of function calls, got 0 want 1
+=== RUN   TestPercorre
+--- FAIL: TestPercorre (0.00s)
+    reflection_test.go:19: número incorreto de chamadas de função: resultado 0, esperado 1
 FAIL
 ```
 
-## Write enough code to make it pass
+### Escreva código o suficiente para fazer o teste passar
 
-We can call the spy with any string to make this pass.
+Agora podemos chamar o espião com qualquer string para fazer o teste passar.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    fn("I still can't believe South Korea beat Germany 2-0 to put them last in their group")
+func percorre(x interface{}, fn func(entrada string)) {
+    fn("Ainda não acredito que o Brasil perdeu de 7 a 1")
 }
 ```
 
-The test should now be passing. The next thing we'll need to do is make a more specific assertion on what our `fn` is being called with.
+Agora o teste deve estar passando. A próxima coisa que vamos precisar fazer é criar uma verificação mais específica do que está sendo chamado dentro do nosso `fn`.
 
-## Write the test first
+## Escreva o teste primeiro
 
-Add the following to the existing test to check the string passed to `fn` is correct
+Adicione o código a seguir para o teste existente para verificar se a string passada para `fn` está correta:
 
 ```go
-if got[0] != expected {
-    t.Errorf("got '%s', want '%s'", got[0], expected)
+if resultado[0] != esperado {
+    t.Errorf("resultado '%s', esperado '%s'", resultado[0], esperado)
 }
 ```
 
-## Try to run the test
+## Execute o teste
 
 ```text
-=== RUN   TestWalk
---- FAIL: TestWalk (0.00s)
-    reflection_test.go:23: got 'I still can't believe South Korea beat Germany 2-0 to put them last in their group', want 'Chris'
+=== RUN   TestPercorre
+--- FAIL: TestPercorre (0.00s)
+    reflection_test.go:23: resultado 'Ainda não acredito que o Brasil perdeu de 7 a 1', esperado 'Chris'
 FAIL
 ```
 
-## Write enough code to make it pass
+### Escreva código o suficiente para fazer o teste passar
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := reflect.ValueOf(x)
-    field := val.Field(0)
-    fn(field.String())
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x) // ValorDe
+	campo := valor.Field(0)     // Campo
+	fn(campo.String())
 }
 ```
+
+Esse código está _pouco seguro e muito frágil_, mas lembre-se que nosso objetivo quando estamos no "vermelho" (os testes estão falhando) é escrever a menor quantidade de código possível. Depois escrevemos mais testes para resolver nossas lacunas.
+
+Precisamos usar o reflection para verificar as propriedades de `x`.
+
+No [pacote reflect](https://godoc.org/reflect) existe uma função chamada `ValueOf` que retorna um `Value` (valor) de determinada variável. Isso nos permite inspecionar um valor, inclusive seus campos usados nas próximas linhas.
+
+Então podemos presumir coisas bem otimistas sobre o valor passado:
 
 This code is _very unsafe and very naive_ but remembers our goal when we are in "red" \(the tests failing\) is to write the smallest amount of code possible. We then write more tests to address our concerns.
 
 We need to use reflection to have a look at `x` and try and look at its properties.
 
-The [reflect package](https://godoc.org/reflect) has a function `ValueOf` which returns us a `Value` of a given variable. This has ways for us to inspect a value, including its fields which we use on the next line.
+The [reflect package]() has a function `ValueOf` which returns us a `Value` of a given variable. This has ways for us to inspect a value, including its fields which we use on the next line.
 
 We then make some very optimistic assumptions about the value passed in
 
@@ -147,7 +154,7 @@ We're going to be writing a number of tests where we pass in different values an
 We should refactor our test into a table based test to make this easier to continue testing new scenarios.
 
 ```go
-func TestWalk(t *testing.T) {
+func TestPercorre(t *testing.T) {
 
     cases := []struct{
         Name string
@@ -198,8 +205,8 @@ Add the following scenario to the `cases`.
 ## Try to run the test
 
 ```text
-=== RUN   TestWalk/Struct_with_two_string_fields
-    --- FAIL: TestWalk/Struct_with_two_string_fields (0.00s)
+=== RUN   TestPercorre/Struct_with_two_string_fields
+    --- FAIL: TestPercorre/Struct_with_two_string_fields (0.00s)
         reflection_test.go:40: got [Chris], want [Chris London]
 ```
 
@@ -242,8 +249,8 @@ Add the following case
 ## Try to run the test
 
 ```text
-=== RUN   TestWalk/Struct_with_non_string_field
-    --- FAIL: TestWalk/Struct_with_non_string_field (0.00s)
+=== RUN   TestPercorre/Struct_with_non_string_field
+    --- FAIL: TestPercorre/Struct_with_non_string_field (0.00s)
         reflection_test.go:46: got [Chris <int Value>], want [Chris]
 ```
 
@@ -328,8 +335,8 @@ Now we can add this to our cases which reads a lot clearer than before
 ## Try to run the test
 
 ```text
-=== RUN   TestWalk/Nested_fields
-    --- FAIL: TestWalk/Nested_fields (0.00s)
+=== RUN   TestPercorre/Nested_fields
+    --- FAIL: TestPercorre/Nested_fields (0.00s)
         reflection_test.go:54: got [Chris], want [Chris London]
 ```
 
@@ -398,7 +405,7 @@ Add this case
 ## Try to run the test
 
 ```text
-=== RUN   TestWalk/Pointers_to_things
+=== RUN   TestPercorre/Pointers_to_things
 panic: reflect: call of reflect.Value.NumField on ptr Value [recovered]
     panic: reflect: call of reflect.Value.NumField on ptr Value
 ```
@@ -482,7 +489,7 @@ Next, we need to cover slices.
 ## Try to run the test
 
 ```text
-=== RUN   TestWalk/Slices
+=== RUN   TestPercorre/Slices
 panic: reflect: call of reflect.Value.NumField on slice Value [recovered]
     panic: reflect: call of reflect.Value.NumField on slice Value
 ```
@@ -606,8 +613,8 @@ Add to the cases
 ## Try to run the test
 
 ```text
-=== RUN   TestWalk/Arrays
-    --- FAIL: TestWalk/Arrays (0.00s)
+=== RUN   TestPercorre/Arrays
+    --- FAIL: TestPercorre/Arrays (0.00s)
         reflection_test.go:78: got [], want [London Reykjavík]
 ```
 
@@ -657,8 +664,8 @@ The final type we want to handle is `map`.
 ## Try to run the test
 
 ```text
-=== RUN   TestWalk/Maps
-    --- FAIL: TestWalk/Maps (0.00s)
+=== RUN   TestPercorre/Maps
+    --- FAIL: TestPercorre/Maps (0.00s)
         reflection_test.go:86: got [], want [Bar Boz]
 ```
 
