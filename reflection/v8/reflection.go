@@ -4,37 +4,37 @@ import (
 	"reflect"
 )
 
-func walk(x interface{}, fn func(input string)) {
-	val := getValue(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
 
-	walkValue := func(value reflect.Value) {
-		walk(value.Interface(), fn)
+	percorreValor := func(valor reflect.Value) {
+		percorre(valor.Interface(), fn)
 	}
 
-	switch val.Kind() {
+	switch valor.Kind() {
 	case reflect.String:
-		fn(val.String())
+		fn(valor.String())
 	case reflect.Struct:
-		for i := 0; i < val.NumField(); i++ {
-			walkValue(val.Field(i))
+		for i := 0; i < valor.NumField(); i++ {
+			percorreValor(valor.Field(i))
 		}
 	case reflect.Slice, reflect.Array:
-		for i := 0; i < val.Len(); i++ {
-			walkValue(val.Index(i))
+		for i := 0; i < valor.Len(); i++ {
+			percorreValor(valor.Index(i))
 		}
 	case reflect.Map:
-		for _, key := range val.MapKeys() {
-			walkValue(val.MapIndex(key))
+		for _, identificador := range valor.MapKeys() {
+			percorreValor(valor.MapIndex(identificador))
 		}
 	}
 }
 
-func getValue(x interface{}) reflect.Value {
-	val := reflect.ValueOf(x)
+func obtemValor(x interface{}) reflect.Value {
+	valor := reflect.ValueOf(x)
 
-	if val.Kind() == reflect.Ptr {
-		val = val.Elem()
+	if valor.Kind() == reflect.Ptr {
+		valor = valor.Elem()
 	}
 
-	return val
+	return valor
 }

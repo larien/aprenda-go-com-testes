@@ -5,39 +5,39 @@ import (
 	"testing"
 )
 
-func TestWalk(t *testing.T) {
+func TestPercorre(t *testing.T) {
 
-	cases := []struct {
-		Name          string
-		Input         interface{}
-		ExpectedCalls []string
+	casos := []struct {
+		Nome              string
+		Entrada           interface{}
+		ChamadasEsperadas []string
 	}{
 		{
-			"Struct with one string field",
+			"Struct com um campo tipo string",
 			struct {
-				Name string
+				Nome string
 			}{"Chris"},
 			[]string{"Chris"},
 		},
 		{
-			"Struct with two string fields",
+			"Struct com dois campos tipo string",
 			struct {
-				Name string
-				City string
-			}{"Chris", "London"},
-			[]string{"Chris", "London"},
+				Nome   string
+				Cidade string
+			}{"Chris", "Londres"},
+			[]string{"Chris", "Londres"},
 		},
 	}
 
-	for _, test := range cases {
-		t.Run(test.Name, func(t *testing.T) {
-			var got []string
-			walk(test.Input, func(input string) {
-				got = append(got, input)
+	for _, teste := range casos {
+		t.Run(teste.Nome, func(t *testing.T) {
+			var resultado []string
+			percorre(teste.Entrada, func(entrada string) {
+				resultado = append(resultado, entrada)
 			})
 
-			if !reflect.DeepEqual(got, test.ExpectedCalls) {
-				t.Errorf("got %v, want %v", got, test.ExpectedCalls)
+			if !reflect.DeepEqual(resultado, teste.ChamadasEsperadas) {
+				t.Errorf("resultado %v, esperado %v", resultado, teste.ChamadasEsperadas)
 			}
 		})
 	}

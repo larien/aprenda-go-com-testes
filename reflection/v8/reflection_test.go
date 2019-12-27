@@ -5,115 +5,109 @@ import (
 	"testing"
 )
 
-func TestWalk(t *testing.T) {
+func TestPercorre(t *testing.T) {
 
-	cases := []struct {
-		Name          string
-		Input         interface{}
-		ExpectedCalls []string
+	casos := []struct {
+		Nome              string
+		Entrada           interface{}
+		ChamadasEsperadas []string
 	}{
 		{
-			"Struct with one string field",
-			struct{ Name string }{"Chris"},
+			"Struct com um campo tipo string",
+			struct {
+				Nome string
+			}{"Chris"},
 			[]string{"Chris"},
 		},
 		{
-			"Struct with two string fields",
+			"Struct com dois campos tipo string",
 			struct {
-				Name string
-				City string
-			}{"Chris", "London"},
-			[]string{"Chris", "London"},
+				Nome   string
+				Cidade string
+			}{"Chris", "Londres"},
+			[]string{"Chris", "Londres"},
 		},
 		{
-			"Struct with non string field",
-			struct {
-				Name string
-				Age  int
-			}{"Chris", 33},
-			[]string{"Chris"},
-		},
-		{
-			"Nested fields",
-			Person{
+			"Campos aninhados",
+			Pessoa{
 				"Chris",
-				Profile{33, "London"},
+				Perfil{33, "Londres"},
 			},
-			[]string{"Chris", "London"},
+			[]string{"Chris", "Londres"},
 		},
 		{
-			"Pointers to things",
-			&Person{
+			"Ponteiros para coisas",
+			&Pessoa{
 				"Chris",
-				Profile{33, "London"},
+				Perfil{33, "Londres"},
 			},
-			[]string{"Chris", "London"},
+			[]string{"Chris", "Londres"},
 		},
 		{
 			"Slices",
-			[]Profile{
-				{33, "London"},
+			[]Perfil{
+				{33, "Londres"},
 				{34, "Reykjavík"},
 			},
-			[]string{"London", "Reykjavík"},
+			[]string{"Londres", "Reykjavík"},
 		},
 		{
 			"Arrays",
-			[2]Profile{
-				{33, "London"},
+			[2]Perfil{
+				{33, "Londres"},
 				{34, "Reykjavík"},
 			},
-			[]string{"London", "Reykjavík"},
+			[]string{"Londres", "Reykjavík"},
 		},
 	}
 
-	for _, test := range cases {
-		t.Run(test.Name, func(t *testing.T) {
-			var got []string
-			walk(test.Input, func(input string) {
-				got = append(got, input)
+	for _, teste := range casos {
+		t.Run(teste.Nome, func(t *testing.T) {
+			var resultado []string
+			percorre(teste.Entrada, func(entrada string) {
+				resultado = append(resultado, entrada)
 			})
 
-			if !reflect.DeepEqual(got, test.ExpectedCalls) {
-				t.Errorf("got %v, want %v", got, test.ExpectedCalls)
+			if !reflect.DeepEqual(resultado, teste.ChamadasEsperadas) {
+				t.Errorf("resultado %v, esperado %v", resultado, teste.ChamadasEsperadas)
 			}
 		})
 	}
 
-	t.Run("with maps", func(t *testing.T) {
-		aMap := map[string]string{
+	t.Run("com maps", func(t *testing.T) {
+		mapA := map[string]string{
 			"Foo": "Bar",
 			"Baz": "Boz",
 		}
 
-		var got []string
-		walk(aMap, func(input string) {
-			got = append(got, input)
+		var resultado []string
+		percorre(mapA, func(input string) {
+			resultado = append(resultado, input)
 		})
 
-		assertContains(t, got, "Bar")
-		assertContains(t, got, "Boz")
+		verificaSeContem(t, resultado, "Bar")
+		verificaSeContem(t, resultado, "Boz")
 	})
 }
 
-type Person struct {
-	Name    string
-	Profile Profile
+type Pessoa struct {
+	Nome   string
+	Perfil Perfil
 }
 
-type Profile struct {
-	Age  int
-	City string
+type Perfil struct {
+	Idade  int
+	Cidade string
 }
 
-func assertContains(t *testing.T, haystack []string, needle string) {
-	contains := false
-	for _, x := range haystack {
-		if x == needle {
-			contains = true
+func verificaSeContem(t *testing.T, palheiro []string, agulha string) {
+	contem := false
+	for _, x := range palheiro {
+		if x == agulha {
+			contem = true
 		}
 	}
-	if !contains {
-		t.Errorf("expected %+v to contain '%s' but it didnt", haystack, needle)
+	if !contem {
+		t.Errorf("esperava-se que %+v contivesse '%s', mas não continha", palheiro, agulha)
 	}
 }

@@ -4,14 +4,14 @@ import (
 	"reflect"
 )
 
-func walk(x interface{}, fn func(input string)) {
-	val := reflect.ValueOf(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x)
 
-	for i := 0; i < val.NumField(); i++ {
-		field := val.Field(i)
+	for i := 0; i < valor.NumField(); i++ {
+		campo := valor.Field(i)
 
-		if field.Kind() == reflect.String {
-			fn(field.String())
+		if campo.Kind() == reflect.String { // Tipo
+			fn(campo.String())
 		}
 	}
 }

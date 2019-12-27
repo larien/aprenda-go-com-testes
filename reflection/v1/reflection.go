@@ -2,8 +2,8 @@ package main
 
 import "reflect"
 
-func walk(x interface{}, fn func(input string)) {
-	val := reflect.ValueOf(x)
-	field := val.Field(0)
-	fn(field.String())
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x) // ValorDe
+	campo := valor.Field(0)     // Campo
+	fn(campo.String())
 }
