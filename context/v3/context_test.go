@@ -9,9 +9,9 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	data := "hello, world"
+	data := "olá, mundo"
 
-	t.Run("returns data from store", func(t *testing.T) {
+	t.Run("retorna dados da store", func(t *testing.T) {
 		store := &SpyStore{response: data, t: t}
 		svr := Server(store)
 
@@ -21,11 +21,11 @@ func TestServer(t *testing.T) {
 		svr.ServeHTTP(response, request)
 
 		if response.Body.String() != data {
-			t.Errorf(`got "%s", want "%s"`, response.Body.String(), data)
+			t.Errorf(`recebi "%s", quero "%s"`, response.Body.String(), data)
 		}
 	})
 
-	t.Run("tells store to cancel work if request is cancelled", func(t *testing.T) {
+	t.Run("avisa a store para cancelar o trabalho se a requisicao for cancelada", func(t *testing.T) {
 		store := &SpyStore{response: data, t: t}
 		svr := Server(store)
 
@@ -40,7 +40,7 @@ func TestServer(t *testing.T) {
 		svr.ServeHTTP(response, request)
 
 		if response.written {
-			t.Error("a response should not have been written")
+			t.Error("uma resposta nao deveria ter sido escrita")
 		}
 	})
 }

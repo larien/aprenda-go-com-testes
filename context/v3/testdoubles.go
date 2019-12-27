@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-// SpyStore allows you to simulate a store and see how its used
+// SpyStore permite que você simule uma store e veja como ela é usada
 type SpyStore struct {
 	response string
 	t        *testing.T
 }
 
-// Fetch returns response after a short delay
+// Fetch retorna a resposta após um curto atraso
 func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
 	data := make(chan string, 1)
 
@@ -23,7 +23,7 @@ func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
 		for _, c := range s.response {
 			select {
 			case <-ctx.Done():
-				s.t.Log("spy store got cancelled")
+				s.t.Log("spy store foi cancelado")
 				return
 			default:
 				time.Sleep(10 * time.Millisecond)
@@ -41,24 +41,24 @@ func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
 	}
 }
 
-// SpyResponseWriter checks whether a response has been written
+// SpyResponseWriter verifica se uma resposta foi escrita
 type SpyResponseWriter struct {
 	written bool
 }
 
-// Header will mark written to true
+// Header marcará escrito (written) para verdadeiro
 func (s *SpyResponseWriter) Header() http.Header {
 	s.written = true
 	return nil
 }
 
-// Write will mark written to true
+// Write marcará escrito (written) para verdadeiro
 func (s *SpyResponseWriter) Write([]byte) (int, error) {
 	s.written = true
-	return 0, errors.New("not implemented")
+	return 0, errors.New("não implementado")
 }
 
-// WriteHeader will mark written to true
+// WriteHeader marcará escrito (written) para verdadeiro
 func (s *SpyResponseWriter) WriteHeader(statusCode int) {
 	s.written = true
 }
