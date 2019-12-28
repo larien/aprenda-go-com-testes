@@ -24,7 +24,7 @@ Ela retorna um map de cada URL verificado com um valor booleano - `true` para um
 
 Você também tem que passar um `VerificadorWebsite` como parâmetro, que leva um URL e retorna um boleano. Isso é usado pela função que verifica todos os websites.
 
-Usando a [injeção de dependência](injecao-de-dependencia.md), conseguimos testar a função sem fazer chamadas HTTP de verdade, tornando o teste seguro e rápido.
+Usando a [injeção de dependência](injecao-de-dependencia/injecao-de-dependencia.md), conseguimos testar a função sem fazer chamadas HTTP de verdade, tornando o teste seguro e rápido.
 
 Aqui está o teste que escreveram:
 

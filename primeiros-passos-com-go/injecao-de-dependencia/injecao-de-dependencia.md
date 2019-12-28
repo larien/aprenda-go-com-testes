@@ -1,6 +1,6 @@
 # Injeção de dependência
 
-[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/injecao-de-dependencia)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/injecao-de-dependencia)
 
 Presume-se que você tenha lido a seção de `structs` antes, já que será necessário saber um pouco sobre interfaces para entender este capítulo.
 
@@ -11,7 +11,7 @@ Há muitos mal entendidos relacionados à injeção de dependência na comunidad
 -   Facilita seus testes
 -   Permite que você escreva funções ótimas para propósitos diversos.
 
-Queremos criar uma função que cumprimenta alguém, assim como a que fizemos no capítulo [Olá, mundo](https://github.com/larien/learn-go-with-tests/tree/master/ola-mundo), mas dessa vez vamos testar o _print de verdade_.
+Queremos criar uma função que cumprimenta alguém, assim como a que fizemos no capítulo [Olá, mundo](../ola-mundo/ola-mundo.md), mas dessa vez vamos testar o _print de verdade_.
 
 Para recapitular, a função era parecida com isso:
 

@@ -78,7 +78,7 @@ Isso pode ou não fazer com que o teste passe para você. O problema é que esta
 
 Testar códigos que usam HTTP é tão comum que Go tem ferramentas na biblioteca padrão para te ajudar a testá-los.
 
-Nos capítulos de [mock](mocks.md) e [injeção de dependências](injecao-de-dependencia.md), falamos sobre como idealmente não queremos depender de serviços externos para testar nosso código, pois:
+Nos capítulos de [mock](mocks.md) e [injeção de dependências](../injecao-de-dependencia/injecao-de-dependencia.md), falamos sobre como idealmente não queremos depender de serviços externos para testar nosso código, pois:
 
 * Podem ser lentos
 * Podem ser inconsistentes

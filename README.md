@@ -29,7 +29,7 @@
 6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces/estruturas-metodos-e-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
 7. [Ponteiros e erros](primeiros-passos-com-go/ponteiros-e-erros/ponteiros-e-erros.md) - Aprenda sobre ponteiros e erros.
 8. [Maps](primeiros-passos-com-go/maps/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
-9. [Injeção de dependência](primeiros-passos-com-go/injecao-de-dependencia.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
+9. [Injeção de dependência](primeiros-passos-com-go/injecao-de-dependencia/injecao-de-dependencia.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
 10. [Mocking](primeiros-passos-com-go/mocks.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
 11. [Concorrência](primeiros-passos-com-go/concorrencia.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
 12. [Select](primeiros-passos-com-go/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.

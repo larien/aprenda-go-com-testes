@@ -35,7 +35,7 @@ Podemos separar essa tarefa da seguinte forma:
 
 ## Escreva o teste primeiro
 
-Nosso software precisa imprimir para a saída. Vimos como podemos usar a injeção de dependência para facilitar nosso teste na [seção anterior](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/injecao-de-dependencia.md).
+Nosso software precisa imprimir para a saída. Vimos como podemos usar a injeção de dependência para facilitar nosso teste na [seção anterior](../injecao-de-dependencia/injecao-de-dependencia.md).
 
 ```go
 func TestContagem(t *testing.T) {
@@ -52,7 +52,7 @@ func TestContagem(t *testing.T) {
 }
 ```
 
-Se tiver dúvidas sobre o `buffer`, leia a [seção anterior](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/injecao-de-dependencia.md) novamente.
+Se tiver dúvidas sobre o `buffer`, leia a [seção anterior](../injecao-de-dependencia/injecao-de-dependencia.md) novamente.
 
 Sabemos que nossa função `Contagem` precisa escrever dados em algum lugar e o `io.Writer` é a forma de capturarmos essa saída como uma interface em Go.
 
