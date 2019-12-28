@@ -1,6 +1,6 @@
 # Olá, mundo
 
-[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/ola-mundo)
 
 É comum o primeiro programa em uma nova linguagem ser um _Olá, mundo_.
 
@@ -460,7 +460,7 @@ func Ola(nome string, idioma string) string {
 
 Faça um teste para incluir agora uma saudação no idioma de sua escolha e você deve ver como é simples estender nossa _fantástica_ função.
 
-### Uma ... última ... refatoração?
+### Uma...última...refatoração?
 
 Você pode achar que talvez nossa função esteja ficando um pouco grande. A refatoração mais simples para isso seria extrair algumas funcionalidades para outra função.
 
