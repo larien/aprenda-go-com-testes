@@ -7,7 +7,7 @@
 
 -   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
 -   [Olá, mundo](primeiros-passos-com-go/ola-mundo/ola-mundo.md)
--   [Inteiros](primeiros-passos-com-go/inteiros.md)
+-   [Inteiros](primeiros-passos-com-go/inteiros/inteiros.md)
 -   [Iteração](primeiros-passos-com-go/iteracao.md)
 -   [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md)
 -   [Estruturas, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces.md)

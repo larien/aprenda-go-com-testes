@@ -1,6 +1,6 @@
 # Inteiros
 
-**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larien/learn-go-with-tests/tree/master/inteiros)**
+**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/inteiros)**
 
 Inteiros funcionam como é de se esperar. Vamos escrever uma função de soma para testar algumas coisas. Crie um arquivo de teste chamado `adicionador_test.go` e escreva o seguinte código.
 
@@ -39,7 +39,7 @@ Inspecione o erro de compilação
 Escreva apenas o suficiente de código para satisfazer o compilador _e nada mais_ - lembre-se de que queremos verificar se nossos testes falham pelo motivo certo.
 
 ```go
-package inteirosinteiros
+package inteiros
 
 func Adiciona(x, y int) int {
     return 0
