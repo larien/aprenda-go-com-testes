@@ -1,6 +1,6 @@
 # Sync
 
-[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/sync)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/sync)
 
 Queremos fazer um contador que é seguro para ser usado concorrentemente.
 

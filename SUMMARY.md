@@ -18,7 +18,7 @@
 -   [Concorrência](primeiros-passos-com-go/concorrencia/concorrencia.md)
 -   [Select](primeiros-passos-com-go/select/select.md)
 -   [Reflection](primeiros-passos-com-go/reflection/reflection.md)
--   [Sync](primeiros-passos-com-go/sync.md)
+-   [Sync](primeiros-passos-com-go/sync/sync.md)
 -   [Context](primeiros-passos-com-go/context.md)
 
 ## Criando uma aplicação
