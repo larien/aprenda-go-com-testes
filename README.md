@@ -35,7 +35,7 @@
 12. [Select](primeiros-passos-com-go/select/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
 13. [Reflection](primeiros-passos-com-go/reflection/reflection.md) - Aprenda sobre reflexão.
 14. [Sync](primeiros-passos-com-go/sync/sync.md) - Conheça algumas funcionalidades do pacote `sync`, como `WaitGroup` e `Mutex`.
-15. [Context](primeiros-passos-com-go/context.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
+15. [Contexto](primeiros-passos-com-go/contexto.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
 
 ### Criando uma aplicação
 
