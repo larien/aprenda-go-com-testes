@@ -4,27 +4,27 @@ import (
 	"reflect"
 )
 
-func walk(x interface{}, fn func(input string)) {
-	val := getValue(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
 
-	for i := 0; i < val.NumField(); i++ {
-		field := val.Field(i)
+	for i := 0; i < valor.NumField(); i++ {
+		campo := valor.Field(i)
 
-		switch field.Kind() {
+		switch campo.Kind() {
 		case reflect.String:
-			fn(field.String())
+			fn(campo.String())
 		case reflect.Struct:
-			walk(field.Interface(), fn)
+			percorre(campo.Interface(), fn)
 		}
 	}
 }
 
-func getValue(x interface{}) reflect.Value {
-	val := reflect.ValueOf(x)
+func obtemValor(x interface{}) reflect.Value {
+	valor := reflect.ValueOf(x)
 
-	if val.Kind() == reflect.Ptr {
-		val = val.Elem()
+	if valor.Kind() == reflect.Ptr {
+		valor = valor.Elem()
 	}
 
-	return val
+	return valor
 }

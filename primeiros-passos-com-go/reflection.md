@@ -1,647 +1,648 @@
-# Reflection
+# Reflexão
 
-[From Twitter](https://twitter.com/peterbourgon/status/1011403901419937792?s=09)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/reflection)
 
-> golang challenge: write a function `walk(x interface{}, fn func(string))` which takes a struct `x` and calls `fn` for all strings fields found inside. difficulty level: recursively.
+[Do Twitter](https://twitter.com/peterbourgon/status/1011403901419937792?s=09)
 
-To do this we will need to use _reflection_.
+> Desafio Golang: escreva uma função `percorre(x interface{}, fn func(string))` que recebe uma struct `x` e chama `fn` para todos os campos string encontrados dentro dela. nível de dificuldade: recursão.
 
-> Reflection in computing is the ability of a program to examine its own structure, particularly through types; it's a form of metaprogramming. It's also a great source of confusion.
+Para fazer isso vamos precisar usar `reflection` (reflexão).
 
-From [The Go Blog: Reflection](https://blog.golang.org/laws-of-reflection)
+> A reflexão em computação é a habilidade de um programa examinar sua própria estrutura, particularmente através de tipos; é uma forma de metaprogramação. Também é uma ótima fonte de confusão.
 
-## What is `interface`?
+De [The Go Blog: Reflection](https://blog.golang.org/laws-of-reflection)
 
-We have enjoyed the type-safety that Go has offered us in terms of functions that work with known types, such as `string`, `int` and our own types like `BankAccount`.
+## O que é `interface`?
 
-This means that we get some documentation for free and the compiler will complain if you try and pass the wrong type to a function.
+Aproveitamos a segurança de tipos que o Go nos ofereceu em termos de funções que funcionam com tipos conhecidos, como `string`, `int` e nossos próprios tipos como `ContaBancaria`.
 
-You may come across scenarios though where you want to write a function where you don't know the type at compile time.
+Isso significa que de praxe temos documentação e o compilador vai reclamar se você tentar passar o tipo errado para uma função.
 
-Go lets us get around this with the type `interface{}` which you can think of as just _any_ type.
+Só que você pode se deparar com situações em que quer escrever uma função, mas não sabe o tipo da variável em tempo de compilação.
 
-So `walk(x interface{}, fn func(string))` will accept any value for `x`.
+Go nos permite contornar isso com o tipo `interface{}`, que você pode relacionar com _qualquer_ tipo.
 
-### So why not use `interface` for everything and have really flexible functions?
+Logo, `percorre(x interface{}, fn func(string))` aceitará qualquer valor para `x`.
 
-* As a user of a function that takes `interface` you lose type safety. What if you meant to pass `Foo.bar` of type `string` into a function but instead did `Foo.baz` which is an `int`? The compiler won't be able to inform you of your mistake. You also have no idea _what_ you're allowed to pass to a function. Knowing that a function takes a `UserService` for instance is very useful.
-* As a writer of such a function, you have to be able to inspect _anything_ that has been passed to you and try and figure out what the type is and what you can do with it. This is done using _reflection_. This can be quite clumsy and difficult to read and is generally less performant \(as you have to do checks at runtime\).
+### Então por que não usar `interface` para tudo e ter funções bem flexíveis?
 
-In short only use reflection if you really need to.
+* Quando utiliza uma função que usa `interface`, você perde a segurança de tipos. E se você quisesse passar `Foo.bar` do tipo `string` para uma função, mas ao invés disso passa `Foo.baz` do tipo `int`? O compilador não vai ser capaz de informar seu erro. Você também não tem ideia _do que_ pode passar para uma função. Saber que uma função recebe um `ServicoDeUsuario`, por exemplo, é muito útil.
 
-If you want polymorphic functions, consider if you could design it around an interface \(not `interface`, confusingly\) so that users can use your function with multiple types if they implement whatever methods you need for your function to work.
+Resumindo, só use reflexão quando realmente precisar.
 
-Our function will need to be able to work with lots of different things. As always we'll take an iterative approach, writing tests for each new thing we want to support and refactoring along the way until we're done.
+Se quiser funções polimórficas, considere desenvolvê-la em torno de uma interface (não `interface{}`, só para esclarecer) para que os usuários possam usar sua função com vários tipos se implementarem os métodos que você precisar para a sua função funcionar.
 
-## Write the test first
+Nossa função vai precisar ser capaz de trabalhar com várias coisas diferentes. Como sempre, vamos usar uma abordagem iterativa, escrevendo testes para cada coisa nova que quisermos dar suporte e refatorando ao longo do caminho até finalizarmos.
 
-We'll want to call our function with a struct that has a string field in it \(`x`\). Then we can spy on the function \(`fn`\) passed in to see if it is called.
+# Escreva o teste primeiro
+
+Vamos chamar nossa função com uma estrutura que tem um campo string dentro (`x`). Depois, podemos espiar a função (`fn`) passada para ela para ver se ela foi chamada.
 
 ```go
-func TestWalk(t *testing.T) {
+func TestPercorre(t *testing.T) {
 
-    expected := "Chris"
-    var got []string
+    esperado := "Chris"
+    var resultado []string
 
     x := struct {
-        Name string
-    }{expected}
+        Nome string
+    }{esperado}
 
-    walk(x, func(input string) {
-        got = append(got, input)
+    percorre(x, func(entrada string) {
+        resultado = append(resultado, entrada)
     })
 
-    if len(got) != 1 {
-        t.Errorf("wrong number of function calls, got %d want %d", len(got), 1)
+    if len(resultado) != 1 {
+        t.Errorf("número incorreto de chamadas de função: resultado %d, esperado %d", len(resultado), 1)
     }
 }
 ```
 
-* We want to store a slice of strings \(`got`\) which stores which strings were passed into `fn` by `walk`. Often in previous chapters, we have made dedicated types for this to spy on function/method invocations but in this case, we can just pass in an anonymous function for `fn` that closes over `got`.
-* We use an anonymous `struct` with a `Name` field of type string to go for the simplest "happy" path.
-* Finally, call `walk` with `x` and the spy and for now just check the length of `got`, we'll be more specific with our assertions once we've got something very basic working.
-
-## Try to run the test
+* Queremos armazenar um slice de strings (`resultado`) que armazena quais strings foram passadas dentro de `fn` pelo `percorre`. Algumas vezes, nos capítulos anteriores, criamos tipos dedicados para isso para espionar chamadas de função/método, mas nesse caso vamos apenas passá-lo em uma função anônima para `fn` que acaba em `resultado`.
+* Usamos uma `struct` anônima com um campo `Nome` do tipo string para partir para caminho "feliz" e mais simples.
+* Finalmente, chamamos `percorre` com `x` e o espião e por enquanto só verificamos o tamanho de `resultado`. Teremos mais precisão nas nossas verificações quando tivermos algo bem básico funcionando.
+  
+## Tente executar o teste
 
 ```text
-./reflection_test.go:21:2: undefined: walk
+./reflection_test.go:21:2: undefined: percorre
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
-We need to define `walk`
+Precisamos definir `percorre`.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
+func percorre(x interface{}, fn func(entrada string)) {
 
 }
 ```
 
-Try and run the test again
+Execute o teste novamente:
 
 ```text
-=== RUN   TestWalk
---- FAIL: TestWalk (0.00s)
-    reflection_test.go:19: wrong number of function calls, got 0 want 1
+=== RUN   TestPercorre
+--- FAIL: TestPercorre (0.00s)
+    reflection_test.go:19: número incorreto de chamadas de função: resultado 0, esperado 1
 FAIL
 ```
 
-## Write enough code to make it pass
+### Escreva código o suficiente para fazer o teste passar
 
-We can call the spy with any string to make this pass.
+Agora podemos chamar o espião com qualquer string para fazer o teste passar.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    fn("I still can't believe South Korea beat Germany 2-0 to put them last in their group")
+func percorre(x interface{}, fn func(entrada string)) {
+    fn("Ainda não acredito que o Brasil perdeu de 7 a 1")
 }
 ```
 
-The test should now be passing. The next thing we'll need to do is make a more specific assertion on what our `fn` is being called with.
+Agora o teste deve estar passando. A próxima coisa que vamos precisar fazer é criar uma verificação mais específica do que está sendo chamado dentro do nosso `fn`.
 
-## Write the test first
+## Escreva o teste primeiro
 
-Add the following to the existing test to check the string passed to `fn` is correct
+Adicione o código a seguir para o teste existente para verificar se a string passada para `fn` está correta:
 
 ```go
-if got[0] != expected {
-    t.Errorf("got '%s', want '%s'", got[0], expected)
+if resultado[0] != esperado {
+    t.Errorf("resultado '%s', esperado '%s'", resultado[0], esperado)
 }
 ```
 
-## Try to run the test
+## Execute o teste
 
 ```text
-=== RUN   TestWalk
---- FAIL: TestWalk (0.00s)
-    reflection_test.go:23: got 'I still can't believe South Korea beat Germany 2-0 to put them last in their group', want 'Chris'
+=== RUN   TestPercorre
+--- FAIL: TestPercorre (0.00s)
+    reflection_test.go:23: resultado 'Ainda não acredito que o Brasil perdeu de 7 a 1', esperado 'Chris'
 FAIL
 ```
 
-## Write enough code to make it pass
+### Escreva código o suficiente para fazer o teste passar
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := reflect.ValueOf(x)
-    field := val.Field(0)
-    fn(field.String())
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x) // ValorDe
+	campo := valor.Field(0)     // Campo
+	fn(campo.String())
 }
 ```
 
-This code is _very unsafe and very naive_ but remembers our goal when we are in "red" \(the tests failing\) is to write the smallest amount of code possible. We then write more tests to address our concerns.
+Esse código está _pouco seguro e muito frágil_, mas lembre-se que nosso objetivo quando estamos no "vermelho" (os testes estão falhando) é escrever a menor quantidade de código possível. Depois escrevemos mais testes para resolver nossas lacunas.
 
-We need to use reflection to have a look at `x` and try and look at its properties.
+Precisamos usar o reflection para verificar as propriedades de `x`.
 
-The [reflect package](https://godoc.org/reflect) has a function `ValueOf` which returns us a `Value` of a given variable. This has ways for us to inspect a value, including its fields which we use on the next line.
+No [pacote reflect](https://godoc.org/reflect) existe uma função chamada `ValueOf` que retorna um `Value` (valor) de determinada variável. Isso nos permite inspecionar um valor, inclusive seus campos usados nas próximas linhas.
 
-We then make some very optimistic assumptions about the value passed in
+Então podemos presumir coisas bem otimistas sobre o valor passado:
 
-* We look at the first and only field, there may be no fields at all which would cause a panic
-* We then call `String()` which returns the underlying value as a string but we know it would be wrong if the field was something other than a string.
+* Podemos procurar pelo primeiro e único campo, mas pode não haver nenhum campo, o que causaria um pânico.
+* Depois podemos chamar `String()` que tetorna o valor subjacente como string, mas sabemos que vai dar errado se o campo for de algum tipo que não uma string.
 
-## Refactor
+## Refatoração
 
-Our code is passing for the simple case but we know our code has a lot of shortcomings.
+Nosso código está passando pelo caso simples, mas sabemos que nosso código tem várias falhas.
 
-We're going to be writing a number of tests where we pass in different values and checking the array of strings that `fn` was called with.
+Vamos escrever alguns testes onde passamos valores diferentes e verificaremos o array de strings com que `fn` foi chamado.
 
-We should refactor our test into a table based test to make this easier to continue testing new scenarios.
+Precisamos refatorar nosso teste em um teste orientado por tabelas para tornar esse processo mais fácil para continuarmos testando novas situações.
 
 ```go
-func TestWalk(t *testing.T) {
+func TestPercorre(t *testing.T) {
 
-    cases := []struct{
-        Name string
-        Input interface{}
-        ExpectedCalls []string
-    } {
-        {
-            "Struct with one string field",
-            struct {
-                Name string
-            }{ "Chris"},
-            []string{"Chris"},
-        },
-    }
+	casos := []struct {
+		Nome              string
+		Entrada           interface{}
+		ChamadasEsperadas []string
+	}{
+		{
+			"Struct com um campo string",
+			struct {
+				Nome string
+			}{"Chris"},
+			[]string{"Chris"},
+		},
+	}
 
-    for _, test := range cases {
-        t.Run(test.Name, func(t *testing.T) {
-            var got []string
-            walk(test.Input, func(input string) {
-                got = append(got, input)
-            })
+	for _, teste := range casos {
+		t.Run(teste.Nome, func(t *testing.T) {
+			var resultado []string
+			percorre(teste.Entrada, func(entrada string) {
+				resultado = append(resultado, entrada)
+			})
 
-            if !reflect.DeepEqual(got, test.ExpectedCalls) {
-                t.Errorf("got %v, want %v", got, test.ExpectedCalls)
-            }
-        })
-    }
+			if !reflect.DeepEqual(resultado, teste.ChamadasEsperadas) {
+				t.Errorf("resultado %v, esperado %v", resultado, teste.ChamadasEsperadas)
+			}
+		})
+	}
 }
 ```
 
-Now we can easily add a scenario to see what happens if we have more than one string field.
+Agora podemos adicionar uma situação facilmente para ver o que acontece se tivermos mais de um campo string.
 
-## Write the test first
+## Escreva o teste primeiro
 
-Add the following scenario to the `cases`.
+Adicione o cenário a seguir nos `casos`.
 
 ```go
 {
-    "Struct with two string fields",
-    struct {
-        Name string
-        City string
-    }{"Chris", "London"},
-    []string{"Chris", "London"},
+	"Struct com dois campos tipo string",
+	struct {
+		Nome   string
+		Cidade string
+	}{"Chris", "Londres"},
+	[]string{"Chris", "Londres"},
 }
 ```
 
-## Try to run the test
+## Execute o teste
 
 ```text
-=== RUN   TestWalk/Struct_with_two_string_fields
-    --- FAIL: TestWalk/Struct_with_two_string_fields (0.00s)
-        reflection_test.go:40: got [Chris], want [Chris London]
+=== RUN   TestPercorre/Struct_com_dois_campos_string
+    --- FAIL: TestPercorre/Struct_com_dois_campos_string (0.00s)
+        reflection_test.go:40: resultado [Chris], esperado [Chris Londres]
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := reflect.ValueOf(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x)
 
-    for i:=0; i<val.NumField(); i++ {
-        field := val.Field(i)
-        fn(field.String())
-    }
+	for i := 0; i < valor.NumField(); i++ {
+		campo := valor.Field(i)
+		fn(campo.String())
+	}
 }
 ```
 
-`value` has a method `NumField` which returns the number of fields in the value. This lets us iterate over the fields and call `fn` which passes our test.
+`valor` tem um método chamado `NumField` que retorna a quantidade de campos no valor. Isso nos permite iterar sobre os campos e chamar `fn`, o que faz nosso teste passar.
 
-## Refactor
+## Refatoração
 
-It doesn't look like there's any obvious refactors here that would improve the code so let's press on.
+Não parece haver nenhuma refatoração óbvia aqui que pode melhorar nosso código, então vamos continuar.
 
-The next shortcoming in `walk` is that it assumes every field is a `string`. Let's write a test for this scenario.
+A próxima falha em `percorre` é que ela presume que todo campo é uma `string`. Vamos escrever um teste para esse caso.
 
-## Write the test first
+## Escreva o teste primeiro
 
-Add the following case
+Inclua o seguinte cenário:
 
 ```go
 {
-    "Struct with non string field",
-    struct {
-        Name string
-        Age  int
-    }{"Chris", 33},
-    []string{"Chris"},
-},
+	"Struct sem campo tipo string",
+	struct {
+		Nome  string
+		Idade int
+	}{"Chris", 33},
+	[]string{"Chris"},
+}
 ```
 
-## Try to run the test
+## Execute o teste
 
 ```text
-=== RUN   TestWalk/Struct_with_non_string_field
-    --- FAIL: TestWalk/Struct_with_non_string_field (0.00s)
-        reflection_test.go:46: got [Chris <int Value>], want [Chris]
+=== RUN   TestPercorre/Struct_sem_campo_tipo_string
+    --- FAIL: TestPercorre/Struct_with_noStruct_sem_campo_tipo_stringn_string_field (0.00s)
+        reflection_test.go:46: resutado [Chris <int Value>], esperado [Chris]
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
-We need to check that the type of the field is a `string`.
+Precisamos verificar que o tipo do campo é uma `string`.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := reflect.ValueOf(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x)
 
-    for i := 0; i < val.NumField(); i++ {
-        field := val.Field(i)
+	for i := 0; i < valor.NumField(); i++ {
+		campo := valor.Field(i)
 
-        if field.Kind() == reflect.String {
-            fn(field.String())
-        }
-    }
+		if campo.Kind() == reflect.String { // Tipo
+			fn(campo.String())
+		}
+	}
 }
 ```
 
-We can do that by checking its [`Kind`](https://godoc.org/reflect#Kind).
+Podemos verificar seu tipo chamando a função [`Kind`](https://godoc.org/reflect#Kind).
 
-## Refactor
+## Refatoração
 
-Again it looks like the code is reasonable enough for now.
+Parece que o código ainda está razoável por enquanto.
 
-The next scenario is what if it isn't a "flat" `struct`? In other words, what happens if we have a `struct` with some nested fields?
+O próximo caso é: e se o valor não for uma `struct` "única"? Em outras palavras, o que acontece se tivermos uma `struct` com alguns campos aninhados?
 
-## Write the test first
+## Escreva o teste primeiro
 
-We have been using the anonymous struct syntax to declare types ad-hocly for our tests so we could continue to do that like so
+Estivemos usando a sintaxe de estrutura anônima para declarar tipos conforme precisávamos para nossos testes, então poderíamos continuar a fazer isso, como:
 
 ```go
 {
-    "Nested fields",
+    "Campos aninhados",
     struct {
-        Name string
-        Profile struct {
-            Age  int
-            City string
+        Nome string
+        Perfil struct {
+            Idade  int
+            Cidade string
         }
     }{"Chris", struct {
-        Age  int
-        City string
-    }{33, "London"}},
-    []string{"Chris", "London"},
+        Idade  int
+        Cidade string
+    }{33, "Londres"}},
+    []string{"Chris", "Londres"},
 },
 ```
 
-But we can see that when you get inner anonymous structs the syntax gets a little messy. [There is a proposal to make it so the syntax would be nicer](https://github.com/golang/go/issues/12854).
+Mas podemos ver que quando você usa estruturas anônimas cada vez mais aninhadas, a sintaxe fica um pouco bagunçada. [Há uma proposta para fazer isso de forma que a sintaxe seja mais agradável](https://github.com/golang/go/issues/12854).
 
-Let's just refactor this by making a known type for this scenario and reference it in the test. There is a little indirection in that some of the code for our test is outside the test but readers should be able to infer the structure of the `struct` by looking at the initialisation.
+Vamos apenas refatorar isso criando um tipo conhecido para esse caso e referenciá-lo no nosso teste. Não é aconselhável colocar código do teste fora do teste, mas as pessoas devem ser capazes de encontrar essas estruturas procurando por sua definição.
 
-Add the following type declarations somewhere in your test file
+Inclua as seguintes declarações de tipos no seu arquivo de teste:
 
 ```go
-type Person struct {
-    Name    string
-    Profile Profile
+type Pessoa struct {
+	Nome   string
+	Perfil Perfil
 }
 
-type Profile struct {
-    Age  int
-    City string
+type Perfil struct {
+	Idade  int
+	Cidade string
 }
 ```
 
-Now we can add this to our cases which reads a lot clearer than before
+Agora podemos adicionar isso aos nossos casos ficarem bem mais legíveis que antes:
 
 ```go
 {
-    "Nested fields",
-    Person{
-        "Chris",
-        Profile{33, "London"},
-    },
-    []string{"Chris", "London"},
-},
+	"Campos aninhados",
+	Pessoa{
+		"Chris",
+		Perfil{33, "Londres"},
+	},
+	[]string{"Chris", "Londres"},
+}
 ```
 
-## Try to run the test
+## Execute o teste
 
 ```text
-=== RUN   TestWalk/Nested_fields
-    --- FAIL: TestWalk/Nested_fields (0.00s)
-        reflection_test.go:54: got [Chris], want [Chris London]
+=== RUN   TestPercorre/Campps_aninhados
+    --- FAIL: TestPercorre/Campps_aninhados (0.00s)
+        reflection_test.go:54: resultado [Chris], esperado [Chris Londres]
 ```
 
-The problem is we're only iterating on the fields on the first level of the type's hierarchy.
+O problema é que estamos apenas iterando sobre os campos no primeiro nível da hierarquia de tipos.
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := reflect.ValueOf(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x)
 
-    for i := 0; i < val.NumField(); i++ {
-        field := val.Field(i)
+	for i := 0; i < valor.NumField(); i++ {
+		campo := valor.Field(i)
 
-        if field.Kind() == reflect.String {
-            fn(field.String())
+        if campo.Kind() == reflect.String {
+            fn(campo.String())
         }
 
-        if field.Kind() == reflect.Struct {
-            walk(field.Interface(), fn)
+        if campo.Kind() == reflect.Struct {
+            percorre(campo.Interface(), fn)
         }
     }
 }
 ```
 
-The solution is quite simple, we again inspect its `Kind` and if it happens to be a `struct` we just call `walk` again on that inner `struct`.
+A solução é bem simples. Inspecionamos seu tipo novamente e se for uma estrutura apenas chamamos `percorre` novamente na nossa estrutura de dentro.
 
-## Refactor
+## Refatoração
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := reflect.ValueOf(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x)
 
-    for i := 0; i < val.NumField(); i++ {
-        field := val.Field(i)
+	for i := 0; i < valor.NumField(); i++ {
+		campo := valor.Field(i)
 
-        switch field.Kind() {
-        case reflect.String:
-            fn(field.String())
-        case reflect.Struct:
-            walk(field.Interface(), fn)
-        }
-    }
+		switch campo.Kind() {
+		case reflect.String:
+			fn(campo.String())
+		case reflect.Struct:
+			percorre(campo.Interface(), fn)
+		}
+	}
 }
 ```
 
-When you're doing a comparison on the same value more than once _generally_ refactoring into a `switch` will improve readability and make your code easier to extend.
+Quando você está fazendo uma comparação de mesmo valor mais de uma vez, _geralmente_ refatorar as condições dentro de um `switch` vai melhorar a legibilidade e tornar seu código mais fácil de estender.
 
-What if the value of the struct passed in is a pointer?
+E se o valor passado na estrutura for um ponteiro?
 
-## Write the test first
+## Escreva o teste primeiro
 
-Add this case
+Inclua esse caso:
 
 ```go
 {
-    "Pointers to things",
-    &Person{
-        "Chris",
-        Profile{33, "London"},
-    },
-    []string{"Chris", "London"},
-},
+	"Ponteiros para coisas",
+	&Pessoa{
+		"Chris",
+		Perfil{33, "Londres"},
+	},
+	[]string{"Chris", "Londres"},
+}
 ```
 
-## Try to run the test
+## Execute o teste
 
 ```text
-=== RUN   TestWalk/Pointers_to_things
+=== RUN   TestPercorre/Ponteiros_para_coisas
 panic: reflect: call of reflect.Value.NumField on ptr Value [recovered]
     panic: reflect: call of reflect.Value.NumField on ptr Value
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := reflect.ValueOf(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := reflect.ValueOf(x)
 
-    if val.Kind() == reflect.Ptr {
-        val = val.Elem()
+    if valor.Kind() == reflect.Ptr {
+        valor = valor.Elem()
     }
 
-    for i := 0; i < val.NumField(); i++ {
-        field := val.Field(i)
+    for i := 0; i < valor.NumField(); i++ {
+		campo := valor.Field(i)
 
-        switch field.Kind() {
-        case reflect.String:
-            fn(field.String())
-        case reflect.Struct:
-            walk(field.Interface(), fn)
-        }
-    }
+		switch campo.Kind() {
+		case reflect.String:
+			fn(campo.String())
+		case reflect.Struct:
+			percorre(campo.Interface(), fn)
+		}
+	}
 }
 ```
 
-You can't use `NumField` on a pointer `Value`, we need to extract the underlying value before we can do that by using `Elem()`.
+Não é possível usar o `NumField` em um ponteiro `Value` e precisamos extrair o valor antes disso usando `Elem()`.
 
-## Refactor
+## Refatoração
 
-Let's encapsulate the responsibility of extracting the `reflect.Value` from a given `interface{}` into a function.
+Vamos encapsular a responsabilidade de extrair o `reflect.Value` de determinada `interface{}` para uma função.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := getValue(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
 
-    for i := 0; i < val.NumField(); i++ {
-        field := val.Field(i)
+	for i := 0; i < valor.NumField(); i++ {
+		campo := valor.Field(i)
 
-        switch field.Kind() {
-        case reflect.String:
-            fn(field.String())
-        case reflect.Struct:
-            walk(field.Interface(), fn)
-        }
-    }
+		switch campo.Kind() {
+		case reflect.String:
+			fn(campo.String())
+		case reflect.Struct:
+			percorre(campo.Interface(), fn)
+		}
+	}
 }
 
-func getValue(x interface{}) reflect.Value {
-    val := reflect.ValueOf(x)
+func obtemValor(x interface{}) reflect.Value {
+	valor := reflect.ValueOf(x)
 
-    if val.Kind() == reflect.Ptr {
-        val = val.Elem()
-    }
+	if valor.Kind() == reflect.Ptr {
+		valor = valor.Elem()
+	}
 
-    return val
+	return valor
 }
 ```
 
-This actually adds _more_ code but I feel the abstraction level is right.
+Isso acaba adicionando _mais_ código, mas me parece que o nível de abstração está correto.
 
-* Get the `reflect.Value` of `x` so I can inspect it, I don't care how.
-* Iterate over the fields, doing whatever needs to be done depending on its type.
+* Obter o `reflect.Value` de `x` para que eu possa inspecioná-lo, não me importa de qual forma.
+* Iterar pelos campos, fazendo o que for necessário dependendo de seu tipo.
 
-Next, we need to cover slices.
+Depois precisamos lidar com os slices.
 
-## Write the test first
+## Escreva o teste primeiro
 
 ```go
 {
-    "Slices",
-    []Profile {
-        {33, "London"},
-        {34, "Reykjavík"},
-    },
-    []string{"London", "Reykjavík"},
-},
+	"Slices",
+	[]Perfil{
+		{33, "Londres"},
+		{34, "Reykjavík"},
+	},
+	[]string{"Londres", "Reykjavík"},
+}
 ```
 
-## Try to run the test
+## Execute o teste
 
 ```text
-=== RUN   TestWalk/Slices
+=== RUN   TestPercorre/Slices
 panic: reflect: call of reflect.Value.NumField on slice Value [recovered]
     panic: reflect: call of reflect.Value.NumField on slice Value
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
 
-This is similar to the pointer scenario before, we are trying to call `NumField` on our `reflect.Value` but it doesn't have one as it's not a struct.
+Esse caso se parece bastante com o do ponteiro acima, pois estamos chamar `NumField` em nosso `reflect.Value`, mas não há um por não ser uma struct.
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := getValue(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
 
-    if val.Kind() == reflect.Slice {
-        for i:=0; i< val.Len(); i++ {
-            walk(val.Index(i).Interface(), fn)
+    if valor.Kind() == reflect.Slice {
+        for i:=0; i< valor.Len(); i++ {
+            percorre(valor.Index(i).Interface(), fn)
         }
         return
     }
 
-    for i := 0; i < val.NumField(); i++ {
-        field := val.Field(i)
+    for i := 0; i < valor.NumField(); i++ {
+        campo := valor.Field(i)
 
-        switch field.Kind() {
+        switch campo.Kind() {
         case reflect.String:
-            fn(field.String())
+            fn(campo.String())
         case reflect.Struct:
-            walk(field.Interface(), fn)
+            percorre(campo.Interface(), fn)
         }
     }
 }
 ```
 
-## Refactor
+## Refatoração
 
-This works but it's yucky. No worries, we have working code backed by tests so we are free to tinker all we like.
+Isso funciona, mas está bagunçado. Não se preocupe, pois temos cada pedaço de código coberto por testes e podemos brincar da forma que quisermos.
 
-If you think a little abstractly, we want to call `walk` on either
+Se formos pensar um pouco abstradamente, queremos chamar `percorre` em:
 
-* Each field in a struct
-* Each _thing_ in a slice
+* Cada campo de uma estrutura
+* Cada _coisa_ de um slice
 
-Our code at the moment does this but doesn't reflect it very well. We just have a check at the start to see if it's a slice \(with a `return` to stop the rest of the code executing\) and if it's not we just assume it's a struct.
+No momento nosso código faz isso, mas não reflete muito bem. Precisamos ter uma verificação no início da função para certificar se é um slice (com um `return` para parar a execução do restante do código) e se não for, só vamos presumir que é uma estrutura.
 
-Let's rework the code so instead we check the type _first_ and then do our work.
+Vamos retrabalhar o código para verificar o tipo _primeiro_ para depois fazermos o que importa.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := getValue(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
 
-    switch val.Kind() {
+    switch valor.Kind() {
     case reflect.Struct:
-        for i:=0; i<val.NumField(); i++ {
-            walk(val.Field(i).Interface(), fn)
+        for i:=0; i<valor.NumField(); i++ {
+            percorre(valor.Field(i).Interface(), fn)
         }
     case reflect.Slice:
-        for i:=0; i<val.Len(); i++ {
-            walk(val.Index(i).Interface(), fn)
+        for i:=0; i<valor.Len(); i++ {
+            percorre(valor.Index(i).Interface(), fn)
         }
     case reflect.String:
-        fn(val.String())
+        fn(valor.String())
     }
 }
 ```
 
-Looking much better! If it's a struct or a slice we iterate over its values calling `walk` on each one. Otherwise, if it's a `reflect.String` we can call `fn`.
+Parece muito melhor! Se for uma estrutura ou um slice, iteramos sobre seus valores chamando `percorre` para cada um. Por outro lado, se for um `reflect.String`, podemos apenas chamar `fn`.
 
-Still, to me it feels like it could be better. There's repetition of the operation of iterating over fields/values and then calling `walk` but conceptually they're the same.
+Ainda assim me parece que poderia ficar melhor. Há repetição da operação de iterar sobre campos/valores e chamar `percorre` sendo que conceitualmente são a mesma coisa.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := getValue(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
 
-    numberOfValues := 0
-    var getField func(int) reflect.Value
+	quantidadeDeValores := 0
+	var obtemCampo func(int) reflect.Value
 
-    switch val.Kind() {
-    case reflect.String:
-        fn(val.String())
-    case reflect.Struct:
-        numberOfValues = val.NumField()
-        getField = val.Field
-    case reflect.Slice:
-        numberOfValues = val.Len()
-        getField = val.Index
-    }
+	switch valor.Kind() {
+	case reflect.String:
+		fn(valor.String())
+	case reflect.Struct:
+		quantidadeDeValores = valor.NumField()
+		obtemCampo = valor.Field
+	case reflect.Slice:
+		quantidadeDeValores = valor.Len()
+		obtemCampo = valor.Index
+	}
 
-    for i:=0; i< numberOfValues; i++ {
-        walk(getField(i).Interface(), fn)
-    }
+	for i := 0; i < quantidadeDeValores; i++ {
+		percorre(obtemCampo(i).Interface(), fn)
+	}
 }
 ```
 
-If the `value` is a `reflect.String` then we just call `fn` like normal.
+Se o `valor` for um `reflect.String`, chamamos `fn` normalmente.
 
-Otherwise, our `switch` will extract out two things depending on the type
+Se for outra coisa, nosso `switch` vai extrair duas coisas dependendo do tipo:
 
-* How many fields there are
-* How to extract the `Value` \(`Field` or `Index`\)
+* Quantos campos existem
+* Como extrair o `Value` (`Field` [campo] ou `Index` [índice])
 
-Once we've determined those things we can iterate through `numberOfValues` calling `walk` with the result of the `getField` function.
+Uma vez que determinamos esses pontos, podemos iterar pela `quantidadeDeValores` chamando `percorre` com o resultado da função `getField`.
 
-Now we've done this, handling arrays should be trivial.
+A partir disso, lidar com arrays deve ser simples.
 
-## Write the test first
+##  Escreva o teste primeiro
 
-Add to the cases
+Inclua o caso:
 
 ```go
 {
-    "Arrays",
-    [2]Profile {
-        {33, "London"},
-        {34, "Reykjavík"},
-    },
-    []string{"London", "Reykjavík"},
-},
-```
-
-## Try to run the test
-
-```text
-=== RUN   TestWalk/Arrays
-    --- FAIL: TestWalk/Arrays (0.00s)
-        reflection_test.go:78: got [], want [London Reykjavík]
-```
-
-## Write enough code to make it pass
-
-Arrays can be handled the same way as slices, so just add it to the case with a comma
-
-```go
-func walk(x interface{}, fn func(input string)) {
-    val := getValue(x)
-
-    numberOfValues := 0
-    var getField func(int) reflect.Value
-
-    switch val.Kind() {
-    case reflect.String:
-        fn(val.String())
-    case reflect.Struct:
-        numberOfValues = val.NumField()
-        getField = val.Field
-    case reflect.Slice, reflect.Array:
-        numberOfValues = val.Len()
-        getField = val.Index
-    }
-
-    for i:=0; i< numberOfValues; i++ {
-        walk(getField(i).Interface(), fn)
-    }
+	"Arrays",
+	[2]Perfil{
+		{33, "Londres"},
+		{34, "Reykjavík"},
+	},
+	[]string{"Londres", "Reykjavík"},
 }
 ```
 
-The final type we want to handle is `map`.
+## Execute o teste
 
-## Write the test first
+```text
+=== RUN   TestPercorre/Arrays
+    --- FAIL: TestPercorre/Arrays (0.00s)
+        reflection_test.go:78: resultado [], esperado [Londres Reykjavík]
+```
+
+## Escreva código o suficiente para fazer o teste passar
+
+Podemos resolver o caso dos arrays da mesma forma que os slices, basta adicioná-los com uma vírgula:
+
+```go
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
+
+	quantidadeDeValores := 0
+	var obtemCampo func(int) reflect.Value
+
+	switch valor.Kind() {
+	case reflect.String:
+		fn(valor.String())
+	case reflect.Struct:
+		quantidadeDeValores = valor.NumField()
+		obtemCampo = valor.Field
+	case reflect.Slice, reflect.Array:
+		quantidadeDeValores = valor.Len()
+		obtemCampo = valor.Index
+	}
+
+	for i := 0; i < quantidadeDeValores; i++ {
+		percorre(obtemCampo(i).Interface(), fn)
+	}
+}
+```
+
+O último tipo que queremos lidar é o `map`.
+
+## Escreva o teste primeiro
 
 ```go
 {
@@ -654,129 +655,131 @@ The final type we want to handle is `map`.
 },
 ```
 
-## Try to run the test
+## Execute o teste
 
 ```text
-=== RUN   TestWalk/Maps
-    --- FAIL: TestWalk/Maps (0.00s)
-        reflection_test.go:86: got [], want [Bar Boz]
+=== RUN   TestPercorre/Maps
+    --- FAIL: TestPercorre/Maps (0.00s)
+        reflection_test.go:86: resultado [], esperado [Bar Boz]
 ```
 
-## Write enough code to make it pass
+## Escreva código o suficiente para fazer o teste passar
+
+Novamente, se pensar um pouco de forma abstrata, percebe-se que o `map` é bem parecido com a `struct`, mas as chaves são desconhecidas em tempo de compilação.
 
 Again if you think a little abstractly you can see that `map` is very similar to `struct`, it's just the keys are unknown at compile time.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := getValue(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
 
-    numberOfValues := 0
-    var getField func(int) reflect.Value
+    quantidadedeValores := 0
+    var obtemCampo func(int) reflect.Value
 
-    switch val.Kind() {
+    switch valor.Kind() {
     case reflect.String:
-        fn(val.String())
+        fn(valor.String())
     case reflect.Struct:
-        numberOfValues = val.NumField()
-        getField = val.Field
+        quantidadeDeValores = valor.NumField()
+        obtemCampo = valor.Field
     case reflect.Slice, reflect.Array:
-        numberOfValues = val.Len()
-        getField = val.Index
+        quantidadeDeValores = valor.Len()
+        obtemCampo = valor.Index
     case reflect.Map:
-        for _, key := range val.MapKeys() {
-            walk(val.MapIndex(key).Interface(), fn)
+        for _, chave := range valor.MapKeys() {
+            percorre(valor.MapIndex(chave).Interface(), fn)
         }
     }
 
-    for i:=0; i< numberOfValues; i++ {
-        walk(getField(i).Interface(), fn)
+    for i := 0; i< quantidadeDeValores; i++ {
+        percorre(obtemCampo(i).Interface(), fn)
     }
 }
 ```
 
-However, by design you cannot get values out of a map by index. It's only done by _key_, so that breaks our abstraction, darn.
+No entanto, por design, não é possível obter os valores de um map por índice. Só é possível fazer isso pela _chave_, que, caramba, acaba com a nossa abstração.
 
-## Refactor
+## Refatoração
 
-How do you feel right now? It felt like maybe a nice abstraction at the time but now the code feels a little wonky.
+Como se sente agora? Parecia que essa era uma boa abstração naquele momento, mas agora o código parece um pouco bagunçado.
 
-_This is OK!_ Refactoring is a journey and sometimes we will make mistakes. A major point of TDD is it gives us the freedom to try these things out.
+_Está tudo bem!_ Refatoração é uma jornada e às vezes vamos cometer erros. Um ponto importante do TDD é que ele nos dá a liberdade de testar esse tipo de coisa.
 
-By taking small steps backed by tests this is in no way an irreversible situation. Let's just put it back to how it was before the refactor.
+Graças aos testes implmentados a cada etapa, essa situação não é irreversível de forma alguma. Vamos apenas voltar a como estava antes da refatoração.
 
 ```go
-func walk(x interface{}, fn func(input string)) {
-    val := getValue(x)
+func percorre(x interface{}, fn func(entrada string)) {
+	valor := obtemValor(x)
 
-    walkValue := func(value reflect.Value) {
-        walk(value.Interface(), fn)
-    }
+	percorreValor := func(valor reflect.Value) {
+		percorre(valor.Interface(), fn)
+	}
 
-    switch val.Kind() {
-    case reflect.String:
-        fn(val.String())
-    case reflect.Struct:
-        for i := 0; i< val.NumField(); i++ {
-            walkValue(val.Field(i))
-        }
-    case reflect.Slice, reflect.Array:
-        for i:= 0; i<val.Len(); i++ {
-            walkValue(val.Index(i))
-        }
-    case reflect.Map:
-        for _, key := range val.MapKeys() {
-            walkValue(val.MapIndex(key))
-        }
-    }
+	switch valor.Kind() {
+	case reflect.String:
+		fn(valor.String())
+	case reflect.Struct:
+		for i := 0; i < valor.NumField(); i++ {
+			percorreValor(valor.Field(i))
+		}
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < valor.Len(); i++ {
+			percorreValor(valor.Index(i))
+		}
+	case reflect.Map:
+		for _, chave := range valor.MapKeys() {
+			percorreValor(valor.MapIndex(chave))
+		}
+	}
 }
 ```
 
-We've introduced `walkValue` which DRYs up the calls to `walk` inside our `switch` so that they only have to extract out the `reflect.Value`s from `val`.
+Apresentamos o `percorreValor`, que encapsula chamadas para `percorre` dentro do nosso `switch` para que só tenham que extrair os `reflect.Value` de `valor`.
 
-### One final problem
+### Um último problema
 
-Remember that maps in Go do not guarantee order. So your tests will sometimes fail because we assert that the calls to `fn` are done in a particular order.
+Lembre que maps em Go não têm ordem garantida. Logo, às vezes os testes irão falhar porque verificamos as chamadas de `fn` em uma ordem específica.
 
-To fix this, we'll need to move our assertion with the maps to a new test where we do not care about the order.
+Para arrumar isso, precisaremos mover nossa verificação com os maps para um novo teste onde não nos importamos com a ordem.
 
 ```go
-t.Run("with maps", func(t *testing.T) {
-    aMap := map[string]string{
-        "Foo": "Bar",
-        "Baz": "Boz",
+t.Run("com maps", func(t *testing.T) {
+	mapA := map[string]string{
+		"Foo": "Bar",
+		"Baz": "Boz",
     }
-
-    var got []string
-    walk(aMap, func(input string) {
-        got = append(got, input)
+    
+	var resultado []string
+	percorre(mapA, func(entrada string) {
+		resultado = append(resultado, entrada)
     })
-
-    assertContains(t, got, "Bar")
-    assertContains(t, got, "Boz")
+    
+	verificaSeContem(t, resultado, "Bar")
+	verificaSeContem(t, resultado, "Boz")
 })
 ```
 
-Here is how `assertContains` is defined
+Essa é a definição de `verificaSeContem`:
 
 ```go
-func assertContains(t *testing.T, haystack []string, needle string)  {
-    contains := false
-    for _, x := range haystack {
-        if x == needle {
-            contains = true
-        }
-    }
-    if !contains {
-        t.Errorf("expected %+v to contain '%s' but it didnt", haystack, needle)
-    }
+func verificaSeContem(t *testing.T, palheiro []string, agulha string) {
+	contem := false
+	for _, x := range palheiro {
+		if x == agulha {
+			contem = true
+		}
+	}
+	if !contem {
+		t.Errorf("esperava-se que %+v contivesse '%s', mas não continha", palheiro, agulha)
+	}
 }
 ```
 
-## Wrapping up
+## Resumo
 
-* Introduced some of the concepts from the `reflect` package.
-* Used recursion to traverse arbitrary data structures.
-* Did an in retrospect bad refactor but didn't get too upset about it. By working iteratively with tests it's not such a big deal.
-* This only covered a small aspect of reflection. [The Go blog has an excellent post covering more details](https://blog.golang.org/laws-of-reflection).
-* Now that you know about reflection, do your best to avoid using it.
+* Apresentamos alguns dos conceitos do pacote `reflect`.
+* Usamos recursão para percorrer estruturas de dados arbitrárias.
+* Houve uma reflexão quanto a uma refatoração ruim, mas não há por que se preocupar muito com isso. Isso não deve ser um problema muito grande se trabalharmos com testes de forma iterativa.
+* Esse capítulo só cobre um aspecto pequeno de reflexão. [O blog do Go tem um artigo excelente cobrindo mais detalhes](https://blog.golang.org/laws-of-reflection).
+* Agora que você tem conhecimento sobre reflexão, faça o possível para evitá-lo.
 
