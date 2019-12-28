@@ -9,7 +9,7 @@
 -   [Olá, mundo](primeiros-passos-com-go/ola-mundo/ola-mundo.md)
 -   [Inteiros](primeiros-passos-com-go/inteiros/inteiros.md)
 -   [Iteração](primeiros-passos-com-go/iteracao/iteracao.md)
--   [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md)
+-   [Arrays e slices](primeiros-passos-com-go/arrays-e-slices/arrays-e-slices.md)
 -   [Estruturas, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces.md)
 -   [Ponteiros e erros](primeiros-passos-com-go/ponteiros-e-erros.md)
 -   [Maps](primeiros-passos-com-go/maps.md)

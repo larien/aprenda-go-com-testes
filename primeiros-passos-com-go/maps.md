@@ -2,7 +2,7 @@
 
 [**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/maps)
 
-Em [arrays e slices](primeiros-passos-com-go/arrays-e-slices.md), vimos como armazenar valores em ordem. Agora, vamos descobrir uma forma de armazenar itens por uma `key` (chave) e procurar por ela rapidamente.
+Em [arrays e slices](primeiros-passos-com-go/arrays-e-slices/arrays-e-slices.md), vimos como armazenar valores em ordem. Agora, vamos descobrir uma forma de armazenar itens por uma `key` (chave) e procurar por ela rapidamente.
 
 Maps te permitem armazenar itens de forma parecida com a de um dicionário. Você pode pensar na `chave` como a palavra e o `valor` como a definição. E tem forma melhor de aprender sobre maps do que criar seu próprio dicionário?
 
