@@ -1,6 +1,6 @@
-# Reflexão
+# Reflection
 
-[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/reflection)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/reflection)
 
 [Do Twitter](https://twitter.com/peterbourgon/status/1011403901419937792?s=09)
 
@@ -34,7 +34,7 @@ Se quiser funções polimórficas, considere desenvolvê-la em torno de uma inte
 
 Nossa função vai precisar ser capaz de trabalhar com várias coisas diferentes. Como sempre, vamos usar uma abordagem iterativa, escrevendo testes para cada coisa nova que quisermos dar suporte e refatorando ao longo do caminho até finalizarmos.
 
-# Escreva o teste primeiro
+## Escreva o teste primeiro
 
 Vamos chamar nossa função com uma estrutura que tem um campo string dentro (`x`). Depois, podemos espiar a função (`fn`) passada para ela para ver se ela foi chamada.
 

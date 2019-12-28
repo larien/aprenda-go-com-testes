@@ -17,7 +17,7 @@
 -   [Mocking](primeiros-passos-com-go/mocks/mocks.md)
 -   [Concorrência](primeiros-passos-com-go/concorrencia/concorrencia.md)
 -   [Select](primeiros-passos-com-go/select/select.md)
--   [Reflection](primeiros-passos-com-go/reflection.md)
+-   [Reflection](primeiros-passos-com-go/reflection/reflection.md)
 -   [Sync](primeiros-passos-com-go/sync.md)
 -   [Context](primeiros-passos-com-go/context.md)
 
