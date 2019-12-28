@@ -8,7 +8,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     primeiros-passos-com-go/instalacao-do-go.md \
     primeiros-passos-com-go/ola-mundo/ola-mundo.md \
     primeiros-passos-com-go/inteiros/inteiros.md \
-    primeiros-passos-com-go/iteracao.md \
+    primeiros-passos-com-go/iteracao/iteracao.md \
     primeiros-passos-com-go/arrays-e-slices.md \
     primeiros-passos-com-go/estruturas-metodos-e-interfaces.md \
     primeiros-passos-com-go/ponteiros-e-erros.md \
@@ -36,7 +36,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     primeiros-passos-com-go/instalacao-do-go.md \
     primeiros-passos-com-go/ola-mundo/ola-mundo.md \
     primeiros-passos-com-go/inteiros/inteiros.md \
-    primeiros-passos-com-go/iteracao.md \
+    primeiros-passos-com-go/iteracao/iteracao.md \
     primeiros-passos-com-go/arrays-e-slices.md \
     primeiros-passos-com-go/estruturas-metodos-e-interfaces.md \
     primeiros-passos-com-go/ponteiros-e-erros.md \

@@ -4,7 +4,7 @@
 
 Arrays te permitem armazenar diversos elementos do mesmo tipo em uma variável em uma ordem específica.
 
-Quando você tem um array, é muito comum ter que percorrer sobre ele. Logo, vamos usar nosso [recém adquirido conhecimento de `for`](primeiros-passos-com-go/iteracao.md) para criar uma função `Soma`. `Soma` vai receber um array de números e retornar o total.
+Quando você tem um array, é muito comum ter que percorrer sobre ele. Logo, vamos usar nosso [recém adquirido conhecimento de `for`](iteracao/iteracao.md) para criar uma função `Soma`. `Soma` vai receber um array de números e retornar o total.
 
 Também vamos praticar nossas habilidades em TDD.
 
