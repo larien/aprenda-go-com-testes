@@ -23,8 +23,8 @@ func percorre(x interface{}, fn func(entrada string)) {
 			percorreValor(valor.Index(i))
 		}
 	case reflect.Map:
-		for _, identificador := range valor.MapKeys() {
-			percorreValor(valor.MapIndex(identificador))
+		for _, chave := range valor.MapKeys() {
+			percorreValor(valor.MapIndex(chave))
 		}
 	}
 }

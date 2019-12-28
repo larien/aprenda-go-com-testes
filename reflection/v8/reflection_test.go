@@ -81,8 +81,8 @@ func TestPercorre(t *testing.T) {
 		}
 
 		var resultado []string
-		percorre(mapA, func(input string) {
-			resultado = append(resultado, input)
+		percorre(mapA, func(entrada string) {
+			resultado = append(resultado, entrada)
 		})
 
 		verificaSeContem(t, resultado, "Bar")
