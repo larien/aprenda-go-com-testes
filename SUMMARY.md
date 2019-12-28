@@ -25,7 +25,7 @@
 
 -   [Introdução](criando-uma-aplicacao/introducao.md)
 -   [Servidor HTTP](criando-uma-aplicacao/http-server/http-server.md)
--   [JSON, roteamento and embedding](criando-uma-aplicacao/json/json.md)
+-   [JSON, roteamento e aninhamento](criando-uma-aplicacao/json/json.md)
 -   [IO e sorting](criando-uma-aplicacao/io/io.md)
 -   [Linha de comando e estrutura de pacotes](criando-uma-aplicacao/command-line/command-line.md)
 -   [Tempo](criando-uma-aplicacao/time/time.md)

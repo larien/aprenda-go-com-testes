@@ -50,7 +50,7 @@ Novos conceitos serão apresentados para ajudar a escrever código de qualidade,
 No final desse capítulo, você deverá ter uma boa ideia de como escrever uma aplicação em Go testada.
 
 -   [Servidor HTTP](criando-uma-aplicacao/http-server/http-server.md) - Vamos criar uma aplicação que espera por requisições HTTP e as responde.
--   [JSON, routing e embedding](criando-uma-aplicacao/json/json.md) - Vamos fazer nossos endpoints retornarem JSON e explorar como trabalhar com rotas.
+-   [JSON, routing e aninhamento](criando-uma-aplicacao/json/json.md) - Vamos fazer nossos endpoints retornarem JSON e explorar como trabalhar com rotas.
 -   [IO e classificação](criando-uma-aplicacao/io/io.md) - Vamos persistir e ler nossos dados do disco e falar sobre classificação de dados.
 -   [Linha de comando e estrutura do projeto](criando-uma-aplicacao/command-line/command-line.md) - Suportar diversas aplicações em uma base de código e ler entradas da linha de comando.
 -   [Tempo](criando-uma-aplicacao/time/time.md) - Usar o pacote `time` para programar atividades.
