@@ -230,7 +230,7 @@ Dentro da mesma função, iniciamos a goroutine que enviará um sinal a esse can
 
 #### `select`
 
-Se você se lembrar do capítulo de [concorrência](concorrencia.md), é possível esperar os valores serem enviados a um canal com `variavel := <-ch`. Isso é uma chamada _bloqueante_, pois está aguardando por um valor.
+Se você se lembrar do capítulo de [concorrência](../concorrencia/concorrencia.md), é possível esperar os valores serem enviados a um canal com `variavel := <-ch`. Isso é uma chamada _bloqueante_, pois está aguardando por um valor.
 
 O que o `select` te permite fazer é aguardar _múltiplos_ canais. O primeiro a enviar um valor "vence" e o código abaixo do `case` é executado.
 

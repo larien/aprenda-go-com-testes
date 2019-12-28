@@ -15,7 +15,7 @@
 -   [Maps](primeiros-passos-com-go/maps/maps.md)
 -   [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md)
 -   [Mocking](primeiros-passos-com-go/mocks/mocks.md)
--   [Concorrência](primeiros-passos-com-go/concorrencia.md)
+-   [Concorrência](primeiros-passos-com-go/concorrencia/concorrencia.md)
 -   [Select](primeiros-passos-com-go/select.md)
 -   [Reflection](primeiros-passos-com-go/reflection.md)
 -   [Sync](primeiros-passos-com-go/sync.md)

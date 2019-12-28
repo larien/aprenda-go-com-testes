@@ -257,7 +257,7 @@ Falamos sobre algumas coisas do [pacote sync](https://golang.org/pkg/sync/):
 
 ### Quando usar travas em vez de *channels* e *goroutines*?
 
-[Anteriormente falamos sobre *goroutines* no primeiro capítulo sobre concorrência](concorrencia.md)
+[Anteriormente falamos sobre *goroutines* no primeiro capítulo sobre concorrência](../concorrencia/concorrencia.md)
 que nos permite escrever código concorrente e seguro, então por que usar travas?
 [A wiki do Go tem uma página dedicada para esse tópico: Mutex ou Channel?](https://github.com/golang/go/wiki/MutexOrChannel)
 
