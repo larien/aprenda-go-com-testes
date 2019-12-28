@@ -32,7 +32,7 @@
 9. [Injeção de dependência](primeiros-passos-com-go/injecao-de-dependencia/injecao-de-dependencia.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
 10. [Mocks](primeiros-passos-com-go/mocks/mocks.md) - Use injeção de dependência com mocks para testar um código não testado.
 11. [Concorrência](primeiros-passos-com-go/concorrencia/concorrencia.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
-12. [Select](primeiros-passos-com-go/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
+12. [Select](primeiros-passos-com-go/select/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
 13. [Reflection](primeiros-passos-com-go/reflection.md) - Aprenda sobre reflection.
 14. [Sync](primeiros-passos-com-go/sync.md) - Conheça algumas funcionalidades do pacote `sync`, como `WaitGroup` e `Mutex`.
 15. [Context](primeiros-passos-com-go/context.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
