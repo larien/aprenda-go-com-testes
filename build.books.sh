@@ -21,12 +21,12 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     primeiros-passos-com-go/sync/sync.md \
     primeiros-passos-com-go/contexto/contexto.md \
     criando-uma-aplicacao/introducao.md \
-    criando-uma-aplicacao/http-server.md \
-    criando-uma-aplicacao/json.md \
-    criando-uma-aplicacao/io.md \
-    criando-uma-aplicacao/command-line.md \
-    criando-uma-aplicacao/time.md \
-    criando-uma-aplicacao/websockets.md \
+    criando-uma-aplicacao/http-server/http-server.md \
+    criando-uma-aplicacao/json/json.md \
+    criando-uma-aplicacao/io/io.md \
+    criando-uma-aplicacao/command-line/command-line.md \
+    criando-uma-aplicacao/time/time.md \
+    criando-uma-aplicacao/websockets/websockets.md \
     perguntas-e-respostas/os-exec.md \
     perguntas-e-respostas/error-types.md \
 
@@ -49,11 +49,11 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     primeiros-passos-com-go/sync/sync.md \
     primeiros-passos-com-go/contexto/contexto.md \
     criando-uma-aplicacao/introducao.md \
-    criando-uma-aplicacao/http-server.md \
-    criando-uma-aplicacao/json.md \
-    criando-uma-aplicacao/io.md \
-    criando-uma-aplicacao/command-line.md \
-    criando-uma-aplicacao/time.md \
-    criando-uma-aplicacao/websockets.md \
+    criando-uma-aplicacao/http-server/http-server.md \
+    criando-uma-aplicacao/json/json.md \
+    criando-uma-aplicacao/io/io.md \
+    criando-uma-aplicacao/command-line/command-line.md \
+    criando-uma-aplicacao/time/time.md \
+    criando-uma-aplicacao/websockets/websockets.md \
     perguntas-e-respostas/os-exec.md \
     perguntas-e-respostas/error-types.md

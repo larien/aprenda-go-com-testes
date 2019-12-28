@@ -24,12 +24,12 @@
 ## Criando uma aplicação
 
 -   [Introdução](criando-uma-aplicacao/introducao.md)
--   [Servidor HTTP](criando-uma-aplicacao/http-server.md)
--   [JSON, roteamento and embedding](criando-uma-aplicacao/json.md)
--   [IO e sorting](criando-uma-aplicacao/io.md)
--   [Linha de comando e estrutura de pacotes](criando-uma-aplicacao/command-line.md)
--   [Tempo](criando-uma-aplicacao/time.md)
--   [Websockets](criando-uma-aplicacao/websockets.md)
+-   [Servidor HTTP](criando-uma-aplicacao/http-server/http-server.md)
+-   [JSON, roteamento and embedding](criando-uma-aplicacao/json/json.md)
+-   [IO e sorting](criando-uma-aplicacao/io/io.md)
+-   [Linha de comando e estrutura de pacotes](criando-uma-aplicacao/command-line/command-line.md)
+-   [Tempo](criando-uma-aplicacao/time/time.md)
+-   [Websockets](criando-uma-aplicacao/websockets/websockets.md)
 
 ## Perguntas e respostas
 
