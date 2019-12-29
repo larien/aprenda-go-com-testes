@@ -1,6 +1,6 @@
 # OS Exec
 
-[**You can find all the code here**](https://github.com/quii/learn-go-with-tests/tree/master/q-and-a/os-exec)
+[**You can find all the code here**](https://github.com/larien/learn-go-with-tests/tree/master/duvidas-da-comunidade/os-exec)
 
 [keith6014](https://www.reddit.com/user/keith6014) asks on [reddit](https://www.reddit.com/r/golang/comments/aaz8ji/testdata_and_function_setup_help/)
 
@@ -15,7 +15,7 @@
 A few things
 
 * When something is difficult to test, it's often due to the separation of concerns not being quite right
-* Dont add "test modes" into your code, instead use [Dependency Injection](../primeiros-passos-com-go/dependency-injection.md) so that you can model your dependencies and separate concerns. 
+* Dont add "test modes" into your code, instead use [Dependency Injection](../../primeiros-passos-com-go/injecao-de-dependencia/injecao-de-dependencia.md) so that you can model your dependencies and separate concerns. 
 
 I have taken the liberty of guessing what the code might look like
 

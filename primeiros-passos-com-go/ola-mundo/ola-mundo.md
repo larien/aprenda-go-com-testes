@@ -4,7 +4,7 @@
 
 É comum o primeiro programa em uma nova linguagem ser um _Olá, mundo_.
 
-No [capítulo anterior](instalacao-do-go.md#o-ambiente-go), discutimos sobre como Go pode ser pouco flexível em relação a onde colocar seus arquivos.
+No [capítulo anterior](../instalacao-do-go.md#o-ambiente-go), discutimos sobre como Go pode ser pouco flexível em relação a onde colocar seus arquivos.
 
 Crie um diretório no seguinte caminho: `$GOPATH/src/github.com/{seu-lindo-nome-de-usuario}/ola`.
 

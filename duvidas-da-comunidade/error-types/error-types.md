@@ -1,6 +1,6 @@
 # Tipos de erro
 
-[**You can find all the code here**](https://github.com/quii/learn-go-with-tests/tree/master/q-and-a/error-types)
+[**You can find all the code here**](https://github.com/larien/learn-go-with-tests/tree/master/duvidas-da-comunidade/error-types)
 
 **Creating your own types for errors can be an elegant way of tidying up your code, making your code easier to use and test.**
 
