@@ -33,8 +33,8 @@
 
 ## Perguntas e respostas
 
--   [OS Exec](perguntas-e-respostas/os-exec.md)
--   [Tipos de erro](perguntas-e-respostas/error-types.md)
+-   [OS Exec](duvidas-da-comunidade/os-exec/os-exec.md)
+-   [Tipos de erro](duvidas-da-comunidade/error-types/error-types.md)
 
 ## Meta
 

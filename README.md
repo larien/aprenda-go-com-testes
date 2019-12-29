@@ -64,8 +64,8 @@ Costumo ver perguntas nas Interwebs como:
 
 Se tiver esse tipo de dúvida, crie uma Issue no GitHub e vou tentar achar tempo para escrever um pequeno capítulo para resolver o problema. Acho que conteúdo como esse é valioso, já que está resolvendo problemas `reais` envolvendo testes que as pessoas têm.
 
--   [OS exec](perguntas-e-respostas/os-exec.md) - Um exemplo de como podemos usar o sistema operacional para executar comandos para buscar dados e manter nossa lógica de negócio testável.
--   [Tipos de erro](perguntas-e-respostas/error-types.md) - Exemplo de como criar seus próprios tipos de erro para melhorar seus testes e tornar seu código mais fácil de se trabalhar.
+-   [OS exec](duvidas-da-comunidade/os-exec/os-exec.md) - Um exemplo de como podemos usar o sistema operacional para executar comandos para buscar dados e manter nossa lógica de negócio testável.
+-   [Tipos de erro](duvidas-da-comunidade/error-types/error-types.md) - Exemplo de como criar seus próprios tipos de erro para melhorar seus testes e tornar seu código mais fácil de se trabalhar.
 
 ## Contribuição
 
