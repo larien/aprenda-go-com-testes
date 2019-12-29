@@ -57,7 +57,7 @@ Para criar um servidor web (uma aplicação que recebe chamadas via protocolo HT
 func ListenAndServe(endereco string, handler Handler) error
 ```
 
-Isso vai iniciar um servidor web disponível em uma porta, criando uma gorotina para cada requisição e repassando para um [`Handler`](https://golang.org/pkg/net/http/#Handler).
+Isso vai iniciar um servidor web disponível em uma porta, criando uma gorotina para cada requisição e repassando para um [`Handler`](https://golang.org/pkg/net/http/#Handler) (um Handler é um _Tratador_, que recebe a requisição e avalia o que fazer com os dados).
 
 ```go
 type Handler interface {
@@ -87,44 +87,45 @@ func TestGETPlayers(t *testing.T) {
 }
 ```
 
-In order to test our server, we will need a `Request` to send in and we'll want to _spy_ on what our handler writes to the `ResponseWriter`.
+Para testar nosso servidor, vamos precisar de um `Request` (_Requisição_) para enviar a requisição ao servidor, e então queremos _inspecionar_ o que o nosso Handler escreve para o `ResponseWriter`. 
 
-* We use `http.NewRequest` to create a request. The first argument is the request's method and the second is the request's path. The `nil` argument refers to the request's body, which we don't need to set in this case.
-* `net/http/httptest` has a spy already made for us called `ResponseRecorder` so we can use that. It has many helpful methods to inspect what has been written as a response.
 
-## Try to run the test
+* Nós usamos o `http.NewRequest` para criar uma requisição. O primeiro argumento é o método da requisição e o segundo é o caminho (_path_) da requisição. O valor `nil` para o segundo argumento corresponde ao corpo (_body_) da requisição, que não precisamos definir para este teste. 
+* `net/http/httptest` já tem um _espião_ criado para nós, chamado `ResponseRecorder`, então podemos usá-lo. Este já possui muitos métodos úteis para inspecionar o que foi escrito como resposta. 
 
-`./server_test.go:13:2: undefined: PlayerServer`
+## Tente rodar o teste novamente
 
-## Write the minimal amount of code for the test to run and check the failing test output
+`./server_test.go:13:2: undefined: JogadorServidor`
 
-The compiler is here to help, just listen to it.
+## Escreva a quantidade mínima de códido para o que teste passe e verifique a falha indicada na responta do teste
 
-Define `PlayerServer`
+O compilador está aqui para ajuda, ouça o que ele diz. 
+
+Crie a `JogadorServidor`
 
 ```go
-func PlayerServer() {}
+func JogadorServidor() {}
 ```
 
-Try again
+Tente novamente
 
 ```text
-./server_test.go:13:14: too many arguments in call to PlayerServer
+./server_test.go:13:14: too many arguments in call to JogadorServidor
     have (*httptest.ResponseRecorder, *http.Request)
     want ()
 ```
 
-Add the arguments to our function
+Adicione os argumentos à função
 
 ```go
 import "net/http"
 
-func PlayerServer(w http.ResponseWriter, r *http.Request) {
+func JogadorServidor(w http.ResponseWriter, r *http.Request) {
 
 }
 ```
 
-The code now compiles and the test fails
+Agora o código compila, e o teste falha. 
 
 ```text
 === RUN   TestGETPlayers/returns_Pepper's_score
