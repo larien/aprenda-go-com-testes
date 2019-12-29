@@ -13,13 +13,13 @@
 -   [Estruturas, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces/estruturas-metodos-e-interfaces.md)
 -   [Ponteiros e erros](primeiros-passos-com-go/ponteiros-e-erros/ponteiros-e-erros.md)
 -   [Maps](primeiros-passos-com-go/maps/maps.md)
--   [Injeção de dependência](primeiros-passos-com-go/dependency-injection.md)
--   [Mocking](primeiros-passos-com-go/mocks/mocks.md)
+-   [Injeção de dependência](primeiros-passos-com-go/injecao-de-dependencia/injecao-de-dependencia.md)
+-   [Mocks](primeiros-passos-com-go/mocks/mocks.md)
 -   [Concorrência](primeiros-passos-com-go/concorrencia/concorrencia.md)
 -   [Select](primeiros-passos-com-go/select/select.md)
--   [Reflection](primeiros-passos-com-go/reflection/reflection.md)
+-   [Reflexão](primeiros-passos-com-go/reflection/reflection.md)
 -   [Sync](primeiros-passos-com-go/sync/sync.md)
--   [Context](primeiros-passos-com-go/contexto/contexto.md)
+-   [Contexto](primeiros-passos-com-go/contexto/contexto.md)
 
 ## Criando uma aplicação
 

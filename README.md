@@ -33,9 +33,9 @@
 10. [Mocks](primeiros-passos-com-go/mocks/mocks.md) - Use injeção de dependência com mocks para testar um código não testado.
 11. [Concorrência](primeiros-passos-com-go/concorrencia/concorrencia.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
 12. [Select](primeiros-passos-com-go/select/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
-13. [Reflection](primeiros-passos-com-go/reflection/reflection.md) - Aprenda sobre reflexão.
+13. [Reflexão](primeiros-passos-com-go/reflection/reflection.md) - Aprenda sobre reflexão.
 14. [Sync](primeiros-passos-com-go/sync/sync.md) - Conheça algumas funcionalidades do pacote `sync`, como `WaitGroup` e `Mutex`.
-15. [Contexto](primeiros-passos-com-go/contexto.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
+15. [Contexto](primeiros-passos-com-go/contexto/contexto.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
 
 ### Criando uma aplicação
 

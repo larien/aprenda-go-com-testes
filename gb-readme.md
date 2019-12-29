@@ -4,7 +4,7 @@
 
 [Arte por Denise](https://twitter.com/deniseyu21)
 
--   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB or PDF](https://github.com/larien/learn-go-with-tests/releases)
+-   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB ou PDF](https://github.com/larien/learn-go-with-tests/releases)
 -   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
 -   Traduções: [Chinese](https://studygolang.gitbook.io/learn-go-with-tests)
 
