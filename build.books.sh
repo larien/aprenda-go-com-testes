@@ -6,27 +6,27 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     gb-readme.md \
     meta/motivacao.md \
     primeiros-passos-com-go/instalacao-do-go.md \
-    primeiros-passos-com-go/ola-mundo.md \
-    primeiros-passos-com-go/inteiros.md \
-    primeiros-passos-com-go/iteracao.md \
-    primeiros-passos-com-go/arrays-e-slices.md \
-    primeiros-passos-com-go/estruturas-metodos-e-interfaces.md \
-    primeiros-passos-com-go/ponteiros-e-erros.md \
-    primeiros-passos-com-go/maps.md \
-    primeiros-passos-com-go/injecao-de-dependencia.md \
-    primeiros-passos-com-go/mocks.md \
-    primeiros-passos-com-go/concorrencia.md \
-    primeiros-passos-com-go/select.md \
-    primeiros-passos-com-go/reflection.md \
-    primeiros-passos-com-go/sync.md \
-    primeiros-passos-com-go/context.md \
+    primeiros-passos-com-go/ola-mundo/ola-mundo.md \
+    primeiros-passos-com-go/inteiros/inteiros.md \
+    primeiros-passos-com-go/iteracao/iteracao.md \
+    primeiros-passos-com-go/arrays-e-slices/arrays-e-slices.md \
+    primeiros-passos-com-go/estruturas-metodos-e-interfaces/estruturas-metodos-e-interfaces.md \
+    primeiros-passos-com-go/ponteiros-e-erros/ponteiros-e-erros.md \
+    primeiros-passos-com-go/maps/maps.md \
+    primeiros-passos-com-go/injecao-de-dependencia/injecao-de-dependencia.md \
+    primeiros-passos-com-go/mocks/mocks.md \
+    primeiros-passos-com-go/concorrencia/concorrencia.md \
+    primeiros-passos-com-go/select/select.md \
+    primeiros-passos-com-go/reflection/reflection.md \
+    primeiros-passos-com-go/sync/sync.md \
+    primeiros-passos-com-go/contexto/contexto.md \
     criando-uma-aplicacao/introducao.md \
-    criando-uma-aplicacao/http-server.md \
-    criando-uma-aplicacao/json.md \
-    criando-uma-aplicacao/io.md \
-    criando-uma-aplicacao/command-line.md \
-    criando-uma-aplicacao/time.md \
-    criando-uma-aplicacao/websockets.md \
+    criando-uma-aplicacao/http-server/http-server.md \
+    criando-uma-aplicacao/json/json.md \
+    criando-uma-aplicacao/io/io.md \
+    criando-uma-aplicacao/command-line/command-line.md \
+    criando-uma-aplicacao/time/time.md \
+    criando-uma-aplicacao/websockets/websockets.md \
     perguntas-e-respostas/os-exec.md \
     perguntas-e-respostas/error-types.md \
 
@@ -34,26 +34,26 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     gb-readme.md \
     meta/motivacao.md \
     primeiros-passos-com-go/instalacao-do-go.md \
-    primeiros-passos-com-go/ola-mundo.md \
-    primeiros-passos-com-go/inteiros.md \
-    primeiros-passos-com-go/iteracao.md \
-    primeiros-passos-com-go/arrays-e-slices.md \
-    primeiros-passos-com-go/estruturas-metodos-e-interfaces.md \
-    primeiros-passos-com-go/ponteiros-e-erros.md \
-    primeiros-passos-com-go/maps.md \
-    primeiros-passos-com-go/injecao-de-dependencia.md \
-    primeiros-passos-com-go/mocks.md \
-    primeiros-passos-com-go/concorrencia.md \
-    primeiros-passos-com-go/select.md \
-    primeiros-passos-com-go/reflection.md \
-    primeiros-passos-com-go/sync.md \
-    primeiros-passos-com-go/context.md \
+    primeiros-passos-com-go/ola-mundo/ola-mundo.md \
+    primeiros-passos-com-go/inteiros/inteiros.md \
+    primeiros-passos-com-go/iteracao/iteracao.md \
+    primeiros-passos-com-go/arrays-e-slices/arrays-e-slices.md \
+    primeiros-passos-com-go/estruturas-metodos-e-interfaces/estruturas-metodos-e-interfaces.md \
+    primeiros-passos-com-go/ponteiros-e-erros/ponteiros-e-erros.md \
+    primeiros-passos-com-go/maps/maps.md \
+    primeiros-passos-com-go/injecao-de-dependencia/injecao-de-dependencia.md \
+    primeiros-passos-com-go/mocks/mocks.md \
+    primeiros-passos-com-go/concorrencia/concorrencia.md \
+    primeiros-passos-com-go/select/select.md \
+    primeiros-passos-com-go/reflection/reflection.md \
+    primeiros-passos-com-go/sync/sync.md \
+    primeiros-passos-com-go/contexto/contexto.md \
     criando-uma-aplicacao/introducao.md \
-    criando-uma-aplicacao/http-server.md \
-    criando-uma-aplicacao/json.md \
-    criando-uma-aplicacao/io.md \
-    criando-uma-aplicacao/command-line.md \
-    criando-uma-aplicacao/time.md \
-    criando-uma-aplicacao/websockets.md \
+    criando-uma-aplicacao/http-server/http-server.md \
+    criando-uma-aplicacao/json/json.md \
+    criando-uma-aplicacao/io/io.md \
+    criando-uma-aplicacao/command-line/command-line.md \
+    criando-uma-aplicacao/time/time.md \
+    criando-uma-aplicacao/websockets/websockets.md \
     perguntas-e-respostas/os-exec.md \
     perguntas-e-respostas/error-types.md

@@ -22,20 +22,20 @@
 ### Primeiros Passos com Go
 
 1. [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md) - Prepare o ambiente para produtividade.
-2. [Olá, mundo](primeiros-passos-com-go/ola-mundo.md) - Declarando variáveis, constantes, declarações `if`/`else`, switch, escreva seu primeiro programa em Go e seu primeiro teste. Sintaxe de subteste e closures.
-3. [Inteiros](primeiros-passos-com-go/inteiros.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
-4. [Iteração](primeiros-passos-com-go/iteracao.md) - Aprenda sobre `for` e benchmarking.
-5. [Arrays e slices](primeiros-passos-com-go/arrays-e-slices.md) - Aprenda sobre arrays, slices, `len`, variáveis recebidas como argumentos, `range` e cobertura de testes.
-6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
-7. [Ponteiros e erros](primeiros-passos-com-go/ponteiros-e-erros.md) - Aprenda sobre ponteiros e erros.
-8. [Maps](primeiros-passos-com-go/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
-9. [Injeção de dependência](primeiros-passos-com-go/injecao-de-dependencia.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
-10. [Mocking](primeiros-passos-com-go/mocks.md) - Use injeção de dependência com mocking para testar um código sem nenhum teste.
-11. [Concorrência](primeiros-passos-com-go/concorrencia.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
-12. [Select](primeiros-passos-com-go/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
-13. [Reflection](primeiros-passos-com-go/reflection.md) - Aprenda sobre reflection.
-14. [Sync](primeiros-passos-com-go/sync.md) - Conheça algumas funcionalidades do pacote `sync`, como `WaitGroup` e `Mutex`.
-15. [Context](primeiros-passos-com-go/context.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
+2. [Olá, mundo](primeiros-passos-com-go/ola-mundo/ola-mundo.md) - Declarando variáveis, constantes, declarações `if`/`else`, switch, escreva seu primeiro programa em Go e seu primeiro teste. Sintaxe de subteste e closures.
+3. [Inteiros](primeiros-passos-com-go/inteiros/inteiros.md) - Mais conteúdo sobre sintaxe de declaração de função e aprenda novas formas de melhorar a documentação do seu código.
+4. [Iteração](primeiros-passos-com-go/iteracao/iteracao.md) - Aprenda sobre `for` e benchmarking.
+5. [Arrays e slices](primeiros-passos-com-go/arrays-e-slices/arrays-e-slices.md) - Aprenda sobre arrays, slices, `len`, variáveis recebidas como argumentos, `range` e cobertura de testes.
+6. [Estruturas, métodos e interfaces](primeiros-passos-com-go/estruturas-metodos-e-interfaces/estruturas-metodos-e-interfaces.md) - Aprenda sobre `structs`, métodos, `interface` e testes orientados a tabela \(table driven tests\).
+7. [Ponteiros e erros](primeiros-passos-com-go/ponteiros-e-erros/ponteiros-e-erros.md) - Aprenda sobre ponteiros e erros.
+8. [Maps](primeiros-passos-com-go/maps/maps.md) - Aprenda sobre armazenamento de valores na estrutura de dados `map`.
+9. [Injeção de dependência](primeiros-passos-com-go/injecao-de-dependencia/injecao-de-dependencia.md) - Aprenda sobre injeção de dependência, qual sua relação com interfaces e uma introdução a I/O.
+10. [Mocks](primeiros-passos-com-go/mocks/mocks.md) - Use injeção de dependência com mocks para testar um código não testado.
+11. [Concorrência](primeiros-passos-com-go/concorrencia/concorrencia.md) - Aprenda como escrever código concorrente para tornar seu software mais rápido.
+12. [Select](primeiros-passos-com-go/select/select.md) - Aprenda a sincronizar processos assíncronos de forma elegante.
+13. [Reflection](primeiros-passos-com-go/reflection/reflection.md) - Aprenda sobre reflexão.
+14. [Sync](primeiros-passos-com-go/sync/sync.md) - Conheça algumas funcionalidades do pacote `sync`, como `WaitGroup` e `Mutex`.
+15. [Contexto](primeiros-passos-com-go/contexto.md) - Use o pacote `context` para gerenciar e cancelar processos de longa duração.
 
 ### Criando uma aplicação
 
@@ -49,12 +49,12 @@ Novos conceitos serão apresentados para ajudar a escrever código de qualidade,
 
 No final desse capítulo, você deverá ter uma boa ideia de como escrever uma aplicação em Go testada.
 
--   [Servidor HTTP](criando-uma-aplicacao/http-server.md) - Vamos criar uma aplicação que espera por requisições HTTP e as responde.
--   [JSON, routing e embedding](criando-uma-aplicacao/json.md) - Vamos fazer nossos endpoints retornarem JSON e explorar como trabalhar com rotas.
--   [IO e classificação](criando-uma-aplicacao/io.md) - Vamos persistir e ler nossos dados do disco e falar sobre classificação de dados.
--   [Linha de comando e estrutura do projeto](criando-uma-aplicacao/command-line.md) - Suportar diversas aplicações em uma base de código e ler entradas da linha de comando.
--   [Tempo](criando-uma-aplicacao/time.md) - Usar o pacote `time` para programar atividades.
--   [Websockets](criando-uma-aplicacao/websockets.md) - Aprender a escrever e testar um servidor que usa websockets.
+-   [Servidor HTTP](criando-uma-aplicacao/http-server/http-server.md) - Vamos criar uma aplicação que espera por requisições HTTP e as responde.
+-   [JSON, routing e aninhamento](criando-uma-aplicacao/json/json.md) - Vamos fazer nossos endpoints retornarem JSON e explorar como trabalhar com rotas.
+-   [IO e classificação](criando-uma-aplicacao/io/io.md) - Vamos persistir e ler nossos dados do disco e falar sobre classificação de dados.
+-   [Linha de comando e estrutura do projeto](criando-uma-aplicacao/command-line/command-line.md) - Suportar diversas aplicações em uma base de código e ler entradas da linha de comando.
+-   [Tempo](criando-uma-aplicacao/time/time.md) - Usar o pacote `time` para programar atividades.
+-   [Websockets](criando-uma-aplicacao/websockets/websockets.md) - Aprender a escrever e testar um servidor que usa websockets.
 
 ### Dúvidas e respostas
 
