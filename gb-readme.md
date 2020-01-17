@@ -13,7 +13,7 @@
 -   Explore a linguagem Go escrevendo testes
 -   **Tenha uma base com TDD**. O Go é uma boa linguagem para aprender TDD por ser simples de aprender e ter testes nativamente
 -   Tenha confiança de que você será capaz de escrever sistemas robustos e bem testados em Go
--   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](meta/motivacao.md)
+-   [Assista a um vídeo ou leia sobre o motivo pelo qual testes unitários e TDD são importantes](outros/motivacao.md)
 
 ## Explicação
 
