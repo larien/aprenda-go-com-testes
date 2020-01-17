@@ -4,7 +4,7 @@ set -e
 
 docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --latex-engine=xelatex --variable urlcolor=blue --toc --toc-depth=1 pdf-cover.md \
     gb-readme.md \
-    meta/motivacao.md \
+    outros/motivacao.md \
     primeiros-passos-com-go/instalacao-do-go.md \
     primeiros-passos-com-go/ola-mundo/ola-mundo.md \
     primeiros-passos-com-go/inteiros/inteiros.md \
@@ -29,10 +29,11 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     criando-uma-aplicacao/websockets/websockets.md \
     duvidas-da-comunidade/os-exec/os-exec.md \
     duvidas-da-comunidade/error-types/error-types.md \
+    outros/glossario.md \
 
 docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --latex-engine=xelatex --toc --toc-depth=1 title.txt \
     gb-readme.md \
-    meta/motivacao.md \
+    outros/motivacao.md \
     primeiros-passos-com-go/instalacao-do-go.md \
     primeiros-passos-com-go/ola-mundo/ola-mundo.md \
     primeiros-passos-com-go/inteiros/inteiros.md \
@@ -56,4 +57,6 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     criando-uma-aplicacao/time/time.md \
     criando-uma-aplicacao/websockets/websockets.md \
     duvidas-da-comunidade/os-exec/os-exec.md \
-    duvidas-da-comunidade/error-types/error-types.md
+    duvidas-da-comunidade/error-types/error-types.md \
+    outros/motivacao.md
+
