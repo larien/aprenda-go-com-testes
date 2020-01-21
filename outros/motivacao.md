@@ -18,7 +18,7 @@ Muita gente costuma escolher o Go para criar sistemas porque a linguagem teve v�
 -   As ferramentas relacionadas a testes, benchmarking, linting e shipping são incríveis se comparadas à maioria das alternativas.
 -   A biblioteca padrão é brilhante.
 -   Velocidade de compilação muito rápida para loops de feedback mais frequentes.
--   A famigerada promessa da compatibilidade. Parece que Go vai receber `generics` e outras funcionalidades no futuro, mas os mantenedores prometeram que mesmo o código Go que você escreveram cinco anos atrás ainda vai compilar e funcionar. Eu literalmente passei semanas atualizando um projeto em Scala da versão 2.8 para a 2.10.
+-   A famigerada promessa da compatibilidade. Parece que Go vai receber `generics` e outras funcionalidades no futuro, mas os mantenedores prometeram que mesmo o código Go que você escreveu cinco anos atrás ainda vai compilar e funcionar. Eu literalmente passei semanas atualizando um projeto em Scala da versão 2.8 para a 2.10.
 
 Com todas essas propriedades ótimas, ainda podemos acabar criando sistemas terríveis. Por isso, precisamos aplicar lições de engenharia de software que se aplicam independente do quão maravilhosa (ou não) sua linguagem seja.
 
@@ -26,7 +26,7 @@ Em 1974, um engenheiro de software esperto chamado [Manny Lehman](https://pt.wik
 
 > As leis descrevem um equilíbrio entre o desenvolvimento de software em uma ponta e a diminuição do progresso em outra.
 
-É importante entender esses extremos para não acabar em um ciclo infinito de entregar sistemas que se tornam em legado e precisam ser reescritos novamente.
+É importante entender esses extremos para não acabar em um ciclo infinito de entregar sistemas que se tornam em legado e precisam ser reescritos.
 
 ## Lei da Mudança Contínua
 
@@ -36,7 +36,7 @@ Parece óbvio que um software _precisa_ mudar ou acaba se tornando menos útil, 
 
 Muitas equipes são incentivadas a entregar um projeto em uma data específica e passar para o próximo projeto. Se o software tiver "sorte", vai acabar na mão de outro grupo de pessoas para mantê-lo, mas é claro que nenhuma dessas pessoas o escreveu.
 
-As pessoas se preocupam em escolher uma framework que vai ajudá-las a "entregar rapidamente", mas não focam na longevidade do sistema em termos de como precisa ser evoluído.
+As pessoas se preocupam em escolher um framework que vai ajudá-las a "entregar rapidamente", mas não focam na longevidade do sistema em termos de como precisa ser evoluído.
 
 Mesmo se você for um engenheiro de software incrível, ainda vai cair na armadilha de não saber que futuro aguarda seu software. Já que o negócio muda, o código brilhante que você escreveu já não vai mais ser relevante.
 
@@ -171,7 +171,7 @@ func TestOla(t *testing.T) {
 }
 ```
 
-Na linha de comando, posso executar `go test` e obter feedback imediato se minha refatoração alterou o comportamento da função. Na prática, é melhor aprender aonde fica o botão mágico que vai executar seus testes dentro do seu editor/IDE (ou rodar os testes sempre que salvar o arquivo).
+Na linha de comando, posso executar `go test` e obter feedback imediato se minha refatoração alterou o comportamento da função. Na prática, é melhor aprender onde fica o botão mágico que vai executar seus testes dentro do seu editor/IDE (ou rodar os testes sempre que salvar o arquivo).
 
 Você deve entrar em uma rotina em que acaba fazendo:
 
