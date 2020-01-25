@@ -215,11 +215,11 @@ Quando ouço pessoas reclamando sobre testes unitários, frequentemente o motivo
 
 Acredito que isso deriva de uma falta de entendimento do que testes unitários são e perseguem métricas vaidosas (cobertura de testes).
 
-Se estou apenas testando o comportamento, não deveríamos apenas escrever testes de sistema/caixa preta? Esses tipos de testes geram muito valor em termos de verificar as principais jornadas do usuário, mas costumam ser difíceis de escrever e lentos para rodar. Por esse motivos, eles não são muito úteis para a _refatoração_ porque o ciclo de feedback é lento. Além disso, os testes de caixa preta tendem a não te ajudar muito com as causas de origem comparados aos testes unitários.
+Se estou apenas testando o comportamento, não deveríamos apenas escrever testes de sistema/caixa preta? Esses tipos de testes geram muito valor em termos de verificar as principais jornadas do usuário, mas costumam ser difíceis de escrever e lentos para rodar. Por esse motivo, eles não são muito úteis para a _refatoração_ porque o ciclo de feedback é lento. Além disso, os testes de caixa preta tendem a não te ajudar muito com as causas de origem comparados aos testes unitários.
 
 Logo, _qual_ é o nível de abstração correto?
 
-## Escrevendo testes unitários de forma efetiva é um problema de design
+## Escrever testes unitários de forma efetiva é um problema de design
 
 Deixando testes de lado por um momento, é desejável "unidades" independentes e desacopladas dentro do seu sistema, centradas em torno de conceitos essenciais do seu domínio.
 
@@ -270,7 +270,7 @@ Eu disse que era uma época das trevas, mas isso ainda acontece!
 
 O movimento ágil nos ensina que precisamos trabalhar de forma iterativa, começando com pouca coisa e evoluindo o software para que tenhamos retorno rápido do design do nosso software e como ele trabalha com usuários reais; o TDD reforça essa abordagem.
 
-O TDD aborda as leis que Lehman fala sobre e outras lições difíceis aprendidas no decorrer da história encorajando uma metodologia de refatoração constante e entrega contínua.
+O TDD aborda as leis citadas por Lehman e outras lições difíceis aprendidas no decorrer da história encorajando uma metodologia de refatoração constante e entrega contínua.
 
 ### Etapas pequenas
 
@@ -288,7 +288,7 @@ Você sempre vai desenvolver de forma a criar funcionalidades pequenas & úteis 
 
 ## Resumindo
 
--   O ponto forte do software é que podemos mudá-lo. A _maioria_ dos software requer mudança com o tempo de formas imprevisíveis; não tente pensar muito à frente porque é difícil prever o futuro.
+-   O ponto forte do software é que podemos mudá-lo. A _maioria_ dos softwares requer mudança com o tempo de formas imprevisíveis; não tente pensar muito à frente porque é difícil prever o futuro.
 -   Ao invés disso, precisamos criar nosso software de forma que ele possa se manter maleável. Para mudar o software precisamos refatorá-lo conforme ele evolui, ou vai acabar virando uma bagunça.
 -   Um bom conjunto de testes pode te ajudar a refatorar mais rápido e de forma menos estressante.
 -   Escrever bons testes unitários é um problema de design. Logo, pense em estruturar seu código de forma que ele tenha unidades significativas que possam ser unidas como blocos de Lego.
