@@ -90,11 +90,11 @@ Para testar nosso servidor, vamos precisar de um `Request` (_Requisição_) para
 * Nós usamos o `http.NewRequest` para criar uma requisição. O primeiro argumento é o método da requisição e o segundo é o caminho (_path_) da requisição. O valor `nil` para o segundo argumento corresponde ao corpo (_body_) da requisição, que não precisamos definir para este teste.
 * `net/http/httptest` já tem um _inspecionador_ criado para nós, chamado `ResponseRecorder`, então podemos usá-lo. Este possui muitos métodos úteis para inspecionar o que foi escrito como resposta.
 
-## Tente rodar o teste 
+## Tente rodar o teste
 
 `./server_test.go:13:2: undefined: PlayerServer`
 
-## Escreva a quantidade mínima de códido para o que teste passe e verifique a falha indicada na responta do teste
+## Escreva a quantidade mínima de código para o que teste passe e verifique a falha indicada na responta do teste
 
 O compilador está aqui para ajuda, ouça o que ele diz.
 
@@ -130,9 +130,9 @@ Agora o código compila, e o teste falha.
         server_test.go:20: got '', want '20'
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer o teste funcionar
 
-From the DI chapter, we touched on HTTP servers with a `Greet` function. We learned that net/http's `ResponseWriter` also implements io `Writer` so we can use `fmt.Fprint` to send strings as HTTP responses.
+Do capítulo sobre injeção de dependências, falamos sobre servidores HTP com a função `Greet`. Aprendemos que a função `ResponseWriter` também implementa a interface `Writer` do pacote io, então podemos usar `fmt.Fprint` para enviar strings como respostas HTTP.
 
 ```go
 func PlayerServer(w http.ResponseWriter, r *http.Request) {
@@ -140,11 +140,11 @@ func PlayerServer(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-The test should now pass.
+O teste agora deve funcionar.
 
-## Complete the scaffolding
+## Complete a estrutura
 
-We want to wire this up into an application. This is important because
+Nós queremos converter isso em uma aplicação. Isso é importante porque
 
 * We'll have _actual working software_, we don't want to write tests for the sake of it, it's good to see the code in action.
 * As we refactor our code, it's likely we will change the structure of the program. We want to make sure this is reflected in our application too as part of the incremental approach.
