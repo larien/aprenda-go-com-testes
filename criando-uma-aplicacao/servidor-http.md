@@ -7,7 +7,7 @@ Você recebeu o desafio de criar um servidor web para que usuários possam acomp
 * `GET /players/{name}` deve retornar um número indicando o número total de vitórias
 * `POST /players/{name}` deve registrar uma vitória para este nome de jogador, incrementando a cada nova chamada `POST`
 
-Vamos seguir com a abordagem do TDD, criando software que funciona o mais rápido possível, e a cada ciclo fazendo pequenas melhoras até uma solução completa. Com essa abordagem, nós
+Vamos seguir com a abordagem do TDD, criando software que funciona o mais rápido possível, e a cada ciclo fazendo pequenas melhorias até uma solução completa. Com essa abordagem, nós
 
 * Mantemos pequeno o escopo do problema em qualquer momento
 * Não perdemos o foco por pensar em muito detalhes
@@ -27,11 +27,11 @@ E você pode cometer estes pecados porque vai reescrever o código logo depois, 
 
 ### E se você não fizer assim?
 
-Quanto mais alterações você fizer enquanto seu código estiver em _vermelho_, maiores as chances de você adicionar mais problemas, não cobertos por testes.
+Quanto mais alterações você fizer enquanto seu código estiver em _vermelho_, maiores as chances de você adicionar problemas, não cobertos por testes.
 
-A ideia é escrever, interativamente, código útil em pequenos passos, e guiados pelos testes, para que você não perca foco no objetivo principal. 
+A ideia é escrever, iterativamente, código útil em pequenos passos, guiados pelos testes, para que você não perca foco no objetivo principal.
 
-### Galinha e ovo
+### A galinha e o ovo
 
 Como podemos construir isso de forma incremental? Não podemos obter (`GET`) um nome de jogador sem ter registrado nada anteriormente, e parece complicado saber se o `POST` funcionou sem o endpoint `GET` já implementado.
 
@@ -39,17 +39,15 @@ E é nesse ponto que o _mocking_ vai nos ajudar.
 
 (Nota do tradutor: A expressão _mocking_ significa "zombar", "fazer piada" ou "enganar". Mantemos a expressão original por ser uma expressão comum na literatura em português, por falta de tradução melhor)
 
-* o `GET` precisa de uma _coisa_ `JogadorArmazenamento` para obter pontuações de um nome de jogador. Isso deve ser uma interface, para que quando rodar os testes, seja possível criar um código simples de esboço para testar o código sem implementar o código final que será usado para armazenar os dados.
-
-* para o `POST`, podemos _olhar_ em suas chamadas a `JogadorArmazenamento` para ter certeza de que os dados são armazenados corretamente. Nossa implementação de gravação dos dados não estará vinculada à busca dos dados.
-
+* o `GET` precisa de uma _coisa_ `PlayerStore` para obter pontuações de um nome de jogador. Isso deve ser uma interface, para que, ao executar os testes, seja possível criar um código simples de esboço para testar o código sem precisar, neste momento, implementar o código final que será usado para armazenar os dados.
+* para o `POST`, podemos _inspecionar_ as chamadas feitas a `PlayerStore` para ter certeza de que os dados são armazenados corretamente. Nossa implementação de gravação dos dados não estará vinculada à busca dos dados.
 * para ver código rodando rapidamente vamos fazer uma implementação simples de armazenamento dos dados na memória, e depois podemos criar uma implementação que dá suporte ao mecanismo de armazenamento de preferência.
 
 ## Escrevendo o teste primeiro
 
-Podemos escrever um teste e fazer passar retornando um valor predeterminado para nos ajudar a começar. Kent Beck se refere a isso como "Fazer de conta". Uma vez que temos um teste funcionando podemos escrever mais testes que nos ajudem a remover este valor predeterminado (constante).
+Podemos escrever um teste e fazer funcionar retornando um valor predeterminado para nos ajudar a começar. Kent Beck se refere a isso como "Fazer de conta". Uma vez que temos um teste funcionando podemos escrever mais testes que nos ajudem a remover este valor predeterminado (constante).
 
-Com este pequeno, mas importante, passo, nós começamos a ter uma estrutura inicial para o projeto funcionando corretamente, sem nos preocuparmos demais com a lógica da aplicação. 
+Com este pequeno passo, nós começamos a ter uma estrutura inicial para o projeto funcionando corretamente, sem nos preocuparmos demais com a lógica da aplicação.
 
 Para criar um servidor web (uma aplicação que recebe chamadas via protocolo HTTP) em Go, você vai chamar, normalmente, a função [ListenAndServe](https://golang.org/pkg/net/http/#ListenAndServe).
 
@@ -57,7 +55,7 @@ Para criar um servidor web (uma aplicação que recebe chamadas via protocolo HT
 func ListenAndServe(endereco string, handler Handler) error
 ```
 
-Isso vai iniciar um servidor web disponível em uma porta, criando uma gorotina para cada requisição e repassando para um [`Handler`](https://golang.org/pkg/net/http/#Handler) (um Handler é um _Tratador_, que recebe a requisição e avalia o que fazer com os dados).
+Isso vai iniciar um servidor web _escutando_ em uma porta, criando uma gorotina para cada requisição e repassando para um [`Handler`](https://golang.org/pkg/net/http/#Handler) (um Handler é um _Tratador_, que recebe a requisição e avalia o que fazer com os dados).
 
 ```go
 type Handler interface {
@@ -65,9 +63,9 @@ type Handler interface {
 }
 ```
 
-Esta interface tem uma única função que espera dois argumentos, o primeiro que indica onde _escrevemos a resposta_ e o outro com a requisição HTTP que nos foi enviada. 
+Esta interface define uma única função que espera dois argumentos, o primeiro que indica onde _escrevemos a resposta_ e o outro com a requisição HTTP que nos foi enviada.
 
-Vamos escrever um teste para a função `JogadorServidor` que recebe estes dois argumentos. A requisição enviada serve para obter a pontuação de um Nome de Jogador, que esperamos que seja `"20"`.
+Vamos escrever um teste para a função `PlayerServer` que recebe estes dois argumentos. A requisição enviada serve para obter a pontuação de um Nome de Jogador, que esperamos que seja `"20"`.
 
 ```go
 func TestGETPlayers(t *testing.T) {
@@ -87,30 +85,29 @@ func TestGETPlayers(t *testing.T) {
 }
 ```
 
-Para testar nosso servidor, vamos precisar de um `Request` (_Requisição_) para enviar a requisição ao servidor, e então queremos _inspecionar_ o que o nosso Handler escreve para o `ResponseWriter`. 
+Para testar nosso servidor, vamos precisar de um `Request` (_Requisição_) para enviar a requisição ao servidor, e então queremos _inspecionar_ o que o nosso Handler escreve para o `ResponseWriter`.
 
+* Nós usamos o `http.NewRequest` para criar uma requisição. O primeiro argumento é o método da requisição e o segundo é o caminho (_path_) da requisição. O valor `nil` para o segundo argumento corresponde ao corpo (_body_) da requisição, que não precisamos definir para este teste.
+* `net/http/httptest` já tem um _inspecionador_ criado para nós, chamado `ResponseRecorder`, então podemos usá-lo. Este possui muitos métodos úteis para inspecionar o que foi escrito como resposta.
 
-* Nós usamos o `http.NewRequest` para criar uma requisição. O primeiro argumento é o método da requisição e o segundo é o caminho (_path_) da requisição. O valor `nil` para o segundo argumento corresponde ao corpo (_body_) da requisição, que não precisamos definir para este teste. 
-* `net/http/httptest` já tem um _espião_ criado para nós, chamado `ResponseRecorder`, então podemos usá-lo. Este já possui muitos métodos úteis para inspecionar o que foi escrito como resposta. 
+## Tente rodar o teste 
 
-## Tente rodar o teste novamente
-
-`./server_test.go:13:2: undefined: JogadorServidor`
+`./server_test.go:13:2: undefined: PlayerServer`
 
 ## Escreva a quantidade mínima de códido para o que teste passe e verifique a falha indicada na responta do teste
 
-O compilador está aqui para ajuda, ouça o que ele diz. 
+O compilador está aqui para ajuda, ouça o que ele diz.
 
-Crie a `JogadorServidor`
+Crie a `PlayerServer`
 
 ```go
-func JogadorServidor() {}
+func PlayerServer() {}
 ```
 
 Tente novamente
 
 ```text
-./server_test.go:13:14: too many arguments in call to JogadorServidor
+./server_test.go:13:14: too many arguments in call to PlayerServer
     have (*httptest.ResponseRecorder, *http.Request)
     want ()
 ```
@@ -120,12 +117,12 @@ Adicione os argumentos à função
 ```go
 import "net/http"
 
-func JogadorServidor(w http.ResponseWriter, r *http.Request) {
+func PlayerServer(w http.ResponseWriter, r *http.Request) {
 
 }
 ```
 
-Agora o código compila, e o teste falha. 
+Agora o código compila, e o teste falha.
 
 ```text
 === RUN   TestGETPlayers/returns_Pepper's_score
@@ -1051,4 +1048,3 @@ Great! You've made a REST-ish service. To take this forward you'd want to pick a
 * Write just the necessary code to get there. _Then_ refactor and make the code nice.
 * By trying to do too many changes whilst the code isn't compiling or the tests are failing puts you at risk of compounding the problems.
 * Sticking to this approach forces you to write small tests, which means small changes, which helps keep working on complex systems manageable.
-
