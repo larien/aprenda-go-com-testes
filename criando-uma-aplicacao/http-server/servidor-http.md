@@ -146,10 +146,11 @@ O teste agora deve funcionar.
 
 Nós queremos converter isso em uma aplicação. Isso é importante porque
 
-* We'll have _actual working software_, we don't want to write tests for the sake of it, it's good to see the code in action.
-* As we refactor our code, it's likely we will change the structure of the program. We want to make sure this is reflected in our application too as part of the incremental approach.
 
-Create a new file for our application and put this code in.
+* Teremos _software funcionando_, não queremos escrever testes apenas por escrever, e é bom ver código que funciona.
+* Conforme refatoramos o código, é provável que vamos mudar a estrutura do programa. Nós queremos garantir que isso é refletido em nossa aplicação também, como parte da abordagem incremental.
+
+Crie um novo arquivo para nossa aplicação, com o código abaixo.
 
 ```go
 package main
@@ -166,34 +167,33 @@ func main() {
     }
 }
 ```
+Até o momento, todo o código de nosso aplicativo está em apenas um arquivo; no entanto, essa não é uma prática recomendada para projetos maiores onde você deseja separar as coisas em arquivos diferentes.
 
-So far all of our application code has been in one file, however, this isn't best practice for larger projects where you'll want to separate things into different files.
-
-To run this, do `go build` which will take all the `.go` files in the directory and build you a program. You can then execute it with `./myprogram`.
+Para executar isso, rode o comando `go build`, que vai pegar todos os arquivos terminados em `.go` neste diretório e construir seu programa. E então você pode executar o programa rodando `./myprogram`.
 
 ### `http.HandlerFunc`
 
-Earlier we explored that the `Handler` interface is what we need to implement in order to make a server. _Typically_ we do that by creating a `struct` and make it implement the interface. However the use-case for structs is for holding data but _currently_ we have no state, so it doesn't feel right to be creating one.
+Anteriormente, vimos que precisamos implementar a interface `Handler` para criar um servidor. _Normalmente_ fazemos isso criando um `struct` e fazendo com que ele implemente esta interface. No entanto, usualmente utilizamos as _structs_ para armazenar dados, mas como _nesse momento_ não armazenamos um estado, não parece certo criar um _struct_ para isso.
 
-[HandlerFunc](https://golang.org/pkg/net/http/#HandlerFunc) lets us avoid this.
+[HandlerFunc](https://golang.org/pkg/net/http/#HandlerFunc) nos ajuda a evitar isso.
 
-> The HandlerFunc type is an adapter to allow the use of ordinary functions as HTTP handlers. If f is a function with the appropriate signature, HandlerFunc\(f\) is a Handler that calls f.
+> o tipo HandlerFunc é um adaptador que permite usar funções comuns como tratadores (_handlers_). Se *f* é uma função com a assinatura adequada, HandlerFunc\(f\) é um Handler que chama *f*.
 
 ```go
 type HandlerFunc func(ResponseWriter, *Request)
 ```
 
-So we use this to wrap our `PlayerServer` function so that it now conforms to `Handler`.
+Então usamos isso para adaptar a função `PlayerServer` para que ele esteja de acordo com a interface `Handler`.
 
 ### `http.ListenAndServe(":5000"...)`
 
-`ListenAndServe` takes a port to listen on a `Handler`. If the port is already being listened to it will return an `error` so we are using an `if` statement to capture that scenario and log the problem to the user.
+`ListenAndServe` recebe como parâmetro um número de porta para escutar em um `Handler`. Se a porta já estiver sendo usada, será retornado um `error` para que, usando um comando `if`, possamos capturar esse erro e registrar o probema para o usuário. 
 
-What we're going to do now is write _another_ test to force us into making a positive change to try and move away from the hard-coded value.
+O que vamos fazer agora é escrever _outro_ teste para nos forçar a fazer uma mudança positiva para tentar nos afastar do valor predefinido.
 
-## Write the test first
+## Escreva o teste primeiro
 
-We'll add another subtest to our suite which tries to get the score of a different player, which will break our hard-coded approach.
+Vamos adicionar outro subteste aos nossos testes, que tenta obter a pontuação de um jogador diferente, o que quebrará nossa abordagem que usa um código predefinido.
 
 ```go
 t.Run("returns Floyd's score", func(t *testing.T) {
