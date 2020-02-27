@@ -434,12 +434,14 @@ Atualize nosso helper para comparar com uma `string`:
 ```go
 confirmarErro := func(t *testing.T, valor error, valorEsperado string) {
     t.Helper()
-	if resultado == nil {
+	if valor == nil {
 		t.Fatal("esperava um erro, mas nenhum ocorreu")
 	}
+    
+ 	resultado := valor.Error()
 
-	if resultado != esperado {
-		t.Errorf("resultado %s, esperado %s", resultado, esperado)
+	if resultado != valorEsperado {
+		t.Errorf("resultado %s, esperado %s", resultado, valorEsperado)
 	}
 }
 ```
