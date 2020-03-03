@@ -12,6 +12,6 @@ Introdução
 
 ## Refatoração
 
-## Repetir a cada novo requerimento
+## Repetir a cada novo requisito
 
 ## Resumo
