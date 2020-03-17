@@ -146,7 +146,6 @@ O teste agora deve funcionar.
 
 Nós queremos converter isso em uma aplicação. Isso é importante porque
 
-
 * Teremos _software funcionando_, não queremos escrever testes apenas por escrever, e é bom ver código que funciona.
 * Conforme refatoramos o código, é provável que vamos mudar a estrutura do programa. Nós queremos garantir que isso é refletido em nossa aplicação também, como parte da abordagem incremental.
 
@@ -167,6 +166,7 @@ func main() {
     }
 }
 ```
+
 Até o momento, todo o código de nosso aplicativo está em apenas um arquivo; no entanto, essa não é uma prática recomendada para projetos maiores onde você deseja separar as coisas em arquivos diferentes.
 
 Para executar isso, rode o comando `go build`, que vai pegar todos os arquivos terminados em `.go` neste diretório e construir seu programa. E então você pode executar o programa rodando `./myprogram`.
@@ -187,7 +187,7 @@ Então usamos isso para adaptar a função `PlayerServer` para que ele esteja de
 
 ### `http.ListenAndServe(":5000"...)`
 
-`ListenAndServe` recebe como parâmetro um número de porta para escutar em um `Handler`. Se a porta já estiver sendo usada, será retornado um `error` para que, usando um comando `if`, possamos capturar esse erro e registrar o probema para o usuário. 
+`ListenAndServe` recebe como parâmetro um número de porta para escutar em um `Handler`. Se a porta já estiver sendo usada, será retornado um `error` para que, usando um comando `if`, possamos capturar esse erro e registrar o probema para o usuário.
 
 O que vamos fazer agora é escrever _outro_ teste para nos forçar a fazer uma mudança positiva para tentar nos afastar do valor predefinido.
 
@@ -211,13 +211,13 @@ t.Run("returns Floyd's score", func(t *testing.T) {
 })
 ```
 
-You may have been thinking
+Você deve estar pensando
 
-> Surely we need some kind of concept of storage to control which player gets what score. It's weird that the values seem so arbitrary in our tests.
+> Certamente precisamos de algum tipo de armazenamento para controlar qual jogador recebe qual pontuação. É estranho que os valores pareçam tão predefinidos em nossos testes.
 
-Remember we are just trying to take as small as steps as reasonably possible, so we're just trying to break the constant for now.
+Lembre-se de que estamos apenas tentando dar os menores passos possíveis; e por isso estamos, nesse momento, tentando invalidar o valor da constante.
 
-## Try to run the test
+## Tente rodar o próximo teste
 
 ```text
 === RUN   TestGETPlayers/returns_Pepper's_score
@@ -227,7 +227,7 @@ Remember we are just trying to take as small as steps as reasonably possible, so
         server_test.go:34: got '20', want '10'
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazer passar
 
 ```go
 func PlayerServer(w http.ResponseWriter, r *http.Request) {
@@ -245,17 +245,17 @@ func PlayerServer(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-This test has forced us to actually look at the request's URL and make a decision. So whilst in our heads, we may have been worrying about player stores and interfaces the next logical step actually seems to be about _routing_.
+Este teste nos forçou a olhar para a URL da requisição e tomar uma decisão. Embora ainda estamos pensando em como armazenar os dados do jogador e as interfaces, na verdade o próximo passo a ser dado está relacionado ao _roteamento_ (_routing_).
 
-If we had started with the store code the amount of changes we'd have to do would be very large compared to this. **This is a smaller step towards our final goal and was driven by tests**.
+Se tivéssemos começado com o código de armazenamento dos dados, a quantidade de alterações que precisaríamos fazer seria muito grande. **Este é um pequeno paso em relação ao nosso objetivo final e foi guidado pelos testes**.
 
-We're resisting the temptation to use any routing libraries right now, just the smallest step to get our test passing.
+Estamos resistindo, nesse momento, à tentação de usar alguma biblioteca de roteamento, e queremos apenas dar o menor passo para fazer nossos testes funcionarem.
 
-`r.URL.Path` returns the path of the request and then we are using slice syntax to slice it past the final slash after `/players/`. It's not very robust but will do the trick for now.
+`r.URL.Path` retorna o caminho da request, e então usamos a sintaxe de slice para obter a parte final , depois de `/players/`. Não é o recomendado por não ser muito robusto, mas resolve o problema por enquanto.
 
-## Refactor
+## Refatorar
 
-We can simplify the `PlayerServer` by separating out the score retrieval into a function
+Podemos simplificar o `PlayerServer` separando a parte de obtenção da pontuação em uma função.
 
 ```go
 func PlayerServer(w http.ResponseWriter, r *http.Request) {
@@ -277,7 +277,7 @@ func GetPlayerScore(name string) string {
 }
 ```
 
-And we can DRY up some of the code in the tests by making some helpers
+E podemos eliminar as repetições de parte do código dos testes montando algumas funções auxiliares("_helpers_")
 
 ```go
 func TestGETPlayers(t *testing.T) {
@@ -313,13 +313,13 @@ func assertResponseBody(t *testing.T, got, want string) {
 }
 ```
 
-However, we still shouldn't be happy. It doesn't feel right that our server knows the scores.
+Ainda assim, ainda não estamos felizes. Não parece correto que o servidor sabe as pontuações.
 
-Our refactoring has made it pretty clear what to do.
+Mas nossa refatoração nos mostra claramente o que fazer.
 
-We moved the score calculation out of the main body of our handler into a function `GetPlayerScore`. This feels like the right place to separate the concerns using interfaces.
+Nós movemos o cálculo de pontuação pra fora do código principal que trata a requisição (_handler_) para uma função `GetPlayerScore`. Isso parece ser o lugar correto para isolar as responsabilidades usando interfaces.
 
-Let's move our function we re-factored to be an interface instead
+Vamos alterar a função que refatoramos para ser uma interface
 
 ```go
 type PlayerStore interface {
@@ -327,7 +327,7 @@ type PlayerStore interface {
 }
 ```
 
-For our `PlayerServer` to be able to use a `PlayerStore`, it will need a reference to one. Now feels like the right time to change our architecture so that our `PlayerServer` is now a `struct`.
+Para que o `PlayerServer` consiga usar o `PlayerStore`, é necessário ter uma referência a ele. Agora nos parece o momento certo para alterar nossa arquitetura, e nosso `PlayerServer` agora é uma `struct`.
 
 ```go
 type PlayerServer struct {
@@ -335,7 +335,8 @@ type PlayerServer struct {
 }
 ```
 
-Finally, we will now implement the `Handler` interface by adding a method to our new struct and putting in our existing handler code.
+E então, vamos implementar a interface do `Handler` adicionando um método à nossa nova struct e adicionado neste método o código existente.
+
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -344,9 +345,9 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-The only other change is we now call our `store.GetPlayerStore` to get the score, rather than the local function we defined \(which we can now delete\).
+Outra alteração a fazer: agora usamos a `store.GetPlayerStore` para obter a pontuação, ao invés da função local definida anteriormente \(e que podemos remover\).
 
-Here is the full code listing of our server
+Abaixo, a listagem completa do servidor
 
 ```go
 type PlayerStore interface {
