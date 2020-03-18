@@ -364,13 +364,13 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-### Fix the issues
+### Ajustar os problemas
 
-This was quite a few changes and we know our tests and application will no longer compile, but just relax and let the compiler work through it.
+Fizemos muitas mudanças, e sabemos que nossos testes não irão funcionar e a compilação deixou de funcionar nesse momento; mas relaxa, e deixa o compilador fazer o trabalho.
 
 `./main.go:9:58: type PlayerServer is not an expression`
 
-We need to change our tests to instead create a new instance of our `PlayerServer` and then call its method `ServeHTTP`.
+Precisamos mudar os nossos testes, que agora devem criar uma nova instânia de `PlayerServer` e então chamar o método `ServeHTTP`.
 
 ```go
 func TestGETPlayers(t *testing.T) {
@@ -396,13 +396,13 @@ func TestGETPlayers(t *testing.T) {
 }
 ```
 
-Notice we're still not worrying about making stores _just yet_, we just want the compiler passing as soon as we can.
+Perceba que ainda não nos preocupamos, _por enquanto_, com o armazenamento dos dados, nós apenas queremos a compilação funcionando o quanto antes.
 
-You should be in the habit of prioritising having code that compiles and then code that passes the tests.
+Você deve ter o hábito de priorizar, sempre, código que compila antes de ter código que passa nos testes.
 
-By adding more functionality \(like stub stores\) whilst the code isn't compiling, we are opening ourselves up to potentially _more_ compilation problems.
+Adicionando mais funcionalidades \(como códigos esboço de armazenamento\) a um código que não ainda não compila, nos arriscamos a ter, potencialmente, _mais_ problemas de compilação.
 
-Now `main.go` won't compile for the same reason.
+Agora `main.go`não vai compilar pelas mesmas razões.
 
 ```go
 func main() {
@@ -414,7 +414,7 @@ func main() {
 }
 ```
 
-Finally, everything is compiling but the tests are failing
+Agora tudo compila, mas os testes falham.
 
 ```text
 === RUN   TestGETPlayers/returns_the_Pepper's_score
@@ -422,7 +422,7 @@ panic: runtime error: invalid memory address or nil pointer dereference [recover
     panic: runtime error: invalid memory address or nil pointer dereference
 ```
 
-This is because we have not passed in a `PlayerStore` in our tests. We'll need to make a stub one up.
+Isso porque não passamos um `PlayerStore` em nossos testes. Precisamos fazer um código de esboço para nos ajudar.
 
 ```go
 type StubPlayerStore struct {
@@ -435,7 +435,7 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 }
 ```
 
-A `map` is a quick and easy way of making a stub key/value store for our tests. Now let's create one of these stores for our tests and send it into our `PlayerServer`.
+Um `map` é um jeito simples e rápido de fazer um armazenamento chave/valor de esboço para os nossos testes. Agora vamos criar um desses armazenamentos para os nosso testes e inserir em nosso `PlayerServer`.
 
 ```go
 func TestGETPlayers(t *testing.T) {
@@ -467,7 +467,7 @@ func TestGETPlayers(t *testing.T) {
 }
 ```
 
-Our tests now pass and are looking better. The _intent_ behind our code is clearer now due to the introduction of the store. We're telling the reader that because we have _this data in a `PlayerStore`_ that when you use it with a `PlayerServer` you should get the following responses.
+Nossos testes agora passam, e parecem melhores. Agora a _intenção_ do nosso código é clara, por conta da adição do armazenamento. Estamos dizendo ao leitor que, por termos _este dado em um `PlayerStore`, quando você o usar com um  `PlayerServer` você deve obter as respostas definidas.
 
 ### Run the application
 
