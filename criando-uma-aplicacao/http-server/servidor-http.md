@@ -469,13 +469,13 @@ func TestGETPlayers(t *testing.T) {
 
 Nossos testes agora passam, e parecem melhores. Agora a _intenção_ do nosso código é clara, por conta da adição do armazenamento. Estamos dizendo ao leitor que, por termos _este dado em um `PlayerStore`, quando você o usar com um  `PlayerServer` você deve obter as respostas definidas.
 
-### Run the application
+### Rodar a aplicação
 
-Now our tests are passing the last thing we need to do to complete this refactor is to check if our application is working. The program should start up but you'll get a horrible response if you try and hit the server at `http://localhost:5000/players/Pepper`.
+Agora que nossos testes estão passando, a última coisa que precisamos fazer para completar a refatoração é verificar se a aplicação está funcionando. O programa deve iniciar, mas você vai receber uma mensagem horrível se tentar acessar o servidor em `http://localhost:5000/players/Pepper`.
 
-The reason for this is that we have not passed in a `PlayerStore`.
+E a razão pra isso é: não passamos um `PlayerStore`.
 
-We'll need to make an implementation of one, but that's difficult right now as we're not storing any meaningful data so it'll have to be hard-coded for the time being.
+Precisamos fazer uma implementação de um, mas isso é difícil no momento, já que não estamos armazenando nenhum dado significativo, por isso precisará ser um valor predefinido por enquanto.
 
 ```go
 type InMemoryPlayerStore struct{}
@@ -493,19 +493,20 @@ func main() {
 }
 ```
 
-If you run `go build` again and hit the same URL you should get `"123"`. Not great, but until we store data that's the best we can do.
+Se você rodao novamente o `go build` e acessar a mesma URL você deve receber `"123"`. Não é fantástico, mas até armazenarmos os dados, é o melhor que podemos fazer.
 
-We have a few options as to what to do next
+Temos algumas opções para decidir o que fazer agora
 
-* Handle the scenario where the player doesn't exist
-* Handle the `POST /players/{name}` scenario
-* It didn't feel great that our main application was starting up but not actually working. We had to manually test to see the problem.
+* Tratar o cenário onde o jogador não existe
+* Tratar o cenário de `POST /players/{name}`
+* Não foi exatamente bom perceber que nossa aplicação principal iniciou mas não funcionou. Tivemos que testar manualmente para ver o problema.
 
-Whilst the `POST` scenario gets us closer to the "happy path", I feel it'll be easier to tackle the missing player scenario first as we're in that context already. We'll get to the rest later.
+Enquanto o cenário do `POST` nos deixa mais perto do "caminho ideal", eu sinto que vai ser mais fácil atacar o cenário de "jogador não existente" antes, já que estamos neste assunto. Veremos os outros itens posteriormente.
 
-## Write the test first
+## Escreva o teste primeiro.
 
-Add a missing player scenario to our existing suite
+Adicione o cenário de um jogador inexistente aos nossos testes
+
 
 ```go
 t.Run("returns 404 on missing players", func(t *testing.T) {
@@ -523,7 +524,7 @@ t.Run("returns 404 on missing players", func(t *testing.T) {
 })
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 === RUN   TestGETPlayers/returns_404_on_missing_players
@@ -531,7 +532,7 @@ t.Run("returns 404 on missing players", func(t *testing.T) {
         server_test.go:56: got status 200 want 404
 ```
 
-## Write enough code to make it pass
+## Escreva código necessário para que o teste funcione
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -543,15 +544,15 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-Sometimes I heavily roll my eyes when TDD advocates say "make sure you just write the minimal amount of code to make it pass" as it can feel very pedantic.
+Às vezes eu me incomodo quando os defensores do TDD dizem "tenha certeza de você escreveu apenas a mínima quantidade de código para fazer o teste funcionar", porque isso me parece muito pedante.
 
-But this scenario illustrates the example well. I have done the bare minimum \(knowing it is not correct\), which is write a `StatusNotFound` on **all responses** but all our tests are passing!
+Mas este cenário ilustra muito bem o que querem dizer. Eu fiz o mínimo \(sabendo que não era a implementação correta\), que foi retornar um `StatusNotFound`em **todas as respostas**, mas todos os nossos testes estão passando!
 
-**By doing the bare minimum to make the tests pass it can highlight gaps in your tests**. In our case, we are not asserting that we should be getting a `StatusOK` when players _do_ exist in the store.
+**Implementando o mínimo par que os testes passem pode evidenciar lacunas nos testes**. Em nosso caso, nós não estamos validando que devemos receber um `StatusOK` quando jogadores _existem_ em nosso armazenamento.
 
-Update the other two tests to assert on the status and fix the code.
+Atualize os dois outros testes para validr o retorno e ajuste o código.
 
-Here are the new tests
+Eis os novos testes
 
 ```go
 func TestGETPlayers(t *testing.T) {
