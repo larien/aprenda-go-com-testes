@@ -123,7 +123,7 @@ Isso foi muito fácil, mas agora temos um requerimento que é: o programa precis
 ```go
 t.Run("roda concorrentemente em segurança", func(t *testing.T) {
 	contagemEsperada := 1000
-	contador := NovoContador()
+	contador := Contador{}
 
 	var wg sync.WaitGroup
 	wg.Add(contagemEsperada)
