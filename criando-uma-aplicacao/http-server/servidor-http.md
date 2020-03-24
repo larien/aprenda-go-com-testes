@@ -614,9 +614,9 @@ func assertResponseBody(t *testing.T, got, want string) {
 }
 ```
 
-We're checking the status in all our tests now so I made a helper `assertStatus` to facilitate that.
+Estamos verificando o `status` (código HTTP de retorno) em todos os nossos testes, por isso existe a função auxiliar `assertStatus` para ajudar com isso.
 
-Now our first two tests fail because of the 404 instead of 200, so we can fix `PlayerServer` to only return not found if the score is 0.
+Agora os primeiros dois testes falham porque o `status` recebido é 404, ao invés do esperado 200. Então vamos corrigir o `PlayerServer` para que retorne *não encontrado* (HTTP status 404) se a pontuação for 0.
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -632,11 +632,11 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-### Storing scores
+### Armazenando pontuações
 
-Now that we can retrieve scores from a store it now makes sense to be able to store new scores.
+Agora que podemos obter pontuações de um armazenamento, também podemos armazenar novas pontuações.
 
-## Write the test first
+## Escreva os testes primeiro
 
 ```go
 func TestStoreWins(t *testing.T) {
@@ -656,9 +656,9 @@ func TestStoreWins(t *testing.T) {
 }
 ```
 
-For a start let's just check we get the correct status code if we hit the particular route with POST. This lets us drive out the functionality of accepting a different kind of request and handling it differently to `GET /players/{name}`. Once this works we can then start asserting on our handler's interaction with the store.
+Inicialmente vamos verificar se obtemos o status HTTP correto ao fazer a requisição em uma rota específica usando POST. Isso nos permite preparar o caminho da funcionalidade que aceita um tipo diferente de requisição e tratar de forma diferente a requisição para `GET /players/{name}`. Uma vez que isso funciona como esperaodo, então podemos começar a testar a interação do nosso tratador com o armazenamento.
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 === RUN   TestStoreWins/it_returns_accepted_on_POST
@@ -666,9 +666,9 @@ For a start let's just check we get the correct status code if we hit the partic
         server_test.go:70: did not get correct status, got 404, want 202
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente pra fazer passar
 
-Remember we are deliberately committing sins, so an `if` statement based on the request's method will do the trick.
+Lembre-se que estamos comentendo pecados deliberadamente, então um comando `if` para identificar o método da requisi~ao vai resolver o problema.
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -690,9 +690,9 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## Refactor
+## Refatorar
 
-The handler is looking a bit muddled now. Let's break the code up to make it easier to follow and isolate the different functionality into new functions.
+O tratador parece um pouco bagunçado agora. Vamos separar o códido para ficar simples de entender e isolar as diferentes funcionalidade em novas funções.
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
