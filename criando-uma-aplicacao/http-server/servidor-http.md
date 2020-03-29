@@ -723,13 +723,13 @@ func (p *PlayerServer) processWin(w http.ResponseWriter) {
 }
 ```
 
-This makes the routing aspect of `ServeHTTP` a bit clearer and means our next iterations on storing can just be inside `processWin`.
+Isso faz com que a função de roteamento do `ServeHTTP` esteja mais clara, e permite que nossas próximas iterações para armazenamento possa estar dentro de `processWin`.
 
-Next, we want to check that when we do our `POST /players/{name}` that our `PlayerStore` is told to record the win.
+Agora, queremos verificar que, quando fazemos a chamada `POST` a `/players/{name}`, que nosso `PlayerStore` registre a vitória.
 
-## Write the test first
+## Escreva primeiro o teste.
 
-We can accomplish this by extending our `StubPlayerStore` with a new `RecordWin` method and then spy on its invocations.
+Vamos implementar isso estendendo o `StubPlayerStore` com um novo método `RecordWin` e então inspecionar as chamadas.
 
 ```go
 type StubPlayerStore struct {
@@ -747,7 +747,7 @@ func (s *StubPlayerStore) RecordWin(name string) {
 }
 ```
 
-Now extend our test to check the number of invocations for a start
+Agora, para começar, estendemos o teste para verificar a quantidade de chamadas
 
 ```go
 func TestStoreWins(t *testing.T) {
@@ -776,16 +776,16 @@ func newPostWinRequest(name string) *http.Request {
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 ./server_test.go:26:20: too few values in struct initializer
 ./server_test.go:65:20: too few values in struct initializer
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Escreva a mínima quantidade de código para a execução do teste e verifique a falha indicada no retorno
 
-We need to update our code where we create a `StubPlayerStore` as we've added a new field
+Como adicionamos um campo, precisamos atualizar o código onde criamos o `StubPlayerStore`
 
 ```go
 store := StubPlayerStore{
@@ -800,11 +800,11 @@ store := StubPlayerStore{
         server_test.go:80: got 0 calls to RecordWin want 1
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para o teste passar
 
-As we're only asserting the number of calls rather than the specific values it makes our initial iteration a little smaller.
+Como estamos apenas verificando o número de chamadas, e não seus valores específicos, nossa iteração inicial é um pouco menor.
 
-We need to update `PlayerServer`'s idea of what a `PlayerStore` is by changing the interface if we're going to be able to call `RecordWin`.
+Para conseguir invocar a `RecordWin`, precisamos atualizar a definição de `PlayerStore` para que o `PlayerServer` funcione como esperado.
 
 ```go
 type PlayerStore interface {
@@ -813,14 +813,14 @@ type PlayerStore interface {
 }
 ```
 
-By doing this `main` no longer compiles
+E, ao fazer isso, `main` não compila mais
 
 ```text
 ./main.go:17:46: cannot use InMemoryPlayerStore literal (type *InMemoryPlayerStore) as type PlayerStore in field value:
     *InMemoryPlayerStore does not implement PlayerStore (missing RecordWin method)
 ```
 
-The compiler tells us what's wrong. Let's update `InMemoryPlayerStore` to have that method.
+O compilador nos informa o que está errado. Vamos alterar `InMemoryPlayerStore`, adicionando esse método.
 
 ```go
 type InMemoryPlayerStore struct{}
@@ -828,9 +828,9 @@ type InMemoryPlayerStore struct{}
 func (i *InMemoryPlayerStore) RecordWin(name string) {}
 ```
 
-Try and run the tests and we should be back to compiling code - but the test is still failing.
+Com essa alteração, o código volta a compilar - mas os testes ainda falham.
 
-Now that `PlayerStore` has `RecordWin` we can call it within our `PlayerServer`
+Agora que `PlayerStore` tem o método `RecordWin`, podemos chamar de dentro do de `PlayerServer`
 
 ```go
 func (p *PlayerServer) processWin(w http.ResponseWriter) {
@@ -839,9 +839,9 @@ func (p *PlayerServer) processWin(w http.ResponseWriter) {
 }
 ```
 
-Run the tests and it should be passing! Obviously `"Bob"` isn't exactly what we want to send to `RecordWin`, so let's further refine the test.
+Rode os testes e deve estar funcionando sem erros! Claro, `"Bob"` não é bem o que vampos enviar para `RecordWin`, então vamos ajustar os testes.
 
-## Write the test first
+## Escreva os testes primeiro
 
 ```go
 t.Run("it records wins on POST", func(t *testing.T) {
@@ -864,9 +864,9 @@ t.Run("it records wins on POST", func(t *testing.T) {
 })
 ```
 
-Now that we know there is one element in our `winCalls` slice we can safely reference the first one and check it is equal to `player`.
+Aggora sabemos que existe um elemento no slice `winCalls`, e então podemos acessar, sem erros, o primeiro elemento e verificar se é igual a `player`.
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 === RUN   TestStoreWins/it_records_wins_on_POST
@@ -874,7 +874,7 @@ Now that we know there is one element in our `winCalls` slice we can safely refe
         server_test.go:86: did not store correct winner got 'Bob' want 'Pepper'
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para o teste passar
 
 ```go
 func (p *PlayerServer) processWin(w http.ResponseWriter, r *http.Request) {
@@ -884,11 +884,12 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-We changed `processWin` to take `http.Request` so we can look at the URL to extract the player's name. Once we have that we can call our `store` with the correct value to make the test pass.
+Mudamos `processWin` para obter a `http.Request`, para conseguir extrair o nome do "player" da URL. Com o nome, podemos chamar o `store` com o valor correto para fazer os testes passarem.
 
-## Refactor
+## Refatorar
 
-We can DRY up this code a bit as we're extracting the player name the same way in two places
+
+Podemos eliminar repetições no código, porque estamos obtendo o nome do "player" do mesmo jeito em dois lugares diferentes.
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -918,17 +919,17 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 }
 ```
 
-Even though our tests are passing we don't really have working software. If you try and run `main` and use the software as intended it doesn't work because we haven't got round to implementing `PlayerStore` correctly. This is fine though; by focusing on our handler we have identified the interface that we need, rather than trying to design it up-front.
+Mesmo com os testes passando, não temos código funcionando de forma ideal. Se executar a `main` e usar o programa como planejado, não vai funcionar porque ainda não nos dedicamos a implementar corretamente `PlayerStore`. Mas isso não é um problema; como focamos no tratamento da requisição, identificamos a interface necessária, ao invés de tentar definir antecipadamente.
 
-We _could_ start writing some tests around our `InMemoryPlayerStore` but it's only here temporarily until we implement a more robust way of persisting player scores \(i.e. a database\).
+_Poderíamos_ começar a escrever alguns testes para a `InMemoryPlayerStore`, mas ela é apenas uma solução temporária até a implementação de um modo mais robusto de registrar as pontuações \(por exemplo, em um banco de dados\).
 
-What we'll do for now is write an _integration test_ between our `PlayerServer` and `InMemoryPlayerStore` to finish off the functionality. This will let us get to our goal of being confident our application is working, without having to directly test `InMemoryPlayerStore`. Not only that, but when we get around to implementing `PlayerStore` with a database, we can test that implementation with the same integration test.
+O que vamos fzer agora é escrever um _teste de integração_ entre `PlayerServer` e `InMemoryPlayerStore` para terminar a funcionalidade. Isso vai permitir confiar que a aplicação está funcionando, sem ter que testar diretamente `InMemoryPlayerStore`. E não apenas isso, mas quando implementarmos `PlayerStore` com um banco de dados, usaremos esse mesmo teste para verificar se a implementação funciona como esperado.
 
-### Integration tests
+### Testes de integração
 
-Integration tests can be useful for testing that larger areas of your system work but you must bear in mind:
+Testes de integração podem ser úteis para testar partes maiores do sistema, mas saiba que:
 
-* They are harder to write
+* São mais difíceis de escrever
 * When they fail, it can be difficult to know why \(usually it's a bug within a component of the integration test\) and so can be harder to fix
 * They are sometimes slower to run \(as they often are used with "real" components, like a database\)
 
