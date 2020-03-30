@@ -930,14 +930,14 @@ O que vamos fzer agora é escrever um _teste de integração_ entre `PlayerServe
 Testes de integração podem ser úteis para testar partes maiores do sistema, mas saiba que:
 
 * São mais difíceis de escrever
-* When they fail, it can be difficult to know why \(usually it's a bug within a component of the integration test\) and so can be harder to fix
-* They are sometimes slower to run \(as they often are used with "real" components, like a database\)
+* Quando falham, é difícil saber o porquê \(normalmente é um problema dentro de um componente do teste de integração\) e pode ser difícil de corrigir
+* Às vezes são mais lentos para rodar \(porque são usados com componentes "reais", como um banco de dados\)
 
-For that reason, it is recommended that you research _The Test Pyramid_.
+Por isso, é recomendo que pesquise sobre _Pirâmide de Testes_.
 
-## Write the test first
+## Escreva os testes primeiro
 
-In the interest of brevity, I am going to show you the final refactored integration test.
+Para ser mais breve, segue o teste de integração, já refatorado.
 
 ```go
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
@@ -957,24 +957,24 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 }
 ```
 
-* We are creating our two components we are trying to integrate with: `InMemoryPlayerStore` and `PlayerServer`.
-* We then fire off 3 requests to record 3 wins for `player`. We're not too concerned about the status codes in this test as it's not relevant to whether they are integrating well.
-* The next response we do care about \(so we store a variable `response`\) because we are going to try and get the `player`'s score.
+* Estamos criando os dois componentes que queremos integrar: `InMemoryPlayerStore` e `PlayerServer`.
+* Então fazemos 3 requisições para registrar 3 vitórias para `player`. Não nos preocupamos com os códigos de retorno no teste, porque isso não é relevante para verificar se a integração funciona como esperado.
+* Registramos a a próxima resposta \(por isso guardamos o valor em `response`\) porque vamos obter a pontuação do `player`.
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 --- FAIL: TestRecordingWinsAndRetrievingThem (0.00s)
     server_integration_test.go:24: response body is wrong, got '123' want '3'
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para passar.
 
-I am going to take some liberties here and write more code than you may be comfortable with without writing a test.
+Abaixo, há mais código do que que o esperado para se escrever sem ter os testes correspondentes.
 
-_This is allowed_! We still have a test checking things should be working correctly but it is not around the specific unit we're working with \(`InMemoryPlayerStore`\).
+_Isso é permitido_! Ainda existem testes verificando se as coisas estão funcionando como esperado, mas não focando na parte específica em que estamos trabalhando \(`InMemoryPlayerStore`\).
 
-If I were to get stuck in this scenario, I would revert my changes back to the failing test and then write more specific unit tests around `InMemoryPlayerStore` to help me drive out a solution.
+Se houvesse algum problema para continuar, é só reverter as alterações para antes do teste que falhou e então escrever mais testes unitários específicos para `InMemoryPlayerStore`, que ajudariam a encontrar a solução.
 
 ```go
 func NewInMemoryPlayerStore() *InMemoryPlayerStore {
@@ -994,11 +994,11 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 }
 ```
 
-* We need to store the data so I've added a `map[string]int` to the `InMemoryPlayerStore` struct
-* For convenience I've made `NewInMemoryPlayerStore` to initialise the store, and updated the integration test to use it \(`store := NewInMemoryPlayerStore()`\)
-* The rest of the code is just wrapping around the `map`
+* Para armazenar os dados, foi adicionado um `map[string]int` na struct `InMemoryPlayerStore`
+* Pra ajudar nos testes, foi criada a `NewInMemoryPlayerStore` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`store := NewInMemoryPlayerStore()`\).
+* O resto do código é apenas para fazer o `map` funcionar.
 
-The integration test passes, now we just need to change `main` to use `NewInMemoryPlayerStore()`
+Nosso teste de integração passa, e agora só é preciso mudar o `main` para usar o `NewInMemoryPlayerStore()`
 
 ```go
 package main
@@ -1017,37 +1017,38 @@ func main() {
 }
 ```
 
-Build it, run it and then use `curl` to test it out.
+Após compilar e rodar, use o `curl` para testar.
 
-* Run this a few times, change the player names if you like `curl -X POST http://localhost:5000/players/Pepper`
-* Check scores with `curl http://localhost:5000/players/Pepper`
+* Execute o comando a seguir algumas vezes, mude o nome do _player_ se quiser `curl -X POST http://localhost:5000/players/Pepper`
+* Verifique a pontuação, rodando `curl http://localhost:5000/players/Pepper`
 
-Great! You've made a REST-ish service. To take this forward you'd want to pick a data store to persist the scores longer than the length of time the program runs.
+Ótimo! Criamos um serviço de acordo com os padrões REST! Para seguirmos em frente, precisamos decidir qual o armazenamento de dados vamos usar, e um que dure mais que o tempo que o programa rodar.
 
-* Pick a store \(Bolt? Mongo? Postgres? File system?\)
-* Make `PostgresPlayerStore` implement `PlayerStore`
-* TDD the functionality so you're sure it works
-* Plug it into the integration test, check it's still ok
-* Finally plug it into `main`
+* Escolher uma tecnologia de armazenamento \(Bolt? Mongo? Postgres? Sistema de arquivos?\)
+* Fazer `PostgresPlayerStore` implementar `PlayerStore`
+* Desenvolver a funcionalidade usando TDD para ter certeza de que funciona
+* Conectar nos testes de integração, verificar se tudo funciona
+* E, finalmente, integrar dentro de `main`.
 
-## Wrapping up
+## Finalizando
 
 ### `http.Handler`
 
-* Implement this interface to create web servers
-* Use `http.HandlerFunc` to turn ordinary functions into `http.Handler`s
-* Use `httptest.NewRecorder` to pass in as a `ResponseWriter` to let you spy on the responses your handler sends
-* Use `http.NewRequest` to construct the requests you expect to come in to your system
+*
+* Implemente essa interface para criar servidores web
+* Use `http.HandlerFunc` para transformar funções simples em `http.Handler`s
+* Use `httptest.NewRecorder` para informar um `ResponseWriter` que permite inspecionar as respostas que a função tratadora envia
+* Use `http.NewRequest` para construir as requisições que você espera que seu sistema receba
 
-### Interfaces, Mocking and DI
+### Interfaces, Códigos de Ensaio (Mocking) e Injeção de Dependência
 
-* Lets you iteratively build the system up in smaller chunks
-* Allows you to develop a handler that needs a storage without needing actual storage
-* TDD to drive out the interfaces you need
+* Permitem que você construa a sua aplicação de forma iterativa, um pedaço de cada vez
+* Te permite desenvolver uma funcionalidade de tratamento de requisições que precisa de um armazenamento sem precisar exatamente de uma estrutura de armazenamento
+* o TDD nos ajudou a definir as interfaces necessárias
 
-### Commit sins, then refactor \(and then commit to source control\)
+### Cometa pecados, e daí refatore \(e então grave no controle de versão\)
 
-* You need to treat having failing compilation or failing tests as a red situation that you need to get out of as soon as you can.
-* Write just the necessary code to get there. _Then_ refactor and make the code nice.
-* By trying to do too many changes whilst the code isn't compiling or the tests are failing puts you at risk of compounding the problems.
-* Sticking to this approach forces you to write small tests, which means small changes, which helps keep working on complex systems manageable.
+* Você precisa tratar falhas na compilação ou noss testes como uma situação urgente, a qual precisa resolver o mais rápido possível.
+* Escreva apenas o código necessário para resolver o problema. _Logo depois_ refatore e faça um código melhor
+* Ao tentar fazer muitas alterações enquanto o código não está compilando ou os testes estão falhando, corremos o risco de acumular e agravar os problemas.
+* Nos manter fiéis à essa abordagem nos obriga a escrever pequenos testes, o que significa pequenas alterações, o que nos ajuda a continuar trabalhando em sistemas complexos de forma gerenciável.
