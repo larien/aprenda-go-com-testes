@@ -239,7 +239,7 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 ### Uma refatoração final
 
-Tente mudar o codigo para o seguinte:
+Tente mudar o código para o seguinte:
 
 ```go
 type PlayerServer struct {
@@ -319,8 +319,7 @@ Nós poderíamos retornar um JSON semelhante a este:
 ```
 
 ## Escreva o teste primeiro
-
-We'll start by trying to parse the response into something meaningful.
+Nós vamos começar tentando analizar a resposta dentro de algo mais significativo.
 
 ```go
 func TestLeague(t *testing.T) {
@@ -345,55 +344,55 @@ func TestLeague(t *testing.T) {
     })
 }
 ```
+### Por quê não testar o JSON como texto puro?
 
-### Why not test the JSON string?
+Você pode argumentar que um simples teste inicial poderia só comparar que o corpo da resposta tem um particular texto em JSON.
 
-You could argue a simpler initial step would be just to assert that the response body has a particular JSON string.
 
-In my experience tests that assert against JSON strings have the following problems.
+Na minha experiência, testes que comparam JSONs de forma literal possuem os seguintes problemas:
 
-* _Brittleness_. If you change the data-model your tests will fail.
-* _Hard to debug_. It can be tricky to understand what the actual problem is when comparing two JSON strings.
-* _Poor intention_. Whilst the output should be JSON, what's really important is exactly what the data is, rather than how it's encoded.
-* _Re-testing the standard library_. There is no need to test how the standard library outputs JSON, it is already tested. Don't test other people's code.
+* _Fragilidade_. Se você mudar o modelo dos dados seu teste irá falhar.
+* _Difícil de debugar_. Pode ser complicado de entender qual é o problema real ao se comparar dois textos JSON.
+* _Má intenção_. Embora a saída deva ser JSON, o que é realmente importante é exatamente o que o dado é, ao invés de como ele está codificado.
+* _Re-testando a biblioteca padrão_. Não há a necessidade de testar como a biblioteca padrão gera JSON, ela já está testada. Não teste o código de outras pessoas.
 
-Instead, we should look to parse the JSON into data structures that are relevant for us to test with.
+Ao invés disso, nós poderíamos analisar o JSON dentro de estruturas de dados que são relevantes para nós e nossos testes.
 
-### Data modelling
+### Modelagem de dados
 
-Given the JSON data model, it looks like we need an array of `Player` with some fields so we have created a new type to capture this.
+Dado o modelo de dados do JSON, parece que nós precisamos de uma lista de `Jogador` com alguns campos, sendo assim nós criaremos um novo tipo para capturarmos isso.
 
 ```go
-type Player struct {
-    Name string
-    Wins int
+type Jogador struct {
+    Nome string
+    Vitorias int
 }
 ```
-
-### JSON decoding
+### Decodificação de JSON
 
 ```go
-var got []Player
+var got []Jogador
 err := json.NewDecoder(response.Body).Decode(&got)
 ```
 
-To parse JSON into our data model we create a `Decoder` from `encoding/json` package and then call its `Decode` method. To create a `Decoder` it needs an `io.Reader` to read from which in our case is our response spy's `Body`.
+Para analizar o JSON dentro de nosso modelo de dados nós criamos um `Decoder` do pacote `encoding/json` e então chamamos seu método `Decode`. Para criar um `Decoder` é necessário ler de um `io.Reader`, que em nosso caso é nossa própria resposta `Body`.
 
-`Decode` takes the address of the thing we are trying to decode into which is why we declare an empty slice of `Player` the line before.
+`Decode` pega o endereço da coisa que nós estamos tentando decodificar, e é por isso que nós declaramos uma fatia vazia de `Jogador` na linha anterior.
 
-Parsing JSON can fail so `Decode` can return an `error`. There's no point continuing the test if that fails so we check for the error and stop the test with `t.Fatalf` if it happens. Notice that we print the response body along with the error as it's important for someone running the test to see what string cannot be parsed.
+Esse processo de analisar um JSON pode falhar, então `Decode` pode retornar um `error`. Não há ponto de continuidade para o teste se isto acontecer, então nós checamos o erro e paramos o teste com `t.Fatalf`.
+Note que nós exibimos que o corpo da resposta junto com o erro, pois é importante para qualquer outra pessoa que esteja rodando os testes ver que o texto não pôde ser analisado.
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 === RUN   TestLeague/it_returns_200_on_/league
     --- FAIL: TestLeague/it_returns_200_on_/league (0.00s)
-        server_test.go:107: Unable to parse response from server '' into slice of Player, 'unexpected end of JSON input'
+        server_test.go:107: Unable to parse response from server '' into slice of Jogador, 'unexpected end of JSON input'
 ```
 
-Our endpoint currently does not return a body so it cannot be parsed into JSON.
+Nosso endpoint atualmente não retorna um corpo, então isso não pode ser analisado como JSON.
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazê-lo passar.
 
 ```go
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
@@ -406,21 +405,19 @@ func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
 }
 ```
+Os testes agora passam.
 
-The test now passes.
+### Codificando e decodificando
+Note a amável simetria na biblioteca padrão.
 
-### Encoding and Decoding
+* Para criar um `Encoder` você precisa de um `io.Writer` que é o que `http.ResponseWriter` implementa.
+* Para criar um `Decoder` você precisa de um `io.Reader` que o campo `Body` da nossa resposta implementa.
 
-Notice the lovely symmetry in the standard library.
+Ao longo deste livro, nós temos usado `io.Writer`. Isso é uma outra demonstração desta prevalência nas bibliotecas padrões e de como várias bibliotecas facilmente trabalham em conjunto com elas.
 
-* To create an `Encoder` you need an `io.Writer` which is what `http.ResponseWriter` implements.
-* To create a `Decoder` you need an `io.Reader` which the `Body` field of our response spy implements.
+## Refatoração
 
-Throughout this book, we have used `io.Writer` and this is another demonstration of its prevalence in the standard library and how a lot of libraries easily work with it.
-
-## Refactor
-
-It would be nice to introduce a separation of concern between our handler and getting the `leagueTable` as we know we're going to not hard-code that very soon.
+Seria legal introduzir uma separação de conceitos entre nosso handler e o trecho de obter o `leagueTable`. Como sabemos, nós não vamos codificar isso por agora.
 
 ```go
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
@@ -435,13 +432,13 @@ func (p *PlayerServer) getLeagueTable() []Player{
 }
 ```
 
-Next, we'll want to extend our test so that we can control exactly what data we want back.
+Mais adiante, nós vamos querer estender nossos testes para então podermos controlar exatamente qual dado nós queremos receber de volta.
 
-## Write the test first
+## Escreva o teste primeiro
 
-We can update the test to assert that the league table contains some players that we will stub in our store.
+Nós podemos atualizar o teste para afirmar que a tabela das ligas contem alguns jogadores que nós vamos pôr em nossa loja.
 
-Update `StubPlayerStore` to let it store a league, which is just a slice of `Player`. We'll store our expected data in there.
+Atualize `StubPlayerStore` para permitir que ele armazene uma liga, que é apenas uma fatia de `Jogador`. Nós vamos armazenar nossos dados esperados lá.
 
 ```go
 type StubPlayerStore struct {
@@ -450,8 +447,7 @@ type StubPlayerStore struct {
     league []Player
 }
 ```
-
-Next, update our current test by putting some players in the league property of our stub and assert they get returned from our server.
+Adiante, atualize nossos testes colocando alguns jogadores na propriedade da liga, para então afirmar que eles foram retornados do nosso servidor.
 
 ```go
 func TestLeague(t *testing.T) {
@@ -488,18 +484,17 @@ func TestLeague(t *testing.T) {
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 ./server_test.go:33:3: too few values in struct initializer
 ./server_test.go:70:3: too few values in struct initializer
 ```
+## Escreva o minimo de código para que o teste rode e cheque as falhas na saída dele.
 
-## Write the minimal amount of code for the test to run and check the failing test output
+Você vai precisar atualizar os outros testes, assim como nós temos um novo campo em `StubPlayerStore`; ponha-o como nulo para os outros testes.
 
-You'll need to update the other tests as we have a new field in `StubPlayerStore`; set it to nil for the other tests.
-
-Try running the tests again and you should get
+Tente rodando os testes novamente e você deverá ter:
 
 ```text
 === RUN   TestLeague/it_returns_the_league_table_as_JSON
@@ -507,9 +502,9 @@ Try running the tests again and you should get
         server_test.go:124: got [{Chris 20}] want [{Cleo 32} {Chris 20} {Tiest 14}]
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para faze-lo passar
 
-We know the data is in our `StubPlayerStore` and we've abstracted that away into an interface `PlayerStore`. We need to update this so anyone passing us in a `PlayerStore` can provide us with the data for leagues.
+Nós sabemos que o dado está em nosso `StubPlayerStore` e nós abstraímos esses dados para uma interface `PlayerStore`. Nós precisamos atualizar isto então qualquer um passando-nos um `PlayerStore` pode prover-nos com dados para as ligas.
 
 ```go
 type PlayerStore interface {
@@ -519,7 +514,7 @@ type PlayerStore interface {
 }
 ```
 
-Now we can update our handler code to call that rather than returning a hard-coded list. Delete our method `getLeagueTable()` and then update `leagueHandler` to call `GetLeague()`.
+Agora nós podemos atualizar o código do nosso handler para chamar isto ao invés de retornar uma lista manualmente escrita. Delete nosso método `getLeagueTable()` e então atualize `leagueHandler` para chamar `GetLeague()`.
 
 ```go
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
@@ -528,7 +523,7 @@ func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-Try and run the tests.
+Tente e rode os testes:
 
 ```text
 # github.com/quii/learn-go-with-tests/json-and-io/v4
@@ -544,27 +539,25 @@ Try and run the tests.
     *StubPlayerStore does not implement PlayerStore (missing GetLeague method)
 ```
 
-The compiler is complaining because `InMemoryPlayerStore` and `StubPlayerStore` do not have the new method we added to our interface.
+O compilador está reclamando porque `InMemoryPlayerStore` e `StubPlayerStore` não tem os novos métodos que nós adicionamos em nossa interface.
 
-For `StubPlayerStore` it's pretty easy, just return the `league` field we added earlier.
+Para `StubPlayerStore` isto é bem fácil, apenas retorne o campo `league` que nós adicionamos anteriormente.
 
 ```go
 func (s *StubPlayerStore) GetLeague() []Player {
     return s.league
 }
 ```
-
-Here's a reminder of how `InMemoryStore` is implemented.
+Aqui está uma lembrança de como `InMemoryStore` é implementado:
 
 ```go
 type InMemoryPlayerStore struct {
     store map[string]int
 }
 ```
+Embora seja bastante simples para implementar `GetLeague` "propriamente", iterando sobre o map, lembre que nós estamos apenas tentando _escrever o mínimo de código para fazer os testes passarem_.
 
-Whilst it would be pretty straightforward to implement `GetLeague` "properly" by iterating over the map remember we are just trying to _write the minimal amount of code to make the tests pass_.
-
-So let's just get the compiler happy for now and live with the uncomfortable feeling of an incomplete implementation in our `InMemoryStore`.
+Então vamos apenas deixar o compilador feliz por enquanto e viver com o desconfortável sentimento de uma implementação incompleta em nosso `InMemoryStore`.
 
 ```go
 func (i *InMemoryPlayerStore) GetLeague() []Player {
@@ -572,11 +565,11 @@ func (i *InMemoryPlayerStore) GetLeague() []Player {
 }
 ```
 
-What this is really telling us is that _later_ we're going to want to test this but let's park that for now.
+O que isto está realmente nos dizendo é que _depois_ nós vamos querer testar isto, porém vamos estacionar isto por hora.
 
-Try and run the tests, the compiler should pass and the tests should be passing!
+Tente e rode os testes, o compilador deve passar e os testes deverão estar passando!
 
-## Refactor
+## Refatoração
 
 The test code does not convey out intent very well and has a lot of boilerplate we can refactor away.
 
