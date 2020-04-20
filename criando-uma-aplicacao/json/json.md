@@ -289,9 +289,9 @@ type Animal interface {
 }
 ```
 
-E você pode usar isto com tipos concretos também, não somente interfaces. Como você pode esperar, se você incorporar um tipo concreto você vai ter acesso a todos os seus métodos e campos publicos. 
+E você pode usar isto com tipos concretos também, não somente interfaces. Como você pode esperar, se você incorporar um tipo concreto você vai ter acesso a todos os seus métodos e campos públicos. 
 
-### Alguma desvantágem?
+### Alguma desvantagem?
 
 Você deve ter cuidado ao incorporar tipos porque você vai expor todos os métodos e campos públicos do tipo que você incorporou. Em nosso caso, está tudo bem porque nós haviamos incorporado apenas a _interface_ que nós queremos expôr \(`http.Handler`\).
 
@@ -571,7 +571,7 @@ Tente e rode os testes, o compilador deve passar e os testes deverão estar pass
 
 ## Refatoração
 
-The test code does not convey out intent very well and has a lot of boilerplate we can refactor away.
+O código de teste não transmite suas intensões muito bem e possui vários trechos que podem ser refatorados.
 
 ```go
 t.Run("it returns the league table as JSON", func(t *testing.T) {
@@ -595,7 +595,7 @@ t.Run("it returns the league table as JSON", func(t *testing.T) {
 })
 ```
 
-Here are the new helpers
+Aqui estão os novos helpers:
 
 ```go
 func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
@@ -622,11 +622,11 @@ func newLeagueRequest() *http.Request {
 }
 ```
 
-One final thing we need to do for our server to work is make sure we return a `content-type` header in the response so machines can recognise we are returning `JSON`.
+Uma última coisa que nós precisamos fazer para nosso servidor funcionar é ter certeza de que nós retornamos um `content-type` correto na resposta, então as máquinas podem reconhecer que nós estamos retornando um `JSON`.
 
-## Write the test first
+## Escreva os testes primeiro
 
-Add this assertion to the existing test
+Adicione essa afirmação no teste existente
 
 ```go
 if response.Result().Header.Get("content-type") != "application/json" {
@@ -634,7 +634,7 @@ if response.Result().Header.Get("content-type") != "application/json" {
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 === RUN   TestLeague/it_returns_the_league_table_as_JSON
@@ -642,9 +642,9 @@ if response.Result().Header.Get("content-type") != "application/json" {
         server_test.go:124: response did not have content-type of application/json, got map[Content-Type:[text/plain; charset=utf-8]]
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazê-lo passar
 
-Update `leagueHandler`
+Atualize `leagueHandler`
 
 ```go
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
@@ -653,11 +653,11 @@ func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-The test should pass.
+O teste deve passar.
 
-## Refactor
+## Refatoração
 
-Add a helper for `assertContentType`.
+Adicione um helper para `assertContentType`.
 
 ```go
 const jsonContentType = "application/json"
@@ -670,17 +670,19 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want s
 }
 ```
 
-Use it in the test.
+Use isso no teste.
 
 ```go
 assertContentType(t, response, jsonContentType)
 ```
 
-Now that we have sorted out `PlayerServer` for now we can turn our attention to `InMemoryPlayerStore` because right now if we tried to demo this to the product owner `/league` will not work.
+Agora que nós resolvemos `PlayerServer`, por agora podemos mudar nossa atenção para `InMemoryPlayerStore` porque no momento se nós tentarmos demonstrá-lo para o gerente de produto, `/league` não vai funcionar.
 
-The quickest way for us to get some confidence is to add to our integration test, we can hit the new endpoint and check we get back the correct response from `/league`.
+A forma mais rápida de nós termos alguma confiança é adicionar a nosso teste de integração, nós podemos bater no novo endpoint e checar se nós recebemos a resposta correta de `/league`.
 
-## Write the test first
+## Escreva o teste primeiro
+
+Nós podemos usar `t.Run` para parar este teste um pouco e então reusar os helpers dos testes do nosso servidor - novamente mostrando a importancia de refatoração dos testes.
 
 We can use `t.Run` to break up this test a bit and we can reuse the helpers from our server tests - again showing the importance of refactoring tests.
 
@@ -716,7 +718,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 }
 ```
 
-## Try to run the test
+## Tente rodar o teste
 
 ```text
 === RUN   TestRecordingWinsAndRetrievingThem/get_league
@@ -724,7 +726,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
         server_integration_test.go:35: got [] want [{Pepper 3}]
 ```
 
-## Write enough code to make it pass
+## Escreva código suficiente para fazê-lo passar
 
 `InMemoryPlayerStore` is returning `nil` when you call `GetLeague()` so we'll need to fix that.
 
@@ -738,17 +740,17 @@ func (i *InMemoryPlayerStore) GetLeague() []Player {
 }
 ```
 
-All we need to do is iterate over the map and convert each key/value to a `Player`.
+Tudo que nós precisamos fazer é interar através do map e converter cada chave/valor para um `Jogador`
 
-The test should now pass.
+O teste deve passar agora.
 
-## Wrapping up
+## Enpacotando
 
-We've continued to safely iterate on our program using TDD, making it support new endpoints in a maintainable way with a router and it can now return JSON for our consumers. In the next chapter, we will cover persisting the data and sorting our league.
+Nós temos continuado a seguramente iterar no nosso programa usando TDD, fazendo ele suportar novos endpoints de uma forma manutenivel com um roteador e isso pode agora retornar JSON para nossos consumidores. No próximo capítulo, nós vamos cobrir persistência de dados e ordenação de nossas ligas.
 
-What we've covered:
+O que nós cobrimos:
 
-* **Routing**. The standard library offers you an easy to use type to do routing. It fully embraces the `http.Handler` interface in that you assign routes to `Handler`s and the router itself is also a `Handler`. It does not have some features you might expect though such as path variables \(e.g `/users/{id}`\). You can easily parse this information yourself but you might want to consider looking at other routing libraries if it becomes a burden. Most of the popular ones stick to the standard library's philosophy of also implementing `http.Handler`.
-* **Type embedding**. We touched a little on this technique but you can [learn more about it from Effective Go](https://golang.org/doc/effective_go.html#embedding). If there is one thing you should take away from this is that it can be extremely useful but _always thinking about your public API, only expose what's appropriate_.
-* **JSON deserializing and serializing**. The standard library makes it very trivial to serialise and deserialise your data. It is also open to configuration and you can customise how these data transformations work if necessary.
+* **Roteamento**. A biblioteca padrão oferece uma fácil forma de usar tipos para fazer roteamento. Ela abraça completamente a interface `http.Handler` nela, tanto que você pode atribuir rotas para `Handler`s e a rota em si também é um `Handler`. Ela não tem alguns recursos que você pode esperar, como caminhos para variáveis \(ex. `/users/{id}`\). Você pode facilmente analisar esta informação por si mesmo porém você pode querer considerar olhar para outras bibliotecas de roteamento se isso se tornar um fardo. Muitas das mais populares seguem a filosofia das bibliotecas padrões e também implementam `http.Handler`.
 
+* **Composição**. Nós tocamos um pouco nesta tecnica porém você pode [ler mais sobre isso de Effective Go](https://golang.org/doc/effective_go.html#embedding). Se há uma coisa que você deve tirar disso é que composições podem ser extremamente úteis, porém _sempre pensando na sua API pública, só exponha o que é apropriado_.
+* **JSON desserialização e serialização**. A biblioteca padrão faz isto de forma bastante trivial ao serializar e desserializar nosso dado. Isto também abre para configurações e você pode customizar como esta transformação de dados funciona se necessário.
