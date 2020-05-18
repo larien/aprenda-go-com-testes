@@ -22,7 +22,7 @@ func TestCarteira(t *testing.T) {
     esperado := 10
 
     if resultado != esperado {
-		t.Errorf("resultado %s, esperado %s", resultado, esperado)
+		t.Errorf("resultado %d, esperado %d", resultado, esperado)
 	}
 }
 ```
