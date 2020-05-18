@@ -521,7 +521,7 @@ func TestCarteira(t *testing.T) {
 		erro := carteira.Retirar(Bitcoin(10))
 
 		confirmaSaldo(t, carteira, Bitcoin(10))
-		confirmaErroInexistente(t, erro)
+		confirmaErro(t, erro, ErroSaldoInsuficiente)
 	})
 
 	t.Run("Retirar com saldo insuficiente", func(t *testing.T) {
