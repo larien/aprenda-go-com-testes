@@ -490,7 +490,7 @@ Em Go, erros são valores, então podemos refatorar isso para ser uma variável 
 ```go
 var ErroSaldoInsuficiente = errors.New("não é possível retirar: saldo insuficiente")
 
-func (c *Carteira) Retirar(amount Bitcoin) error {
+func (c *Carteira) Retirar(quantidade Bitcoin) error {
 
     if quantidade > c.saldo {
         return ErroSaldoInsuficiente
