@@ -306,12 +306,12 @@ Há algumas duplicações em nossos testes, vamos refatorar isso.
 
 ```go
 func TestCarteira(t *testing.T) {
-    confirmaSaldo := func(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
+    confirmaSaldo := func(t *testing.T, carteira Carteira, esperado Bitcoin) {
         t.Helper()
 		resultado := carteira.Saldo()
 
-		if resultado != valorEsperado {
-			t.Errorf("resultado %s, esperado %s", resultado, valorEsperado)
+		if resultado != esperado {
+			t.Errorf("resultado %s, esperado %s", resultado, esperado)
 		}
     }
 
@@ -432,7 +432,7 @@ Assumindo que o erro enfim foi retornado para o usuário, vamos atualizar nosso 
 Atualize nosso helper para comparar com uma `string`:
 
 ```go
-confirmaErro := func(t *testing.T, valor error, valorEsperado string) {
+confirmaErro := func(t *testing.T, valor error, esperado string) {
     t.Helper()
 	if valor == nil {
 		t.Fatal("esperava um erro, mas nenhum ocorreu")
@@ -440,8 +440,8 @@ confirmaErro := func(t *testing.T, valor error, valorEsperado string) {
     
  	resultado := valor.Error()
 
-	if resultado != valorEsperado {
-		t.Errorf("resultado %s, esperado %s", resultado, valorEsperado)
+	if resultado != esperado {
+		t.Errorf("resultado %s, esperado %s", resultado, esperado)
 	}
 }
 ```
