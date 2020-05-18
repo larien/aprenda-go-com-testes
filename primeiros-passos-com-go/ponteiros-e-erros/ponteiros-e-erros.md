@@ -432,7 +432,7 @@ Assumindo que o erro enfim foi retornado para o usuário, vamos atualizar nosso 
 Atualize nosso helper para comparar com uma `string`:
 
 ```go
-confirmarErro := func(t *testing.T, valor error, valorEsperado string) {
+confirmaErro := func(t *testing.T, valor error, valorEsperado string) {
     t.Helper()
 	if valor == nil {
 		t.Fatal("esperava um erro, mas nenhum ocorreu")
