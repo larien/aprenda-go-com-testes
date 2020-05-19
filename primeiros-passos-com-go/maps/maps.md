@@ -20,7 +20,7 @@ import "testing"
 func TestBusca(t *testing.T) {
     dicionario := map[string]string{"teste": "isso é apenas um teste"}
 
-    resultado := Busca(dictionary, "teste")
+    resultado := Busca(dicionario, "teste")
     esperado := "isso é apenas um teste"
 
     if resultado != esperado {
@@ -98,9 +98,9 @@ Em `dicionario_test.go`:
 
 ```go
 func TestBusca(t *testing.T) {
-    dicionario := Dictionary{"teste": "isso é apenas um teste"}
+    dicionario := Dicionario{"teste": "isso é apenas um teste"}
 
-    resultado := dictionary.Busca("teste")
+    resultado := dicionario.Busca("teste")
     esperado := "isso é apenas um teste"
 
     comparaStrings(t, resultado, esperado)
@@ -143,7 +143,7 @@ func TestBusca(t *testing.T) {
     t.Run("palavra desconhecida", func(t *testing.T) {
         _, resultado := dicionario.Busca("desconhecida")
 
-        if err == nil {
+        if resultado == nil {
             t.Fatal("é esperado que um erro seja obtido.")
         }
     })
@@ -220,7 +220,7 @@ t.Run("palavra desconhecida", func(t *testing.T) {
 func comparaErro(t *testing.T, resultado, esperado error) {
     t.Helper()
 
-    if resultado != esperado {
+    if resultado == esperado {
         t.Errorf("resultado erro '%s', esperado '%s'", resultado, esperado)
     }
 }
@@ -356,7 +356,7 @@ func TestAdiciona(t *testing.T) {
         palavra := "teste"
         definicao := "isso é apenas um teste"
         dicionario := Dicionario{palavra: definicao}
-        err := dicionario.Add(palavra, "teste novo")
+        err := dicionario.Adiciona(palavra, "teste novo")
 
         comparaErro(t, err, ErrPalavraExistente)
         comparaDefinicao(t, dicionario, palavra, definicao)
