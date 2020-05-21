@@ -220,7 +220,7 @@ t.Run("palavra desconhecida", func(t *testing.T) {
 func comparaErro(t *testing.T, resultado, esperado error) {
     t.Helper()
 
-    if resultado == esperado {
+    if resultado != esperado {
         t.Errorf("resultado erro '%s', esperado '%s'", resultado, esperado)
     }
 }
