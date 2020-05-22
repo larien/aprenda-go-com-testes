@@ -22,7 +22,7 @@ func TestCarteira(t *testing.T) {
     esperado := 10
 
     if resultado != esperado {
-		t.Errorf("resultado %s, esperado %s", resultado, esperado)
+		t.Errorf("resultado %d, esperado %d", resultado, esperado)
 	}
 }
 ```
@@ -306,7 +306,7 @@ Há algumas duplicações em nossos testes, vamos refatorar isso.
 
 ```go
 func TestCarteira(t *testing.T) {
-    confirmaSaldo := func(t *testing.T, carteira Carteira, valorEsperado Bitcoin) {
+    confirmaSaldo := func(t *testing.T, carteira Carteira, esperado Bitcoin) {
         t.Helper()
 		resultado := carteira.Saldo()
 
@@ -432,7 +432,7 @@ Assumindo que o erro enfim foi retornado para o usuário, vamos atualizar nosso 
 Atualize nosso helper para comparar com uma `string`:
 
 ```go
-confirmarErro := func(t *testing.T, valor error, valorEsperado string) {
+confirmaErro := func(t *testing.T, valor error, esperado string) {
     t.Helper()
 	if valor == nil {
 		t.Fatal("esperava um erro, mas nenhum ocorreu")
@@ -440,8 +440,8 @@ confirmarErro := func(t *testing.T, valor error, valorEsperado string) {
     
  	resultado := valor.Error()
 
-	if resultado != valorEsperado {
-		t.Errorf("resultado %s, esperado %s", resultado, valorEsperado)
+	if resultado != esperado {
+		t.Errorf("resultado %s, esperado %s", resultado, esperado)
 	}
 }
 ```
@@ -490,7 +490,7 @@ Em Go, erros são valores, então podemos refatorar isso para ser uma variável 
 ```go
 var ErroSaldoInsuficiente = errors.New("não é possível retirar: saldo insuficiente")
 
-func (c *Carteira) Retirar(amount Bitcoin) error {
+func (c *Carteira) Retirar(quantidade Bitcoin) error {
 
     if quantidade > c.saldo {
         return ErroSaldoInsuficiente
@@ -521,7 +521,6 @@ func TestCarteira(t *testing.T) {
 		erro := carteira.Retirar(Bitcoin(10))
 
 		confirmaSaldo(t, carteira, Bitcoin(10))
-		confirmaErroInexistente(t, erro)
 	})
 
 	t.Run("Retirar com saldo insuficiente", func(t *testing.T) {
