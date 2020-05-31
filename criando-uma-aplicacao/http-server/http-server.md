@@ -287,7 +287,7 @@ func TestObterJogadores(t *testing.T) {
 
         JogadorServidor(resposta, requisicao)
 
-        assertResponseBody(t, resposta.Body.String(), "20")
+        verificarCorpoRequisicao(t, resposta.Body.String(), "20")
     })
 
     t.Run("returns Pedro's score", func(t *testing.T) {
@@ -296,19 +296,19 @@ func TestObterJogadores(t *testing.T) {
 
         JogadorServidor(resposta, requisicao)
 
-        assertResponseBody(t, resposta.Body.String(), "10")
+        verificarCorpoRequisicao(t, resposta.Body.String(), "10")
     })
 }
 
 func novaRequisicaoObterPontuacao(nome string) *http.Request {
-    req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
-    return req
+    requisicao, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
+    return requisicao
 }
 
-func assertResponseBody(t *testing.T, got, want string) {
+func verificarCorpoRequisicao(t *testing.T, obtido, esperado string) {
     t.Helper()
-    if got != want {
-        t.Errorf("response body is wrong, got '%s' want '%s'", got, want)
+    if obtido != esperado {
+        t.Errorf("corpo da requisição é inválido, obtive '%s' esperava '%s'", obtido, esperado)
     }
 }
 ```
@@ -319,47 +319,47 @@ Mas nossa refatoração nos mostra claramente o que fazer.
 
 Nós movemos o cálculo de pontuação para fora do código principal que trata a requisição (_handler_) para uma função `ObterPontuacaoJogador`. Isso parece ser o lugar correto para isolar as responsabilidades usando interfaces.
 
-Vamos alterar a função que refatoramos para ser uma interface
+Vamos alterar, em `servidor.go`, a função que refatoramos para ser uma interface
 
 ```go
 type JogadorArmazenamento interface {
-    ObterPontuacaoJogador(name string) int
+    ObterPontuacaoJogador(nome string) int
 }
 ```
 
-Para que o `JogadorServidor` consiga usar o `JogadorArmazenamento`, é necessário ter uma referência a ele. Agora nos parece o momento certo para alterar nossa arquitetura, e nosso `JogadorServidor` agora é uma `struct`.
+Para que o `JogadorServidor` consiga usar o `JogadorArmazenamento`, é necessário ter uma referência a ele. Agora nos parece o momento certo para alterar nossa arquitetura, e nosso `JogadorServidor` agora se torna uma estrutura (`struct`).
 
 ```go
 type JogadorServidor struct {
-    store JogadorArmazenamento
+    armazenamento JogadorArmazenamento
 }
 ```
 
-E agora, vamos implementar a interface do `Handler` adicionando um método à nossa nova struct e adicionado neste método o código existente.
+E agora, vamos implementar a interface do _tratador_ (`Handler`) adicionando um método à nossa nova estrutura `JogadorServidor` e adicionado neste método o código existente.
 
 ```go
-func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     player := r.URL.Path[len("/jogadores/"):]
-    fmt.Fprint(w, p.store.ObterPontuacaoJogador(player))
+    fmt.Fprint(w, js.armazenamento.ObterPontuacaoJogador(jogador))
 }
 ```
 
-Outra alteração a fazer: agora usamos a `store.GetJogadorArmazenamento` para obter a pontuação, ao invés da função local definida anteriormente \(e que podemos remover\).
+Outra alteração a fazer: agora usamos a `armazenamento.ObterPontuacaoJogador` para obter a pontuação, ao invés da função local definida anteriormente \(e que podemos remover\).
 
-Abaixo, a listagem completa do servidor
+Abaixo, a listagem completa do servidor (arquivo `servidor.go`)
 
 ```go
 type JogadorArmazenamento interface {
-    ObterPontuacaoJogador(name string) int
+	ObterPontuacaoJogador(nome string) int
 }
 
 type JogadorServidor struct {
-    store JogadorArmazenamento
+	armazenamento JogadorArmazenamento
 }
 
-func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/jogadores/"):]
-    fmt.Fprint(w, p.store.ObterPontuacaoJogador(player))
+func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	jogador := r.URL.Path[len("/jogadores/"):]
+	fmt.Fprint(w, js.armazenamento.ObterPontuacaoJogador(jogador))
 }
 ```
 
@@ -369,28 +369,28 @@ Fizemos muitas mudanças, e sabemos que nossos testes não irão funcionar e a c
 
 `./main.go:9:58: type JogadorServidor is not an expression`
 
-Precisamos mudar os nossos testes, que agora devem criar uma nova instânia de `JogadorServidor` e então chamar o método `ServeHTTP`.
+Precisamos mudar os nossos testes, que agora devem criar uma nova instância de `JogadorServidor` e então chamar o método `ServeHTTP`.
 
 ```go
 func TestObterJogadores(t *testing.T) {
-    server := &JogadorServidor{}
+    servidor := &JogadorServidor{}
 
     t.Run("returns Maria's score", func(t *testing.T) {
-        request := newGetScoreRequest("Maria")
+        request := novaRequisicaoObterPontuacao("Maria")
         response := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+        servidor.ServeHTTP(response, request)
 
-        assertResponseBody(t, response.Body.String(), "20")
+        verificarCorpoRequisicao(t, response.Body.String(), "20")
     })
 
     t.Run("returns Pedro's score", func(t *testing.T) {
-        request := newGetScoreRequest("Pedro")
+        request := novaRequisicaoObterPontuacao("Pedro")
         response := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+        servidor.ServeHTTP(response, request)
 
-        assertResponseBody(t, response.Body.String(), "10")
+        verificarCorpoRequisicao(t, response.Body.String(), "10")
     })
 }
 ```
@@ -399,70 +399,71 @@ Perceba que ainda não nos preocupamos, _por enquanto_, com o armazenamento dos 
 
 Você deve ter o hábito de priorizar, _sempre_, código que compila antes de ter código que passa nos testes.
 
-Adicionando mais funcionalidades \(como códigos de esboço - _stub_ - de armazenamento\) a um código que não ainda não compila, nos arriscamos a ter, potencialmente, _mais_ problemas de compilação.
+Adicionando mais funcionalidades \(como códigos de esboço de armazenamento\) a um código que não ainda não compila, nos arriscamos a ter, potencialmente, _mais_ problemas de compilação.
 
 Agora `main.go` não vai compilar pelas mesmas razões.
 
 ```go
 func main() {
-    server := &JogadorServidor{}
+	servidor := &JogadorServidor{}
 
-    if err := http.ListenAndServe(":5000", server); err != nil {
-        log.Fatalf("could not listen on port 5000 %v", err)
-    }
+	if err := http.ListenAndServe(":5000", servidor); err != nil {
+		log.Fatalf("não foi possível escutar na porta 5000 %v", err)
+	}
 }
 ```
 
 Agora tudo compila, mas os testes falham.
 
 ```text
-=== RUN   TestObterJogadores/returns_the_Maria's_score
+--- FAIL: TestObterJogadores (0.00s)
+    --- FAIL: TestObterJogadores/retorna_pontucao_de_Maria (0.00s)
 panic: runtime error: invalid memory address or nil pointer dereference [recovered]
-    panic: runtime error: invalid memory address or nil pointer dereference
+        panic: runtime error: invalid memory address or nil pointer dereference
 ```
 
-Isso porque não passamos um `JogadorArmazenamento` em nossos testes. Precisamos fazer um código de esboço \(stub\) para nos ajudar.
+Isso porque não passamos um `JogadorArmazenamento` em nossos testes. Precisamos fazer, no arquivo `servidor_test.go` um código de esboço para nos ajudar.
 
 ```go
-type StubJogadorArmazenamento struct {
-    scores map[string]int
+type EsbocoJogadorArmazenamento struct {
+	pontuacoes map[string]int
 }
 
-func (s *StubJogadorArmazenamento) ObterPontuacaoJogador(name string) int {
-    score := s.scores[name]
-    return score
+func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(name string) int {
+	pontuacao := e.pontuacoes[name]
+	return pontuacao
 }
 ```
 
-Um `map` é um jeito simples e rápido de fazer um armazenamento chave/valor de  para os nossos testes. Agora vamos criar um desses armazenamentos para os nosso testes e inserir em nosso `JogadorServidor`.
+Um _mapa_ (`map`) é um jeito simples e rápido de fazer um armazenamento chave/valor para os nossos testes. Agora vamos criar um desses armazenamentos para os nosso testes e inserir em nosso `JogadorServidor`.
 
 ```go
 func TestObterJogadores(t *testing.T) {
-    store := StubJogadorArmazenamento{
-        map[string]int{
-            "Maria": 20,
-            "Pedro":  10,
-        },
-    }
-    server := &JogadorServidor{&store}
+	armazenamento := EsbocoJogadorArmazenamento{
+		map[string]int{
+			"Maria": 20,
+			"Pedro": 10,
+		},
+	}
+	servidor := &JogadorServidor{&armazenamento}
 
-    t.Run("returns Maria's score", func(t *testing.T) {
-        request := newGetScoreRequest("Maria")
-        response := httptest.NewRecorder()
+	t.Run("retorna pontuacao de Maria", func(t *testing.T) {
+		request := novaRequisicaoObterPontuacao("Maria")
+		response := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+		servidor.ServeHTTP(response, request)
 
-        assertResponseBody(t, response.Body.String(), "20")
-    })
+		verificarCorpoRequisicao(t, response.Body.String(), "20")
+	})
 
-    t.Run("returns Pedro's score", func(t *testing.T) {
-        request := newGetScoreRequest("Pedro")
-        response := httptest.NewRecorder()
+	t.Run("retorna pontuacao de Pedro", func(t *testing.T) {
+		request := novaRequisicaoObterPontuacao("Pedro")
+		response := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+		servidor.ServeHTTP(response, request)
 
-        assertResponseBody(t, response.Body.String(), "10")
-    })
+		verificarCorpoRequisicao(t, response.Body.String(), "10")
+	})
 }
 ```
 
@@ -474,20 +475,20 @@ Agora que nossos testes estão passando, a última coisa que precisamos fazer pa
 
 E a razão pra isso é: não informamos um `JogadorArmazenamento`.
 
-Precisamos fazer uma implementação de um, mas isso é difícil no momento, já que não estamos armazenando nenhum dado significativo, por isso precisará ser um valor predefinido por enquanto.
+Precisamos fazer uma implementação de um, mas isso é difícil no momento, já que não estamos armazenando nenhum dado significativo, por isso precisará ser, por enquanto, um valor predefinido. Vamos alterar na `main.go`:
 
 ```go
-type InMemoryJogadorArmazenamento struct{}
+type JogadorArmazenamentoNaMemoria struct{}
 
-func (i *InMemoryJogadorArmazenamento) ObterPontuacaoJogador(name string) int {
+func (i *JogadorArmazenamentoNaMemoria) ObterPontuacaoJogador(name string) int {
     return 123
 }
 
 func main() {
-    server := &JogadorServidor{&InMemoryJogadorArmazenamento{}}
+    server := &JogadorServidor{&JogadorArmazenamentoNaMemoria{}}
 
     if err := http.ListenAndServe(":5000", server); err != nil {
-        log.Fatalf("could not listen on port 5000 %v", err)
+        log.Fatalf("não foi possível escutar na porta 5000 %v", err)
     }
 }
 ```
@@ -497,27 +498,27 @@ Se você rodar novamente o `go build` e acessar a mesma URL você deve receber `
 Temos algumas opções para decidir o que fazer agora
 
 * Tratar o cenário onde o jogador não existe
-* Tratar o cenário de `POST /jogadores/{name}`
-* Não foi exatamente bom perceber que nossa aplicação principal iniciou mas não funcionou. Tivemos que testar manualmente para ver o problema.
+* Tratar o cenário da chamado ao método HTTP `POST` em `/jogadores/{nome}`
+* Não foi particularmente interessante perceber que nossa aplicação principal iniciou mas não funcionou. Tivemos que testar manualmente para ver o problema.
 
-Enquanto o cenário do `POST` nos deixa mais perto do "caminho ideal", eu sinto que vai ser mais fácil atacar o cenário de "jogador não existente" antes, já que estamos neste assunto. Veremos os outros itens posteriormente.
+Enquanto o cenário do tratamento ao método HTTP `POST` nos deixa mais perto do "caminho ideal", eu sinto que vai ser mais fácil atacar o cenário de "jogador não existente" antes, já que estamos neste assunto. Veremos os outros itens posteriormente.
 
 ## Escreva o teste primeiro
 
 Adicione o cenário de um jogador inexistente aos nossos testes
 
 ```go
-t.Run("returns 404 on missing players", func(t *testing.T) {
-    request := newGetScoreRequest("Apollo")
-    response := httptest.NewRecorder()
+t.Run("retorna 404 para jogador não encontrado", func(t *testing.T) {
+    requisicao := novaRequisicaoObterPontuacao("Jorge")
+    resposta := httptest.NewRecorder()
 
-    server.ServeHTTP(response, request)
+    server.ServeHTTP(resposta, requisicao)
 
-    got := response.Code
-    want := http.StatusNotFound
+    obtido := resposta.Code
+    esperado := http.StatusNotFound
 
-    if got != want {
-        t.Errorf("got status %d want %d", got, want)
+    if obtido != esperado {
+        t.Errorf("obtido status %d esperado %d", obtido, esperado)
     }
 })
 ```
@@ -525,9 +526,9 @@ t.Run("returns 404 on missing players", func(t *testing.T) {
 ## Tente rodar o teste
 
 ```text
-=== RUN   TestObterJogadores/returns_404_on_missing_players
-    --- FAIL: TestObterJogadores/returns_404_on_missing_players (0.00s)
-        servidor_test.go:56: got status 200 want 404
+--- FAIL: TestObterJogadores (0.00s)
+    --- FAIL: TestObterJogadores/retorna_404_para_jogador_não_encontrado (0.00s)
+        servidor_test.go:56: obtido status 200 esperado 404
 ```
 
 ## Escreva código necessário para que o teste funcione
@@ -546,7 +547,7 @@ func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 Mas este cenário ilustra muito bem o que querem dizer. Eu fiz o mínimo \(sabendo que não era a implementação correta\), que foi retornar um `StatusNotFound` em **todas as respostas**, mas todos os nossos testes estão passando!
 
-**Implementando o mínimo par que os testes passem pode evidenciar lacunas nos testes**. Em nosso caso, nós não estamos validando que devemos receber um `StatusOK` quando jogadores _existem_ em nosso armazenamento.
+**Implementando o mínimo para que os testes passem pode evidenciar lacunas nos testes**. Em nosso caso, nós não estamos validando que devemos receber um `StatusOK` quando jogadores _existem_ em nosso armazenamento.
 
 Atualize os outros dois testes para validar o retorno e corrija o código.
 
@@ -554,7 +555,7 @@ Eis os novos testes
 
 ```go
 func TestObterJogadores(t *testing.T) {
-    store := StubJogadorArmazenamento{
+    store := EsbocoJogadorArmazenamento{
         map[string]int{
             "Maria": 20,
             "Pedro":  10,
@@ -583,7 +584,7 @@ func TestObterJogadores(t *testing.T) {
     })
 
     t.Run("returns 404 on missing players", func(t *testing.T) {
-        request := newGetScoreRequest("Apollo")
+        request := newGetScoreRequest("Jorge")
         response := httptest.NewRecorder()
 
         server.ServeHTTP(response, request)
@@ -638,7 +639,7 @@ Agora que podemos obter pontuações de um armazenamento, também podemos armaze
 
 ```go
 func TestStoreWins(t *testing.T) {
-    store := StubJogadorArmazenamento{
+    store := EsbocoJogadorArmazenamento{
         map[string]int{},
     }
     server := &JogadorServidor{&store}
@@ -727,20 +728,20 @@ Agora, queremos verificar que, quando fazemos a chamada `POST` a `/jogadores/{na
 
 ## Escreva primeiro o teste
 
-Vamos implementar isso estendendo o `StubJogadorArmazenamento` com um novo método `RecordWin` e então inspecionar as chamadas.
+Vamos implementar isso estendendo o `EsbocoJogadorArmazenamento` com um novo método `RecordWin` e então inspecionar as chamadas.
 
 ```go
-type StubJogadorArmazenamento struct {
+type EsbocoJogadorArmazenamento struct {
     scores   map[string]int
     winCalls []string
 }
 
-func (s *StubJogadorArmazenamento) ObterPontuacaoJogador(name string) int {
+func (s *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(name string) int {
     score := s.scores[name]
     return score
 }
 
-func (s *StubJogadorArmazenamento) RecordWin(name string) {
+func (s *EsbocoJogadorArmazenamento) RecordWin(name string) {
     s.winCalls = append(s.winCalls, name)
 }
 ```
@@ -749,7 +750,7 @@ Agora, para começar, estendemos o teste para verificar a quantidade de chamadas
 
 ```go
 func TestStoreWins(t *testing.T) {
-    store := StubJogadorArmazenamento{
+    store := EsbocoJogadorArmazenamento{
         map[string]int{},
     }
     server := &JogadorServidor{&store}
@@ -783,10 +784,10 @@ func newPostWinRequest(name string) *http.Request {
 
 ## Escreva a mínima quantidade de código para a execução do teste e verifique a falha indicada no retorno
 
-Como adicionamos um campo, precisamos atualizar o código onde criamos o `StubJogadorArmazenamento`
+Como adicionamos um campo, precisamos atualizar o código onde criamos o `EsbocoJogadorArmazenamento`
 
 ```go
-store := StubJogadorArmazenamento{
+store := EsbocoJogadorArmazenamento{
     map[string]int{},
     nil,
 }
