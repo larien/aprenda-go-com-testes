@@ -5,39 +5,39 @@ import (
 	"net/http"
 )
 
-// PlayerStore stores score information about players
-type PlayerStore interface {
-	GetPlayerScore(name string) int
-	RecordWin(name string)
+// JogadorArmazenamento armazena as pontuacoes dos jogadores
+type JogadorArmazenamento interface {
+	ObterPontuacaoJogador(name string) int
+	RegistrarVitoria(name string)
 }
 
-// PlayerServer is a HTTP interface for player information
-type PlayerServer struct {
-	store PlayerStore
+// JogadorServidor é uma interface HTTP para os dados dos jogadores
+type JogadorServidor struct {
+	armazenamento JogadorArmazenamento
 }
 
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	player := r.URL.Path[len("/players/"):]
+func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	jogador := r.URL.Path[len("/jogadores/"):]
 
 	switch r.Method {
 	case http.MethodPost:
-		p.processWin(w, player)
+		js.registrarVitoria(w, jogador)
 	case http.MethodGet:
-		p.showScore(w, player)
+		js.mostrarPontuacao(w, jogador)
 	}
 }
 
-func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
-	score := p.store.GetPlayerScore(player)
+func (js *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, player string) {
+	pontuacao := js.armazenamento.ObterPontuacaoJogador(player)
 
-	if score == 0 {
+	if pontuacao == 0 {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
-	fmt.Fprint(w, score)
+	fmt.Fprint(w, pontuacao)
 }
 
-func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
-	p.store.RecordWin(player)
+func (p *JogadorServidor) registrarVitoria(w http.ResponseWriter, player string) {
+	p.armazenamento.RegistrarVitoria(player)
 	w.WriteHeader(http.StatusAccepted)
 }
