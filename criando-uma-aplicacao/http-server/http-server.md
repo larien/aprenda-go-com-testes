@@ -11,13 +11,13 @@ Vamos seguir com a abordagem do TDD, criando software que funciona o mais rápid
 
 * Mantemos pequeno o escopo do problema em qualquer momento
 * Não perdemos o foco por pensar em muito detalhes
-* Se ficamos emperrados ou perdidos, voltando para uma versão anterior do código não perdemos muito trabalho.
+* Se ficamos emperrados ou perdidos, podemos voltar para uma versão anterior do código sem perder muito trabalho.
 
 ## Vermelho, verde, refatore
 
 Por todo o livro, enfatizamos o processo TDD de escrever um teste e ver a falha \(vermelho\), escrever a _menor_ quantidade de código para fazer o teste passar/funcionar \(verde\), e então fazemos a reescrita (refatoração).
 
-A disciplina de escrever a menor quantidade de código é importante para garantir a seguraça que o TDD proporciona. Você deve se empenhar em sair do _vermelho_ o quanto antes.
+A disciplina de escrever a menor quantidade de código é importante para garantir a segurança que o TDD proporciona. Você deve se empenhar em sair do _vermelho_ o quanto antes.
 
 Kent Beck descreve essa prática como:
 
@@ -29,11 +29,11 @@ E você pode cometer estes pecados porque vamos reescrever o código logo depois
 
 Quanto mais alterações você fizer enquanto seu código estiver em _vermelho_, maiores as chances de você adicionar problemas, não cobertos por testes.
 
-A ideia é escrever, iterativamente, código útil em pequenos passos, guiados pelos testes, para que você não perca foco no objetivo principal.
+A ideia é escrever iterativamente código útil em pequenos passos, guiados pelos testes, para que você não perca foco no objetivo principal.
 
 ### A galinha e o ovo
 
-Como podemos construir isso de forma incremental? Não podemos obter (`GET`) um nome de jogador sem ter registrado nada anteriormente, e parece complicado saber se o `POST` funcionou sem o endpoint `GET` já implementado.
+Como podemos construir isso de forma incremental? Não podemos obter um jogador (`GET`) sem tê-lo registrado nada anteriormente, e parece complicado saber se o `POST` funcionou sem o endpoint `GET` já implementado.
 
 E é nesse ponto que o _mocking_ vai nos ajudar.
 
@@ -666,7 +666,7 @@ Inicialmente vamos verificar se obtemos o status HTTP correto ao fazer a requisi
 
 ## Escreva código suficiente pra fazer passar
 
-Lembre-se que estamos comentendo pecados deliberadamente, então um comando `if` para identificar o método da requisição vai resolver o problema.
+Lembre-se que estamos cometendo pecados deliberadamente, então um comando `if` para identificar o método da requisição vai resolver o problema.
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -721,7 +721,7 @@ func (p *PlayerServer) processWin(w http.ResponseWriter) {
 }
 ```
 
-Isso faz com que a função de roteamento do `ServeHTTP` esteja mais clara, e permite que nossas próximas iterações para armazenamento possa estar dentro de `processWin`.
+Isso faz com que a função de roteamento do `ServeHTTP` esteja mais clara; e também permite que, em nossas próximas iterações, o código para armazenamento possa estar dentro de `processWin`.
 
 Agora, queremos verificar que, quando fazemos a chamada `POST` a `/players/{name}`, nosso `PlayerStore` registra a vitória.
 
@@ -956,7 +956,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 * Estamos criando os dois componentes que queremos integrar: `InMemoryPlayerStore` e `PlayerServer`.
 * Então fazemos 3 requisições para registrar 3 vitórias para `player`. Não nos preocupamos com os códigos de retorno no teste, porque isso não é relevante para verificar se a integração funciona como esperado.
-* Registramos a a próxima resposta \(por isso guardamos o valor em `response`\) porque vamos obter a pontuação do `player`.
+* Registramos a próxima resposta \(por isso guardamos o valor em `response`\) porque vamos obter a pontuação do `player`.
 
 ## Tente rodar o teste
 
@@ -1019,7 +1019,7 @@ Após compilar e rodar, use o `curl` para testar.
 * Execute o comando a seguir algumas vezes, mude o nome do jogador se quiser `curl -X POST http://localhost:5000/players/Pepper`
 * Verifique a pontuação, rodando `curl http://localhost:5000/players/Pepper`
 
-Ótimo! Criamos um serviço de acordo com os padrões REST! Para seguirmos em frente, precisamos decidir qual o armazenamento de dados vamos usar, e um que dure mais que o tempo que o programa rodar.
+Ótimo! Criamos um serviço de acordo com os padrões REST! Se quiser continuar, você pode escolher um armazenamento de dados com maior persistência, que não vai perder os dados quando o programa terminar.
 
 * Escolher uma tecnologia de armazenamento \(Bolt? Mongo? Postgres? Sistema de arquivos?\)
 * Fazer `PostgresPlayerStore` implementar `PlayerStore`
@@ -1044,7 +1044,7 @@ Após compilar e rodar, use o `curl` para testar.
 
 ### Cometa pecados, e daí refatore \(e então registre no controle de versão\)
 
-* Você precisa tratar falhas na compilação ou noss testes como uma situação urgente, a qual precisa resolver o mais rápido possível.
+* Você precisa tratar falhas na compilação ou nos testes como uma situação urgente, a qual precisa resolver o mais rápido possível.
 * Escreva apenas o código necessário para resolver o problema. _Logo depois_ refatore e faça um código melhor
 * Ao tentar fazer muitas alterações enquanto o código não está compilando ou os testes estão falhando, corremos o risco de acumular e agravar os problemas.
 * Nos manter fiéis à essa abordagem nos obriga a escrever pequenos testes, o que significa pequenas alterações, o que nos ajuda a continuar trabalhando em sistemas complexos de forma gerenciável.
