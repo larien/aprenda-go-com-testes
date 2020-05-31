@@ -824,7 +824,7 @@ E, ao fazer isso, `main` não compila mais
         *JogadorArmazenamentoNaMemoria does not implement JogadorArmazenamento (missing RegistrarVitoria method)
 ```
 
-O compilador nos informa o que está errado. Vamos alterar `InMemoryJogadorArmazenamento`, adicionando esse método.
+O compilador nos informa o que está errado. Vamos alterar `JogadorArmazenamentoNaMemoria`, adicionando esse método.
 
 ```go
 type JogadorArmazenamentoNaMemoria struct{}
@@ -895,38 +895,38 @@ Mudamos `registrarVitoria` para obter a `http.Request`, e assim conseguir extrai
 Podemos eliminar repetições no código, porque estamos obtendo o nome do "player" do mesmo jeito em dois lugares diferentes.
 
 ```go
-func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/jogadores/"):]
+func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	jogador := r.URL.Path[len("/jogadores/"):]
 
-    switch r.Method {
-    case http.MethodPost:
-        p.processWin(w, player)
-    case http.MethodGet:
-        p.showScore(w, player)
-    }
+	switch r.Method {
+	case http.MethodPost:
+		js.registrarVitoria(w, jogador)
+	case http.MethodGet:
+		js.mostrarPontuacao(w, jogador)
+	}
 }
 
-func (p *JogadorServidor) showScore(w http.ResponseWriter, player string) {
-    score := p.store.ObterPontuacaoJogador(player)
+func (js *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, jogador string) {
+	pontuacao := js.armazenamento.ObterPontuacaoJogador(jogador)
 
-    if score == 0 {
-        w.WriteHeader(http.StatusNotFound)
-    }
+	if pontuacao == 0 {
+		w.WriteHeader(http.StatusNotFound)
+	}
 
-    fmt.Fprint(w, score)
+	fmt.Fprint(w, pontuacao)
 }
 
-func (p *JogadorServidor) processWin(w http.ResponseWriter, player string) {
-    p.store.RecordWin(player)
-    w.WriteHeader(http.StatusAccepted)
+func (js *JogadorServidor) registrarVitoria(w http.ResponseWriter, jogador string) {
+	js.armazenamento.RegistrarVitoria(jogador)
+	w.WriteHeader(http.StatusAccepted)
 }
 ```
 
 Mesmo com os testes passando, não temos código funcionando de forma ideal. Se executar a `main` e usar o programa como planejado, não vai funcionar porque ainda não nos dedicamos a implementar corretamente `JogadorArmazenamento`. Mas isso não é um problema; como focamos no tratamento da requisição, identificamos a interface necessária, ao invés de tentar definir antecipadamente.
 
-_Poderíamos_ começar a escrever alguns testes para a `InMemoryJogadorArmazenamento`, mas ela é apenas uma solução temporária até a implementação de um modo mais robusto de registrar as pontuações \(por exemplo, em um banco de dados\).
+_Poderíamos_ começar a escrever alguns testes para a `JogadorArmazenamentoNaMemoria`, mas ela é apenas uma solução temporária até a implementação de um modo mais robusto de registrar as pontuações \(por exemplo, em um banco de dados\).
 
-O que vamos fazer agora é escrever um _teste de integração_ entre `JogadorServidor` e `InMemoryJogadorArmazenamento` para terminar a funcionalidade. Isso vai permitir confiar que a aplicação está funcionando, sem ter que testar diretamente `InMemoryJogadorArmazenamento`. E não apenas isso, mas quando implementarmos `JogadorArmazenamento` com um banco de dados, usaremos esse mesmo teste para verificar se a implementação funciona como esperado.
+O que vamos fazer agora é escrever um _teste de integração_ entre `JogadorServidor` e `JogadorArmazenamentoNaMemoria` para terminar a funcionalidade. Isso vai permitir confiar que a aplicação está funcionando, sem ter que testar diretamente `JogadorArmazenamentoNaMemoria`. E não apenas isso, mas quando implementarmos `JogadorArmazenamento` com um banco de dados, usaremos esse mesmo teste para verificar se a implementação funciona como esperado.
 
 ### Testes de integração
 
@@ -943,65 +943,65 @@ Por isso, é recomendado que pesquise sobre _Pirâmide de Testes_.
 Para ser mais breve, vou te mostrar o teste de integração, já refatorado.
 
 ```go
-func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-    store := InMemoryJogadorArmazenamento{}
-    server := JogadorServidor{&store}
-    player := "Maria"
+func TestRegistrarVitoriasEBuscarEstasVitorias(t *testing.T) {
+	armazenamento := CriarJogadorArmazenamentoNaMemoria()
+	servidor := JogadorServidor{armazenamento}
+	jogador := "Maria"
 
-    server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-    server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-    server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoRegistrarVitoriaPost(jogador))
+	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoRegistrarVitoriaPost(jogador))
+	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoRegistrarVitoriaPost(jogador))
 
-    response := httptest.NewRecorder()
-    server.ServeHTTP(response, newGetScoreRequest(player))
-    assertStatus(t, response.Code, http.StatusOK)
+	resposta := httptest.NewRecorder()
+	servidor.ServeHTTP(resposta, novaRequisicaoObterPontuacao(jogador))
+	verificarRespostaCodigoStatus(t, resposta.Code, http.StatusOK)
 
-    assertResponseBody(t, response.Body.String(), "3")
+	verificarCorpoRequisicao(t, resposta.Body.String(), "3")
 }
 ```
 
-* Estamos criando os dois componentes que queremos integrar: `InMemoryJogadorArmazenamento` e `JogadorServidor`.
-* Então fazemos 3 requisições para registrar 3 vitórias para `player`. Não nos preocupamos com os códigos de retorno no teste, porque isso não é relevante para verificar se a integração funciona como esperado.
-* Registramos a próxima resposta \(por isso guardamos o valor em `response`\) porque vamos obter a pontuação do `player`.
+* Estamos criando os dois componentes que queremos integrar: `JogadorArmazenamentoNaMemoria` e `JogadorServidor`.
+* Então fazemos 3 requisições para registrar 3 vitórias para `jogador`. Não nos preocupamos com os códigos de retorno no teste, porque isso não é relevante para verificar se a integração funciona como esperado.
+* Registramos a próxima resposta \(por isso guardamos o valor em `resposta`\) porque vamos obter a pontuação do `jogador`.
 
 ## Tente rodar o teste
 
 ```text
---- FAIL: TestRecordingWinsAndRetrievingThem (0.00s)
-    server_integration_test.go:24: response body is wrong, got '123' want '3'
+--- FAIL: TestRegistrarVitoriasEBuscarEstasVitorias (0.00s)
+    servidor_test.go:109: corpo da requisição é inválido, recebido '123' esperado '3'
 ```
 
 ## Escreva código suficiente para passar
 
 Abaixo, há mais código do que o esperado para se escrever sem ter os testes correspondentes.
 
-_Isso é permitido_! Ainda existem testes verificando se as coisas estão funcionando como esperado, mas não focando na parte específica em que estamos trabalhando \(`InMemoryJogadorArmazenamento`\).
+_Isso é permitido_! Ainda existem testes verificando se as coisas estão funcionando como esperado, mas não focando na parte específica em que estamos trabalhando \(`JogadorArmazenamentoNaMemoria`\).
 
-Se houvesse algum problema para continuarmos, era só reverter as alterações para antes do teste que falhou e então escrever mais testes unitários específicos para `InMemoryJogadorArmazenamento`, que nos ajudariam a encontrar a solução.
+Se houvesse algum problema para continuarmos, era só reverter as alterações para antes do teste que falhou e então escrever mais testes unitários específicos para `JogadorArmazenamentoNaMemoria`, que nos ajudariam a encontrar a solução.
 
 ```go
-func NewInMemoryJogadorArmazenamento() *InMemoryJogadorArmazenamento {
-    return &InMemoryJogadorArmazenamento{map[string]int{}}
+func CriarJogadorArmazenamentoNaMemoria() *JogadorArmazenamentoNaMemoria {
+	return &JogadorArmazenamentoNaMemoria{map[string]int{}}
 }
 
-type InMemoryJogadorArmazenamento struct{
-    store map[string]int
+type JogadorArmazenamentoNaMemoria struct {
+	armazenamento map[string]int
 }
 
-func (i *InMemoryJogadorArmazenamento) RecordWin(name string) {
-    i.store[name]++
+func (ja *JogadorArmazenamentoNaMemoria) RegistrarVitoria(nome string) {
+	ja.armazenamento[nome]++
 }
 
-func (i *InMemoryJogadorArmazenamento) ObterPontuacaoJogador(name string) int {
-    return i.store[name]
+func (ja *JogadorArmazenamentoNaMemoria) ObterPontuacaoJogador(nome string) int {
+	return ja.armazenamento[nome]
 }
 ```
 
-* Para armazenar os dados, adicionamos um `map[string]int` na struct `InMemoryJogadorArmazenamento`
-* Para ajudar nos testes, criamos a `NewInMemoryJogadorArmazenamento` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`store := NewInMemoryJogadorArmazenamento()`\).
+* Para armazenar os dados, adicionamos um `map[string]int` na struct `JogadorArmazenamentoNaMemoria`
+* Para ajudar nos testes, criamos a `NewJogadorArmazenamentoNaMemoria` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`store := NewJogadorArmazenamentoNaMemoria()`\).
 * O resto do código é apenas para fazer o `map` funcionar.
 
-Nosso teste de integração passa, e agora só é preciso mudar o `main` para usar o `NewInMemoryJogadorArmazenamento()`
+Nosso teste de integração passa, e agora só é preciso mudar o `main` para usar o `NewJogadorArmazenamentoNaMemoria()`
 
 ```go
 package main
@@ -1012,10 +1012,10 @@ import (
 )
 
 func main() {
-    server := &JogadorServidor{NewInMemoryJogadorArmazenamento()}
+    servidor := &JogadorServidor{CriarJogadorArmazenamentoNaMemoria()}
 
-    if err := http.ListenAndServe(":5000", server); err != nil {
-        log.Fatalf("could not listen on port 5000 %v", err)
+    if err := http.ListenAndServe(":5000", servidor); err != nil {
+        log.Fatalf("não foi possível escutar na porta 5000 %v", err)
     }
 }
 ```
@@ -1042,7 +1042,7 @@ Após compilar e rodar, use o `curl` para testar.
 * Use `httptest.NewRecorder` para informar um `ResponseWriter` que permite inspecionar as respostas que a função tratadora envia
 * Use `http.NewRequest` para construir as requisições que você espera que seu sistema receba
 
-### Interfaces, _Mocking_ e Injeção de Dependência
+### Interfaces, Valores predefinidos (_Mocking_) e Injeção de Dependência
 
 * Permitem que você construa a sua aplicação de forma iterativa, um pedaço de cada vez
 * Te permite desenvolver uma funcionalidade de tratamento de requisições que precisa de um armazenamento sem precisar exatamente de uma estrutura de armazenamento
