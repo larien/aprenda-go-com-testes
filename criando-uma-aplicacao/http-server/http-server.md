@@ -75,11 +75,11 @@ func TestObterJogadores(t *testing.T) {
 
         JogadorServidor(resposta, requisicao)
 
-        obtido := resposta.Body.String()
+        recebido := resposta.Body.String()
         esperado := "20"
 
-        if obtido != esperado {
-            t.Errorf("obtido '%s', esperado '%s'", obtido, esperado)
+        if recebido != esperado {
+            t.Errorf("recebido '%s', esperado '%s'", recebido, esperado)
         }
     })
 }
@@ -127,7 +127,7 @@ Agora o código compila, e o teste falha.
 ```text
 --- FAIL: TestObterJogadores (0.00s)
     --- FAIL: TestObterJogadores/retornar_resultado_de_Maria (0.00s)
-        servidor_test.go:20: obtido '', esperado '20'
+        servidor_test.go:20: recebido '', esperado '20'
 ```
 
 ## Escreva código suficiente para fazer o teste funcionar
@@ -200,11 +200,11 @@ t.Run("retornar resultado de Pedro", func(t *testing.T) {
 
     JogadorServidor(resposta, requisicao)
 
-    obtido := resposta.Body.String()
+    recebido := resposta.Body.String()
     esperado := "10"
 
-    if obtido != esperado {
-        t.Errorf("obtido '%s', esperado '%s'", obtido, esperado)
+    if recebido != esperado {
+        t.Errorf("recebido '%s', esperado '%s'", recebido, esperado)
     }
 })
 ```
@@ -221,7 +221,7 @@ Lembre-se de que estamos apenas tentando dar os menores passos possíveis; e por
 === RUN   TestObterJogadores
 === RUN   TestObterJogadores/retornar_resultado_de_Maria
 === RUN   TestObterJogadores/retornar_resultado_de_Pedro
-    TestObterJogadores/retornar_resultado_de_Pedro: servidor_test.go:34: obtido '20', esperado '10'
+    TestObterJogadores/retornar_resultado_de_Pedro: servidor_test.go:34: recebido '20', esperado '10'
 --- FAIL: TestObterJogadores (0.00s)
     --- PASS: TestObterJogadores/retornar_resultado_de_Maria (0.00s)
     --- FAIL: TestObterJogadores/retornar_resultado_de_Pedro (0.00s)
@@ -305,10 +305,10 @@ func novaRequisicaoObterPontuacao(nome string) *http.Request {
     return requisicao
 }
 
-func verificarCorpoRequisicao(t *testing.T, obtido, esperado string) {
+func verificarCorpoRequisicao(t *testing.T, recebido, esperado string) {
     t.Helper()
-    if obtido != esperado {
-        t.Errorf("corpo da requisição é inválido, obtive '%s' esperava '%s'", obtido, esperado)
+    if recebido != esperado {
+        t.Errorf("corpo da requisição é inválido, obtive '%s' esperava '%s'", recebido, esperado)
     }
 }
 ```
@@ -514,11 +514,11 @@ t.Run("retorna 404 para jogador não encontrado", func(t *testing.T) {
 
     server.ServeHTTP(resposta, requisicao)
 
-    obtido := resposta.Code
+    recebido := resposta.Code
     esperado := http.StatusNotFound
 
-    if obtido != esperado {
-        t.Errorf("obtido status %d esperado %d", obtido, esperado)
+    if recebido != esperado {
+        t.Errorf("recebido status %d esperado %d", recebido, esperado)
     }
 })
 ```
@@ -528,7 +528,7 @@ t.Run("retorna 404 para jogador não encontrado", func(t *testing.T) {
 ```text
 --- FAIL: TestObterJogadores (0.00s)
     --- FAIL: TestObterJogadores/retorna_404_para_jogador_não_encontrado (0.00s)
-        servidor_test.go:56: obtido status 200 esperado 404
+        servidor_test.go:56: recebido status 200 esperado 404
 ```
 
 ## Escreva código necessário para que o teste funcione
@@ -547,7 +547,7 @@ func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 Mas este cenário ilustra muito bem o que querem dizer. Eu fiz o mínimo \(sabendo que não era a implementação correta\), que foi retornar um `StatusNotFound` em **todas as respostas**, mas todos os nossos testes estão passando!
 
-**Implementando o mínimo para que os testes passem pode evidenciar lacunas nos testes**. Em nosso caso, nós não estamos validando que devemos receber um `StatusOK` quando jogadores _existem_ em nosso armazenamento.
+**Implementando o mínimo para que os testes passem vai evidenciar as lacunas nos testes**. Em nosso caso, nós não estamos validando que devemos receber um `StatusOK` quando jogadores _existem_ em nosso armazenamento.
 
 Atualize os outros dois testes para validar o retorno e corrija o código.
 
@@ -555,79 +555,84 @@ Eis os novos testes
 
 ```go
 func TestObterJogadores(t *testing.T) {
-    store := EsbocoJogadorArmazenamento{
-        map[string]int{
-            "Maria": 20,
-            "Pedro":  10,
-        },
-    }
-    server := &JogadorServidor{&store}
+	armazenamento := EsbocoJogadorArmazenamento{
+		map[string]int{
+			"Maria": 20,
+			"Pedro": 10,
+		},
+	}
+	servidor := &JogadorServidor{&armazenamento}
 
-    t.Run("returns Maria's score", func(t *testing.T) {
-        request := newGetScoreRequest("Maria")
-        response := httptest.NewRecorder()
+	t.Run("retorna pontuacao de Maria", func(t *testing.T) {
+		requisicao := novaRequisicaoObterPontuacao("Maria")
+		resposta := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-        assertStatus(t, response.Code, http.StatusOK)
-        assertResponseBody(t, response.Body.String(), "20")
-    })
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusOK)
+		verificarCorpoRequisicao(t, resposta.Body.String(), "20")
+	})
 
-    t.Run("returns Pedro's score", func(t *testing.T) {
-        request := newGetScoreRequest("Pedro")
-        response := httptest.NewRecorder()
+	t.Run("retorna pontuacao de Pedro", func(t *testing.T) {
+		requisicao := novaRequisicaoObterPontuacao("Pedro")
+		resposta := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-        assertStatus(t, response.Code, http.StatusOK)
-        assertResponseBody(t, response.Body.String(), "10")
-    })
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusOK)
+		verificarCorpoRequisicao(t, resposta.Body.String(), "10")
+	})
 
-    t.Run("returns 404 on missing players", func(t *testing.T) {
-        request := newGetScoreRequest("Jorge")
-        response := httptest.NewRecorder()
+	t.Run("retorna 404 para jogador não encontrado", func(t *testing.T) {
+		requisicao := novaRequisicaoObterPontuacao("Jorge")
+		resposta := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-        assertStatus(t, response.Code, http.StatusNotFound)
-    })
+		recebido := resposta.Code
+		esperado := http.StatusNotFound
+
+		if recebido != esperado {
+			t.Errorf("recebido status %d esperado %d", recebido, esperado)
+		}
+	})
 }
 
-func assertStatus(t *testing.T, got, want int) {
-    t.Helper()
-    if got != want {
-        t.Errorf("did not get correct status, got %d, want %d", got, want)
-    }
+func novaRequisicaoObterPontuacao(nome string) *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
+	return req
 }
 
-func newGetScoreRequest(name string) *http.Request {
-    req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", name), nil)
-    return req
+func verificarCorpoRequisicao(t *testing.T, recebido, esperado string) {
+	t.Helper()
+	if recebido != esperado {
+		t.Errorf("corpo da requisição é inválido, recebido '%s' esperado '%s'", recebido, esperado)
+	}
 }
 
-func assertResponseBody(t *testing.T, got, want string) {
-    t.Helper()
-    if got != want {
-        t.Errorf("response body is wrong, got '%s' want '%s'", got, want)
-    }
+func verificarRespostaCodigoStatus(t *testing.T, recebido, esperado int) {
+	t.Helper()
+	if recebido != esperado {
+		t.Errorf("não recebeu código de status HTTP esperado, recebido %d, esperado %d", recebido, esperado)
+	}
 }
 ```
 
-Estamos verificando o `status` (código HTTP de retorno) em todos os nossos testes, por isso existe a função auxiliar `assertStatus` para ajudar com isso.
+Estamos verificando o `status` (código de retorno HTTP) em todos os nossos testes, por isso existe a função auxiliar `verificarRespostaCodigoStatus` para ajudar com isso.
 
-Agora os primeiros dois testes falham porque o `status` recebido é 404, ao invés do esperado 200. Então vamos corrigir o `JogadorServidor` para que retorne *não encontrado* (HTTP status 404) se a pontuação for 0.
+Agora os primeiros dois testes falham porque o código de status recebido é 404, ao invés do esperado 200. Então vamos corrigir o `JogadorServidor` para que retorne *não encontrado* (HTTP status 404) se a pontuação for 0.
 
 ```go
-func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/jogadores/"):]
+func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	jogador := r.URL.Path[len("/jogadores/"):]
 
-    score := p.store.ObterPontuacaoJogador(player)
+	pontuacao := js.armazenamento.ObterPontuacaoJogador(jogador)
 
-    if score == 0 {
-        w.WriteHeader(http.StatusNotFound)
-    }
+	if pontuacao == 0 {
+		w.WriteHeader(http.StatusNotFound)
+	}
 
-    fmt.Fprint(w, score)
+	fmt.Fprint(w, pontuacao)
 }
 ```
 
@@ -638,31 +643,31 @@ Agora que podemos obter pontuações de um armazenamento, também podemos armaze
 ## Escreva os testes primeiro
 
 ```go
-func TestStoreWins(t *testing.T) {
-    store := EsbocoJogadorArmazenamento{
-        map[string]int{},
-    }
-    server := &JogadorServidor{&store}
+func TestArmazenamentoVitorias(t *testing.T) {
+	armazenamento := EsbocoJogadorArmazenamento{
+		map[string]int{},
+	}
+	servidor := &JogadorServidor{&armazenamento}
 
-    t.Run("it returns accepted on POST", func(t *testing.T) {
-        request, _ := http.NewRequest(http.MethodPost, "/jogadores/Maria", nil)
-        response := httptest.NewRecorder()
+	t.Run("retorna status 'aceito' para chamadas ao método POST", func(t *testing.T) {
+		requisicao, _ := http.NewRequest(http.MethodPost, "/jogadores/Maria", nil)
+		resposta := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-        assertStatus(t, response.Code, http.StatusAccepted)
-    })
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusAccepted)
+	})
 }
 ```
 
-Inicialmente vamos verificar se obtemos o status HTTP correto ao fazer a requisição em uma rota específica usando POST. Isso nos permite preparar o caminho da funcionalidade que aceita um tipo diferente de requisição e tratar de forma diferente a requisição para `GET /jogadores/{name}`. Uma vez que isso funciona como esperado, então podemos começar a testar a interação do nosso _handler_ com o armazenamento.
+Inicialmente vamos verificar se obtemos o código de status HTTP correto ao fazer a requisição em uma rota específica usando o método POST. Isso nos permite preparar o caminho da funcionalidade que aceita um tipo diferente de requisição, e tratar de forma diferente a requisição para `GET /jogadores/{nome}`. Uma vez que isso funcione como esperado, podemos começar a testar a interação do nosso tratador (_handler_) com o armazenamento.
 
 ## Tente rodar o teste
 
 ```text
-=== RUN   TestStoreWins/it_returns_accepted_on_POST
-    --- FAIL: TestStoreWins/it_returns_accepted_on_POST (0.00s)
-        servidor_test.go:70: did not get correct status, got 404, want 202
+--- FAIL: TestArmazenamentoVitorias (0.00s)
+    --- FAIL: TestArmazenamentoVitorias/retorna_status_'aceito'_para_chamadas_ao_método_POST (0.00s)
+        servidor_test.go:75: não recebeu código de status HTTP esperado, recebido 404, esperado 202
 ```
 
 ## Escreva código suficiente pra fazer passar
@@ -670,61 +675,60 @@ Inicialmente vamos verificar se obtemos o status HTTP correto ao fazer a requisi
 Lembre-se que estamos cometendo pecados deliberadamente, então um comando `if` para identificar o método da requisição vai resolver o problema.
 
 ```go
-func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-    if r.Method == http.MethodPost {
-        w.WriteHeader(http.StatusAccepted)
-        return
-    }
+	if r.Method == http.MethodPost {
+		w.WriteHeader(http.StatusAccepted)
+		return
+	}
 
-    player := r.URL.Path[len("/jogadores/"):]
+	jogador := r.URL.Path[len("/jogadores/"):]
 
-    score := p.store.ObterPontuacaoJogador(player)
+	pontuacao := js.armazenamento.ObterPontuacaoJogador(jogador)
 
-    if score == 0 {
-        w.WriteHeader(http.StatusNotFound)
-    }
+	if pontuacao == 0 {
+		w.WriteHeader(http.StatusNotFound)
+	}
 
-    fmt.Fprint(w, score)
+	fmt.Fprint(w, pontuacao)
 }
 ```
 
 ## Refatorar
 
-O _handler_ parece um pouco bagunçado agora. Vamos separar o código para ficar simples de entender e isolar as diferentes funcionalidades em novas funções.
+O tratador parece um pouco bagunçado agora. Vamos separar o código para ficar simples de entender e isolar as diferentes funcionalidades em novas funções.
 
 ```go
-func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-    switch r.Method {
-    case http.MethodPost:
-        p.processWin(w)
-    case http.MethodGet:
-        p.showScore(w, r)
-    }
-
+	switch r.Method {
+	case http.MethodPost:
+		js.registrarVitoria(w)
+	case http.MethodGet:
+		js.mostrarPontuacao(w, r)
+	}
 }
 
-func (p *JogadorServidor) showScore(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/jogadores/"):]
+func (p *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, r *http.Request) {
+	player := r.URL.Path[len("/jogadores/"):]
 
-    score := p.store.ObterPontuacaoJogador(player)
+	score := p.armazenamento.ObterPontuacaoJogador(player)
 
-    if score == 0 {
-        w.WriteHeader(http.StatusNotFound)
-    }
+	if score == 0 {
+		w.WriteHeader(http.StatusNotFound)
+	}
 
-    fmt.Fprint(w, score)
+	fmt.Fprint(w, score)
 }
 
-func (p *JogadorServidor) processWin(w http.ResponseWriter) {
-    w.WriteHeader(http.StatusAccepted)
+func (p *JogadorServidor) registrarVitoria(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusAccepted)
 }
 ```
 
-Isso faz com que a função de roteamento do `ServeHTTP` esteja mais clara; e também permite que, em nossas próximas iterações, o código para armazenamento possa estar dentro de `processWin`.
+Isso faz com que a responsabilidade de roteamento do `ServeHTTP` esteja mais clara; e também permite que, em nossas próximas iterações, o código para armazenamento possa estar dentro de `registrarVitoria`.
 
-Agora, queremos verificar que, quando fazemos a chamada `POST` a `/jogadores/{name}`, nosso `JogadorArmazenamento` registra a vitória.
+Agora, queremos verificar que, quando fazemos a chamada `POST` a `/jogadores/{nome}`, nosso `JogadorArmazenamento` registra a vitória.
 
 ## Escreva primeiro o teste
 
@@ -732,54 +736,55 @@ Vamos implementar isso estendendo o `EsbocoJogadorArmazenamento` com um novo mé
 
 ```go
 type EsbocoJogadorArmazenamento struct {
-    scores   map[string]int
-    winCalls []string
+	pontuacoes        map[string]int
+	registrosVitorias []string
 }
 
-func (s *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(name string) int {
-    score := s.scores[name]
-    return score
+func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
+	pontuacao := e.pontuacoes[nome]
+	return pontuacao
 }
 
-func (s *EsbocoJogadorArmazenamento) RecordWin(name string) {
-    s.winCalls = append(s.winCalls, name)
+func (e *EsbocoJogadorArmazenamento) RegistrarVitoria(nome string) {
+	e.registrosVitorias = append(e.registrosVitorias, nome)
 }
 ```
 
 Agora, para começar, estendemos o teste para verificar a quantidade de chamadas
 
 ```go
-func TestStoreWins(t *testing.T) {
-    store := EsbocoJogadorArmazenamento{
-        map[string]int{},
-    }
-    server := &JogadorServidor{&store}
+func TestArmazenamentoVitorias(t *testing.T) {
+	armazenamento := EsbocoJogadorArmazenamento{
+		map[string]int{},
+		nil,
+	}
+	servidor := &JogadorServidor{&armazenamento}
 
-    t.Run("it records wins when POST", func(t *testing.T) {
-        request := newPostWinRequest("Maria")
-        response := httptest.NewRecorder()
+	t.Run("registra vitorias na chamada ao método HTTP POST", func(t *testing.T) {
+		requisicao := novaRequisicaoRegistrarVitoriaPost("Maria")
+		resposta := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-        assertStatus(t, response.Code, http.StatusAccepted)
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusAccepted)
 
-        if len(store.winCalls) != 1 {
-            t.Errorf("got %d calls to RecordWin want %d", len(store.winCalls), 1)
-        }
-    })
+		if len(armazenamento.registrosVitorias) != 1 {
+			t.Errorf("verifiquei %d chamadas a RegistrarVitoria, esperava %d", len(armazenamento.registrosVitorias), 1)
+		}
+	})
 }
 
-func newPostWinRequest(name string) *http.Request {
-    req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", name), nil)
-    return req
+func novaRequisicaoRegistrarVitoriaPost(nome string) *http.Request {
+	requisicao, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", nome), nil)
+	return requisicao
 }
 ```
 
 ## Tente rodar o teste
 
 ```text
-./servidor_test.go:26:20: too few values in struct initializer
-./servidor_test.go:65:20: too few values in struct initializer
+./servidor_test.go:26:17: too few values in EsbocoJogadorArmazenamento literal
+./servidor_test.go:70:17: too few values in EsbocoJogadorArmazenamento literal
 ```
 
 ## Escreva a mínima quantidade de código para a execução do teste e verifique a falha indicada no retorno
@@ -787,44 +792,44 @@ func newPostWinRequest(name string) *http.Request {
 Como adicionamos um campo, precisamos atualizar o código onde criamos o `EsbocoJogadorArmazenamento`
 
 ```go
-store := EsbocoJogadorArmazenamento{
+armazenamento := EsbocoJogadorArmazenamento{
     map[string]int{},
     nil,
 }
 ```
 
 ```text
---- FAIL: TestStoreWins (0.00s)
-    --- FAIL: TestStoreWins/it_records_wins_when_POST (0.00s)
-        servidor_test.go:80: got 0 calls to RecordWin want 1
+--- FAIL: TestArmazenamentoVitorias (0.00s)
+    --- FAIL: TestArmazenamentoVitorias/#00 (0.00s)
+        servidor_test.go:85: verifiquei 0 chamadas a RegistrarVitoria, esperava 1
 ```
 
 ## Escreva código suficiente para o teste passar
 
 Como estamos apenas verificando o número de chamadas, e não seus valores específicos, nossa iteração inicial é um pouco menor.
 
-Para conseguir invocar a `RecordWin`, precisamos atualizar a definição de `JogadorArmazenamento` para que o `JogadorServidor` funcione como esperado.
+Para conseguir invocar a `RegistrarVitoria`, precisamos atualizar a definição de `JogadorArmazenamento` para que o `JogadorServidor` funcione como esperado.
 
 ```go
 type JogadorArmazenamento interface {
     ObterPontuacaoJogador(name string) int
-    RecordWin(name string)
+    RegistrarVitoria(name string)
 }
 ```
 
 E, ao fazer isso, `main` não compila mais
 
 ```text
-./main.go:17:46: cannot use InMemoryJogadorArmazenamento literal (type *InMemoryJogadorArmazenamento) as type JogadorArmazenamento in field value:
-    *InMemoryJogadorArmazenamento does not implement JogadorArmazenamento (missing RecordWin method)
+./main.go:15:29: cannot use &JogadorArmazenamentoNaMemoria literal (type *JogadorArmazenamentoNaMemoria) as type JogadorArmazenamento in field value:
+        *JogadorArmazenamentoNaMemoria does not implement JogadorArmazenamento (missing RegistrarVitoria method)
 ```
 
 O compilador nos informa o que está errado. Vamos alterar `InMemoryJogadorArmazenamento`, adicionando esse método.
 
 ```go
-type InMemoryJogadorArmazenamento struct{}
+type JogadorArmazenamentoNaMemoria struct{}
 
-func (i *InMemoryJogadorArmazenamento) RecordWin(name string) {}
+func (ja *JogadorArmazenamentoNaMemoria) RegistrarVitoria(nome string) {}
 ```
 
 Com essa alteração, o código volta a compilar - mas os testes ainda falham.
@@ -833,57 +838,57 @@ Agora que `JogadorArmazenamento` tem o método `RecordWin`, podemos chamar de de
 
 ```go
 func (p *JogadorServidor) processWin(w http.ResponseWriter) {
-    p.store.RecordWin("Bob")
+    p.store.RecordWin("Marcela")
     w.WriteHeader(http.StatusAccepted)
 }
 ```
 
-Rode os testes e deve estar funcionando sem erros! Claro, `"Bob"` não é bem o que queremos enviar para `RecordWin`, então vamos ajustar os testes.
+Rode os testes e deve estar funcionando sem erros! Claro, `"Marcela"` não é bem o que queremos enviar para `RegistrarVitoria`, então vamos ajustar os testes.
 
 ## Escreva os testes primeiro
 
 ```go
-t.Run("it records wins on POST", func(t *testing.T) {
-    player := "Maria"
+t.Run("registra vitorias na chamada ao método HTTP POST", func(t *testing.T) {
+    jogador := "Maria"
 
-    request := newPostWinRequest(player)
-    response := httptest.NewRecorder()
+    requisicao := novaRequisicaoRegistrarVitoriaPost(jogador)
+    resposta := httptest.NewRecorder()
 
-    server.ServeHTTP(response, request)
+    servidor.ServeHTTP(resposta, requisicao)
 
-    assertStatus(t, response.Code, http.StatusAccepted)
+    verificarRespostaCodigoStatus(t, resposta.Code, http.StatusAccepted)
 
-    if len(store.winCalls) != 1 {
-        t.Fatalf("got %d calls to RecordWin want %d", len(store.winCalls), 1)
+    if len(armazenamento.registrosVitorias) != 1 {
+        t.Errorf("verifiquei %d chamadas a RegistrarVitoria, esperava %d", len(armazenamento.registrosVitorias), 1)
     }
 
-    if store.winCalls[0] != player {
-        t.Errorf("did not store correct winner got '%s' want '%s'", store.winCalls[0], player)
+    if armazenamento.registrosVitorias[0] != jogador {
+        t.Errorf("não registrou o vencedor corretamente, recebi '%s', esperava '%s'", armazenamento.registrosVitorias[0], jogador)
     }
 })
 ```
 
-Agora sabemos que existe um elemento no slice `winCalls`, e então podemos acessar, sem erros, o primeiro elemento e verificar se é igual a `player`.
+Agora sabemos que existe um elemento no slice `registrosVitorias`, e então podemos acessar, sem erros, o primeiro elemento e verificar se é igual a `jogador`.
 
 ## Tente rodar o teste
 
 ```text
-=== RUN   TestStoreWins/it_records_wins_on_POST
-    --- FAIL: TestStoreWins/it_records_wins_on_POST (0.00s)
-        servidor_test.go:86: did not store correct winner got 'Bob' want 'Maria'
+--- FAIL: TestArmazenamentoVitorias (0.00s)
+    --- FAIL: TestArmazenamentoVitorias/registra_vitorias_na_chamada_ao_método_HTTP_POST (0.00s)
+        servidor_test.go:91: não registrou o vencedor corretamente, recebi 'Marcela', esperava 'Maria'
 ```
 
 ## Escreva código suficiente para o teste passar
 
 ```go
-func (p *JogadorServidor) processWin(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/jogadores/"):]
-    p.store.RecordWin(player)
-    w.WriteHeader(http.StatusAccepted)
+func (js *JogadorServidor) registrarVitoria(w http.ResponseWriter, r *http.Request) {
+	jogador := r.URL.Path[len("/jogadores/"):]
+	js.armazenamento.RegistrarVitoria(jogador)
+	w.WriteHeader(http.StatusAccepted)
 }
 ```
 
-Mudamos `processWin` para obter a `http.Request`, para conseguir extrair o nome do jogador da URL. Com o nome, podemos chamar o `store` com o valor correto para fazer os testes passarem.
+Mudamos `registrarVitoria` para obter a `http.Request`, e assim conseguir extrair o nome do jogador da URL. Com o nome, podemos chamar o `armazenamento` com o valor correto para fazer os testes passarem.
 
 ## Refatorar
 
