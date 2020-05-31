@@ -1,6 +1,6 @@
 # Servidor HTTP
 
-[**Você encontra todo o código-fonte para este capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/http-server)
+[**Você encontra todo o código-fonte para este capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/http-server)
 
 Você recebeu o desafio de criar um servidor web para que usuários possam acompanhar quantas partidas os jogadores (players) venceram.
 
@@ -52,7 +52,7 @@ Com este pequeno passo, nós começamos a ter uma estrutura inicial para o proje
 Para criar um servidor web (uma aplicação que recebe chamadas via protocolo HTTP) em Go, você vai chamar, usualmente, a função [ListenAndServe](https://golang.org/pkg/net/http/#ListenAndServe).
 
 ```go
-func ListenAndServe(endereco string, handler Handler) error
+func ListenAndServe(addr string, handler Handler) error
 ```
 
 Isso vai iniciar um servidor web _escutando_ em uma porta, criando uma gorotina para cada requisição, e repassando para um [`Handler`](https://golang.org/pkg/net/http/#Handler) (um Handler é um _Tratador_, que recebe a requisição e avalia o que fazer com os dados).
@@ -173,7 +173,7 @@ Para executar, execute o comando `go build`, que vai pegar todos os arquivos ter
 
 ### `http.HandlerFunc`
 
-Anteriormente, vimos que precisamos implementar a interface `Handler` para criar um servidor. _Normalmente_ fazemos isso criando um `struct` e fazendo com que ele implemente esta interface. No entanto, Mesmo que o comum seja utilizar as _structs_ para armazenar dados, _nesse momento_ não armazenamos um estado, então não parece certo criar um _struct_ para isso.
+Anteriormente, vimos que precisamos implementar a interface `Handler` para criar um servidor. _Normalmente_ fazemos isso criando um `struct` e fazendo com que ele implemente esta interface. No entanto, mesmo que o comum seja utilizar as _structs_ para armazenar dados, _nesse momento_ não armazenamos um estado, então não parece certo criar um _struct_ para isso.
 
 [HandlerFunc](https://golang.org/pkg/net/http/#HandlerFunc) nos ajuda a evitar isso.
 
@@ -187,7 +187,7 @@ Então usamos essa construção para adaptar a função `PlayerServer`, fazendo 
 
 ### `http.ListenAndServe(":5000"...)`
 
-`ListenAndServe` recebe como parâmetro um número de porta para escutar em um `Handler`. Se a porta já estiver sendo usada, será retornado um `error` para que, usando um comando `if`, possamos capturar esse erro e registrar o probema para o usuário.
+`ListenAndServe` recebe como parâmetro um número de porta para escutar em um `Handler`. Se a porta já estiver sendo usada, será retornado um `error` para que, usando um comando `if`, possamos capturar esse erro e registrar o problema para o usuário.
 
 O que vamos fazer agora é escrever _outro_ teste para nos forçar a fazer uma mudança positiva para tentar nos afastar do valor predefinido.
 
@@ -247,7 +247,7 @@ func PlayerServer(w http.ResponseWriter, r *http.Request) {
 
 Este teste nos forçou a olhar para a URL da requisição e tomar uma decisão. Embora ainda estamos pensando em como armazenar os dados do jogador e as interfaces, na verdade o próximo passo a ser dado está relacionado ao _roteamento_ (_routing_).
 
-Se tivéssemos começado com o código de armazenamento dos dados, a quantidade de alterações que precisaríamos fazer seria muito grande. **Este é um pequeno passo em relação ao nosso objetivo final e foi guidado pelos testes**.
+Se tivéssemos começado com o código de armazenamento dos dados, a quantidade de alterações que precisaríamos fazer seria muito grande. **Este é um pequeno passo em relação ao nosso objetivo final e foi guiado pelos testes**.
 
 Estamos resistindo, nesse momento, à tentação de usar alguma biblioteca de roteamento, e queremos apenas dar o menor passo para fazer nossos testes funcionarem.
 
@@ -317,7 +317,7 @@ Ainda assim, ainda não estamos felizes. Não parece correto que o servidor saib
 
 Mas nossa refatoração nos mostra claramente o que fazer.
 
-Nós movemos o cálculo de pontuação pra fora do código principal que trata a requisição (_handler_) para uma função `GetPlayerScore`. Isso parece ser o lugar correto para isolar as responsabilidades usando interfaces.
+Nós movemos o cálculo de pontuação para fora do código principal que trata a requisição (_handler_) para uma função `GetPlayerScore`. Isso parece ser o lugar correto para isolar as responsabilidades usando interfaces.
 
 Vamos alterar a função que refatoramos para ser uma interface
 
@@ -654,7 +654,7 @@ func TestStoreWins(t *testing.T) {
 }
 ```
 
-Inicialmente vamos verificar se obtemos o status HTTP correto ao fazer a requisição em uma rota específica usando POST. Isso nos permite preparar o caminho da funcionalidade que aceita um tipo diferente de requisição e tratar de forma diferente a requisição para `GET /players/{name}`. Uma vez que isso funciona como esperaodo, então podemos começar a testar a interação do nosso _handler_ com o armazenamento.
+Inicialmente vamos verificar se obtemos o status HTTP correto ao fazer a requisição em uma rota específica usando POST. Isso nos permite preparar o caminho da funcionalidade que aceita um tipo diferente de requisição e tratar de forma diferente a requisição para `GET /players/{name}`. Uma vez que isso funciona como esperado, então podemos começar a testar a interação do nosso _handler_ com o armazenamento.
 
 ## Tente rodar o teste
 
@@ -690,7 +690,7 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 ## Refatorar
 
-O _handler_ parece um pouco bagunçado agora. Vamos separar o código para ficar simples de entender e isolar as diferentes funcionalidade em novas funções.
+O _handler_ parece um pouco bagunçado agora. Vamos separar o código para ficar simples de entender e isolar as diferentes funcionalidades em novas funções.
 
 ```go
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -920,7 +920,7 @@ Mesmo com os testes passando, não temos código funcionando de forma ideal. Se 
 
 _Poderíamos_ começar a escrever alguns testes para a `InMemoryPlayerStore`, mas ela é apenas uma solução temporária até a implementação de um modo mais robusto de registrar as pontuações \(por exemplo, em um banco de dados\).
 
-O que vamos fzer agora é escrever um _teste de integração_ entre `PlayerServer` e `InMemoryPlayerStore` para terminar a funcionalidade. Isso vai permitir confiar que a aplicação está funcionando, sem ter que testar diretamente `InMemoryPlayerStore`. E não apenas isso, mas quando implementarmos `PlayerStore` com um banco de dados, usaremos esse mesmo teste para verificar se a implementação funciona como esperado.
+O que vamos fazer agora é escrever um _teste de integração_ entre `PlayerServer` e `InMemoryPlayerStore` para terminar a funcionalidade. Isso vai permitir confiar que a aplicação está funcionando, sem ter que testar diretamente `InMemoryPlayerStore`. E não apenas isso, mas quando implementarmos `PlayerStore` com um banco de dados, usaremos esse mesmo teste para verificar se a implementação funciona como esperado.
 
 ### Testes de integração
 
@@ -967,7 +967,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 ## Escreva código suficiente para passar
 
-Abaixo, há mais código do que que o esperado para se escrever sem ter os testes correspondentes.
+Abaixo, há mais código do que o esperado para se escrever sem ter os testes correspondentes.
 
 _Isso é permitido_! Ainda existem testes verificando se as coisas estão funcionando como esperado, mas não focando na parte específica em que estamos trabalhando \(`InMemoryPlayerStore`\).
 
@@ -992,7 +992,7 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 ```
 
 * Para armazenar os dados, adicionamos um `map[string]int` na struct `InMemoryPlayerStore`
-* Pra ajudar nos testes, criamos a `NewInMemoryPlayerStore` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`store := NewInMemoryPlayerStore()`\).
+* Para ajudar nos testes, criamos a `NewInMemoryPlayerStore` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`store := NewInMemoryPlayerStore()`\).
 * O resto do código é apenas para fazer o `map` funcionar.
 
 Nosso teste de integração passa, e agora só é preciso mudar o `main` para usar o `NewInMemoryPlayerStore()`
