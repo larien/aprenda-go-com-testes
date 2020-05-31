@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// JogadorServidor currently returns Hello, world given _any_ request
+// JogadorServidor retorna valor fixo "20" para qualquer chamada
 func JogadorServidor(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "20")
 }

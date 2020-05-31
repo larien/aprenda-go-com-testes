@@ -5,24 +5,24 @@ import (
 	"net/http"
 )
 
-// PlayerStore stores score information about players
-type PlayerStore interface {
-	GetPlayerScore(name string) int
+// JogadorArmazenamento armazena as pontuacoes dos jogadores
+type JogadorArmazenamento interface {
+	ObterPontuacaoJogador(nome string) int
 }
 
-// PlayerServer is a HTTP interface for player information
-type PlayerServer struct {
-	store PlayerStore
+// JogadorServidor é uma interface HTTP para os dados dos jogadores
+type JogadorServidor struct {
+	armazenamento JogadorArmazenamento
 }
 
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	player := r.URL.Path[len("/players/"):]
+func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	jogador := r.URL.Path[len("/jogadores/"):]
 
-	score := p.store.GetPlayerScore(player)
+	pontuacao := js.armazenamento.ObterPontuacaoJogador(jogador)
 
-	if score == 0 {
+	if pontuacao == 0 {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
-	fmt.Fprint(w, score)
+	fmt.Fprint(w, pontuacao)
 }

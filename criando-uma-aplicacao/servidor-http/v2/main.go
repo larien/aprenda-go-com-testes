@@ -5,18 +5,18 @@ import (
 	"net/http"
 )
 
-// InMemoryPlayerStore collects data about players in memory
-type InMemoryPlayerStore struct{}
+// JogadorArmazenamentoEmMemoria armazena na memória os dados sobre os jogadores
+type JogadorArmazenamentoEmMemoria struct{}
 
-// GetPlayerScore retrieves scores for a given player
-func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
+// ObterPontuacaoJogador obtém as pontuações para um jogador
+func (i *JogadorArmazenamentoEmMemoria) ObterPontuacaoJogador(nome string) int {
 	return 123
 }
 
 func main() {
-	server := &PlayerServer{&InMemoryPlayerStore{}}
+	servidor := &JogadorServidor{&JogadorArmazenamentoEmMemoria{}}
 
-	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("could not listen on port 5000 %v", err)
+	if err := http.ListenAndServe(":5000", servidor); err != nil {
+		log.Fatalf("não foi possível ouvir na porta 5000 %v", err)
 	}
 }
