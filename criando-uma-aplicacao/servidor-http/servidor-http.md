@@ -4,8 +4,8 @@
 
 Você recebeu o desafio de criar um servidor web para que usuários possam acompanhar quantas partidas os jogadores venceram.
 
-* `GET /jogadores/{name}` deve retornar um número indicando o número total de vitórias
-* `POST /jogadores/{name}` deve registrar uma vitória para este nome de jogador, incrementando a cada nova chamada de submissão de dados (método HTTP `POST`). 
+* `GET /jogadores/{nome}` deve retornar um número indicando o número total de vitórias
+* `POST /jogadores/{nome}` deve registrar uma vitória para este nome de jogador, incrementando a cada nova chamada de submissão de dados (método HTTP `POST`). 
 
 Vamos seguir com a abordagem do Desenvolvimento Orientado a Testes, criando software que funciona o mais rápido possível, e a cada ciclo fazendo pequenas melhorias até uma solução completa. Com essa abordagem, nós
 
@@ -251,7 +251,7 @@ Se tivéssemos começado com o código de armazenamento dos dados, a quantidade 
 
 Estamos resistindo, nesse momento, à tentação de usar alguma biblioteca de roteamento, e queremos apenas dar o menor passo para fazer nossos testes funcionarem.
 
-`r.URL.Path` retorna o caminho da request, e então usamos a sintaxe de slice para obter a parte final, depois de `/jogadores/`. Não é o recomendado por não ser muito robusto, mas resolve o problema por enquanto.
+`r.URL.Path` retorna o caminho da requisição, e então usamos a sintaxe de slice para obter a parte final, depois de `/jogadores/`. Não é o recomendado por não ser muito robusto, mas resolve o problema por enquanto.
 
 ## Refatorar
 
@@ -339,7 +339,7 @@ E agora, vamos implementar a interface do _tratador_ (`Handler`) adicionando um 
 
 ```go
 func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/jogadores/"):]
+     := r.URL.Path[len("/jogadores/"):]
     fmt.Fprint(w, js.armazenamento.ObterPontuacaoJogador(jogador))
 }
 ```
@@ -376,21 +376,21 @@ func TestObterJogadores(t *testing.T) {
     servidor := &JogadorServidor{}
 
     t.Run("returns Maria's score", func(t *testing.T) {
-        request := novaRequisicaoObterPontuacao("Maria")
-        response := httptest.NewRecorder()
+        requisicao := novaRequisicaoObterPontuacao("Maria")
+        resposta := httptest.NewRecorder()
 
-        servidor.ServeHTTP(response, request)
+        servidor.ServeHTTP(resposta, requisicao)
 
-        verificarCorpoRequisicao(t, response.Body.String(), "20")
+        verificarCorpoRequisicao(t, resposta.Body.String(), "20")
     })
 
     t.Run("returns Pedro's score", func(t *testing.T) {
-        request := novaRequisicaoObterPontuacao("Pedro")
-        response := httptest.NewRecorder()
+        requisicao := novaRequisicaoObterPontuacao("Pedro")
+        resposta := httptest.NewRecorder()
 
-        servidor.ServeHTTP(response, request)
+        servidor.ServeHTTP(resposta, requisicao)
 
-        verificarCorpoRequisicao(t, response.Body.String(), "10")
+        verificarCorpoRequisicao(t, resposta.Body.String(), "10")
     })
 }
 ```
@@ -429,8 +429,8 @@ type EsbocoJogadorArmazenamento struct {
 	pontuacoes map[string]int
 }
 
-func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(name string) int {
-	pontuacao := e.pontuacoes[name]
+func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
+	pontuacao := e.pontuacoes[nome]
 	return pontuacao
 }
 ```
@@ -448,21 +448,21 @@ func TestObterJogadores(t *testing.T) {
 	servidor := &JogadorServidor{&armazenamento}
 
 	t.Run("retorna pontuacao de Maria", func(t *testing.T) {
-		request := novaRequisicaoObterPontuacao("Maria")
-		response := httptest.NewRecorder()
+		requisicao := novaRequisicaoObterPontuacao("Maria")
+		resposta := httptest.NewRecorder()
 
-		servidor.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-		verificarCorpoRequisicao(t, response.Body.String(), "20")
+		verificarCorpoRequisicao(t, resposta.Body.String(), "20")
 	})
 
 	t.Run("retorna pontuacao de Pedro", func(t *testing.T) {
-		request := novaRequisicaoObterPontuacao("Pedro")
-		response := httptest.NewRecorder()
+		requisicao := novaRequisicaoObterPontuacao("Pedro")
+		resposta := httptest.NewRecorder()
 
-		servidor.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-		verificarCorpoRequisicao(t, response.Body.String(), "10")
+		verificarCorpoRequisicao(t, resposta.Body.String(), "10")
 	})
 }
 ```
@@ -480,7 +480,7 @@ Precisamos fazer uma implementação de um, mas isso é difícil no momento, já
 ```go
 type JogadorArmazenamentoNaMemoria struct{}
 
-func (i *JogadorArmazenamentoNaMemoria) ObterPontuacaoJogador(name string) int {
+func (i *JogadorArmazenamentoNaMemoria) ObterPontuacaoJogador(nome string) int {
     return 123
 }
 
@@ -534,12 +534,12 @@ t.Run("retorna 404 para jogador não encontrado", func(t *testing.T) {
 ## Escreva código necessário para que o teste funcione
 
 ```go
-func (p *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/jogadores/"):]
+func (ja *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    jogador := r.URL.Path[len("/jogadores/"):]
 
     w.WriteHeader(http.StatusNotFound)
 
-    fmt.Fprint(w, p.store.ObterPontuacaoJogador(player))
+    fmt.Fprint(w, js.armazenamento.ObterPontuacaoJogador(jogador))
 }
 ```
 
@@ -710,15 +710,15 @@ func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, r *http.Request) {
-	player := r.URL.Path[len("/jogadores/"):]
+	jogador := r.URL.Path[len("/jogadores/"):]
 
-	score := p.armazenamento.ObterPontuacaoJogador(player)
+	pontuacao := p.armazenamento.ObterPontuacaoJogador(jogador)
 
-	if score == 0 {
+	if pontuacao == 0 {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
-	fmt.Fprint(w, score)
+	fmt.Fprint(w, pontuacao)
 }
 
 func (p *JogadorServidor) registrarVitoria(w http.ResponseWriter) {
@@ -812,8 +812,8 @@ Para conseguir invocar a `RegistrarVitoria`, precisamos atualizar a definição 
 
 ```go
 type JogadorArmazenamento interface {
-    ObterPontuacaoJogador(name string) int
-    RegistrarVitoria(name string)
+    ObterPontuacaoJogador(nome string) int
+    RegistrarVitoria(nome string)
 }
 ```
 
@@ -837,8 +837,8 @@ Com essa alteração, o código volta a compilar - mas os testes ainda falham.
 Agora que `JogadorArmazenamento` tem o método `RecordWin`, podemos chamar de dentro do nosso `JogadorServidor`
 
 ```go
-func (p *JogadorServidor) processWin(w http.ResponseWriter) {
-    p.store.RecordWin("Marcela")
+func (p *JogadorServidor) registrarVitoria(w http.ResponseWriter) {
+    p.armazenamento.RecordWin("Marcela")
     w.WriteHeader(http.StatusAccepted)
 }
 ```
@@ -892,7 +892,7 @@ Mudamos `registrarVitoria` para obter a `http.Request`, e assim conseguir extrai
 
 ## Refatorar
 
-Podemos eliminar repetições no código, porque estamos obtendo o nome do "player" do mesmo jeito em dois lugares diferentes.
+Podemos eliminar repetições no código, porque estamos obtendo o nome do jogador do mesmo jeito em dois lugares diferentes.
 
 ```go
 func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -998,7 +998,7 @@ func (ja *JogadorArmazenamentoNaMemoria) ObterPontuacaoJogador(nome string) int 
 ```
 
 * Para armazenar os dados, adicionamos um `map[string]int` na struct `JogadorArmazenamentoNaMemoria`
-* Para ajudar nos testes, criamos a `NewJogadorArmazenamentoNaMemoria` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`store := NewJogadorArmazenamentoNaMemoria()`\).
+* Para ajudar nos testes, criamos a `NewJogadorArmazenamentoNaMemoria` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`armazenamento := NewJogadorArmazenamentoNaMemoria()`\).
 * O resto do código é apenas para fazer o `map` funcionar.
 
 Nosso teste de integração passa, e agora só é preciso mudar o `main` para usar o `NewJogadorArmazenamentoNaMemoria()`

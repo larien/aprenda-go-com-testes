@@ -7,8 +7,8 @@ import (
 
 // JogadorArmazenamento armazena as pontuacoes dos jogadores
 type JogadorArmazenamento interface {
-	ObterPontuacaoJogador(name string) int
-	RegistrarVitoria(name string)
+	ObterPontuacaoJogador(nome string) int
+	RegistrarVitoria(nome string)
 }
 
 // JogadorServidor é uma interface HTTP para os dados dos jogadores
@@ -27,8 +27,8 @@ func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (js *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, player string) {
-	pontuacao := js.armazenamento.ObterPontuacaoJogador(player)
+func (js *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, jogador string) {
+	pontuacao := js.armazenamento.ObterPontuacaoJogador(jogador)
 
 	if pontuacao == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -37,7 +37,7 @@ func (js *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, player string
 	fmt.Fprint(w, pontuacao)
 }
 
-func (p *JogadorServidor) registrarVitoria(w http.ResponseWriter, player string) {
-	p.armazenamento.RegistrarVitoria(player)
+func (p *JogadorServidor) registrarVitoria(w http.ResponseWriter, jogador string) {
+	p.armazenamento.RegistrarVitoria(jogador)
 	w.WriteHeader(http.StatusAccepted)
 }

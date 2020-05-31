@@ -17,13 +17,13 @@ func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
 }
 
 func TestObterJogadores(t *testing.T) {
-	store := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoJogadorArmazenamento{
 		map[string]int{
 			"Maria": 20,
 			"Pedro": 10,
 		},
 	}
-	servidor := &JogadorServidor{&store}
+	servidor := &JogadorServidor{&armazenamento}
 
 	t.Run("obter pontuação de Maria", func(t *testing.T) {
 		requisicao := novaRequisicaoPontuacaoGet("Maria")
@@ -62,8 +62,8 @@ func verificarRespostaCodigoStatus(t *testing.T, recebido, esperado int) {
 	}
 }
 
-func novaRequisicaoPontuacaoGet(name string) *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", name), nil)
+func novaRequisicaoPontuacaoGet(nome string) *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
 	return req
 }
 

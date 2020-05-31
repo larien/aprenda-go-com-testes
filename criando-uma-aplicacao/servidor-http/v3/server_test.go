@@ -17,13 +17,13 @@ func (s *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
 }
 
 func TestObterJogadores(t *testing.T) {
-	store := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoJogadorArmazenamento{
 		map[string]int{
 			"Maria": 20,
 			"Pedro": 10,
 		},
 	}
-	servidor := &JogadorServidor{&store}
+	servidor := &JogadorServidor{&armazenamento}
 
 	t.Run("obter pontuação de Maria", func(t *testing.T) {
 		requisicao := novaRequisicaoPontuacaoGet("Maria")
