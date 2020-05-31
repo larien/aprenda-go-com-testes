@@ -6,18 +6,18 @@ import (
 	"testing"
 )
 
-func TestGETPlayers(t *testing.T) {
-	request, _ := http.NewRequest(http.MethodGet, "/", nil)
-	response := httptest.NewRecorder()
+func TestObterJogadores(t *testing.T) {
+	requisicao, _ := http.NewRequest(http.MethodGet, "/", nil)
+	resposta := httptest.NewRecorder()
 
-	PlayerServer(response, request)
+	JogadorServidor(resposta, requisicao)
 
-	t.Run("returns Pepper's score", func(t *testing.T) {
-		got := response.Body.String()
-		want := "20"
+	t.Run("obter pontuação de Maria", func(t *testing.T) {
+		retornado := resposta.Body.String()
+		esperado := "20"
 
-		if got != want {
-			t.Errorf("got '%s', want '%s'", got, want)
+		if retornado != esperado {
+			t.Errorf("retornado '%s', esperado '%s'", retornado, esperado)
 		}
 	})
 

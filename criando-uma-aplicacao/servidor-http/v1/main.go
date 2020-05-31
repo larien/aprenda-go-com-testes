@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	handler := http.HandlerFunc(PlayerServer)
-	if err := http.ListenAndServe(":5000", handler); err != nil {
-		log.Fatalf("could not listen on port 5000 %v", err)
+	tratador := http.HandlerFunc(JogadorServidor)
+	if err := http.ListenAndServe(":5000", tratador); err != nil {
+		log.Fatalf("não foi possível ouvir na porta 5000 %v", err)
 	}
 }
