@@ -1,21 +1,21 @@
 package main
 
-// NewInMemoryPlayerStore initialises an empty player store
-func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-	return &InMemoryPlayerStore{map[string]int{}}
+// CriarJogadorArmazenamentoNaMemoria cria um JogadorArmazenamento vazio
+func CriarJogadorArmazenamentoNaMemoria() *JogadorArmazenamentoNaMemoria {
+	return &JogadorArmazenamentoNaMemoria{map[string]int{}}
 }
 
-// InMemoryPlayerStore collects data about players in memory
-type InMemoryPlayerStore struct {
-	store map[string]int
+// JogadorArmazenamentoEmMemoria armazena na memória os dados sobre os jogadores
+type JogadorArmazenamentoNaMemoria struct {
+	armazenamento map[string]int
 }
 
-// RecordWin will record a player's win
-func (i *InMemoryPlayerStore) RecordWin(name string) {
-	i.store[name]++
+// RegistrarVitoria irá registrar uma vitoria
+func (ja *JogadorArmazenamentoNaMemoria) RegistrarVitoria(nome string) {
+	ja.armazenamento[nome]++
 }
 
-// GetPlayerScore retrieves scores for a given player
-func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return i.store[name]
+// ObterPontuacaoJogador obtém as pontuações para um jogador
+func (ja *JogadorArmazenamentoNaMemoria) ObterPontuacaoJogador(nome string) int {
+	return ja.armazenamento[nome]
 }

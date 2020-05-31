@@ -6,18 +6,18 @@ import (
 	"testing"
 )
 
-func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewInMemoryPlayerStore()
-	server := PlayerServer{store}
-	player := "Pepper"
+func TestRegistrarVitoriasEBuscarEstasVitorias(t *testing.T) {
+	armazenamento := CriarJogadorArmazenamentoNaMemoria()
+	servidor := JogadorServidor{armazenamento}
+	jogador := "Maria"
 
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoPontuacaoPost(jogador))
+	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoPontuacaoPost(jogador))
+	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoPontuacaoPost(jogador))
 
-	response := httptest.NewRecorder()
-	server.ServeHTTP(response, newGetScoreRequest(player))
-	assertStatus(t, response.Code, http.StatusOK)
+	resposta := httptest.NewRecorder()
+	servidor.ServeHTTP(resposta, novaRequisicaoPontuacaoGet(jogador))
+	verificarRespostaCodigoStatus(t, resposta.Code, http.StatusOK)
 
-	assertResponseBody(t, response.Body.String(), "3")
+	verificarCorpoRequisicao(t, resposta.Body.String(), "3")
 }
