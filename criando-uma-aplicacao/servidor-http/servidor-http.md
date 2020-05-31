@@ -1,6 +1,6 @@
 # Servidor HTTP
 
-[**Você encontra todo o código-fonte para este capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/http-server)
+[**Você encontra todo o código-fonte para este capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/servidor-http)
 
 Você recebeu o desafio de criar um servidor web para que usuários possam acompanhar quantas partidas os jogadores venceram.
 
