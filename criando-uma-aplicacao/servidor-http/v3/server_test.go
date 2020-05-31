@@ -7,85 +7,85 @@ import (
 	"testing"
 )
 
-type StubPlayerStore struct {
-	scores map[string]int
+type EsbocoJogadorArmazenamento struct {
+	pontuacoes map[string]int
 }
 
-func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	score := s.scores[name]
-	return score
+func (s *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
+	pontuacao := s.pontuacoes[nome]
+	return pontuacao
 }
 
-func TestGETPlayers(t *testing.T) {
-	store := StubPlayerStore{
+func TestObterJogadores(t *testing.T) {
+	store := EsbocoJogadorArmazenamento{
 		map[string]int{
-			"Pepper": 20,
-			"Floyd":  10,
+			"Maria": 20,
+			"Pedro": 10,
 		},
 	}
-	server := &PlayerServer{&store}
+	servidor := &JogadorServidor{&store}
 
-	t.Run("returns Pepper's score", func(t *testing.T) {
-		request := newGetScoreRequest("Pepper")
-		response := httptest.NewRecorder()
+	t.Run("obter pontuação de Maria", func(t *testing.T) {
+		requisicao := novaRequisicaoPontuacaoGet("Maria")
+		resposta := httptest.NewRecorder()
 
-		server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-		assertStatus(t, response.Code, http.StatusOK)
-		assertResponseBody(t, response.Body.String(), "20")
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusOK)
+		verificarCorpoRequisicao(t, resposta.Body.String(), "20")
 	})
 
-	t.Run("returns Floyd's score", func(t *testing.T) {
-		request := newGetScoreRequest("Floyd")
-		response := httptest.NewRecorder()
+	t.Run("obter pontuação de Pedro", func(t *testing.T) {
+		requisicao := novaRequisicaoPontuacaoGet("Pedro")
+		resposta := httptest.NewRecorder()
 
-		server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-		assertStatus(t, response.Code, http.StatusOK)
-		assertResponseBody(t, response.Body.String(), "10")
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusOK)
+		verificarCorpoRequisicao(t, resposta.Body.String(), "10")
 	})
 
-	t.Run("returns 404 on missing players", func(t *testing.T) {
-		request := newGetScoreRequest("Apollo")
-		response := httptest.NewRecorder()
+	t.Run("obter código de status 404 para jogadores não encontrados", func(t *testing.T) {
+		requisicao := novaRequisicaoPontuacaoGet("Joana")
+		resposta := httptest.NewRecorder()
 
-		server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-		assertStatus(t, response.Code, http.StatusNotFound)
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusNotFound)
 	})
 }
 
-func TestStoreWins(t *testing.T) {
-	store := StubPlayerStore{
+func TestArmazenamentoVitorias(t *testing.T) {
+	armazenamento := EsbocoJogadorArmazenamento{
 		map[string]int{},
 	}
-	server := &PlayerServer{&store}
+	servidor := &JogadorServidor{&armazenamento}
 
-	t.Run("it returns accepted on POST", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodPost, "/players/Pepper", nil)
-		response := httptest.NewRecorder()
+	t.Run("retorna status 'aceito' para chamadas ao método POST", func(t *testing.T) {
+		requisicao, _ := http.NewRequest(http.MethodPost, "/jogadores/Maria", nil)
+		resposta := httptest.NewRecorder()
 
-		server.ServeHTTP(response, request)
+		servidor.ServeHTTP(resposta, requisicao)
 
-		assertStatus(t, response.Code, http.StatusAccepted)
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusAccepted)
 	})
 }
 
-func assertStatus(t *testing.T, got, want int) {
+func verificarRespostaCodigoStatus(t *testing.T, recebido, esperado int) {
 	t.Helper()
-	if got != want {
-		t.Errorf("did not get correct status, got %d, want %d", got, want)
+	if recebido != esperado {
+		t.Errorf("não recebi o codigo de status HTTP esperado, recebido %d, esperado %d", recebido, esperado)
 	}
 }
 
-func newGetScoreRequest(name string) *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
+func novaRequisicaoPontuacaoGet(nome string) *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
 	return req
 }
 
-func assertResponseBody(t *testing.T, got, want string) {
+func verificarCorpoRequisicao(t *testing.T, recebido, esperado string) {
 	t.Helper()
-	if got != want {
-		t.Errorf("response body is wrong, got '%s' want '%s'", got, want)
+	if recebido != esperado {
+		t.Errorf("corpo da requisição é inválido, recebido '%s' esperado '%s'", recebido, esperado)
 	}
 }
