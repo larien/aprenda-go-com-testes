@@ -20,7 +20,7 @@ import "testing"
 func TestBusca(t *testing.T) {
     dicionario := map[string]string{"teste": "isso é apenas um teste"}
 
-    resultado := Busca(dictionary, "teste")
+    resultado := Busca(dicionario, "teste")
     esperado := "isso é apenas um teste"
 
     if resultado != esperado {
@@ -98,9 +98,9 @@ Em `dicionario_test.go`:
 
 ```go
 func TestBusca(t *testing.T) {
-    dicionario := Dictionary{"teste": "isso é apenas um teste"}
+    dicionario := Dicionario{"teste": "isso é apenas um teste"}
 
-    resultado := dictionary.Busca("teste")
+    resultado := dicionario.Busca("teste")
     esperado := "isso é apenas um teste"
 
     comparaStrings(t, resultado, esperado)
@@ -141,7 +141,7 @@ func TestBusca(t *testing.T) {
     })
 
     t.Run("palavra desconhecida", func(t *testing.T) {
-        _, resultado := dicionario.Busca("desconhecida")
+        _, err := dicionario.Busca("desconhecida")
 
         if err == nil {
             t.Fatal("é esperado que um erro seja obtido.")
@@ -158,7 +158,7 @@ Erros podem ser convertidos para uma string com o método `.Error()`, o que pode
 
 Isso não vai compilar.
 
-`./dictionary_test.go:18:10: assignment mismatch: 2 variables but 1 values`
+`./dicionario_test.go:18:10: assignment mismatch: 2 variables but 1 values`
 
 `incompatibilidade de atribuição: 2 variáveis, mas 1 valor`
 
@@ -172,7 +172,7 @@ func (d Dicionario) Busca(palavra string) (string, error) {
 
 Agora seu teste deve falhar com uma mensagem de erro muito mais clara.
 
-`dictionary_test.go:22: expected to get an error.`
+`dicionario_test.go:22: expected to get an error.`
 
 `erro esperado.`
 
