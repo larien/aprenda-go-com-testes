@@ -143,7 +143,7 @@ func TestBusca(t *testing.T) {
     t.Run("palavra desconhecida", func(t *testing.T) {
         _, err := dicionario.Busca("desconhecida")
 
-        if err == nil {
+        if resultado == nil {
             t.Fatal("é esperado que um erro seja obtido.")
         }
     })
@@ -356,7 +356,7 @@ func TestAdiciona(t *testing.T) {
         palavra := "teste"
         definicao := "isso é apenas um teste"
         dicionario := Dicionario{palavra: definicao}
-        err := dicionario.Add(palavra, "teste novo")
+        err := dicionario.Adiciona(palavra, "teste novo")
 
         comparaErro(t, err, ErrPalavraExistente)
         comparaDefinicao(t, dicionario, palavra, definicao)
