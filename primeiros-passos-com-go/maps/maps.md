@@ -143,7 +143,7 @@ func TestBusca(t *testing.T) {
     t.Run("palavra desconhecida", func(t *testing.T) {
         _, err := dicionario.Busca("desconhecida")
 
-        if resultado == nil {
+        if err == nil {
             t.Fatal("é esperado que um erro seja obtido.")
         }
     })
