@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	server := NewPlayerServer(NewInMemoryPlayerStore())
+    servidor:= NovoServidorDoJogador(SalvaNovoJogadorNaMemoria())
 
-	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("could not listen on port 5000 %v", err)
-	}
+    if err := http.ListenAndServe(":5000", servidor); err != nil {
+        log.Fatalf("Não foi possivel ouvir na porta 5000 %v", err)
+    }
 }
