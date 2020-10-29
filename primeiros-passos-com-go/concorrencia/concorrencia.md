@@ -158,7 +158,7 @@ FAIL    github.com/larien/learn-go-with-tests/concorrencia/v2        0.010s
 
 ### Uma breve visita ao universo paralelo...
 
-Você pode não ter obtido esse resultado. Você pode obter uma mesnagem de pânico, que vamos falar sobre em breve. Não se preocupe se isso aparecer para você, basta você executar o teste até você _de fato_ receber o resultado acima. Ou faça de conta que você recebeu. Escolha sua. Boas vindas à concorrência: quando não for trabalhada da forma correta, é difícil prever o que vai acontecer. Não se preocupe, é por isso que estamos escrevendo testes: para nos ajudar a saber quando estamos trabalhando com concorrência de forma previsível.
+Você pode não ter obtido esse resultado. Você pode obter uma mensagem de pânico, que vamos falar sobre em breve. Não se preocupe se isso aparecer para você, basta você executar o teste até você _de fato_ receber o resultado acima. Ou faça de conta que você recebeu. Escolha sua. Boas vindas à concorrência: quando não for trabalhada da forma correta, é difícil prever o que vai acontecer. Não se preocupe, é por isso que estamos escrevendo testes: para nos ajudar a saber quando estamos trabalhando com concorrência de forma previsível.
 
 ### ... e estamos de volta.
 
