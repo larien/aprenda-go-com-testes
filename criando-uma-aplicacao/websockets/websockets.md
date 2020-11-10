@@ -1,8 +1,6 @@
 # Websockets
 
-[**Você pode encontrar os códigos desse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/criando-uma-aplicacao/websockets)
-
-Nesse capítulo, vamos aprender a utilizar WebSockets pra melhorar a nossa aplicação.
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/criando-uma-aplicacao/websockets)
 
 ## Recapitulando o projeto
 
@@ -38,10 +36,8 @@ o JSON são strings\), mas nós também podemos usar o pacote
 [html/template](https://golang.org/pkg/html/template/) para uma solução mais
 limpa.
 
-> **FIXME: **Não tenho certeza sobre a tradução dessa frase do "The blind is now *y*
-
 Nós também temos que ser capazes de enviar mensagens assíncronas para o usuário
-dizendo `O cego agora é *y*` sem ter que recarregar o navegador. Para facilitar
+dizendo `A aposta blind é *y*` sem ter que recarregar o navegador. Para facilitar
 isso, podemos usar [WebSockets](https://pt.wikipedia.org/wiki/WebSocket).
 
 > WebSocket é uma tecnologia que permite a comunicação bidirecional por canais full-duplex
@@ -59,7 +55,7 @@ código de infraestrutura pronto.
 
 ### E os testes para o JavaScript?
 
-Haverá algum JavaScript escrito pra cumprir nossa tarefa, mas não vamos
+Haverá algum JavaScript escrito para cumprir nossa tarefa, mas não vamos
 escrever testes para ele.
 
 É claro que é possível, mas, em nome da breviedade, não incluíremos quaisquer
@@ -70,11 +66,10 @@ JavaScript com testes".
 
 ## Escreva o teste primeiro
 
-**FIXME: **Traduzir os endpoints também?
 A primeira coisa que precisamos fazer é montar algum HTML para os usuários
 quando eles acessarem `/game`.
 
-Aqui está um lembrete do código no nosso servidor we
+Aqui está um lembrete do código no nosso servidor web:
 
 ```go
 type PlayerServer struct {
@@ -136,7 +131,7 @@ To our router add
 router.Handle("/game", http.HandlerFunc(p.game))
 ```
 
-And then write the `game` method
+E então escreva o método `game`
 
 ```go
 func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
@@ -144,11 +139,13 @@ func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## Refactor
+## Refatore
 
-The server code is already fine due to us slotting in more code into the existing well-factored code very easily.
+O servidor já está bem graças às inserções que fizemos no código já bem refatorado.
 
-We can tidy up the test a little by adding a test helper function `newGameRequest` to make the request to `/game`. Try writing this yourself.
+Podemos ajeitar ainda mais o teste um pouco ao adicionarmos uma função auxiliar
+`novaRequisicaoDeJogo` para fazer a requisição para `/jogo`. Tente escrever essa
+função você mesmo.
 
 ```go
 func TestGame(t *testing.T) {
@@ -201,13 +198,16 @@ Now we need to make the endpoint return some HTML, here it is
 </html>
 ```
 
-We have a very simple web page
+Temos uma página web bem simples:
 
-* A text input for the user to enter the winner into
-* A button they can click to declare the winner.
-* Some JavaScript to open a WebSocket connection to our server and handle the submit button being pressed
+* Uma entrada de texto para a pessoa inserir a vitória
+* Um botão onde pode-se clicar para declarar quem venceu
+* Um pouco de JavaScript para abrir uma conexão WebSocket para nosso servidor e
+assim gerenciar o envio dos dados ao pressionar o botão
 
-`WebSocket` is built into most modern browsers so we don't need to worry about bringing in any libraries. The web page wont work for older browsers, but we're ok with that for this scenario.
+`WebSocket` é integrado na maioria dos navegadores modernos, logo não precisamos
+nos preocupar em instalar bibliotecas. A página web não vai funcionar em
+navegadores antigos, mas para nosso caso tá tudo bem.
 
 ### How do we test we return the correct markup?
 
@@ -692,9 +692,9 @@ var (
 The final error is where we are trying to pass in `Game` to `NewPlayerServer` but it doesn't support it yet
 
 ```text
-./server_test.go:21:38: too many arguments in call to "github.com/quii/learn-go-with-tests/WebSockets/v2".NewPlayerServer
-    have ("github.com/quii/learn-go-with-tests/WebSockets/v2".PlayerStore, "github.com/quii/learn-go-with-tests/WebSockets/v2".Game)
-    want ("github.com/quii/learn-go-with-tests/WebSockets/v2".PlayerStore)
+./server_test.go:21:38: too many arguments in call to "github.com/larien/learn-go-with-tests/WebSockets/v2".NewPlayerServer
+    have ("github.com/larien/learn-go-with-tests/WebSockets/v2".PlayerStore, "github.com/larien/learn-go-with-tests/WebSockets/v2".Game)
+    want ("github.com/larien/learn-go-with-tests/WebSockets/v2".PlayerStore)
 ```
 
 ## Write the minimal amount of code for the test to run and check the failing test output
