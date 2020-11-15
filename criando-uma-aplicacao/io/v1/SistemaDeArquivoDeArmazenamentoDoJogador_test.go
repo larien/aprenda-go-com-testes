@@ -7,20 +7,20 @@ import (
 
 func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
-    t.Run("/liga de um leitor", func(t *testing.T) {
-        bancoDeDados := strings.NewReader(`[
+	t.Run("/liga de um leitor", func(t *testing.T) {
+		bancoDeDados := strings.NewReader(`[
             {"Nome": "Cleo", "Vitorias": 10},
             {"Nome": "Chris", "Vitorias": 33}]`)
 
-        armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
+		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-        recebido := armazenamento.PegaLiga()
+		recebido := armazenamento.PegaLiga()
 
-        esperado := []Jogador{
-            {"Cleo", 10},
-            {"Chris", 33},
-        }
+		esperado := []Jogador{
+			{"Cleo", 10},
+			{"Chris", 33},
+		}
 		//ler novamente
-        defineLiga(t, recebido, esperado)
-    })
+		defineLiga(t, recebido, esperado)
+	})
 }

@@ -8,7 +8,7 @@ import (
 // SistemaDeArquivoDeArmazenamentoDoJogador armazena jogadores no sistema de arquivos
 type SistemaDeArquivoDeArmazenamentoDoJogador struct {
 	bancoDeDados io.ReaderWriteSeeker
-	liga Liga
+	liga         Liga
 }
 
 // NovoSistemaDeArquivoDeArmazenamentoDoJogador cria um SistemaDeArquivoDeArmazenamentoDoJogador
@@ -18,7 +18,7 @@ func NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados io.ReadWriteSeeke
 
 	return &SistemaDeArquivoDeArmazenamentoDoJogador{
 		bancoDeDados: bancoDeDados,
-		liga:   liga,
+		liga:         liga,
 	}
 }
 

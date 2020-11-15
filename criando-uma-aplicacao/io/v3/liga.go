@@ -21,7 +21,7 @@ func (l Liga) Busca(nome string) *Jogador {
 
 // NovaLiga cria uma liga a partir do JSON
 func NovaLiga(rdr io.Reader) (Liga, error) {
-    var liga []Jogador
+	var liga []Jogador
 	err := json.NewDecoder(rdr).Decode(&liga)
 
 	if err != nil {

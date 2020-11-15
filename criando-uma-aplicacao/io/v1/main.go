@@ -1,14 +1,14 @@
 package main
 
 import (
-    "log"
-    "net/http"
+	"log"
+	"net/http"
 )
 
 func main() {
-    servidor:= NovoServidorDoJogador(SalvaNovoJogadorNaMemoria())
+	servidor := NovoServidorDoJogador(SalvaNovoJogadorNaMemoria())
 
-    if err := http.ListenAndServe(":5000", servidor); err != nil {
-        log.Fatalf("Não foi possivel ouvir na porta 5000 %v", err)
-    }
+	if err := http.ListenAndServe(":5000", servidor); err != nil {
+		log.Fatalf("Não foi possivel ouvir na porta 5000 %v", err)
+	}
 }

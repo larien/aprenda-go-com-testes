@@ -10,9 +10,9 @@ import (
 )
 
 type EsbocoDoArmazenamentoDoJogador struct {
-	pontuacoes   map[string]int
+	pontuacoes        map[string]int
 	chamadasDeVitoria []string
-	liga   []Jogador
+	liga              []Jogador
 }
 
 func (s *EsbocoDoArmazenamentoDoJogador) PegaPontuacaoDoJogador(nome string) int {
@@ -176,4 +176,3 @@ func defineCorpodeResposta(t *testing.T, recebido, esperado string) {
 		t.Errorf("corpo da resposta esta errado, recebido '%s' esperado '%s'", recebido, esperado)
 	}
 }
-

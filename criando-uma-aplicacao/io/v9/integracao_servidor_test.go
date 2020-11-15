@@ -11,7 +11,7 @@ func TestaSalvarERetornarVitorias(t *testing.T) {
 	defer limpaBancoDeDados()
 	armazenamento, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
-	defineSemErro(t,err)
+	defineSemErro(t, err)
 
 	servidor := NovoServidorDoJogador(armazenamento)
 	jogador := "Pepper"

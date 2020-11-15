@@ -9,7 +9,7 @@ import (
 // SistemaDeArquivoDeArmazenamentoDoJogador armazena jogadores no sistema de arquivos
 type SistemaDeArquivoDeArmazenamentoDoJogador struct {
 	bancoDeDados *json.Encoder
-	liga Liga
+	liga         Liga
 }
 
 // NovoSistemaDeArquivoDeArmazenamentoDoJogador cria um SistemaDeArquivoDeArmazenamentoDoJogador
@@ -29,7 +29,7 @@ func NovoSistemaDeArquivoDeArmazenamentoDoJogador(arquivo *os.File) (*SistemaDeA
 
 	return &SistemaDeArquivoDeArmazenamentoDoJogador{
 		bancoDeDados: json.NewEncoder(&fita{arquivo}),
-		liga:   liga,
+		liga:         liga,
 	}, nil
 }
 

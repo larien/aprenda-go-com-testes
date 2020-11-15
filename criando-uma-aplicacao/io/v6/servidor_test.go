@@ -10,9 +10,9 @@ import (
 )
 
 type EsbocoDoArmazenamentoDoJogador struct {
-	pontuacoes   map[string]int
+	pontuacoes        map[string]int
 	chamadasDeVitoria []string
-	liga   []Jogador
+	liga              []Jogador
 }
 
 func (s *EsbocoDoArmazenamentoDoJogador) PegaPontuacaoDoJogador(nome string) int {

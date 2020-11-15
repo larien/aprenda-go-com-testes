@@ -21,9 +21,9 @@ func main() {
 		log.Fatalf("problema criando sistema de arquivo de armazenamento, %v ", err)
 	}
 
-	servidor:= NovoServidorDoJogador(armazenamento)
+	servidor := NovoServidorDoJogador(armazenamento)
 
-    if err := http.ListenAndServe(":5000", servidor); err != nil {
-        log.Fatalf("Não foi possivel ouvir na porta 5000 %v", err)
-    }
+	if err := http.ListenAndServe(":5000", servidor); err != nil {
+		log.Fatalf("Não foi possivel ouvir na porta 5000 %v", err)
+	}
 }
