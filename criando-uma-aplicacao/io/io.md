@@ -1,6 +1,6 @@
 # IO e Ordenação
 
-[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/io)
+[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/io)
 
 [No capitulo anterior](json.md) continuamos interagindo com nossa aplicação pela adição de um novo endpoint `/liga`. Durante o caminho aprendemos como lidar com JSON, tipos embutidos e roteamento.
 
@@ -179,7 +179,7 @@ Estamos usando `strings.NewReader` que irá nos retornar um `Reader`, que é o q
 ## Tente rodar o teste
 
 ```text
-# github.com/quii/learn-go-with-tests/json-and-io/v7
+# github.com/larien/learn-go-with-tests/json-and-io/v7
 ./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:15:12: undefined: SistemaDeArquivoDeArmazenamentoDoJogador
 ```
 
@@ -194,7 +194,7 @@ type SistemaDeArquivoDeArmazenamentoDoJogador struct {}
 Tente de novo
 
 ```text
-# github.com/quii/learn-go-with-tests/json-and-io/v7
+# github.com/larien/learn-go-with-tests/json-and-io/v7
 ./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:15:28: too many values in struct initializer
 ./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:17:15: armazenamento.PegaLiga undefined (type SistemaDeArquivoDeArmazenamentoDoJogador has no field or method PegaLiga)
 ```
