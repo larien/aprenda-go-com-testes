@@ -17,7 +17,7 @@ func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() Liga {
     return liga
 }
 
-// GetPlayerScore retrieves a player's score
+// PegaPontuacaoDoJogador retorna a pontuacao de um jogador
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaPontuacaoDoJogador(nome string) int {
 
 	jogador := f.PegaLiga().Find(nome)

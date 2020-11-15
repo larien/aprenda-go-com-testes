@@ -24,7 +24,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
         defineLiga(t, recebido, esperado)
     })
 
-		// read again
+		// ler novamente
 		recebido = armazenamento.PegaLiga()
 		defineLiga(t, recebido, esperado)
 	})

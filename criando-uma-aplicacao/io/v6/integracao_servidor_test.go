@@ -17,12 +17,12 @@ func TestaSalvarERetornarVitorias(t *testing.T) {
 	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoPostaVitoria(jogador))
 	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoPostaVitoria(jogador))
 
-	t.Run("get score", func(t *testing.T) {
+	t.Run("pega pontuação", func(t *testing.T) {
 		resposta := httptest.NewRecorder()
 		servidor.ServeHTTP(resposta, novaRequisicaoPegaPontuacao(player))
 		defineStatus(t, resposta.Code, http.StatusOK)
 
-		defineCorpoDeReposta(t, resposta.Body.String(), "3")
+		defineCorpoDeResposta(t, resposta.Body.String(), "3")
 	})
 
 	t.Run("pega liga", func(t *testing.T) {

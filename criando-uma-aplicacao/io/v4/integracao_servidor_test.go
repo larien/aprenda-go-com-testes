@@ -20,7 +20,7 @@ func TestaSalvarERetornarVitorias(t *testing.T) {
 		servidor.ServeHTTP(resposta, newGetScoreRequest(jogador))
 		defineStatus(t, resposta.Code, http.StatusOK)
 
-		defineCorpoDeReposta(t, resposta.Body.String(), "3")
+		defineCorpoDeResposta(t, resposta.Body.String(), "3")
 	})
 
 	t.Run("pega liga", func(t *testing.T) {
