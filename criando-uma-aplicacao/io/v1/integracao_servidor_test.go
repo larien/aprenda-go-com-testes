@@ -7,7 +7,7 @@ import (
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	armazenamento := NewInMemoryPlayerStore()
+	armazenamento := NovoArmazenamentoDeJogadorNaMemoria()
 	servidor := NovoServidorDoJogador(armazenamento)
 	jogador := "Pepper"
 
@@ -17,10 +17,10 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 	t.Run("pega armazenamento", func(t *testing.T) {
 		resposta := httptest.NewRecorder()
-		servidor.ServeHTTP(resposta, newGetScoreRequest(jogador))
+		servidor.ServeHTTP(resposta, novaRequisicaoPegaPontuacao(jogador))
 		defineStatus(t, resposta.Code, http.StatusOK)
 
-		defineCorpoDeResposta(t, resposta.Body.String(), "3")
+		definecorpodeResposta(t, resposta.Body.String(), "3")
 	})
 
 	t.Run("pega liga", func(t *testing.T) {

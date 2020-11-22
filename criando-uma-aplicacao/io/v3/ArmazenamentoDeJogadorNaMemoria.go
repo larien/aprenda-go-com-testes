@@ -11,7 +11,7 @@ type ArmazenamentoDeJogadorNaMemoria struct {
 }
 
 // PegaLiga retorna uma colecao de jogadores
-func (i *ArmazenamentoDeJogadorNaMemoria) PegaLiga() League {
+func (i *ArmazenamentoDeJogadorNaMemoria) PegaLiga() Liga {
 	var liga []Jogador
 	for nome, vitorias := range i.armazenamento {
 		liga = append(liga, Jogador{nome, vitorias})
@@ -24,7 +24,7 @@ func (i *ArmazenamentoDeJogadorNaMemoria) SalvaVitoria(nome string) {
 	i.armazenamento[nome]++
 }
 
-// PegarPontuacaoJogador retorna pontuacoes de um dado jogador
-func (i *ArmazenamentoDeJogadorNaMemoria) PegarPontuacaoJogador(nome string) int {
+// PegaPontuacaoDoJogador retorna pontuacoes de um dado jogador
+func (i *ArmazenamentoDeJogadorNaMemoria) PegaPontuacaoDoJogador(nome string) int {
 	return i.armazenamento[nome]
 }

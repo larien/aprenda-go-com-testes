@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
+func TestArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
 	t.Run("/liga de um leitor", func(t *testing.T) {
 		bancoDeDados := strings.NewReader(`[

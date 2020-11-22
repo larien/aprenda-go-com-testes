@@ -46,7 +46,7 @@ func TestPEGAJogadores(t *testing.T) {
 		servidor.ServeHTTP(resposta, requisicao)
 
 		defineStatus(t, resposta.Code, http.StatusOK)
-		defineCorpodeResposta(t, resposta.Body.String(), "20")
+		definecorpodeResposta(t, resposta.Body.String(), "20")
 	})
 
 	t.Run("returna a pontuacao de Floyd", func(t *testing.T) {
@@ -56,7 +56,7 @@ func TestPEGAJogadores(t *testing.T) {
 		servidor.ServeHTTP(resposta, requisicao)
 
 		defineStatus(t, resposta.Code, http.StatusOK)
-		defineCorpoDeResposta(t, resposta.Body.String(), "10")
+		definecorpodeResposta(t, resposta.Body.String(), "10")
 	})
 
 	t.Run("returna 404 para jogadores nao existentes", func(t *testing.T) {
@@ -69,7 +69,7 @@ func TestPEGAJogadores(t *testing.T) {
 	})
 }
 
-func TesteArmazenamentoDeVitorias(t *testing.T) {
+func TestArmazenamentoDeVitorias(t *testing.T) {
 	armazenamento := EsbocoDoArmazenamentoDoJogador{
 		map[string]int{},
 		nil,
@@ -88,7 +88,7 @@ func TesteArmazenamentoDeVitorias(t *testing.T) {
 		defineStatus(t, resposta.Code, http.StatusAccepted)
 
 		if len(armazenamento.chamadasDeVitoria) != 1 {
-			t.Fatalf("recebido %d chamadas para RecordeDeVitoria esperado %d", len(armazenamento.chamadasDeVitoria), 1)
+			t.Fatalf("recebido %d chamadas para salvaVitoria esperado %d", len(armazenamento.chamadasDeVitoria), 1)
 		}
 
 		if armazenamento.chamadasDeVitoria[0] != jogador {
@@ -97,7 +97,7 @@ func TesteArmazenamentoDeVitorias(t *testing.T) {
 	})
 }
 
-func TestaLiga(t *testing.T) {
+func TestLiga(t *testing.T) {
 
 	t.Run("retorna a tabela de liga como JSON", func(t *testing.T) {
 		LigaEsperada := []Jogador{
@@ -130,9 +130,9 @@ func defineTipoDeConteudo(t *testing.T, resposta *httptest.ResponseRecorder, esp
 	}
 }
 
-func pegaLigaDaResposta(t *testing.T, corpo io.Reader) []Jogador {
+func pegaLigaDaResposta(t *testing.T, body io.Reader) []Jogador {
 	t.Helper()
-	liga, err := NovaLiga(corpo)
+	liga, err := NovaLiga(body)
 
 	if err != nil {
 		t.Fatalf("Nao foi possivel passar resposta do servidor '%s' em pedaco de jogador, '%v'", body, err)
@@ -155,22 +155,22 @@ func defineStatus(t *testing.T, recebido, esperado int) {
 	}
 }
 
-func requisicaoNovaLiga() *http.requisicao {
+func requisicaoNovaLiga() *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, "/liga", nil)
 	return req
 }
 
-func novaRequisicaoPegaPontuacao(nome string) *http.requisicao {
+func novaRequisicaoPegaPontuacao(nome string) *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
 	return req
 }
 
-func novaRequisicaoPostaVitoria(nome string) *http.requisicao {
+func novaRequisicaoPostaVitoria(nome string) *http.Request {
 	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", nome), nil)
 	return req
 }
 
-func defineCorpodeResposta(t *testing.T, recebido, esperado string) {
+func definecorpodeResposta(t *testing.T, recebido, esperado string) {
 	t.Helper()
 	if recebido != esperado {
 		t.Errorf("corpo da resposta esta errado, recebido '%s' esperado '%s'", recebido, esperado)

@@ -5,13 +5,13 @@ import (
 	"testing"
 )
 
-func TestaFita_Escrita(t *testing.T) {
+func TestFita_Escrita(t *testing.T) {
 	arquivo, limpa := criaArquivoTemporario(t, "12345")
 	defer limpa()
 
 	fita := &fita{arquivo}
 
-	fita.Escrita([]byte("abc"))
+	fita.Write([]byte("abc"))
 
 	arquivo.Seek(0, 0)
 	novoConteudoDoArquivo, _ := ioutil.ReadAll(arquivo)

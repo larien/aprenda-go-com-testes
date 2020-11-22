@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestaSalvarERetornarVitorias(t *testing.T) {
+func TestSalvarERetornarVitorias(t *testing.T) {
 	armazenamento := NovoArmazenamentoDeJogadorNaMemoria()
 	servidor := NovoServidorDoJogador(armazenamento)
 	jogador := "Pepper"
@@ -17,10 +17,10 @@ func TestaSalvarERetornarVitorias(t *testing.T) {
 
 	t.Run("pega pontuacao", func(t *testing.T) {
 		resposta := httptest.NewRecorder()
-		servidor.ServeHTTP(resposta, newGetScoreRequest(jogador))
+		servidor.ServeHTTP(resposta, novaRequisicaoPegaPontuacao(jogador))
 		defineStatus(t, resposta.Code, http.StatusOK)
 
-		defineCorpoDeResposta(t, resposta.Body.String(), "3")
+		definecorpodeResposta(t, resposta.Body.String(), "3")
 	})
 
 	t.Run("pega liga", func(t *testing.T) {

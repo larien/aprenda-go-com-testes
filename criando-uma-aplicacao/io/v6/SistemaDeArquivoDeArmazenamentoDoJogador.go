@@ -7,7 +7,7 @@ import (
 
 // SistemaDeArquivoDeArmazenamentoDoJogador armazena jogadores no sistema de arquivos
 type SistemaDeArquivoDeArmazenamentoDoJogador struct {
-	bancoDeDados io.ReaderWriteSeeker
+	bancoDeDados io.ReadWriteSeeker
 	liga         Liga
 }
 
@@ -30,7 +30,7 @@ func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() Liga {
 // PegaPontuacaoDoJogador retorna a pontuacao do jogador
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaPontuacaoDoJogador(nome string) int {
 
-	jogador := f.PegaLiga().Find(nome)
+	jogador := f.liga.Busca(nome)
 
 	if jogador != nil {
 		return jogador.Vitorias
@@ -41,7 +41,7 @@ func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaPontuacaoDoJogador(nome s
 
 // SalvaVitoria vai armazenar uma vitoria para o jogador, aumentando se ja for conhecido
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
-	jogador := liga.Find(nome)
+	jogador := f.liga.Busca(nome)
 
 	if jogador != nil {
 		jogador.Vitorias++

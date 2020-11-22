@@ -20,7 +20,7 @@ import (
 
 // GuardaJogador armazena informações sobre os jogadores
 type GuardaJogador interface {
-    PegaPontosJogador(nome string) int
+    PegaPontuacaoDoJogador(nome string) int
     SalvaVitoria(nome string)
     PegaLiga() []Jogador
 }
@@ -72,7 +72,7 @@ func (p *ServidorDoJogador) ManipulaJogador(w http.ResponseWriter, r *http.Reque
 }
 
 func (p *ServidorDoJogador) mostraPontuacao(w http.ResponseWriter, jogador string) {
-    pontuacao := p.armazenamento.PegaPontosJogador(jogador)
+    pontuacao := p.armazenamento.PegaPontuacaoDoJogador(jogador)
 
     if pontuacao == 0 {
         w.WriteHeader(http.StatusNotFound)
@@ -82,7 +82,7 @@ func (p *ServidorDoJogador) mostraPontuacao(w http.ResponseWriter, jogador strin
 }
 
 func (p *ServidorDoJogador) processaVitoria(w http.ResponseWriter, jogador string) {
-    p.armazenamento.RecordeDeVitorias(jogador)
+    p.armazenamento.salvaVitorias(jogador)
     w.WriteHeader(http.StatusAccepted)
 }
 ```
@@ -111,7 +111,7 @@ func (i *ArmazenamentoDeJogadorNaMemoria) SalvaVitoria(nome string) {
     i.armazenamento[nome]++
 }
 
-func (i *ArmazenamentoDeJogadorNaMemoria) PegarPontuacaoJogador(nome string) int {
+func (i *ArmazenamentoDeJogadorNaMemoria) PegaPontuacaoDoJogador(nome string) int {
     return i.armazenamento[nome]
 }
 ```

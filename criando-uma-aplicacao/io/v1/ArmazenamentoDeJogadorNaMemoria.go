@@ -24,7 +24,7 @@ func (i *ArmazenamentoDeJogadorNaMemoria) SalvaVitoria(nome string) {
 	i.armazenamento[nome]++
 }
 
-// PegarPontuacaoJogador retorna pontuacoes de um dado jogador
-func (i *ArmazenamentoDeJogadorNaMemoria) PegarPontuacaoJogador(nome string) int {
+// PegaPontuacaoDoJogador retorna pontuacoes de um dado jogador
+func (i *ArmazenamentoDeJogadorNaMemoria) PegaPontuacaoDoJogador(nome string) int {
 	return i.armazenamento[nome]
 }

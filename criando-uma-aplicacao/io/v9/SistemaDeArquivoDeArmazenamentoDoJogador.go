@@ -16,7 +16,7 @@ type SistemaDeArquivoDeArmazenamentoDoJogador struct {
 // NovoSistemaDeArquivoDeArmazenamentoDoJogador cria um SistemaDeArquivoDeArmazenamentoDoJogador
 func NovoSistemaDeArquivoDeArmazenamentoDoJogador(arquivo *os.File) (*SistemaDeArquivoDeArmazenamentoDoJogador, error) {
 
-	err := initialisePlayeriniciaArquivoBDDoJogadorDBFile(arquivo)
+	err := iniciaArquivoBDDoJogador(arquivo)
 
 	if err != nil {
 		return nil, fmt.Errorf("problem iniciando arquivo bd do jogador, %v", err)
@@ -62,7 +62,7 @@ func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() Liga {
 // PegaPontuacaoDoJogador retorna a pontuacao do jogador
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaPontuacaoDoJogador(nome string) int {
 
-	jogador := f.liga.Find(nome)
+	jogador := f.liga.Busca(nome)
 
 	if jogador != nil {
 		return jogador.Vitorias
@@ -73,7 +73,7 @@ func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaPontuacaoDoJogador(nome s
 
 // SalvaVitoria vai armazenar uma vitoria para o jogador, aumentando se ja for conhecido
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
-	jogador := f.liga.Find(nome)
+	jogador := f.liga.Busca(nome)
 
 	if jogador != nil {
 		jogador.Vitorias++

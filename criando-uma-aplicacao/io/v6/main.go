@@ -15,7 +15,7 @@ func main() {
 		log.Fatalf("problema abrindo %s %v", dbFileName, err)
 	}
 
-	armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(db)
+	armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(db)
 
 	servidor := NovoServidorDoJogador(armazenamento)
 

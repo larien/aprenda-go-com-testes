@@ -26,7 +26,7 @@ func criaArquivoTemporario(t *testing.T, dadoInicial string) (io.ReadWriteSeeker
 	return arquivotmp, removeArquivo
 }
 
-func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
+func TestArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
 	t.Run("liga de um leitor", func(t *testing.T) {
 		bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
@@ -34,7 +34,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		recebido := armazenamento.PegaLiga()
 
@@ -56,7 +56,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		recebido := armazenamento.PegaPontuacaoDoJogador("Chris")
 		esperado := 33
@@ -69,7 +69,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		armazenamento.SalvaVitoria("Chris")
 
@@ -84,7 +84,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
             {"Nome": "Chris", "Vitorias": 33}]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		armazenamento.SalvaVitoria("Pepper")
 
@@ -97,6 +97,6 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 func definePontuacaoIgual(t *testing.T, recebido, esperado int) {
 	t.Helper()
 	if recebido != esperado {
-		t.Errorf("recebido '%s' esperado '%s'", recebido, esperado)
+		t.Errorf("recebido '%d' esperado '%d'", recebido, esperado)
 	}
 }

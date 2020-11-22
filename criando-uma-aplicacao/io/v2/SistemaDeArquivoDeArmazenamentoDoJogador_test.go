@@ -5,24 +5,23 @@ import (
 	"testing"
 )
 
-func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
+func TestArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
-    t.Run("/liga de um leitor", func(t *testing.T) {
-        bancoDeDados := strings.NewReader(`[
+	t.Run("/liga de um leitor", func(t *testing.T) {
+		bancoDeDados := strings.NewReader(`[
             {"Nome": "Cleo", "Vitorias": 10},
             {"Nome": "Chris", "Vitorias": 33}]`)
 
-        armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
+		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-        recebido := armazenamento.PegaLiga()
+		recebido := armazenamento.PegaLiga()
 
-        esperado := []Jogador{
-            {"Cleo", 10},
-            {"Chris", 33},
-        }
+		esperado := []Jogador{
+			{"Cleo", 10},
+			{"Chris", 33},
+		}
 
-        defineLiga(t, recebido, esperado)
-    })
+		defineLiga(t, recebido, esperado)
 
 		// ler novamente
 		recebido = armazenamento.PegaLiga()
@@ -36,7 +35,7 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
 		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-		recebido := armazenamento.("Chris")
+		recebido := armazenamento.PegaPontuacaoDoJogador("Chris")
 		esperado := 33
 		definePontuacaoIgual(t, recebido, esperado)
 	})
@@ -45,6 +44,6 @@ func TestaArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 func definePontuacaoIgual(t *testing.T, recebido, esperado int) {
 	t.Helper()
 	if recebido != esperado {
-        t.Errorf("recebido '%s' esperado '%s'", recebido, esperado)
-    }
+		t.Errorf("recebido '%d' esperado '%d'", recebido, esperado)
+	}
 }
