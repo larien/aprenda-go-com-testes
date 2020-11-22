@@ -9,7 +9,7 @@ import (
 // Liga armazena uma colecao de jogadores
 type Liga []Jogador
 
-// Bussca tenta retornar um jogador de uma liga
+// Busca tenta retornar um jogador de uma liga
 func (l Liga) Busca(nome string) *Jogador {
 	for i, p := range l {
 		if p.Nome == nome {

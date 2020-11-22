@@ -42,12 +42,14 @@ func NovoServidorDoJogador(armazenamento GuardaJogador) *ServidorDoJogador {
 	return p
 }
 
+// ManipulaLiga escreve uma liga
 func (p *ServidorDoJogador) ManipulaLiga(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p.armazenamento.PegaLiga())
 	w.Header().Set("content-type", jsonContentType)
 	w.WriteHeader(http.StatusOK)
 }
 
+// ManipulaJogador processa uma vitoria ou mostra pontuacao
 func (p *ServidorDoJogador) ManipulaJogador(w http.ResponseWriter, r *http.Request) {
 	jogador := r.URL.Path[len("/jogadores/"):]
 
