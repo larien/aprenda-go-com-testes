@@ -6,11 +6,12 @@ import (
 
 // SistemaDeArquivoDeArmazenamentoDoJogador armazena jogadores no sistema de arquivos
 type SistemaDeArquivoDeArmazenamentoDoJogador struct {
-	bancoDeDados io.Reader
+	bancoDeDados io.ReadSeeker
 }
 
 // PegaLiga retorna a pontuacao de todos os jogadores
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() []Jogador {
+	f.bancoDeDados.Seek(0, 0)
 	liga, _ := NovaLiga(f.bancoDeDados)
 	return liga
 }

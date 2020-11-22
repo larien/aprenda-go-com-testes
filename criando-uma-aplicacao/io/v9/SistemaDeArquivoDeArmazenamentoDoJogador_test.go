@@ -27,7 +27,7 @@ func criaArquivoTemporario(t *testing.T, dadoInicial string) (*os.File, func()) 
 
 func TestArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
-	t.Run("liga de um leitor", func(t *testing.T) {
+	t.Run("liga ordenada", func(t *testing.T) {
 		bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
             {"Nome": "Cleo", "Vitorias": 10},
             {"Nome": "Chris", "Vitorias": 33}]`)
@@ -40,8 +40,8 @@ func TestArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 		recebido := armazenamento.PegaLiga()
 
 		esperado := []Jogador{
-			{"Cleo", 10},
 			{"Chris", 33},
+			{"Cleo", 10},
 		}
 
 		defineLiga(t, recebido, esperado)

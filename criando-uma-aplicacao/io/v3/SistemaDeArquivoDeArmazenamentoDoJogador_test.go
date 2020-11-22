@@ -27,7 +27,7 @@ func criaArquivoTemporario(t *testing.T, dadoInicial string) (io.ReadWriteSeeker
 }
 func TestArmazenamentoDeSistemaDeArquivo(t *testing.T) {
 
-	t.Run("liga de um leitor", func(t *testing.T) {
+	t.Run("/liga de um leitor", func(t *testing.T) {
 		bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
             {"Nome": "Cleo", "Vitorias": 10},
             {"Nome": "Chris", "Vitorias": 33}]`)
