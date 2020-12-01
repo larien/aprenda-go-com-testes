@@ -2,7 +2,7 @@
 
 [**You can find all the code for this chapter here**](https://github.com/quii/learn-go-with-tests/tree/master/criando-uma-aplicacao/json)
 
-[In the previous chapter](http-server.md) we created a web server to store how many games players have won.
+[In the previous chapter](https://github.com/larien/learn-go-with-tests/blob/master/criando-uma-aplicacao/http-server/http-server.md) we created a web server to store how many games players have won.
 
 Our product owner has a new requirement; to have a new endpoint called `/league` which returns a list of all players stored. She would like this to be returned as JSON.
 
