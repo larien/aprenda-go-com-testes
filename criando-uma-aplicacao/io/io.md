@@ -1,8 +1,8 @@
 # IO e Ordenação
 
-[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/io)
+[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/criando-uma-aplicacao/io)
 
-[No capitulo anterior](json.md) continuamos interagindo com nossa aplicação pela adição de um novo endpoint `/liga`. Durante o caminho aprendemos como lidar com JSON, tipos embutidos e roteamento.
+[No capitulo anterior](../json.md) continuamos interagindo com nossa aplicação pela adição de um novo endpoint `/liga`. Durante o caminho aprendemos como lidar com JSON, tipos embutidos e roteamento.
 
 Nossa dona do produto está de certa forma preocupada, por conta do software perder as pontuações quando o servidor é reiniciado. Ela também não se agradou que nós não interpretamos o endpoint `/liga` que deveria retornar os jogadores ordenados pelo número de vitórias!
 
@@ -253,7 +253,7 @@ func NovaLiga(rdr io.Reader) ([]Jogador, error) {
 }
 ```
 
-Chame isso em nossa implementação e em nosso teste helper `getLeagueFromResponse` in `server_test.go`
+Chame isso em nossa implementação e em nosso teste helper `obterLigaDaResposta` in `serv_test.go`
 
 ```go
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() []Jogador {
@@ -266,7 +266,7 @@ Ainda não temos a estratégia para lidar com a análise de erros mas vamos cont
 
 ### Procurando problemas
 
-Existe um problema na nossa implementação . Primeiramente, vamos relembrar como `io.Reader` é definida.
+Existe um problema na nossa implementação. Primeiramente, vamos relembrar como `io.Reader` é definida.
 
 ```go
 type Reader interface {
@@ -407,11 +407,11 @@ Finalmente, precisamos começar a salvar pontuações com `SalvaVitoria`.
 
 ## Escreva o teste primeiro
 
-Nossa abordagem é até .Não podemos \(facilmente\) apenas atualizar uma "linha" de JSON em um arquivo. Precisaremos armazenar a _inteira_ nova representação de nosso banco de dados em cada escrita.
+Nossa abordagem é um pouco ruim para escritas. Não podemos \(facilmente\) apenas atualizar uma "linha" de JSON em um arquivo. Precisaremos armazenar a _inteira_ nova representação de nosso banco de dados em cada escrita.
 
-Como escrevemos? Normalmente usaríamos um `Writer`mas já temos nosso `ReadSeeker`. Potencialmente, podemos ter duas dependências mas a biblioteca padrão já tem uma interface para nós `ReadWriteSeeker` que permite fazermos tudo que precisamos com um arquivo.
+Como escrevemos? Normalmente usaríamos um `Writer`, mas já temos nosso `ReadSeeker`. Potencialmente podemos ter duas dependências, mas a biblioteca padrão já tem uma interface para nós: o `ReadWriteSeeker`, que permite fazermos tudo que precisamos com um arquivo.
 
-Vamos atualizar nosso tipo
+Vamos atualizar nosso tipo:
 
 ```go
 type SistemaDeArquivoDeArmazenamentoDoJogador struct {
@@ -419,7 +419,7 @@ type SistemaDeArquivoDeArmazenamentoDoJogador struct {
 }
 ```
 
-Veja se compila
+Veja se compila:
 
 ```go
 ./SistemaDeArquivoDeArmazenamentoDoJogador_test.go:15:34: cannot use bancoDeDados (type *strings.Reader) as type io.ReadWriteSeeker in field value:
@@ -430,7 +430,7 @@ Veja se compila
 
 Não é tão surpreendente que `strings.Reader` não implementa `ReadWriteSeeker`, então o que vamos fazer?
 
-Temos duas opções
+Temos duas opções:
 
 -   Criar um arquivo temporário para cada teste. `*os.File` implementa `ReadWriteSeeker`. O pró disso é que isso se torna mais um teste de integração, mas nós realmente estamos lendo e escrevendo de um sistema de arquivos então isso nos dará um alto nível de confiança. Os contras são que preferimos testes unitários porque são mais rápidos e normalmente mais simples. Também precisaremos trabalhar mais criando arquivos temporários e então ter certeza que serão removidos após o teste.
 -   Poderíamos usar uma biblioteca externa. [Mattetti](https://github.com/mattetti) escreveu uma biblioteca [filebuffer](https://github.com/mattetti/filebuffer) que implementa a interface que precisamos e assim não precisariamos modificar o sistema de arquivos.
