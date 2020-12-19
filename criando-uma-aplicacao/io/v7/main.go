@@ -12,14 +12,14 @@ func main() {
 	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
+		log.Fatalf("problema abrindo %s %v", dbFileName, err)
 	}
 
-	store := NewFileSystemPlayerStore(db)
+	armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(db)
 
-	server := NewPlayerServer(store)
+	servidor := NovoServidorDoJogador(armazenamento)
 
-	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("could not listen on port 5000 %v", err)
+	if err := http.ListenAndServe(":5000", servidor); err != nil {
+		log.Fatalf("Não foi possivel ouvir na porta 5000 %v", err)
 	}
 }
