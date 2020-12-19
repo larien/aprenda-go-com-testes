@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestArmazenandoERetornandoVitorias TestRecordingWinsAndRetrievingThem(t *testing.T) {
+func TestArmazenandoERetornandoVitorias(t *testing.T) {
 	armazenamento := NovoArmazenamentoDeJogadorNaMemoria()
 	servidor := NovoServidorDoJogador(armazenamento)
 	jogador := "Pepper"
