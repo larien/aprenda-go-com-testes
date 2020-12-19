@@ -28,7 +28,7 @@ func (s *EsbocoDoArmazenamentoDoJogador) PegaLiga() []Jogador {
 	return s.liga
 }
 
-func TestPEGAJogadores(t *testing.T) {
+func TestPegaJogadores(t *testing.T) {
 	armazenamento := EsbocoDoArmazenamentoDoJogador{
 		map[string]int{
 			"Pepper": 20,
@@ -39,7 +39,7 @@ func TestPEGAJogadores(t *testing.T) {
 	}
 	servidor := NovoServidorDoJogador(&armazenamento)
 
-	t.Run("returna a pontuacao de Pepper'", func(t *testing.T) {
+	t.Run("retorna a pontuacao de Pepper'", func(t *testing.T) {
 		requisicao := novaRequisicaoPegaPontuacao("Pepper")
 		resposta := httptest.NewRecorder()
 
@@ -49,7 +49,7 @@ func TestPEGAJogadores(t *testing.T) {
 		definecorpodeResposta(t, resposta.Body.String(), "20")
 	})
 
-	t.Run("returna a pontuacao de Floyd", func(t *testing.T) {
+	t.Run("retorna a pontuacao de Floyd", func(t *testing.T) {
 		requisicao := novaRequisicaoPegaPontuacao("Floyd")
 		resposta := httptest.NewRecorder()
 
@@ -59,7 +59,7 @@ func TestPEGAJogadores(t *testing.T) {
 		definecorpodeResposta(t, resposta.Body.String(), "10")
 	})
 
-	t.Run("returna 404 para jogadores nao existentes", func(t *testing.T) {
+	t.Run("retorna 404 para jogadores nao existentes", func(t *testing.T) {
 		requisicao := novaRequisicaoPegaPontuacao("Apollo")
 		resposta := httptest.NewRecorder()
 
