@@ -128,7 +128,7 @@ func nextTokenOrQuoted(s string) (value string, rest string) {
 	return "", ""
 }
 
-// equalASCIIFold returns true if s is equal to t with ASCII case folding.
+// equalASCIIFold retorna true if s is equal to t with ASCII case folding.
 func equalASCIIFold(s, t string) bool {
 	for s != "" && t != "" {
 		sr, size := utf8.DecodeRuneInString(s)
@@ -151,11 +151,11 @@ func equalASCIIFold(s, t string) bool {
 	return s == t
 }
 
-// tokenListContainsValue returns true if the 1#token header with the given
-// name contains a token equal to value with ASCII case folding.
-func tokenListContainsValue(header http.Header, name string, value string) bool {
+// tokenListContainsValue retorna true if the 1#token header with the given
+// nome contains a token equal to value with ASCII case folding.
+func tokenListContainsValue(header http.Header, nome string, value string) bool {
 headers:
-	for _, s := range header[name] {
+	for _, s := range header[nome] {
 		for {
 			var t string
 			t, s = nextToken(skipSpace(s))

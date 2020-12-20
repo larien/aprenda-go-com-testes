@@ -1,4 +1,4 @@
-package poquer_test
+package poquer
 
 import (
 	"fmt"
@@ -13,13 +13,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var (
-	dummyGame = &JogoEspiao{}
-	tenMS     = 10 * time.Millisecond
-)
-
-func mustMakePlayerServer(t *testing.T, armazenamento poquer.ArmazenamentoJogador, partida poquer.Game) *poquer.PlayerServer {
-	server, err := poquer.NewPlayerServer(armazenamento, partida)
+func mustMakePlayerServer(t *testing.T, armazenamento ArmazenamentoJogador) *PlayerServer {
+	server, err := NewPlayerServer(armazenamento)
 	if err != nil {
 		t.Fatal("problem creating player server", err)
 	}
@@ -27,13 +22,15 @@ func mustMakePlayerServer(t *testing.T, armazenamento poquer.ArmazenamentoJogado
 }
 
 func TestGETPlayers(t *testing.T) {
-	armazenamento := poquer.EsbocoDeArmazenamentoJogador{
-		Pontuações: map[string]int{
+	armazenamento := EsbocoDeArmazenamentoJogador{
+		map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
 		},
+		nil,
+		nil,
 	}
-	server := mustMakePlayerServer(t, &armazenamento, dummyGame)
+	server := mustMakePlayerServer(t, &armazenamento)
 
 	t.Run("retorna Pepper's pontuação", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -66,10 +63,12 @@ func TestGETPlayers(t *testing.T) {
 }
 
 func TestStoreWins(t *testing.T) {
-	armazenamento := poquer.EsbocoDeArmazenamentoJogador{
-		Pontuações: map[string]int{},
+	armazenamento := EsbocoDeArmazenamentoJogador{
+		map[string]int{},
+		nil,
+		nil,
 	}
-	server := mustMakePlayerServer(t, &armazenamento, dummyGame)
+	server := mustMakePlayerServer(t, &armazenamento)
 
 	t.Run("it records venceu on POST", func(t *testing.T) {
 		player := "Pepper"
@@ -80,21 +79,21 @@ func TestStoreWins(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertStatus(t, response, http.StatusAccepted)
-		poquer.VerificaVitoriaDoVencedor(t, &armazenamento, player)
+		VerificaVitoriaDoVencedor(t, &armazenamento, player)
 	})
 }
 
 func TestLeague(t *testing.T) {
 
 	t.Run("it retorna the Liga table as JSON", func(t *testing.T) {
-		wantedLeague := []poquer.Jogador{
-			{Nome: "Cleo", Vitorias: 32},
-			{Nome: "Chris", Vitorias: 20},
-			{Nome: "Tiest", Vitorias: 14},
+		wantedLeague := []Jogador{
+			{"Cleo", 32},
+			{"Chris", 20},
+			{"Tiest", 14},
 		}
 
-		armazenamento := poquer.EsbocoDeArmazenamentoJogador{Liga: wantedLeague}
-		server := mustMakePlayerServer(t, &armazenamento, dummyGame)
+		armazenamento := EsbocoDeArmazenamentoJogador{nil, nil, wantedLeague}
+		server := mustMakePlayerServer(t, &armazenamento)
 
 		request := newLeagueRequest()
 		response := httptest.NewRecorder()
@@ -105,14 +104,14 @@ func TestLeague(t *testing.T) {
 
 		assertStatus(t, response, http.StatusOK)
 		verificaLiga(t, obtido, wantedLeague)
-		assertContentType(t, response, "application/json")
+		assertContentType(t, response, jsonContentType)
 
 	})
 }
 
 func TestGame(t *testing.T) {
 	t.Run("GET /partida retorna 200", func(t *testing.T) {
-		server := mustMakePlayerServer(t, &poquer.EsbocoDeArmazenamentoJogador{}, dummyGame)
+		server := mustMakePlayerServer(t, &EsbocoDeArmazenamentoJogador{})
 
 		request := newGameRequest()
 		response := httptest.NewRecorder()
@@ -122,58 +121,25 @@ func TestGame(t *testing.T) {
 		assertStatus(t, response, http.StatusOK)
 	})
 
-	t.Run("start a partida with 3 players, send some blind alerts down WS and declare Ruth the vencedor", func(t *testing.T) {
-		wantedBlindAlert := "Blind is 100"
+	t.Run("when we get a message over a websocket it is a vencedor of a partida", func(t *testing.T) {
+		armazenamento := &EsbocoDeArmazenamentoJogador{}
 		vencedor := "Ruth"
-
-		partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
-		server := httptest.NewServer(mustMakePlayerServer(t, ArmazenamentoJogadorTosco, partida))
-		ws := mustDialWS(t, "ws"+strings.TrimPrefix(server.URL, "http")+"/ws")
-
+		server := httptest.NewServer(mustMakePlayerServer(t, armazenamento))
 		defer server.Close()
+
+		wsURL := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws"
+
+		ws, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+		if err != nil {
+			t.Fatalf("could not open a ws connection on %s %v", wsURL, err)
+		}
 		defer ws.Close()
 
-		writeWSMessage(t, ws, "3")
 		writeWSMessage(t, ws, vencedor)
 
-		verificaJogoComeçadoCom(t, partida, 3)
-		verificaTerminosChamadosCom(t, partida, vencedor)
-		within(t, tenMS, func() { assertWebsocketGotMsg(t, ws, wantedBlindAlert) })
+		time.Sleep(10 * time.Millisecond)
+		VerificaVitoriaDoVencedor(t, armazenamento, vencedor)
 	})
-}
-
-func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, esperado string) {
-	_, msg, _ := ws.ReadMessage()
-	if string(msg) != esperado {
-		t.Errorf(`obtido "%s", esperado "%s"`, string(msg), esperado)
-	}
-}
-
-func tentarNovamenteAte(d time.Duration, f func() bool) bool {
-	deadline := time.Now().Add(d)
-	for time.Now().Before(deadline) {
-		if f() {
-			return true
-		}
-	}
-	return false
-}
-
-func within(t *testing.T, d time.Duration, assert func()) {
-	t.Helper()
-
-	done := make(chan struct{}, 1)
-
-	go func() {
-		assert()
-		done <- struct{}{}
-	}()
-
-	select {
-	case <-time.After(d):
-		t.Error("timed out")
-	case <-done:
-	}
 }
 
 func writeWSMessage(t *testing.T, conn *websocket.Conn, message string) {
@@ -190,9 +156,9 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, espera
 	}
 }
 
-func getLeagueFromResponse(t *testing.T, body io.Reader) []poquer.Jogador {
+func getLeagueFromResponse(t *testing.T, body io.Reader) []Jogador {
 	t.Helper()
-	league, err := poquer.NewLeague(body)
+	league, err := NewLeague(body)
 
 	if err != nil {
 		t.Fatalf("Unable to parse response from server '%s' into slice of Jogador, '%v'", body, err)
@@ -201,7 +167,7 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) []poquer.Jogador {
 	return league
 }
 
-func verificaLiga(t *testing.T, obtido, esperado []poquer.Jogador) {
+func verificaLiga(t *testing.T, obtido, esperado []Jogador) {
 	t.Helper()
 	if !reflect.DeepEqual(obtido, esperado) {
 		t.Errorf("obtido %v esperado %v", obtido, esperado)
@@ -240,14 +206,4 @@ func assertResponseBody(t *testing.T, obtido, esperado string) {
 	if obtido != esperado {
 		t.Errorf("response body is wrong, obtido '%s' esperado '%s'", obtido, esperado)
 	}
-}
-
-func mustDialWS(t *testing.T, url string) *websocket.Conn {
-	ws, _, err := websocket.DefaultDialer.Dial(url, nil)
-
-	if err != nil {
-		t.Fatalf("could not open a ws connection on %s %v", url, err)
-	}
-
-	return ws
 }

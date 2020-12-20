@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"bufio"
@@ -9,61 +9,61 @@ import (
 	"strings"
 )
 
-// CLI helps players through a game of poker
+// CLI helps players through a partida of poquer
 type CLI struct {
-	playerStore PlayerStore
+	playerStore ArmazenamentoJogador
 	in          *bufio.Scanner
 	out         io.Writer
-	game        Game
+	partida     Game
 }
 
-// NewCLI creates a CLI for playing poker
-func NewCLI(in io.Reader, out io.Writer, game Game) *CLI {
+// NovaCLI creates a CLI for playing poquer
+func NovaCLI(in io.Reader, out io.Writer, partida Game) *CLI {
 	return &CLI{
-		in:   bufio.NewScanner(in),
-		out:  out,
-		game: game,
+		in:      bufio.NewScanner(in),
+		out:     out,
+		partida: partida,
 	}
 }
 
-// PlayerPrompt is the text asking the user for the number of players
-const PlayerPrompt = "Please enter the number of players: "
+// PromptJogador is the text asking the user for the number of players
+const PromptJogador = "Please enter the number of players: "
 
-// BadPlayerInputErrMsg is the text telling the user they did bad things
-const BadPlayerInputErrMsg = "Bad value received for number of players, please try again with a number"
+// ErrMsgEntradaJogadorIncorreta is the text telling the user they did bad things
+const ErrMsgEntradaJogadorIncorreta = "Bad value received for number of players, please try again with a number"
 
-// BadWinnerInputMsg is the text telling the user they declared the winner wrong
-const BadWinnerInputMsg = "invalid winner input, expect format of 'PlayerName wins'"
+// ErrMsgEntradaVencedorIncorreta is the text telling the user they declared the vencedor wrong
+const ErrMsgEntradaVencedorIncorreta = "invalid vencedor input, expect format of 'PlayerName venceu'"
 
-// PlayPoker starts the game
-func (cli *CLI) PlayPoker() {
-	fmt.Fprint(cli.out, PlayerPrompt)
+// JogarPoquer starts the partida
+func (cli *CLI) JogarPoquer() {
+	fmt.Fprint(cli.out, PromptJogador)
 
-	numberOfPlayers, err := strconv.Atoi(cli.readLine())
+	numeroDeJogadores, err := strconv.Atoi(cli.readLine())
 
 	if err != nil {
-		fmt.Fprint(cli.out, BadPlayerInputErrMsg)
+		fmt.Fprint(cli.out, ErrMsgEntradaJogadorIncorreta)
 		return
 	}
 
-	cli.game.Start(numberOfPlayers)
+	cli.partida.Começar(numeroDeJogadores)
 
 	winnerInput := cli.readLine()
-	winner, err := extractWinner(winnerInput)
+	vencedor, err := extractWinner(winnerInput)
 
 	if err != nil {
-		fmt.Fprint(cli.out, BadWinnerInputMsg)
+		fmt.Fprint(cli.out, ErrMsgEntradaVencedorIncorreta)
 		return
 	}
 
-	cli.game.Finish(winner)
+	cli.partida.Terminar(vencedor)
 }
 
 func extractWinner(userInput string) (string, error) {
-	if !strings.Contains(userInput, " wins") {
-		return "", errors.New(BadWinnerInputMsg)
+	if !strings.Contains(userInput, " venceu") {
+		return "", errors.New(ErrMsgEntradaVencedorIncorreta)
 	}
-	return strings.Replace(userInput, " wins", "", 1), nil
+	return strings.Replace(userInput, " venceu", "", 1), nil
 }
 
 func (cli *CLI) readLine() string {

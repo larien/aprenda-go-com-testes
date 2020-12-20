@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"fmt"
@@ -6,22 +6,22 @@ import (
 	"time"
 )
 
-// BlindAlerter schedules alerts for blind amounts
-type BlindAlerter interface {
-	ScheduleAlertAt(duration time.Duration, amount int, to io.Writer)
+// AlertadorDeBlind agenda alertas para quantias de blind
+type AlertadorDeBlind interface {
+	AgendarAlertaPara(duracao time.Duration, quantia int, to io.Writer)
 }
 
-// BlindAlerterFunc allows you to implement BlindAlerter with a function
-type BlindAlerterFunc func(duration time.Duration, amount int, to io.Writer)
+// AlertadorDeBlindFunc te permite implementar o AlertadorDeBlind com uma função
+type AlertadorDeBlindFunc func(duracao time.Duration, quantia int, to io.Writer)
 
-// ScheduleAlertAt is BlindAlerterFunc implementation of BlindAlerter
-func (a BlindAlerterFunc) ScheduleAlertAt(duration time.Duration, amount int, to io.Writer) {
-	a(duration, amount, to)
+// AgendarAlertaPara é uma implementação de AlertadorDeBlind para AlertadorDeBlindFunc
+func (a AlertadorDeBlindFunc) AgendarAlertaPara(duracao time.Duration, quantia int, to io.Writer) {
+	a(duracao, quantia, to)
 }
 
-// Alerter will schedule alerts and print them to "to"
-func Alerter(duration time.Duration, amount int, to io.Writer) {
-	time.AfterFunc(duration, func() {
-		fmt.Fprintf(to, "Blind is now %d\n", amount)
+// Alerter agenda alertas e os imprime para "to"
+func Alerter(duracao time.Duration, quantia int, to io.Writer) {
+	time.AfterFunc(duracao, func() {
+		fmt.Fprintf(to, "Blind agora é %d\n", quantia)
 	})
 }

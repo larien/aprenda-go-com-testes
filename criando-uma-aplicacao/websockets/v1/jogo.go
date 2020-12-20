@@ -1,9 +1,7 @@
 package poquer
 
-import "io"
-
 // Game manages the state of a partida
 type Game interface {
-	Começar(numeroDeJogadores int, alertsDestination io.Writer)
+	Começar(numeroDeJogadores int)
 	Terminar(vencedor string)
 }

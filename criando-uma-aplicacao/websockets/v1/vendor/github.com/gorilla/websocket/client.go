@@ -58,21 +58,21 @@ type Dialer struct {
 	NetDialContext func(ctx context.Context, network, addr string) (net.Conn, error)
 
 	// Proxy specifies a function to return a proxy for a given
-	// Request. If the function returns a non-nil error, the
+	// Request. If the function retorna a non-nil error, the
 	// request is aborted with the provided error.
-	// If Proxy is nil or returns a nil *URL, no proxy is used.
+	// If Proxy is nil or retorna a nil *URL, no proxy is used.
 	Proxy func(*http.Request) (*url.URL, error)
 
 	// TLSClientConfig specifies the TLS configuration to use with tls.Client.
 	// If nil, the default configuration is used.
 	TLSClientConfig *tls.Config
 
-	// HandshakeTimeout specifies the duration for the handshake to complete.
+	// HandshakeTimeout specifies the duracao for the handshake to complete.
 	HandshakeTimeout time.Duration
 
 	// ReadBufferSize and WriteBufferSize specify I/O buffer sizes. If a buffer
 	// size is zero, then a useful default size is used. The I/O buffer sizes
-	// do not limit the size of the messages that can be sent or received.
+	// do not limit the size of the mensagens that can be sent or received.
 	ReadBufferSize, WriteBufferSize int
 
 	// WriteBufferPool is a pool of buffers for write operations. If the value
@@ -171,7 +171,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 	}
 
 	if u.User != nil {
-		// User name and password are not allowed in websocket URIs.
+		// User nome and password are not allowed in websocket URIs.
 		return nil, nil, errMalformedURL
 	}
 

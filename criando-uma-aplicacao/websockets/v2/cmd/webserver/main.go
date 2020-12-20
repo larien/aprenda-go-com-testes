@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
 	"log"
 	"net/http"
 	"os"
+
+	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
 )
 
-const dbFileName = "game.db.json"
+const dbFileName = "partida.db.json"
 
 func main() {
 	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
@@ -16,15 +17,15 @@ func main() {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
 
-	store, err := poker.NewFileSystemPlayerStore(db)
+	armazenamento, err := poquer.NewFileSystemPlayerStore(db)
 
 	if err != nil {
-		log.Fatalf("problem creating file system player store, %v ", err)
+		log.Fatalf("problem creating file system player armazenamento, %v ", err)
 	}
 
-	game := poker.NewTexasHoldem(poker.BlindAlerterFunc(poker.Alerter), store)
+	partida := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.Alerter), armazenamento)
 
-	server, err := poker.NewPlayerServer(store, game)
+	server, err := poquer.NewPlayerServer(armazenamento, partida)
 
 	if err != nil {
 		log.Fatalf("problem creating player server %v", err)

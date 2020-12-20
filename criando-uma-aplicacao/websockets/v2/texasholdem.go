@@ -1,37 +1,37 @@
-package poker
+package poquer
 
 import (
 	"io"
 	"time"
 )
 
-// TexasHoldem manages a game of poker
+// TexasHoldem manages a partida of poquer
 type TexasHoldem struct {
-	alerter BlindAlerter
-	store   PlayerStore
+	alerter       AlertadorDeBlind
+	armazenamento ArmazenamentoJogador
 }
 
-// NewTexasHoldem returns a new game
-func NewTexasHoldem(alerter BlindAlerter, store PlayerStore) *TexasHoldem {
+// NovoTexasHoldem retorna a new partida
+func NovoTexasHoldem(alerter AlertadorDeBlind, armazenamento ArmazenamentoJogador) *TexasHoldem {
 	return &TexasHoldem{
-		alerter: alerter,
-		store:   store,
+		alerter:       alerter,
+		armazenamento: armazenamento,
 	}
 }
 
-// Start will schedule blind alerts dependant on the number of players
-func (p *TexasHoldem) Start(numberOfPlayers int, alertsDestination io.Writer) {
-	blindIncrement := time.Duration(5+numberOfPlayers) * time.Minute
+// Começar will schedule blind alerts dependant on the number of players
+func (p *TexasHoldem) Começar(numeroDeJogadores int, alertsDestination io.Writer) {
+	blindIncrement := time.Duration(5+numeroDeJogadores) * time.Minute
 
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
 	blindTime := 0 * time.Second
 	for _, blind := range blinds {
-		p.alerter.ScheduleAlertAt(blindTime, blind, alertsDestination)
+		p.alerter.AgendarAlertaPara(blindTime, blind, alertsDestination)
 		blindTime = blindTime + blindIncrement
 	}
 }
 
-// Finish ends the game, recording the winner
-func (p *TexasHoldem) Finish(winner string) {
-	p.store.RecordWin(winner)
+// Terminar ends the partida, recording the vencedor
+func (p *TexasHoldem) Terminar(vencedor string) {
+	p.armazenamento.GravarVitoria(vencedor)
 }

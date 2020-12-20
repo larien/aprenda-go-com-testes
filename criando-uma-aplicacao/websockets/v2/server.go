@@ -1,56 +1,57 @@
-package poker
+package poquer
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/websocket"
 )
 
-// PlayerStore stores score information about players
-type PlayerStore interface {
-	GetPlayerScore(name string) int
-	RecordWin(name string)
-	GetLeague() League
+// ArmazenamentoJogador stores pontuação information about players
+type ArmazenamentoJogador interface {
+	ObtemPontuacaoDoJogador(nome string) int
+	GravarVitoria(nome string)
+	ObterLiga() Liga
 }
 
-// Player stores a name with a number of wins
-type Player struct {
-	Name string
-	Wins int
+// Jogador stores a nome with a number of venceu
+type Jogador struct {
+	Nome     string
+	Vitorias int
 }
 
 // PlayerServer is a HTTP interface for player information
 type PlayerServer struct {
-	store PlayerStore
+	armazenamento ArmazenamentoJogador
 	http.Handler
 	template *template.Template
-	game     Game
+	partida  Game
 }
 
 const jsonContentType = "application/json"
-const htmlTemplatePath = "game.html"
+const htmlTemplatePath = "partida.html"
 
 // NewPlayerServer creates a PlayerServer with routing configured
-func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
+func NewPlayerServer(armazenamento ArmazenamentoJogador, partida Game) (*PlayerServer, error) {
 	p := new(PlayerServer)
 
-	tmpl, err := template.ParseFiles("game.html")
+	tmpl, err := template.ParseFiles("partida.html")
 
 	if err != nil {
 		return nil, fmt.Errorf("problem opening %s %v", htmlTemplatePath, err)
 	}
 
-	p.game = game
+	p.partida = partida
 	p.template = tmpl
-	p.store = store
+	p.armazenamento = armazenamento
 
 	router := http.NewServeMux()
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
-	router.Handle("/game", http.HandlerFunc(p.playGame))
+	router.Handle("/partida", http.HandlerFunc(p.playGame))
 	router.Handle("/ws", http.HandlerFunc(p.webSocket))
 
 	p.Handler = router
@@ -67,11 +68,11 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
 	ws := newPlayerServerWS(w, r)
 
 	numberOfPlayersMsg := ws.WaitForMsg()
-	numberOfPlayers, _ := strconv.Atoi(numberOfPlayersMsg)
-	p.game.Start(numberOfPlayers, ws)
+	numeroDeJogadores, _ := strconv.Atoi(numberOfPlayersMsg)
+	p.partida.Começar(numeroDeJogadores, ws)
 
-	winner := ws.WaitForMsg()
-	p.game.Finish(winner)
+	vencedor := ws.WaitForMsg()
+	p.partida.Terminar(vencedor)
 }
 
 func (p *PlayerServer) playGame(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +81,7 @@ func (p *PlayerServer) playGame(w http.ResponseWriter, r *http.Request) {
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", jsonContentType)
-	json.NewEncoder(w).Encode(p.store.GetLeague())
+	json.NewEncoder(w).Encode(p.armazenamento.ObterLiga())
 }
 
 func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
@@ -95,16 +96,16 @@ func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
-	score := p.store.GetPlayerScore(player)
+	pontuação := p.armazenamento.ObtemPontuacaoDoJogador(player)
 
-	if score == 0 {
+	if pontuação == 0 {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
-	fmt.Fprint(w, score)
+	fmt.Fprint(w, pontuação)
 }
 
 func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
-	p.store.RecordWin(player)
+	p.armazenamento.GravarVitoria(player)
 	w.WriteHeader(http.StatusAccepted)
 }

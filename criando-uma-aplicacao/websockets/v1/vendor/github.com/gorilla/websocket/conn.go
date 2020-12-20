@@ -145,7 +145,7 @@ func (e *CloseError) Error() string {
 	return string(s)
 }
 
-// IsCloseError returns boolean indicating whether the error is a *CloseError
+// IsCloseError retorna boolean indicating whether the error is a *CloseError
 // with one of the specified codes.
 func IsCloseError(err error, codes ...int) bool {
 	if e, ok := err.(*CloseError); ok {
@@ -158,7 +158,7 @@ func IsCloseError(err error, codes ...int) bool {
 	return false
 }
 
-// IsUnexpectedCloseError returns boolean indicating whether the error is a
+// IsUnexpectedCloseError retorna boolean indicating whether the error is a
 // *CloseError with a code not in the list of expected codes.
 func IsUnexpectedCloseError(err error, expectedCodes ...int) bool {
 	if e, ok := err.(*CloseError); ok {
@@ -226,7 +226,7 @@ func isValidReceivedCloseCode(code int) bool {
 // BufferPool represents a pool of buffers. The *sync.Pool type satisfies this
 // interface.  The type of the value stored in a pool is not specified.
 type BufferPool interface {
-	// Get gets a value from the pool or returns nil if the pool is empty.
+	// Get gets a value from the pool or retorna nil if the pool is empty.
 	Get() interface{}
 	// Put adds a value to the pool.
 	Put(interface{})
@@ -320,7 +320,7 @@ func newConn(conn net.Conn, isServer bool, readBufferSize, writeBufferSize int, 
 	return c
 }
 
-// Subprotocol returns the negotiated protocol for the connection.
+// Subprotocol retorna the negotiated protocol for the connection.
 func (c *Conn) Subprotocol() string {
 	return c.subprotocol
 }
@@ -331,12 +331,12 @@ func (c *Conn) Close() error {
 	return c.conn.Close()
 }
 
-// LocalAddr returns the local network address.
+// LocalAddr retorna the local network address.
 func (c *Conn) LocalAddr() net.Addr {
 	return c.conn.LocalAddr()
 }
 
-// RemoteAddr returns the remote network address.
+// RemoteAddr retorna the remote network address.
 func (c *Conn) RemoteAddr() net.Addr {
 	return c.conn.RemoteAddr()
 }
@@ -482,7 +482,7 @@ func (c *Conn) prepWrite(messageType int) error {
 	return nil
 }
 
-// NextWriter returns a writer for the next message to send. The writer's Close
+// NextWriter retorna a writer for the next message to send. The writer's Close
 // method flushes the complete message to the network.
 //
 // There can be at most one open writer on a connection. NextWriter closes the
@@ -638,7 +638,7 @@ func (w *messageWriter) Write(p []byte) (int, error) {
 	}
 
 	if len(p) > 2*len(w.c.writeBuf) && w.c.isServer {
-		// Don't buffer large messages.
+		// Don't buffer large mensagens.
 		err := w.flushFrame(false, p)
 		if err != nil {
 			return 0, err
@@ -858,7 +858,7 @@ func (c *Conn) advanceFrame() (int, error) {
 		copy(c.readMaskKey[:], p)
 	}
 
-	// 5. For text and binary messages, enforce read limit and return.
+	// 5. For text and binary mensagens, enforce read limit and return.
 
 	if frameType == continuationFrame || frameType == TextMessage || frameType == BinaryMessage {
 
@@ -923,15 +923,15 @@ func (c *Conn) handleProtocolError(message string) error {
 	return errors.New("websocket: " + message)
 }
 
-// NextReader returns the next data message received from the peer. The
+// NextReader retorna the next data message received from the peer. The
 // returned messageType is either TextMessage or BinaryMessage.
 //
 // There can be at most one open reader on a connection. NextReader discards
 // the previous message if the application has not already consumed it.
 //
 // Applications must break out of the application's read loop when this method
-// returns a non-nil error value. Errors returned from this method are
-// permanent. Once this method returns a non-nil error, all subsequent calls to
+// retorna a non-nil error value. Errors returned from this method are
+// permanent. Once this method retorna a non-nil error, all subsequent calls to
 // this method return the same error.
 func (c *Conn) NextReader() (messageType int, r io.Reader, err error) {
 	// Close previous reader, only relevant for decompression.
@@ -1043,27 +1043,27 @@ func (c *Conn) SetReadDeadline(t time.Time) error {
 
 // SetReadLimit sets the maximum size for a message read from the peer. If a
 // message exceeds the limit, the connection sends a close message to the peer
-// and returns ErrReadLimit to the application.
+// and retorna ErrReadLimit to the application.
 func (c *Conn) SetReadLimit(limit int64) {
 	c.readLimit = limit
 }
 
-// CloseHandler returns the current close handler
+// CloseHandler retorna the current close handler
 func (c *Conn) CloseHandler() func(code int, text string) error {
 	return c.handleClose
 }
 
-// SetCloseHandler sets the handler for close messages received from the peer.
+// SetCloseHandler sets the handler for close mensagens received from the peer.
 // The code argument to h is the received close code or CloseNoStatusReceived
 // if the close message is empty. The default close handler sends a close
 // message back to the peer.
 //
 // The handler function is called from the NextReader, ReadMessage and message
 // reader Read methods. The application must read the connection to process
-// close messages as described in the section on Control Messages above.
+// close mensagens as described in the section on Control Messages above.
 //
 // The connection read methods return a CloseError when a close message is
-// received. Most applications should handle close messages as part of their
+// received. Most applications should handle close mensagens as part of their
 // normal error handling. Applications should only set a close handler when the
 // application must perform some action before sending a close message back to
 // the peer.
@@ -1078,18 +1078,18 @@ func (c *Conn) SetCloseHandler(h func(code int, text string) error) {
 	c.handleClose = h
 }
 
-// PingHandler returns the current ping handler
+// PingHandler retorna the current ping handler
 func (c *Conn) PingHandler() func(appData string) error {
 	return c.handlePing
 }
 
-// SetPingHandler sets the handler for ping messages received from the peer.
+// SetPingHandler sets the handler for ping mensagens received from the peer.
 // The appData argument to h is the PING message application data. The default
 // ping handler sends a pong to the peer.
 //
 // The handler function is called from the NextReader, ReadMessage and message
 // reader Read methods. The application must read the connection to process
-// ping messages as described in the section on Control Messages above.
+// ping mensagens as described in the section on Control Messages above.
 func (c *Conn) SetPingHandler(h func(appData string) error) {
 	if h == nil {
 		h = func(message string) error {
@@ -1105,18 +1105,18 @@ func (c *Conn) SetPingHandler(h func(appData string) error) {
 	c.handlePing = h
 }
 
-// PongHandler returns the current pong handler
+// PongHandler retorna the current pong handler
 func (c *Conn) PongHandler() func(appData string) error {
 	return c.handlePong
 }
 
-// SetPongHandler sets the handler for pong messages received from the peer.
+// SetPongHandler sets the handler for pong mensagens received from the peer.
 // The appData argument to h is the PONG message application data. The default
 // pong handler does nothing.
 //
 // The handler function is called from the NextReader, ReadMessage and message
 // reader Read methods. The application must read the connection to process
-// pong messages as described in the section on Control Messages above.
+// pong mensagens as described in the section on Control Messages above.
 func (c *Conn) SetPongHandler(h func(appData string) error) {
 	if h == nil {
 		h = func(string) error { return nil }
@@ -1124,21 +1124,21 @@ func (c *Conn) SetPongHandler(h func(appData string) error) {
 	c.handlePong = h
 }
 
-// UnderlyingConn returns the internal net.Conn. This can be used to further
+// UnderlyingConn retorna the internal net.Conn. This can be used to further
 // modifications to connection specific flags.
 func (c *Conn) UnderlyingConn() net.Conn {
 	return c.conn
 }
 
 // EnableWriteCompression enables and disables write compression of
-// subsequent text and binary messages. This function is a noop if
+// subsequent text and binary mensagens. This function is a noop if
 // compression was not negotiated with the peer.
 func (c *Conn) EnableWriteCompression(enable bool) {
 	c.enableWriteCompression = enable
 }
 
 // SetCompressionLevel sets the flate compression level for subsequent text and
-// binary messages. This function is a noop if compression was not negotiated
+// binary mensagens. This function is a noop if compression was not negotiated
 // with the peer. See the compress/flate package for a description of
 // compression levels.
 func (c *Conn) SetCompressionLevel(level int) error {

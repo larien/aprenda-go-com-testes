@@ -12,7 +12,7 @@ type Liga []Jogador
 // Find tries to return a player from a Liga
 func (l Liga) Find(nome string) *Jogador {
 	for i, p := range l {
-		if p.Name == nome {
+		if p.Nome == nome {
 			return &l[i]
 		}
 	}

@@ -1,13 +1,12 @@
 package main
 
 import (
-	"github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v1"
 	"log"
 	"net/http"
 	"os"
 )
 
-const dbFileName = "game.db.json"
+const dbFileName = "partida.db.json"
 
 func main() {
 	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
@@ -16,13 +15,13 @@ func main() {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
 
-	store, err := poker.NewFileSystemPlayerStore(db)
+	armazenamento, err := poquer.NewFileSystemPlayerStore(db)
 
 	if err != nil {
-		log.Fatalf("problem creating file system player store, %v ", err)
+		log.Fatalf("problem creating file system player armazenamento, %v ", err)
 	}
 
-	server, err := poker.NewPlayerServer(store)
+	server, err := poquer.NewPlayerServer(armazenamento)
 
 	if err != nil {
 		log.Fatalf("problem creating player server %v", err)

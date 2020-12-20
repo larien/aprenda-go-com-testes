@@ -27,7 +27,7 @@ func (proxy_direct) Dial(network, addr string) (net.Conn, error) {
 	return net.Dial(network, addr)
 }
 
-// A PerHost directs connections to a default Dialer unless the host name
+// A PerHost directs connections to a default Dialer unless the host nome
 // requested matches one of a number of exceptions.
 type proxy_PerHost struct {
 	def, bypass proxy_Dialer
@@ -38,7 +38,7 @@ type proxy_PerHost struct {
 	bypassHosts    []string
 }
 
-// NewPerHost returns a PerHost Dialer that directs connections to either
+// NewPerHost retorna a PerHost Dialer that directs connections to either
 // defaultDialer or bypass, depending on whether the connection matches one of
 // the configured rules.
 func proxy_NewPerHost(defaultDialer, bypass proxy_Dialer) *proxy_PerHost {
@@ -94,7 +94,7 @@ func (p *proxy_PerHost) dialerForRequest(host string) proxy_Dialer {
 
 // AddFromString parses a string that contains comma-separated values
 // specifying hosts that should use the bypass proxy. Each value is either an
-// IP address, a CIDR range, a zone (*.example.com) or a host name
+// IP address, a CIDR range, a zone (*.example.com) or a host nome
 // (localhost). A best effort is made to parse the string and errors are
 // ignored.
 func (p *proxy_PerHost) AddFromString(s string) {
@@ -149,7 +149,7 @@ func (p *proxy_PerHost) AddZone(zone string) {
 	p.bypassZones = append(p.bypassZones, zone)
 }
 
-// AddHost specifies a host name that will use the bypass proxy.
+// AddHost specifies a host nome that will use the bypass proxy.
 func (p *proxy_PerHost) AddHost(host string) {
 	if strings.HasSuffix(host, ".") {
 		host = host[:len(host)-1]
@@ -168,7 +168,7 @@ type proxy_Auth struct {
 	User, Password string
 }
 
-// FromEnvironment returns the dialer specified by the proxy related variables in
+// FromEnvironment retorna the dialer specified by the proxy related variables in
 // the environment.
 func proxy_FromEnvironment() proxy_Dialer {
 	allProxy := proxy_allProxyEnv.Get()
@@ -209,7 +209,7 @@ func proxy_RegisterDialerType(scheme string, f func(*url.URL, proxy_Dialer) (pro
 	proxy_proxySchemes[scheme] = f
 }
 
-// FromURL returns a Dialer given a URL specification and an underlying
+// FromURL retorna a Dialer given a URL specification and an underlying
 // Dialer for it to make network requests.
 func proxy_FromURL(u *url.URL, forward proxy_Dialer) (proxy_Dialer, error) {
 	var auth *proxy_Auth
@@ -270,7 +270,7 @@ func (e *proxy_envOnce) init() {
 	}
 }
 
-// SOCKS5 returns a Dialer that makes SOCKSv5 connections to the given address
+// SOCKS5 retorna a Dialer that makes SOCKSv5 connections to the given address
 // with an optional username and password. See RFC 1928 and RFC 1929.
 func proxy_SOCKS5(network, addr string, auth *proxy_Auth, forward proxy_Dialer) (proxy_Dialer, error) {
 	s := &proxy_socks5{
@@ -414,7 +414,7 @@ func (s *proxy_socks5) connect(conn net.Conn, target string) error {
 		buf = append(buf, ip...)
 	} else {
 		if len(host) > 255 {
-			return errors.New("proxy: destination host name too long: " + host)
+			return errors.New("proxy: destination host nome too long: " + host)
 		}
 		buf = append(buf, proxy_socks5Domain)
 		buf = append(buf, byte(len(host)))
@@ -452,7 +452,7 @@ func (s *proxy_socks5) connect(conn net.Conn, target string) error {
 		}
 		bytesToDiscard = int(buf[0])
 	default:
-		return errors.New("proxy: got unknown address type " + strconv.Itoa(int(buf[3])) + " from SOCKS5 proxy at " + s.addr)
+		return errors.New("proxy: obtido unknown address type " + strconv.Itoa(int(buf[3])) + " from SOCKS5 proxy at " + s.addr)
 	}
 
 	if cap(buf) < bytesToDiscard {

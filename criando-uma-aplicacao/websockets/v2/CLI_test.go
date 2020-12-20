@@ -1,144 +1,145 @@
-package poker_test
+package poquer_test
 
 import (
 	"bytes"
-	"github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
 	"io"
 	"strings"
 	"testing"
 	"time"
+
+	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
 )
 
-var dummyBlindAlerter = &poker.SpyBlindAlerter{}
-var dummyPlayerStore = &poker.StubPlayerStore{}
-var dummyStdIn = &bytes.Buffer{}
-var dummyStdOut = &bytes.Buffer{}
+var AlertadorDeBlindTosco = &poquer.AlertadorDeBlindEspiao{}
+var ArmazenamentoJogadorTosco = &poquer.EsbocoDeArmazenamentoJogador{}
+var EntradaTosca = &bytes.Buffer{}
+var SaidaTosca = &bytes.Buffer{}
 
-type GameSpy struct {
-	StartCalled     bool
-	StartCalledWith int
-	BlindAlert      []byte
+type JogoEspiao struct {
+	ComecouASerChamado    bool
+	ComecouASerChamadoCom int
+	AlertaDeBlind         []byte
 
-	FinishedCalled   bool
-	FinishCalledWith string
+	TerminouDeSerChamado    bool
+	TerminouDeSerChamadoCom string
 }
 
-func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
-	g.StartCalled = true
-	g.StartCalledWith = numberOfPlayers
-	out.Write(g.BlindAlert)
+func (j *JogoEspiao) Começar(numeroDeJogadores int, out io.Writer) {
+	j.ComecouASerChamado = true
+	j.ComecouASerChamadoCom = numeroDeJogadores
+	out.Write(j.AlertaDeBlind)
 }
 
-func (g *GameSpy) Finish(winner string) {
-	g.FinishedCalled = true
-	g.FinishCalledWith = winner
+func (j *JogoEspiao) Terminar(vencedor string) {
+	j.TerminouDeSerChamado = true
+	j.TerminouDeSerChamadoCom = vencedor
 }
 
-func userSends(messages ...string) io.Reader {
-	return strings.NewReader(strings.Join(messages, "\n"))
+func usuarioEnvia(mensagens ...string) io.Reader {
+	return strings.NewReader(strings.Join(mensagens, "\n"))
 }
 
 func TestCLI(t *testing.T) {
 
-	t.Run("start game with 3 players and finish game with 'Chris' as winner", func(t *testing.T) {
-		game := &GameSpy{}
+	t.Run("começa partida com 3 jogadores e termina partida com 'Chris' como vencedor", func(t *testing.T) {
+		partida := &JogoEspiao{}
 
 		out := &bytes.Buffer{}
-		in := userSends("3", "Chris wins")
+		in := usuarioEnvia("3", "Chris venceu")
 
-		poker.NewCLI(in, out, game).PlayPoker()
+		poquer.NovaCLI(in, out, partida).JogarPoquer()
 
-		assertMessagesSentToUser(t, out, poker.PlayerPrompt)
-		assertGameStartedWith(t, game, 3)
-		assertFinishCalledWith(t, game, "Chris")
+		verificaMensagensEnviadasParaUsuario(t, out, poquer.PromptJogador)
+		verificaJogoComeçadoCom(t, partida, 3)
+		verificaTerminosChamadosCom(t, partida, "Chris")
 	})
 
-	t.Run("start game with 8 players and record 'Cleo' as winner", func(t *testing.T) {
-		game := &GameSpy{}
+	t.Run("começa partida com 8 jogadores e grava 'Cleo' como vencedor", func(t *testing.T) {
+		partida := &JogoEspiao{}
 
-		in := userSends("8", "Cleo wins")
+		in := usuarioEnvia("8", "Cleo venceu")
 
-		poker.NewCLI(in, dummyStdOut, game).PlayPoker()
+		poquer.NovaCLI(in, SaidaTosca, partida).JogarPoquer()
 
-		assertGameStartedWith(t, game, 8)
-		assertFinishCalledWith(t, game, "Cleo")
+		verificaJogoComeçadoCom(t, partida, 8)
+		verificaTerminosChamadosCom(t, partida, "Cleo")
 	})
 
-	t.Run("it prints an error when a non numeric value is entered and does not start the game", func(t *testing.T) {
-		game := &GameSpy{}
+	t.Run("imprime um erro quando um valor não numérico é inserido e não começa a partida", func(t *testing.T) {
+		partida := &JogoEspiao{}
 
 		out := &bytes.Buffer{}
-		in := userSends("pies")
+		in := usuarioEnvia("tortas")
 
-		poker.NewCLI(in, out, game).PlayPoker()
+		poquer.NovaCLI(in, out, partida).JogarPoquer()
 
-		assertGameNotStarted(t, game)
-		assertMessagesSentToUser(t, out, poker.PlayerPrompt, poker.BadPlayerInputErrMsg)
+		verificaPartidaNaoIniciada(t, partida)
+		verificaMensagensEnviadasParaUsuario(t, out, poquer.PromptJogador, poquer.ErrMsgEntradaJogadorIncorreta)
 	})
 
-	t.Run("it prints an error when the winner is declared incorrectly", func(t *testing.T) {
-		game := &GameSpy{}
+	t.Run("imprime um erro quando o vencedor é declarado incorretamente", func(t *testing.T) {
+		partida := &JogoEspiao{}
 
 		out := &bytes.Buffer{}
-		in := userSends("8", "Lloyd is a killer")
+		in := usuarioEnvia("8", "Lloyd é incrível")
 
-		poker.NewCLI(in, out, game).PlayPoker()
+		poquer.NovaCLI(in, out, partida).JogarPoquer()
 
-		assertGameNotFinished(t, game)
-		assertMessagesSentToUser(t, out, poker.PlayerPrompt, poker.BadWinnerInputMsg)
+		verificaPartidaNaoFinalizada(t, partida)
+		verificaMensagensEnviadasParaUsuario(t, out, poquer.PromptJogador, poquer.ErrMsgEntradaVencedorIncorreta)
 	})
 }
 
-func assertGameStartedWith(t *testing.T, game *GameSpy, numberOfPlayersWanted int) {
+func verificaJogoComeçadoCom(t *testing.T, partida *JogoEspiao, numeroDeJogadoresDesejados int) {
 	t.Helper()
 
-	passed := retryUntil(500*time.Millisecond, func() bool {
-		return game.StartCalledWith == numberOfPlayersWanted
+	passou := tentarNovamenteAte(500*time.Millisecond, func() bool {
+		return partida.ComecouASerChamadoCom == numeroDeJogadoresDesejados
 	})
 
-	if !passed {
-		t.Errorf("wanted Start called with %d but got %d", numberOfPlayersWanted, game.StartCalledWith)
+	if !passou {
+		t.Errorf("esperava Começar chamado com %d mas obteve %d", numeroDeJogadoresDesejados, partida.ComecouASerChamadoCom)
 	}
 }
 
-func assertGameNotFinished(t *testing.T, game *GameSpy) {
+func verificaPartidaNaoFinalizada(t *testing.T, partida *JogoEspiao) {
 	t.Helper()
-	if game.FinishedCalled {
-		t.Errorf("game should not have finished")
+	if partida.TerminouDeSerChamado {
+		t.Errorf("partida não deveria ter finalizado")
 	}
 }
 
-func assertGameNotStarted(t *testing.T, game *GameSpy) {
+func verificaPartidaNaoIniciada(t *testing.T, partida *JogoEspiao) {
 	t.Helper()
-	if game.StartCalled {
-		t.Errorf("game should not have started")
+	if partida.ComecouASerChamado {
+		t.Errorf("partida não deveria ter começado")
 	}
 }
 
-func assertFinishCalledWith(t *testing.T, game *GameSpy, winner string) {
+func verificaTerminosChamadosCom(t *testing.T, partida *JogoEspiao, vencedor string) {
 	t.Helper()
 
-	passed := retryUntil(500*time.Millisecond, func() bool {
-		return game.FinishCalledWith == winner
+	passou := tentarNovamenteAte(500*time.Millisecond, func() bool {
+		return partida.TerminouDeSerChamadoCom == vencedor
 	})
 
-	if !passed {
-		t.Errorf("expected finish called with '%s' but got '%s'", winner, game.FinishCalledWith)
+	if !passou {
+		t.Errorf("esperava chamada de término com '%s' mas obteve '%s' ", vencedor, partida.TerminouDeSerChamadoCom)
 	}
 }
 
-func assertMessagesSentToUser(t *testing.T, stdout *bytes.Buffer, messages ...string) {
+func verificaMensagensEnviadasParaUsuario(t *testing.T, saida *bytes.Buffer, mensagens ...string) {
 	t.Helper()
-	want := strings.Join(messages, "")
-	got := stdout.String()
-	if got != want {
-		t.Errorf("got '%s' sent to stdout but expected %+v", got, messages)
+	esperado := strings.Join(mensagens, "")
+	obtido := saida.String()
+	if obtido != esperado {
+		t.Errorf("obtido '%s' enviado para saida mas esperava %+v", obtido, mensagens)
 	}
 }
 
-func assertScheduledAlert(t *testing.T, got, want poker.ScheduledAlert) {
+func verificaAlertaAgendado(t *testing.T, obtido, esperado poquer.AlertaAgendado) {
 	t.Helper()
-	if got != want {
-		t.Errorf("got %+v, want %+v", got, want)
+	if obtido != esperado {
+		t.Errorf("obtido %+v, esperado %+v", obtido, esperado)
 	}
 }

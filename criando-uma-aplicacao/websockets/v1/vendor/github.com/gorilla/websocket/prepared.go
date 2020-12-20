@@ -36,7 +36,7 @@ type preparedFrame struct {
 	data []byte
 }
 
-// NewPreparedMessage returns an initialized PreparedMessage. You can then send
+// NewPreparedMessage retorna an initialized PreparedMessage. You can then send
 // it to connection using WritePreparedMessage method. Valid wire
 // representation will be calculated lazily only once for a set of current
 // connection options.

@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"fmt"
@@ -6,58 +6,58 @@ import (
 	"time"
 )
 
-// StubPlayerStore implements PlayerStore for testing purposes
-type StubPlayerStore struct {
-	Scores   map[string]int
-	WinCalls []string
-	League   []Player
+// EsbocoDeArmazenamentoJogador implementa ArmazenamentoJogador para propósitos de teste
+type EsbocoDeArmazenamentoJogador struct {
+	Pontuações        map[string]int
+	ChamadasDeVitoria []string
+	Liga              []Jogador
 }
 
-// GetPlayerScore returns a score from Scores
-func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	score := s.Scores[name]
-	return score
+// ObtemPontuacaoDoJogador retorna uma pontuação de Pontuações
+func (s *EsbocoDeArmazenamentoJogador) ObtemPontuacaoDoJogador(nome string) int {
+	pontuação := s.Pontuações[nome]
+	return pontuação
 }
 
-// RecordWin will record a win to WinCalls
-func (s *StubPlayerStore) RecordWin(name string) {
-	s.WinCalls = append(s.WinCalls, name)
+// GravarVitoria grava uma vitória para ChamadasDeVitoria
+func (s *EsbocoDeArmazenamentoJogador) GravarVitoria(nome string) {
+	s.ChamadasDeVitoria = append(s.ChamadasDeVitoria, nome)
 }
 
-// GetLeague returns League
-func (s *StubPlayerStore) GetLeague() League {
-	return s.League
+// ObterLiga retorna Liga
+func (s *EsbocoDeArmazenamentoJogador) ObterLiga() Liga {
+	return s.Liga
 }
 
-// AssertPlayerWin allows you to spy on the store's calls to RecordWin
-func AssertPlayerWin(t *testing.T, store *StubPlayerStore, winner string) {
+// VerificaVitoriaDoVencedor te permite espionar as chamadas ao armazenamento de GravarVitoria
+func VerificaVitoriaDoVencedor(t *testing.T, armazenamento *EsbocoDeArmazenamentoJogador, vencedor string) {
 	t.Helper()
 
-	if len(store.WinCalls) != 1 {
-		t.Fatalf("got %d calls to RecordWin want %d", len(store.WinCalls), 1)
+	if len(armazenamento.ChamadasDeVitoria) != 1 {
+		t.Fatalf("obtido %d chamadas paraGravarVitoria esperado %d", len(armazenamento.ChamadasDeVitoria), 1)
 	}
 
-	if store.WinCalls[0] != winner {
-		t.Errorf("did not store correct winner got '%s' want '%s'", store.WinCalls[0], winner)
+	if armazenamento.ChamadasDeVitoria[0] != vencedor {
+		t.Errorf("não armazenou o vencedor correto obtido '%s' esperado '%s'", armazenamento.ChamadasDeVitoria[0], vencedor)
 	}
 }
 
-// ScheduledAlert holds information about when an alert is scheduled
-type ScheduledAlert struct {
-	At     time.Duration
-	Amount int
+// AlertaAgendado contém informações sobre quando um alerta é agendado
+type AlertaAgendado struct {
+	Em      time.Duration
+	Quantia int
 }
 
-func (s ScheduledAlert) String() string {
-	return fmt.Sprintf("%d chips at %v", s.Amount, s.At)
+func (s AlertaAgendado) String() string {
+	return fmt.Sprintf("%d chips em %v", s.Quantia, s.Em)
 }
 
-// SpyBlindAlerter allows you to spy on ScheduleAlertAt calls
-type SpyBlindAlerter struct {
-	Alerts []ScheduledAlert
+// AlertadorDeBlindEspiao te permite espionar em chamadas AgendarAlertaPara
+type AlertadorDeBlindEspiao struct {
+	Alertas []AlertaAgendado
 }
 
-// ScheduleAlertAt records alerts that have been scheduled
-func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int) {
-	s.Alerts = append(s.Alerts, ScheduledAlert{at, amount})
+// AgendarAlertaPara grava alertas que foram agendados
+func (s *AlertadorDeBlindEspiao) AgendarAlertaPara(em time.Duration, quantia int) {
+	s.Alertas = append(s.Alertas, AlertaAgendado{em, quantia})
 }

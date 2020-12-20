@@ -24,12 +24,12 @@ func (e HandshakeError) Error() string { return e.message }
 // Upgrader specifies parameters for upgrading an HTTP connection to a
 // WebSocket connection.
 type Upgrader struct {
-	// HandshakeTimeout specifies the duration for the handshake to complete.
+	// HandshakeTimeout specifies the duracao for the handshake to complete.
 	HandshakeTimeout time.Duration
 
 	// ReadBufferSize and WriteBufferSize specify I/O buffer sizes. If a buffer
 	// size is zero, then buffers allocated by the HTTP server are used. The
-	// I/O buffer sizes do not limit the size of the messages that can be sent
+	// I/O buffer sizes do not limit the size of the mensagens that can be sent
 	// or received.
 	ReadBufferSize, WriteBufferSize int
 
@@ -56,7 +56,7 @@ type Upgrader struct {
 	// is nil, then http.Error is used to generate the HTTP response.
 	Error func(w http.ResponseWriter, r *http.Request, status int, reason error)
 
-	// CheckOrigin returns true if the request Origin header is acceptable. If
+	// CheckOrigin retorna true if the request Origin header is acceptable. If
 	// CheckOrigin is nil, then a safe default is used: return false if the
 	// Origin request header is present and the origin host is not equal to
 	// request Host header.
@@ -83,7 +83,7 @@ func (u *Upgrader) returnError(w http.ResponseWriter, r *http.Request, status in
 	return nil, err
 }
 
-// checkSameOrigin returns true if the origin is not set or is equal to the request host.
+// checkSameOrigin retorna true if the origin is not set or is equal to the request host.
 func checkSameOrigin(r *http.Request) bool {
 	origin := r.Header["Origin"]
 	if len(origin) == 0 {
@@ -289,7 +289,7 @@ func (u *Upgrader) Upgrade(w http.ResponseWriter, r *http.Request, responseHeade
 // readBufSize and writeBufSize parameters specify the size of the buffers to
 // use. Messages can be larger than the buffers.
 //
-// If the request is not a valid WebSocket handshake, then Upgrade returns an
+// If the request is not a valid WebSocket handshake, then Upgrade retorna an
 // error of type HandshakeError. Applications should handle this error by
 // replying to the client with an HTTP error response.
 func Upgrade(w http.ResponseWriter, r *http.Request, responseHeader http.Header, readBufSize, writeBufSize int) (*Conn, error) {
@@ -304,7 +304,7 @@ func Upgrade(w http.ResponseWriter, r *http.Request, responseHeader http.Header,
 	return u.Upgrade(w, r, responseHeader)
 }
 
-// Subprotocols returns the subprotocols requested by the client in the
+// Subprotocols retorna the subprotocols requested by the client in the
 // Sec-Websocket-Protocol header.
 func Subprotocols(r *http.Request) []string {
 	h := strings.TrimSpace(r.Header.Get("Sec-Websocket-Protocol"))
@@ -318,16 +318,16 @@ func Subprotocols(r *http.Request) []string {
 	return protocols
 }
 
-// IsWebSocketUpgrade returns true if the client requested upgrade to the
+// IsWebSocketUpgrade retorna true if the client requested upgrade to the
 // WebSocket protocol.
 func IsWebSocketUpgrade(r *http.Request) bool {
 	return tokenListContainsValue(r.Header, "Connection", "upgrade") &&
 		tokenListContainsValue(r.Header, "Upgrade", "websocket")
 }
 
-// bufioReaderSize size returns the size of a bufio.Reader.
+// bufioReaderSize size retorna the size of a bufio.Reader.
 func bufioReaderSize(originalReader io.Reader, br *bufio.Reader) int {
-	// This code assumes that peek on a reset reader returns
+	// This code assumes that peek on a reset reader retorna
 	// bufio.Reader.buf[:0].
 	// TODO: Use bufio.Reader.Size() after Go 1.10
 	br.Reset(originalReader)
@@ -337,7 +337,7 @@ func bufioReaderSize(originalReader io.Reader, br *bufio.Reader) int {
 	return 0
 }
 
-// writeHook is an io.Writer that records the last slice passed to it vio
+// writeHook is an io.Writer that records the last slice passou to it vio
 // io.Writer.Write.
 type writeHook struct {
 	p []byte
@@ -350,7 +350,7 @@ func (wh *writeHook) Write(p []byte) (int, error) {
 
 // bufioWriterBuffer grabs the buffer from a bufio.Writer.
 func bufioWriterBuffer(originalWriter io.Writer, bw *bufio.Writer) []byte {
-	// This code assumes that bufio.Writer.buf[:1] is passed to the
+	// This code assumes that bufio.Writer.buf[:1] is passou to the
 	// bufio.Writer's underlying writer.
 	var wh writeHook
 	bw.Reset(&wh)

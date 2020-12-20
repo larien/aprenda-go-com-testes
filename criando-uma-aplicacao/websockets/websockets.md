@@ -67,22 +67,22 @@ JavaScript com testes".
 ## Escreva o teste primeiro
 
 A primeira coisa que precisamos fazer é montar algum HTML para os usuários
-quando eles acessarem `/game`.
+quando eles acessarem `/partida`.
 
 Aqui está um lembrete do código no nosso servidor web:
 
 ```go
 type PlayerServer struct {
-    store PlayerStore
+    armazenamento ArmazenamentoJogador
     http.Handler
 }
 
 const jsonContentType = "application/json"
 
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+func NewPlayerServer(armazenamento ArmazenamentoJogador) *PlayerServer {
     p := new(PlayerServer)
 
-    p.store = store
+    p.armazenamento = armazenamento
 
     router := http.NewServeMux()
     router.Handle("/league", http.HandlerFunc(p.leagueHandler))
@@ -95,14 +95,14 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 ```
 
 A maneira _mais fácil_ que podemos fazer por agora é checar que recebemos um
-código `200` quando acessamos o `GET /game`.
+código `200` quando acessamos o `GET /partida`.
 
 ```go
 func TestGame(t *testing.T) {
-    t.Run("GET /game returns 200", func(t *testing.T) {
-        server := NewPlayerServer(&StubPlayerStore{})
+    t.Run("GET /partida retorna 200", func(t *testing.T) {
+        server := NewPlayerServer(&EsbocoDeArmazenamentoJogador{})
 
-        request, _ := http.NewRequest(http.MethodGet, "/game", nil)
+        request, _ := http.NewRequest(http.MethodGet, "/partida", nil)
         response := httptest.NewRecorder()
 
         server.ServeHTTP(response, request)
@@ -118,7 +118,7 @@ func TestGame(t *testing.T) {
 --- FAIL: TestGame (0.00s)
 === RUN   TestGame/GET_/game_returns_200
     --- FAIL: TestGame/GET_/game_returns_200 (0.00s)
-        server_test.go:109: did not get correct status, got 404, want 200
+        server_test.go:109: did not get correct status, obtido 404, esperado 200
 ```
 
 ## Escreva código suficiente para fazer o teste passar
@@ -128,13 +128,13 @@ Our server has a router setup so it's relatively easy to fix.
 To our router add
 
 ```go
-router.Handle("/game", http.HandlerFunc(p.game))
+router.Handle("/partida", http.HandlerFunc(p.partida))
 ```
 
-E então escreva o método `game`
+E então escreva o método `partida`
 
 ```go
-func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
+func (p *PlayerServer) partida(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
 }
 ```
@@ -149,8 +149,8 @@ função você mesmo.
 
 ```go
 func TestGame(t *testing.T) {
-    t.Run("GET /game returns 200", func(t *testing.T) {
-        server := NewPlayerServer(&StubPlayerStore{})
+    t.Run("GET /partida retorna 200", func(t *testing.T) {
+        server := NewPlayerServer(&EsbocoDeArmazenamentoJogador{})
 
         request :=  newGameRequest()
         response := httptest.NewRecorder()
@@ -174,18 +174,18 @@ Now we need to make the endpoint return some HTML, here it is
     <title>Let's play poquer</title>
 </head>
 <body>
-<section id="game">
-    <div id="declare-winner">
-        <label for="winner">Winner</label>
-        <input type="text" id="winner"/>
-        <button id="winner-button">Declare winner</button>
+<section id="partida">
+    <div id="declare-vencedor">
+        <label for="vencedor">Winner</label>
+        <input type="text" id="vencedor"/>
+        <button id="vencedor-button">Declare vencedor</button>
     </div>
 </section>
 </body>
 <script type="application/javascript">
 
-    const submitWinnerButton = document.getElementById('winner-button')
-    const winnerInput = document.getElementById('winner')
+    const submitWinnerButton = document.getElementById('vencedor-button')
+    const winnerInput = document.getElementById('vencedor')
 
     if (window['WebSocket']) {
         const conn = new WebSocket('ws://' + document.location.host + '/ws')
@@ -219,13 +219,13 @@ There are a few ways. As has been emphasised throughout the book, it is importan
 
 So in the book "Learn Go with Tests" for the first time, we're not going to write a test.
 
-Put the markup in a file called `game.html`
+Put the markup in a file called `partida.html`
 
 Next change the endpoint we just wrote to the following
 
 ```go
-func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
-    tmpl, err := template.ParseFiles("game.html")
+func (p *PlayerServer) partida(w http.ResponseWriter, r *http.Request) {
+    tmpl, err := template.ParseFiles("partida.html")
 
     if err != nil {
         http.Error(w, fmt.Sprintf("problem loading template %s", err.Error()), http.StatusInternalServerError)
@@ -236,15 +236,15 @@ func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-[`html/template`](https://golang.org/pkg/html/template/) is a Go package for creating HTML. In our case we call `template.ParseFiles`, giving the path of our html file. Assuming there is no error you can then `Execute` the template, which writes it to an `io.Writer`. In our case we want it to `Write` to the internet, so we give it our `http.ResponseWriter`.
+[`html/template`](https://golang.org/pkg/html/template/) is a Go package for creating HTML. In our case we call `template.ParseFiles`, giving the path of our html file. Assuming there is no error you can then `Execute` the template, which writes it to an `io.Writer`. In our case we esperado it to `Write` to the internet, so we give it our `http.ResponseWriter`.
 
-As we have not written a test, it would be prudent to manually test our web server just to make sure things are working as we'd hope. Go to `cmd/webserver` and run the `main.go` file. Visit `http://localhost:5000/game`.
+As we have not written a test, it would be prudent to manually test our web server just to make sure things are working as we'd hope. Go to `cmd/webserver` and run the `main.go` file. Visit `http://localhost:5000/partida`.
 
-You _should_ have got an error about not being able to find the template. You can either change the path to be relative to your folder, or you can have a copy of the `game.html` in the `cmd/webserver` directory. I chose to create a symlink \(`ln -s ../../game.html game.html`\) to the file inside the root of the project so if I make changes they are reflected when running the server.
+You _should_ have obtido an error about not being able to find the template. You can either change the path to be relative to your folder, or you can have a copy of the `partida.html` in the `cmd/webserver` directory. I chose to create a symlink \(`ln -s ../../partida.html partida.html`\) to the file inside the root of the project so if I make changes they are reflected when running the server.
 
 If you make this change and run again you should see our UI.
 
-Now we need to test that when we get a string over a WebSocket connection to our server that we declare it as a winner of a game.
+Now we need to test that when we get a string over a WebSocket connection to our server that we declare it as a vencedor of a partida.
 
 ## Write the test first
 
@@ -255,10 +255,10 @@ Run `go get github.com/gorilla/websocket`
 This will fetch the code for the excellent [Gorilla WebSocket](https://github.com/gorilla/websocket) library. Now we can update our tests for our new requirement.
 
 ```go
-t.Run("when we get a message over a websocket it is a winner of a game", func(t *testing.T) {
-    store := &StubPlayerStore{}
-    winner := "Ruth"
-    server := httptest.NewServer(NewPlayerServer(store))
+t.Run("when we get a message over a websocket it is a vencedor of a partida", func(t *testing.T) {
+    armazenamento := &EsbocoDeArmazenamentoJogador{}
+    vencedor := "Ruth"
+    server := httptest.NewServer(NewPlayerServer(armazenamento))
     defer server.Close()
 
     wsURL := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws"
@@ -269,11 +269,11 @@ t.Run("when we get a message over a websocket it is a winner of a game", func(t 
     }
     defer ws.Close()
 
-    if err := ws.WriteMessage(websocket.TextMessage, []byte(winner)); err != nil {
+    if err := ws.WriteMessage(websocket.TextMessage, []byte(vencedor)); err != nil {
         t.Fatalf("could not send message over ws connection %v", err)
     }
 
-    AssertPlayerWin(t, store, winner)
+    VerificaVitoriaDoVencedor(t, armazenamento, vencedor)
 })
 ```
 
@@ -283,9 +283,9 @@ To test what happens from the browser we have to open up our own WebSocket conne
 
 Our previous tests around our server just called methods on our server but now we need to have a persistent connection to our server. To do that we use `httptest.NewServer` which takes a `http.Handler` and will spin it up and listen for connections.
 
-Using `websocket.DefaultDialer.Dial` we try to dial in to our server and then we'll try and send a message with our `winner`.
+Using `websocket.DefaultDialer.Dial` we try to dial in to our server and then we'll try and send a message with our `vencedor`.
 
-Finally we assert on the player store to check the winner was recorded.
+Finally we assert on the player armazenamento to check the vencedor was recorded.
 
 ## Try to run the test
 
@@ -322,10 +322,10 @@ To accept a WebSocket connection we `Upgrade` the request. If you now re-run the
 ```text
 === RUN   TestGame/when_we_get_a_message_over_a_websocket_it_is_a_winner_of_a_game
     --- FAIL: TestGame/when_we_get_a_message_over_a_websocket_it_is_a_winner_of_a_game (0.00s)
-        server_test.go:132: got 0 calls to RecordWin want 1
+        server_test.go:132: obtido 0 chamadas paraGravarVitoria esperado 1
 ```
 
-Now that we have a connection opened, we'll want to listen for a message and then record it as the winner.
+Now that we have a connection opened, we'll esperado to listen for a message and then record it as the vencedor.
 
 ```go
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
@@ -335,13 +335,13 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
     }
     conn, _ := upgrader.Upgrade(w, r, nil)
     _, winnerMsg, _ := conn.ReadMessage()
-    p.store.RecordWin(string(winnerMsg))
+    p.armazenamento.GravarVitoria(string(winnerMsg))
 }
 ```
 
 \(Yes, we're ignoring a lot of errors right now!\)
 
-`conn.ReadMessage()` blocks on waiting for a message on the connection. Once we get one we use it to `RecordWin`. This would finally close the WebSocket connection.
+`conn.ReadMessage()` blocks on waiting for a message on the connection. Once we get one we use it to `GravarVitoria`. This would finally close the WebSocket connection.
 
 If you try and run the test, it's still failing.
 
@@ -351,7 +351,7 @@ Let's go with that for now but acknowledge that putting in arbitrary sleeps into
 
 ```go
 time.Sleep(10 * time.Millisecond)
-AssertPlayerWin(t, store, winner)
+VerificaVitoriaDoVencedor(t, armazenamento, vencedor)
 ```
 
 ## Refactor
@@ -373,39 +373,39 @@ var wsUpgrader = websocket.Upgrader{
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
     conn, _ := wsUpgrader.Upgrade(w, r, nil)
     _, winnerMsg, _ := conn.ReadMessage()
-    p.store.RecordWin(string(winnerMsg))
+    p.armazenamento.GravarVitoria(string(winnerMsg))
 }
 ```
 
-Our call to `template.ParseFiles("game.html")` will run on every `GET /game` which means we'll go to the file system on every request even though we have no need to re-parse the template. Let's refactor our code so that we parse the template once in `NewPlayerServer` instead. We'll have to make it so this function can now return an error in case we have problems fetching the template from disk or parsing it.
+Our call to `template.ParseFiles("partida.html")` will run on every `GET /partida` which means we'll go to the file system on every request even though we have no need to re-parse the template. Let's refactor our code so that we parse the template once in `NewPlayerServer` instead. We'll have to make it so this function can now return an error in case we have problems fetching the template from disk or parsing it.
 
 Here's the relevant changes to `PlayerServer`
 
 ```go
 type PlayerServer struct {
-    store PlayerStore
+    armazenamento ArmazenamentoJogador
     http.Handler
     template *template.Template
 }
 
-const htmlTemplatePath = "game.html"
+const htmlTemplatePath = "partida.html"
 
-func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
+func NewPlayerServer(armazenamento ArmazenamentoJogador) (*PlayerServer, error) {
     p := new(PlayerServer)
 
-    tmpl, err := template.ParseFiles("game.html")
+    tmpl, err := template.ParseFiles("partida.html")
 
     if err != nil {
         return nil, fmt.Errorf("problem opening %s %v", htmlTemplatePath, err)
     }
 
     p.template = tmpl
-    p.store = store
+    p.armazenamento = armazenamento
 
     router := http.NewServeMux()
     router.Handle("/league", http.HandlerFunc(p.leagueHandler))
     router.Handle("/players/", http.HandlerFunc(p.playersHandler))
-    router.Handle("/game", http.HandlerFunc(p.game))
+    router.Handle("/partida", http.HandlerFunc(p.partida))
     router.Handle("/ws", http.HandlerFunc(p.webSocket))
 
     p.Handler = router
@@ -413,18 +413,18 @@ func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
     return p, nil
 }
 
-func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
+func (p *PlayerServer) partida(w http.ResponseWriter, r *http.Request) {
     p.template.Execute(w, nil)
 }
 ```
 
 By changing the signature of `NewPlayerServer` we now have compilation problems. Try and fix them yourself or refer to the source code if you struggle.
 
-For the test code I made a helper called `mustMakePlayerServer(t *testing.T, store PlayerStore) *PlayerServer` so that I could hide the error noise away from the tests.
+For the test code I made a helper called `mustMakePlayerServer(t *testing.T, armazenamento ArmazenamentoJogador) *PlayerServer` so that I could hide the error noise away from the tests.
 
 ```go
-func mustMakePlayerServer(t *testing.T, store PlayerStore) *PlayerServer {
-    server, err := NewPlayerServer(store)
+func mustMakePlayerServer(t *testing.T, armazenamento ArmazenamentoJogador) *PlayerServer {
+    server, err := NewPlayerServer(armazenamento)
     if err != nil {
         t.Fatal("problem creating player server", err)
     }
@@ -446,7 +446,7 @@ func mustDialWS(t *testing.T, url string) *websocket.Conn {
 }
 ```
 
-Finally in our test code we can create a helper to tidy up sending messages
+Finally in our test code we can create a helper to tidy up sending mensagens
 
 ```go
 func writeWSMessage(t *testing.T, conn *websocket.Conn, message string) {
@@ -457,11 +457,11 @@ func writeWSMessage(t *testing.T, conn *websocket.Conn, message string) {
 }
 ```
 
-Now the tests are passing try running the server and declare some winners in `/game`. You should see them recorded in `/league`. Remember that every time we get a winner we _close the connection_, you will need to refresh the page to open the connection again.
+Now the tests are passing try running the server and declare some winners in `/partida`. You should see them recorded in `/league`. Remember that every time we get a vencedor we _close the connection_, you will need to refresh the page to open the connection again.
 
-We've made a trivial web form that lets users record the winner of a game. Let's iterate on it to make it so the user can start a game by providing a number of players and the server will push messages to the client informing them of what the blind value is as time passes.
+We've made a trivial web form that lets users record the vencedor of a partida. Let's iterate on it to make it so the user can start a partida by providing a number of players and the server will push mensagens to the client informing them of what the blind value is as time passes.
 
-First of all update `game.html` to update our client side code for the new requirements
+First of all update `partida.html` to update our client side code for the new requirements
 
 ```markup
 <!DOCTYPE html>
@@ -471,48 +471,48 @@ First of all update `game.html` to update our client side code for the new requi
     <title>Lets play poquer</title>
 </head>
 <body>
-<section id="game">
-    <div id="game-start">
+<section id="partida">
+    <div id="partida-start">
         <label for="player-count">Number of players</label>
         <input type="number" id="player-count"/>
-        <button id="start-game">Start</button>
+        <button id="start-partida">Começar</button>
     </div>
 
-    <div id="declare-winner">
-        <label for="winner">Winner</label>
-        <input type="text" id="winner"/>
-        <button id="winner-button">Declare winner</button>
+    <div id="declare-vencedor">
+        <label for="vencedor">Winner</label>
+        <input type="text" id="vencedor"/>
+        <button id="vencedor-button">Declare vencedor</button>
     </div>
 
     <div id="blind-value"/>
 </section>
 
-<section id="game-end">
-    <h1>Another great game of poquer everyone!</h1>
+<section id="partida-end">
+    <h1>Another great partida of poquer everyone!</h1>
     <p><a href="/league">Go check the league table</a></p>
 </section>
 
 </body>
 <script type="application/javascript">
-    const startGame = document.getElementById('game-start')
+    const startGame = document.getElementById('partida-start')
 
-    const declareWinner = document.getElementById('declare-winner')
-    const submitWinnerButton = document.getElementById('winner-button')
-    const winnerInput = document.getElementById('winner')
+    const declareWinner = document.getElementById('declare-vencedor')
+    const submitWinnerButton = document.getElementById('vencedor-button')
+    const winnerInput = document.getElementById('vencedor')
 
     const blindContainer = document.getElementById('blind-value')
 
-    const gameContainer = document.getElementById('game')
-    const gameEndContainer = document.getElementById('game-end')
+    const gameContainer = document.getElementById('partida')
+    const gameEndContainer = document.getElementById('partida-end')
 
     declareWinner.hidden = true
     gameEndContainer.hidden = true
 
-    document.getElementById('start-game').addEventListener('click', event => {
+    document.getElementById('start-partida').addEventListener('click', event => {
         startGame.hidden = true
         declareWinner.hidden = false
 
-        const numberOfPlayers = document.getElementById('player-count').value
+        const numeroDeJogadores = document.getElementById('player-count').value
 
         if (window['WebSocket']) {
             const conn = new WebSocket('ws://' + document.location.host + '/ws')
@@ -532,7 +532,7 @@ First of all update `game.html` to update our client side code for the new requi
             }
 
             conn.onopen = function () {
-                conn.send(numberOfPlayers)
+                conn.send(numeroDeJogadores)
             }
         }
     })
@@ -540,7 +540,7 @@ First of all update `game.html` to update our client side code for the new requi
 </html>
 ```
 
-The main changes is bringing in a section to enter the number of players and a section to display the blind value. We have a little logic to show/hide the user interface depending on the stage of the game.
+The main changes is bringing in a section to enter the number of players and a section to display the blind value. We have a little logic to show/hide the user interface depending on the stage of the partida.
 
 Any message we receive via `conn.onmessage` we assume to be blind alerts and so we set the `blindContainer.innerText` accordingly.
 
@@ -548,88 +548,88 @@ How do we go about sending the blind alerts? In the previous chapter we introduc
 
 ```go
 type Game interface {
-    Start(numberOfPlayers int)
-    Finish(winner string)
+    Começar(numeroDeJogadores int)
+    Terminar(vencedor string)
 }
 ```
 
-When the user was prompted in the CLI for number of players it would `Start` the game which would kick off the blind alerts and when the user declared the winner they would `Finish`. This is the same requirements we have now, just a different way of getting the inputs; so we should look to re-use this concept if we can.
+When the user was prompted in the CLI for number of players it would `Começar` the partida which would kick off the blind alerts and when the user declared the vencedor they would `Terminar`. This is the same requirements we have now, just a different way of getting the inputs; so we should look to re-use this concept if we can.
 
 Our "real" implementation of `Game` is `TexasHoldem`
 
 ```go
 type TexasHoldem struct {
-    alerter BlindAlerter
-    store   PlayerStore
+    alerter AlertadorDeBlind
+    armazenamento   ArmazenamentoJogador
 }
 ```
 
-By sending in a `BlindAlerter` `TexasHoldem` can schedule blind alerts to be sent to _wherever_
+By sending in a `AlertadorDeBlind` `TexasHoldem` can schedule blind alerts to be sent to _wherever_
 
 ```go
-type BlindAlerter interface {
-    ScheduleAlertAt(duration time.Duration, amount int)
+type AlertadorDeBlind interface {
+    AgendarAlertaPara(duracao time.Duration, quantia int)
 }
 ```
 
-And as a reminder, here is our implementation of the `BlindAlerter` we use in the CLI.
+And as a reminder, here is our implementation of the `AlertadorDeBlind` we use in the CLI.
 
 ```go
-func StdOutAlerter(duration time.Duration, amount int) {
-    time.AfterFunc(duration, func() {
-        fmt.Fprintf(os.Stdout, "Blind is now %d\n", amount)
+func SaidaAlertador(duracao time.Duration, quantia int) {
+    time.AfterFunc(duracao, func() {
+        fmt.Fprintf(os.Stdout, "Blind agora é %d\n", quantia)
     })
 }
 ```
 
-This works in CLI because we _always want to send the alerts to `os.Stdout`_ but this wont work for our web server. For every request we get a new `http.ResponseWriter` which we then upgrade to `*websocket.Conn`. So we cant know when constructing our dependencies where our alerts need to go.
+This works in CLI because we _always esperado to send the alerts to `os.Stdout`_ but this wont work for our web server. For every request we get a new `http.ResponseWriter` which we then upgrade to `*websocket.Conn`. So we cant know when constructing our dependencies where our alerts need to go.
 
-For that reason we need to change `BlindAlerter.ScheduleAlertAt` so that it takes a destination for the alerts so that we can re-use it in our webserver.
+For that reason we need to change `AlertadorDeBlind.AgendarAlertaPara` so that it takes a destination for the alerts so that we can re-use it in our webserver.
 
-Open BlindAlerter.go and add the parameter `to io.Writer`
+Open AlertadorDeBlind.go and add the parameter `to io.Writer`
 
 ```go
-type BlindAlerter interface {
-    ScheduleAlertAt(duration time.Duration, amount int, to io.Writer)
+type AlertadorDeBlind interface {
+    AgendarAlertaPara(duracao time.Duration, quantia int, to io.Writer)
 }
 
-type BlindAlerterFunc func(duration time.Duration, amount int, to io.Writer)
+type AlertadorDeBlindFunc func(duracao time.Duration, quantia int, to io.Writer)
 
-func (a BlindAlerterFunc) ScheduleAlertAt(duration time.Duration, amount int, to io.Writer) {
-    a(duration, amount, to)
+func (a AlertadorDeBlindFunc) AgendarAlertaPara(duracao time.Duration, quantia int, to io.Writer) {
+    a(duracao, quantia, to)
 }
 ```
 
 The idea of a `StdoutAlerter` doesn't fit our new model so just rename it to `Alerter`
 
 ```go
-func Alerter(duration time.Duration, amount int, to io.Writer) {
-    time.AfterFunc(duration, func() {
-        fmt.Fprintf(to, "Blind is now %d\n", amount)
+func Alerter(duracao time.Duration, quantia int, to io.Writer) {
+    time.AfterFunc(duracao, func() {
+        fmt.Fprintf(to, "Blind agora é %d\n", quantia)
     })
 }
 ```
 
-If you try and compile, it will fail in `TexasHoldem` because it is calling `ScheduleAlertAt` without a destination, to get things compiling again _for now_ hard-code it to `os.Stdout`.
+If you try and compile, it will fail in `TexasHoldem` because it is calling `AgendarAlertaPara` without a destination, to get things compiling again _for now_ hard-code it to `os.Stdout`.
 
-Try and run the tests and they will fail because `SpyBlindAlerter` no longer implements `BlindAlerter`, fix this by updating the signature of `ScheduleAlertAt`, run the tests and we should still be green.
+Try and run the tests and they will fail because `AlertadorDeBlindEspiao` no longer implementa `AlertadorDeBlind`, fix this by updating the signature of `AgendarAlertaPara`, run the tests and we should still be green.
 
-It doesn't make any sense for `TexasHoldem` to know where to send blind alerts. Let's now update `Game` so that when you start a game you declare _where_ the alerts should go.
+It doesn't make any sense for `TexasHoldem` to know where to send blind alerts. Let's now update `Game` so that when you start a partida you declare _where_ the alerts should go.
 
 ```go
 type Game interface {
-    Start(numberOfPlayers int, alertsDestination io.Writer)
-    Finish(winner string)
+    Começar(numeroDeJogadores int, alertsDestination io.Writer)
+    Terminar(vencedor string)
 }
 ```
 
 Let the compiler tell you what you need to fix. The change isn't so bad:
 
-* Update `TexasHoldem` so it properly implements `Game`
-* In `CLI` when we start the game, pass in our `out` property \(`cli.game.Start(numberOfPlayers, cli.out)`\)
-* In `TexasHoldem`'s test i use `game.Start(5, ioutil.Discard)` to fix the compilation problem and configure the alert output to be discarded
+* Update `TexasHoldem` so it properly implementa `Game`
+* In `CLI` when we start the partida, pass in our `out` property \(`cli.partida.Começar(numeroDeJogadores, cli.out)`\)
+* In `TexasHoldem`'s test i use `partida.Começar(5, ioutil.Discard)` to fix the compilation problem and configure the alert output to be discarded
 
-If you've got everything right, everything should be green! Now we can try and use `Game` within `Server`.
+If you've obtido everything right, everything should be green! Now we can try and use `Game` within `Server`.
 
 ## Write the test first
 
@@ -638,46 +638,46 @@ The requirements of `CLI` and `Server` are the same! It's just the delivery mech
 Let's take a look at our `CLI` test for inspiration.
 
 ```go
-t.Run("start game with 3 players and finish game with 'Chris' as winner", func(t *testing.T) {
-    game := &GameSpy{}
+t.Run("começa partida com 3 jogadores e termina partida com 'Chris' como vencedor", func(t *testing.T) {
+    partida := &JogoEspiao{}
 
     out := &bytes.Buffer{}
-    in := userSends("3", "Chris wins")
+    in := usuarioEnvia("3", "Chris venceu")
 
-    poquer.NewCLI(in, out, game).PlayPoker()
+    poquer.NovaCLI(in, out, partida).JogarPoquer()
 
-    assertMessagesSentToUser(t, out, poquer.PlayerPrompt)
-    assertGameStartedWith(t, game, 3)
-    assertFinishCalledWith(t, game, "Chris")
+    verificaMensagensEnviadasParaUsuario(t, out, poquer.PromptJogador)
+    verificaJogoComeçadoCom(t, partida, 3)
+    verificaTerminosChamadosCom(t, partida, "Chris")
 })
 ```
 
-It looks like we should be able to test drive out a similar outcome using `GameSpy`
+It looks like we should be able to test drive out a similar outcome using `JogoEspiao`
 
 Replace the old websocket test with the following
 
 ```go
-t.Run("start a game with 3 players and declare Ruth the winner", func(t *testing.T) {
-    game := &poquer.GameSpy{}
-    winner := "Ruth"
-    server := httptest.NewServer(mustMakePlayerServer(t, dummyPlayerStore, game))
+t.Run("start a partida with 3 players and declare Ruth the vencedor", func(t *testing.T) {
+    partida := &poquer.JogoEspiao{}
+    vencedor := "Ruth"
+    server := httptest.NewServer(mustMakePlayerServer(t, ArmazenamentoJogadorTosco, partida))
     ws := mustDialWS(t, "ws"+strings.TrimPrefix(server.URL, "http")+"/ws")
 
     defer server.Close()
     defer ws.Close()
 
     writeWSMessage(t, ws, "3")
-    writeWSMessage(t, ws, winner)
+    writeWSMessage(t, ws, vencedor)
 
     time.Sleep(10 * time.Millisecond)
-    assertGameStartedWith(t, game, 3)
-    assertFinishCalledWith(t, game, winner)
+    verificaJogoComeçadoCom(t, partida, 3)
+    verificaTerminosChamadosCom(t, partida, vencedor)
 })
 ```
 
 * As discussed we create a spy `Game` and pass it into `mustMakePlayerServer` \(be sure to update the helper to support this\).
-* We then send the web socket messages for a game.
-* Finally we assert that the game is started and finished with what we expect.
+* We then send the web socket mensagens for a partida.
+* Finally we assert that the partida is started and finished with what we expect.
 
 ## Try to run the test
 
@@ -685,7 +685,7 @@ You'll have a number of compilation errors around `mustMakePlayerServer` in othe
 
 ```go
 var (
-    dummyGame = &GameSpy{}
+    dummyGame = &JogoEspiao{}
 )
 ```
 
@@ -693,16 +693,16 @@ The final error is where we are trying to pass in `Game` to `NewPlayerServer` bu
 
 ```text
 ./server_test.go:21:38: too many arguments in call to "github.com/larien/learn-go-with-tests/WebSockets/v2".NewPlayerServer
-    have ("github.com/larien/learn-go-with-tests/WebSockets/v2".PlayerStore, "github.com/larien/learn-go-with-tests/WebSockets/v2".Game)
-    want ("github.com/larien/learn-go-with-tests/WebSockets/v2".PlayerStore)
+    have ("github.com/larien/learn-go-with-tests/WebSockets/v2".ArmazenamentoJogador, "github.com/larien/learn-go-with-tests/WebSockets/v2".Game)
+    esperado ("github.com/larien/learn-go-with-tests/WebSockets/v2".ArmazenamentoJogador)
 ```
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Write the minimal quantia of code for the test to run and check the failing test output
 
 Just add it as an argument for now just to get the test running
 
 ```go
-func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
+func NewPlayerServer(armazenamento ArmazenamentoJogador, partida Game) (*PlayerServer, error) {
 ```
 
 Finally!
@@ -711,8 +711,8 @@ Finally!
 === RUN   TestGame/start_a_game_with_3_players_and_declare_Ruth_the_winner
 --- FAIL: TestGame (0.01s)
     --- FAIL: TestGame/start_a_game_with_3_players_and_declare_Ruth_the_winner (0.01s)
-        server_test.go:146: wanted Start called with 3 but got 0
-        server_test.go:147: expected finish called with 'Ruth' but got ''
+        server_test.go:146: wanted Começar called with 3 but obtido 0
+        server_test.go:147: expected finish called with 'Ruth' but obtido ''
 FAIL
 ```
 
@@ -722,28 +722,28 @@ We need to add `Game` as a field to `PlayerServer` so that it can use it when it
 
 ```go
 type PlayerServer struct {
-    store PlayerStore
+    armazenamento ArmazenamentoJogador
     http.Handler
     template *template.Template
-    game Game
+    partida Game
 }
 ```
 
-\(We already have a method called `game` so rename that to `playGame`\)
+\(We already have a method called `partida` so rename that to `playGame`\)
 
 Next lets assign it in our constructor
 
 ```go
-func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
+func NewPlayerServer(armazenamento ArmazenamentoJogador, partida Game) (*PlayerServer, error) {
     p := new(PlayerServer)
 
-    tmpl, err := template.ParseFiles("game.html")
+    tmpl, err := template.ParseFiles("partida.html")
 
     if err != nil {
         return nil, fmt.Errorf("problem opening %s %v", htmlTemplatePath, err)
     }
 
-    p.game = game
+    p.partida = partida
 
     // etc
 ```
@@ -755,17 +755,17 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
     conn, _ := wsUpgrader.Upgrade(w, r, nil)
 
     _, numberOfPlayersMsg, _ := conn.ReadMessage()
-    numberOfPlayers, _ := strconv.Atoi(string(numberOfPlayersMsg))
-    p.game.Start(numberOfPlayers, ioutil.Discard) //todo: Dont discard the blinds messages!
+    numeroDeJogadores, _ := strconv.Atoi(string(numberOfPlayersMsg))
+    p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Dont discard the blinds mensagens!
 
-    _, winner, _ := conn.ReadMessage()
-    p.game.Finish(string(winner))
+    _, vencedor, _ := conn.ReadMessage()
+    p.partida.Terminar(string(vencedor))
 }
 ```
 
 Hooray! The tests pass.
 
-We are not going to send the blind messages anywhere _just yet_ as we need to have a think about that. When we call `game.Start` we send in `ioutil.Discard` which will just discard any messages written to it.
+We are not going to send the blind mensagens anywhere _just yet_ as we need to have a think about that. When we call `partida.Começar` we send in `ioutil.Discard` which will just discard any mensagens written to it.
 
 For now start the web server up. You'll need to update the `main.go` to pass a `Game` to the `PlayerServer`
 
@@ -777,15 +777,15 @@ func main() {
         log.Fatalf("problem opening %s %v", dbFileName, err)
     }
 
-    store, err := poquer.NewFileSystemPlayerStore(db)
+    armazenamento, err := poquer.NewFileSystemPlayerStore(db)
 
     if err != nil {
-        log.Fatalf("problem creating file system player store, %v ", err)
+        log.Fatalf("problem creating file system player armazenamento, %v ", err)
     }
 
-    game := poquer.NewTexasHoldem(poquer.BlindAlerterFunc(poquer.Alerter), store)
+    partida := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.Alerter), armazenamento)
 
-    server, err := poquer.NewPlayerServer(store, game)
+    server, err := poquer.NewPlayerServer(armazenamento, partida)
 
     if err != nil {
         log.Fatalf("problem creating player server %v", err)
@@ -836,15 +836,15 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
     ws := newPlayerServerWS(w, r)
 
     numberOfPlayersMsg := ws.WaitForMsg()
-    numberOfPlayers, _ := strconv.Atoi(numberOfPlayersMsg)
-    p.game.Start(numberOfPlayers, ioutil.Discard) //todo: Dont discard the blinds messages!
+    numeroDeJogadores, _ := strconv.Atoi(numberOfPlayersMsg)
+    p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Dont discard the blinds mensagens!
 
-    winner := ws.WaitForMsg()
-    p.game.Finish(winner)
+    vencedor := ws.WaitForMsg()
+    p.partida.Terminar(vencedor)
 }
 ```
 
-Once we figure out how to not discard the blind messages we're done.
+Once we figure out how to not discard the blind mensagens we're done.
 
 ### Let's _not_ write a test!
 
@@ -853,12 +853,12 @@ Sometimes when we're not sure how to do something, it's best just to play around
 The problematic line of code we have is
 
 ```go
-p.game.Start(numberOfPlayers, ioutil.Discard) //todo: Dont discard the blinds messages!
+p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Dont discard the blinds mensagens!
 ```
 
-We need to pass in an `io.Writer` for the game to write the blind alerts to.
+We need to pass in an `io.Writer` for the partida to write the blind alerts to.
 
-Wouldn't it be nice if we could pass in our `playerServerWS` from before? It's our wrapper around our WebSocket so it _feels_ like we should be able to send that to our `Game` to send messages to.
+Wouldn't it be nice if we could pass in our `playerServerWS` from before? It's our wrapper around our WebSocket so it _feels_ like we should be able to send that to our `Game` to send mensagens to.
 
 Give it a go:
 
@@ -867,15 +867,15 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
     ws := newPlayerServerWS(w, r)
 
     numberOfPlayersMsg := ws.WaitForMsg()
-    numberOfPlayers, _ := strconv.Atoi(numberOfPlayersMsg)
-    p.game.Start(numberOfPlayers, ws)
+    numeroDeJogadores, _ := strconv.Atoi(numberOfPlayersMsg)
+    p.partida.Começar(numeroDeJogadores, ws)
     //etc...
 ```
 
 The compiler complains
 
 ```text
-./server.go:71:14: cannot use ws (type *playerServerWS) as type io.Writer in argument to p.game.Start:
+./server.go:71:14: cannot use ws (type *playerServerWS) as type io.Writer in argument to p.partida.Começar:
     *playerServerWS does not implement io.Writer (missing Write method)
 ```
 
@@ -898,87 +898,87 @@ This seems too easy! Try and run the application and see if it works.
 Beforehand edit `TexasHoldem` so that the blind increment time is shorter so you can see it in action
 
 ```go
-blindIncrement := time.Duration(5+numberOfPlayers) * time.Second // (rather than a minute)
+blindIncrement := time.Duration(5+numeroDeJogadores) * time.Second // (rather than a minute)
 ```
 
-You should see it working! The blind amount increments in the browser as if by magic.
+You should see it working! The blind quantia increments in the browser as if by magic.
 
 Now let's revert the code and think how to test it. In order to _implement_ it all we did was pass through to `StartGame` was `playerServerWS` rather than `ioutil.Discard` so that might make you think we should perhaps spy on the call to verify it works.
 
 Spying is great and helps us check implementation details but we should always try and favour testing the _real_ behaviour if we can because when you decide to refactor it's often spy tests that start failing because they are usually checking implementation details that you're trying to change.
 
-Our test currently opens a websocket connection to our running server and sends messages to make it do things. Equally we should be able to test the messages our server sends back over the websocket connection.
+Our test currently opens a websocket connection to our running server and sends mensagens to make it do things. Equally we should be able to test the mensagens our server sends back over the websocket connection.
 
 ## Write the test first
 
 We'll edit our existing test.
 
-Currently our `GameSpy` does not send any data to `out` when you call `Start`. We should change it so we can configure it to send a canned message and then we can check that message gets sent to the websocket. This should give us confidence that we have configured things correctly whilst still exercising the real behaviour we want.
+Currently our `JogoEspiao` does not send any data to `out` when you call `Começar`. We should change it so we can configure it to send a canned message and then we can check that message gets sent to the websocket. This should give us confidence that we have configured things correctly whilst still exercising the real behaviour we esperado.
 
 ```go
-type GameSpy struct {
-    StartCalled     bool
-    StartCalledWith int
-    BlindAlert      []byte
+type JogoEspiao struct {
+    ComecouASerChamado     bool
+    ComecouASerChamadoCom int
+    AlertaDeBlind      []byte
 
-    FinishedCalled   bool
-    FinishCalledWith string
+    TerminouDeSerChamado   bool
+    TerminouDeSerChamadoCom string
 }
 ```
 
-Add `BlindAlert` field.
+Add `AlertaDeBlind` field.
 
-Update `GameSpy` `Start` to send the canned message to `out`.
+Update `JogoEspiao` `Começar` to send the canned message to `out`.
 
 ```go
-func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
-    g.StartCalled = true
-    g.StartCalledWith = numberOfPlayers
-    out.Write(g.BlindAlert)
+func (j *JogoEspiao) Começar(numeroDeJogadores int, out io.Writer) {
+    j.ComecouASerChamado = true
+    j.ComecouASerChamadoCom = numeroDeJogadores
+    out.Write(j.AlertaDeBlind)
 }
 ```
 
-This now means when we exercise `PlayerServer` when it tries to `Start` the game it should end up sending messages through the websocket if things are working right.
+This now means when we exercise `PlayerServer` when it tries to `Começar` the partida it should end up sending mensagens through the websocket if things are working right.
 
 Finally we can update the test
 
 ```go
-t.Run("start a game with 3 players, send some blind alerts down WS and declare Ruth the winner", func(t *testing.T) {
+t.Run("start a partida with 3 players, send some blind alerts down WS and declare Ruth the vencedor", func(t *testing.T) {
     wantedBlindAlert := "Blind is 100"
-    winner := "Ruth"
+    vencedor := "Ruth"
 
-    game := &GameSpy{BlindAlert: []byte(wantedBlindAlert)}
-    server := httptest.NewServer(mustMakePlayerServer(t, dummyPlayerStore, game))
+    partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
+    server := httptest.NewServer(mustMakePlayerServer(t, ArmazenamentoJogadorTosco, partida))
     ws := mustDialWS(t, "ws"+strings.TrimPrefix(server.URL, "http")+"/ws")
 
     defer server.Close()
     defer ws.Close()
 
     writeWSMessage(t, ws, "3")
-    writeWSMessage(t, ws, winner)
+    writeWSMessage(t, ws, vencedor)
 
     time.Sleep(10 * time.Millisecond)
-    assertGameStartedWith(t, game, 3)
-    assertFinishCalledWith(t, game, winner)
+    verificaJogoComeçadoCom(t, partida, 3)
+    verificaTerminosChamadosCom(t, partida, vencedor)
 
     _, gotBlindAlert, _ := ws.ReadMessage()
 
     if string(gotBlindAlert) != wantedBlindAlert {
-        t.Errorf("got blind alert '%s', want '%s'", string(gotBlindAlert), wantedBlindAlert)
+        t.Errorf("obtido blind alert '%s', esperado '%s'", string(gotBlindAlert), wantedBlindAlert)
     }
 })
 ```
 
-* We've added a `wantedBlindAlert` and configured our `GameSpy` to send it to `out` if `Start` is called.
+* We've added a `wantedBlindAlert` and configured our `JogoEspiao` to send it to `out` if `Começar` is called.
 * We hope it gets sent in the websocket connection so we've added a call to `ws.ReadMessage()` to wait for a message to be sent and then check it's the one we expected.
 
 ## Try to run the test
 
 You should find the test hangs forever. This is because `ws.ReadMessage()` will block until it gets a message, which it never will.
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## Write the minimal quantia of code for the test to run and check the failing test output
 
-We should never have tests that hang so let's introduce a way of handling code that we want to timeout.
+We should never have tests that hang so let's introduce a way of handling code that we esperado to timeout.
 
 ```go
 func within(t *testing.T, d time.Duration, assert func()) {
@@ -1001,15 +1001,15 @@ func within(t *testing.T, d time.Duration, assert func()) {
 
 What `within` does is take a function `assert` as an argument and then runs it in a go routine. If/When the function finishes it will signal it is done via the `done` channel.
 
-While that happens we use a `select` statement which lets us wait for a channel to send a message. From here it is a race between the `assert` function and `time.After` which will send a signal when the duration has occurred.
+While that happens we use a `select` statement which lets us wait for a channel to send a message. From here it is a race between the `assert` function and `time.After` which will send a signal when the duracao has occurred.
 
 Finally I made a helper function for our assertion just to make things a bit neater
 
 ```go
-func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, want string) {
+func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, esperado string) {
     _, msg, _ := ws.ReadMessage()
-    if string(msg) != want {
-        t.Errorf(`got "%s", want "%s"`, string(msg), want)
+    if string(msg) != esperado {
+        t.Errorf(`obtido "%s", esperado "%s"`, string(msg), esperado)
     }
 }
 ```
@@ -1017,24 +1017,24 @@ func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, want string) {
 Here's how the test reads now
 
 ```go
-t.Run("start a game with 3 players, send some blind alerts down WS and declare Ruth the winner", func(t *testing.T) {
+t.Run("start a partida with 3 players, send some blind alerts down WS and declare Ruth the vencedor", func(t *testing.T) {
     wantedBlindAlert := "Blind is 100"
-    winner := "Ruth"
+    vencedor := "Ruth"
 
-    game := &GameSpy{BlindAlert: []byte(wantedBlindAlert)}
-    server := httptest.NewServer(mustMakePlayerServer(t, dummyPlayerStore, game))
+    partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
+    server := httptest.NewServer(mustMakePlayerServer(t, ArmazenamentoJogadorTosco, partida))
     ws := mustDialWS(t, "ws"+strings.TrimPrefix(server.URL, "http")+"/ws")
 
     defer server.Close()
     defer ws.Close()
 
     writeWSMessage(t, ws, "3")
-    writeWSMessage(t, ws, winner)
+    writeWSMessage(t, ws, vencedor)
 
     time.Sleep(tenMS)
 
-    assertGameStartedWith(t, game, 3)
-    assertFinishCalledWith(t, game, winner)
+    verificaJogoComeçadoCom(t, partida, 3)
+    verificaTerminosChamadosCom(t, partida, vencedor)
     within(t, tenMS, func() { assertWebsocketGotMsg(t, ws, wantedBlindAlert) })
 })
 ```
@@ -1047,23 +1047,23 @@ Now if you run the test...
 --- FAIL: TestGame (0.02s)
     --- FAIL: TestGame/start_a_game_with_3_players,_send_some_blind_alerts_down_WS_and_declare_Ruth_the_winner (0.02s)
         server_test.go:143: timed out
-        server_test.go:150: got "", want "Blind is 100"
+        server_test.go:150: obtido "", esperado "Blind is 100"
 ```
 
 ## Write enough code to make it pass
 
-Finally we can now change our server code so it sends our WebSocket connection to the game when it starts
+Finally we can now change our server code so it sends our WebSocket connection to the partida when it starts
 
 ```go
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
     ws := newPlayerServerWS(w, r)
 
     numberOfPlayersMsg := ws.WaitForMsg()
-    numberOfPlayers, _ := strconv.Atoi(numberOfPlayersMsg)
-    p.game.Start(numberOfPlayers, ws)
+    numeroDeJogadores, _ := strconv.Atoi(numberOfPlayersMsg)
+    p.partida.Começar(numeroDeJogadores, ws)
 
-    winner := ws.WaitForMsg()
-    p.game.Finish(winner)
+    vencedor := ws.WaitForMsg()
+    p.partida.Terminar(vencedor)
 }
 ```
 
@@ -1073,28 +1073,28 @@ O código do servidor sofreu uma mudança bem pequena, então não tem muito o
 que mudar aqui, mas o código de teste ainda tem uma chamada `time.Sleep`
 porque temos que esperar até que o nosso servidor termina sua tarefa assíncronamente.
 
-We can refactor our helpers `assertGameStartedWith` and `assertFinishCalledWith` so that they can retry their assertions for a short period before failing.
+We can refactor our helpers `verificaJogoComeçadoCom` and `verificaTerminosChamadosCom` so that they can retry their assertions for a short period before failing.
 
-Here's how you can do it for `assertFinishCalledWith` and you can use the same approach for the other helper.
+Here's how you can do it for `verificaTerminosChamadosCom` and you can use the same approach for the other helper.
 
 ```go
-func assertFinishCalledWith(t *testing.T, game *GameSpy, winner string) {
+func verificaTerminosChamadosCom(t *testing.T, partida *JogoEspiao, vencedor string) {
     t.Helper()
 
-    passed := retryUntil(500*time.Millisecond, func() bool {
-        return game.FinishCalledWith == winner
+    passou := tentarNovamenteAte(500*time.Millisecond, func() bool {
+        return partida.TerminouDeSerChamadoCom == vencedor
     })
 
-    if !passed {
-        t.Errorf("expected finish called with '%s' but got '%s'", winner, game.FinishCalledWith)
+    if !passou {
+        t.Errorf("esperava chamada de término com '%s' mas obteve '%s' ", vencedor, partida.TerminouDeSerChamadoCom)
     }
 }
 ```
 
-Here is how `retryUntil` is defined
+Here is how `tentarNovamenteAte` is defined
 
 ```go
-func retryUntil(d time.Duration, f func() bool) bool {
+func tentarNovamenteAte(d time.Duration, f func() bool) bool {
     deadline := time.Now().Add(d)
     for time.Now().Before(deadline) {
         if f() {
@@ -1105,7 +1105,7 @@ func retryUntil(d time.Duration, f func() bool) bool {
 }
 ```
 
-## Resumindo t
+## Resumindo
 
 Nossa aplicação agora está completa. Um jogo de pôquer agora pode ser
 iniciado pelo navegador web e os usuários são informados sobre o valor
@@ -1114,7 +1114,6 @@ jogo for encerrado, eles podem salvar o vencedor, o que é persistente
 uma vez que estamos usando o código que escrevemos há alguns capítulos
 atrás. Os jogadores podem descobrir quem é o melhor \(ou o mais sortudo\)
 jogador de pôquer utilizando o endpoint `/league` do nosso website.
-
 
 No decorrer da nossa jornada cometemos diversos erros, mas com o fluxo de
 desenvolvimento orientado a testes (TDD) nunca estivemos com um programa
@@ -1133,9 +1132,8 @@ que o cliente fique sondando (?) o servidor. O código que fizemos tanto do clie
 do servidor são muito simples.
 * É trivial para testar, mas você tem que se atentar com a natureza assíncrona dos testes.
 
-### Handling code in tests that can be delayed or never finish
+### Lidando com código em testes qeu podem ter sido atrasados ou nunca terem terminado
 
-* Create helper functions to retry assertions and add timeouts.
-* We can use go routines to ensure the assertions dont block anything and then use channels to let them signal that they have finished, or not.
-* The `time` package has some helpful functions which also send signals via channels about events in time so we can set timeouts
-
+* Crie funções utilitárias para tentar verificações novamente e adicione timeouts.
+* Podemos usar go routines para certificar que as verificações não bloqueiam nada e então usar canais para deixá-los sinalizar se tiverem terminado ou não;
+* O pacote `time` tem algumas funções úteis que também enviam sinais para canais sobre eventos no tempo para que possamos definir timeouts.
