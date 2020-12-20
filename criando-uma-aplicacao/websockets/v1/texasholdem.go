@@ -16,7 +16,7 @@ func NovoTexasHoldem(alerter AlertadorDeBlind, armazenamento ArmazenamentoJogado
 	}
 }
 
-// Começar will schedule blind alerts dependant on the number of players
+// Começar will schedule blind alerts dependant on the number of jogadores
 func (p *TexasHoldem) Começar(numeroDeJogadores int) {
 	blindIncrement := time.Duration(5+numeroDeJogadores) * time.Minute
 

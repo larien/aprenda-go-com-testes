@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/websocket"
 )
@@ -27,13 +28,14 @@ type ServidorJogador struct {
 	armazenamento ArmazenamentoJogador
 	http.Handler
 	template *template.Template
+	partida  Jogo
 }
 
 const tipoConteudoJSON = "application/json"
 const htmlTemplatePath = "partida.html"
 
 // NovoServidorJogador cria um ServidorJogador com rotas configuradas
-func NovoServidorJogador(armazenamento ArmazenamentoJogador) (*ServidorJogador, error) {
+func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*ServidorJogador, error) {
 	p := new(ServidorJogador)
 
 	tmpl, err := template.ParseFiles("partida.html")
@@ -42,13 +44,14 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) (*ServidorJogador, 
 		return nil, fmt.Errorf("problema ao abrir %s %v", htmlTemplatePath, err)
 	}
 
+	p.partida = partida
 	p.template = tmpl
 	p.armazenamento = armazenamento
 
 	router := http.NewServeMux()
 	router.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
 	router.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
-	router.Handle("/partida", http.HandlerFunc(p.partida))
+	router.Handle("/partida", http.HandlerFunc(p.jogarJogo))
 	router.Handle("/ws", http.HandlerFunc(p.webSocket))
 
 	p.Handler = router
@@ -62,12 +65,17 @@ var atualizadorDeWebsocket = websocket.Upgrader{
 }
 
 func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
-	conexão, _ := atualizadorDeWebsocket.Upgrade(w, r, nil)
-	_, winnerMsg, _ := conexão.ReadMessage()
-	p.armazenamento.GravarVitoria(string(winnerMsg))
+	ws := novoWebsocketServidorJogador(w, r)
+
+	mensagemNumeroDeJogadores := ws.EsperarPelaMensagem()
+	numeroDeJogadores, _ := strconv.Atoi(mensagemNumeroDeJogadores)
+	p.partida.Começar(numeroDeJogadores, ws)
+
+	vencedor := ws.EsperarPelaMensagem()
+	p.partida.Terminar(vencedor)
 }
 
-func (p *ServidorJogador) partida(w http.ResponseWriter, r *http.Request) {
+func (p *ServidorJogador) jogarJogo(w http.ResponseWriter, r *http.Request) {
 	p.template.Execute(w, nil)
 }
 

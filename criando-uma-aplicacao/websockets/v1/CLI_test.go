@@ -41,8 +41,8 @@ func TestCLI(t *testing.T) {
 		partida := &JogoEspiao{}
 		saida := &bytes.Buffer{}
 
-		in := usuarioEnvia("3", "Chris venceu")
-		cli := poquer.NovaCLI(in, saida, partida)
+		entrada := usuarioEnvia("3", "Chris venceu")
+		cli := poquer.NovaCLI(entrada, saida, partida)
 
 		cli.JogarPoquer()
 
@@ -54,8 +54,8 @@ func TestCLI(t *testing.T) {
 	t.Run("começa partida com 8 jogadores e grava 'Cleo' como vencedor", func(t *testing.T) {
 		partida := &JogoEspiao{}
 
-		in := usuarioEnvia("8", "Cleo venceu")
-		cli := poquer.NovaCLI(in, SaidaTosca, partida)
+		entrada := usuarioEnvia("8", "Cleo venceu")
+		cli := poquer.NovaCLI(entrada, SaidaTosca, partida)
 
 		cli.JogarPoquer()
 
@@ -67,9 +67,9 @@ func TestCLI(t *testing.T) {
 		partida := &JogoEspiao{}
 
 		saida := &bytes.Buffer{}
-		in := usuarioEnvia("tortas")
+		entrada := usuarioEnvia("tortas")
 
-		cli := poquer.NovaCLI(in, saida, partida)
+		cli := poquer.NovaCLI(entrada, saida, partida)
 		cli.JogarPoquer()
 
 		verificaPartidaNaoIniciada(t, partida)
@@ -80,8 +80,8 @@ func TestCLI(t *testing.T) {
 		partida := &JogoEspiao{}
 		saida := &bytes.Buffer{}
 
-		in := usuarioEnvia("8", "Lloyd é incrível")
-		cli := poquer.NovaCLI(in, saida, partida)
+		entrada := usuarioEnvia("8", "Lloyd é incrível")
+		cli := poquer.NovaCLI(entrada, saida, partida)
 
 		cli.JogarPoquer()
 

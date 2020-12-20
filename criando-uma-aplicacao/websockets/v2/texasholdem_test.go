@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"testing"
 	"time"
+
+	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
 )
 
 func TestJogo_Começar(t *testing.T) {

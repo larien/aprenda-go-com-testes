@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Let's play poquer</title>
+    <title>Vamos jogar pôquer</title>
 </head>
-<body>
+<corpo>
 <section id="partida">
     <div id="partida-start">
-        <label for="player-count">Number of players</label>
-        <input type="number" id="player-count"/>
+        <label for="jogador-count">Number of jogadores</label>
+        <input type="number" id="jogador-count"/>
         <button id="start-partida">Começar</button>
     </div>
 
@@ -23,10 +23,10 @@
 
 <section id="partida-end">
     <h1>Another great partida of poquer everyone!</h1>
-    <p><a href="/league">Go check the league table</a></p>
+    <p><a href="/liga">Go check the liga table</a></p>
 </section>
 
-</body>
+</corpo>
 <script type="application/javascript">
     const startGame = document.getElementById('partida-start')
 
@@ -46,27 +46,27 @@
         startGame.hidden = true
         declareWinner.hidden = false
 
-        const numeroDeJogadores = document.getElementById('player-count').value
+        const numeroDeJogadores = document.getElementById('jogador-count').value
 
         if (window['WebSocket']) {
-            const conn = new WebSocket('ws://' + document.location.host + '/ws')
+            const conexão = new WebSocket('ws://' + document.location.host + '/ws')
 
             submitWinnerButton.onclick = event => {
-                conn.send(winnerInput.value)
+                conexão.send(winnerInput.value)
                 gameEndContainer.hidden = false
                 gameContainer.hidden = true
             }
 
-            conn.onclose = evt => {
+            conexão.onclose = evt => {
                 blindContainer.innerText = 'Connection closed'
             }
 
-            conn.onmessage = evt => {
+            conexão.onmessage = evt => {
                 blindContainer.innerText = evt.data
             }
 
-            conn.onopen = function () {
-                conn.send(numeroDeJogadores)
+            conexão.onopen = function () {
+                conexão.send(numeroDeJogadores)
             }
         }
     })

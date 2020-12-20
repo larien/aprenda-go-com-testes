@@ -8,30 +8,30 @@ import (
 	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
 )
 
-const dbFileName = "partida.db.json"
+const nomeArquivoBaseDeDados = "partida.db.json"
 
 func main() {
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	db, err := os.OpenFile(nomeArquivoBaseDeDados, os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
+		log.Fatalf("problema ao abrir %s %v", nomeArquivoBaseDeDados, err)
 	}
 
-	armazenamento, err := poquer.NewFileSystemPlayerStore(db)
+	armazenamento, err := poquer.NovoSistemaArquivoArmazenamentoJogador(db)
 
 	if err != nil {
-		log.Fatalf("problem creating file system player armazenamento, %v ", err)
+		log.Fatalf("problema ao criar sistema de arquivo de armazenamento do jogador, %v ", err)
 	}
 
-	partida := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.Alerter), armazenamento)
+	partida := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.Alertador), armazenamento)
 
-	server, err := poquer.NewPlayerServer(armazenamento, partida)
+	servidor, err := poquer.NovoServidorJogador(armazenamento, partida)
 
 	if err != nil {
-		log.Fatalf("problem creating player server %v", err)
+		log.Fatalf("problema ao criar o servidor do jogador %v", err)
 	}
 
-	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("could not listen on port 5000 %v", err)
+	if err := http.ListenAndServe(":5000", servidor); err != nil {
+		log.Fatalf("não foi possível ouvir na porta 5000 %v", err)
 	}
 }

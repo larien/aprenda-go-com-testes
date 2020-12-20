@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v1"
+	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
 )
 
 func criarArquivoTemporario(t *testing.T, dadosIniciais string) (*os.File, func()) {
@@ -35,15 +35,15 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 			{"Nome": "Chris", "Vitorias": 33}]`)
 		defer limparBaseDeDados()
 
-		armazenamento, err := poquer.NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
+		armazenamento, err := poquer.NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
 		obtido := armazenamento.ObterLiga()
 
 		esperado := []poquer.Jogador{
-			{Nome: "Chris", ChamadasDeVitoria: 33},
-			{Nome: "Cleo", ChamadasDeVitoria: 10},
+			{Nome: "Chris", Vitorias: 33},
+			{Nome: "Cleo", Vitorias: 10},
 		}
 
 		verificaLiga(t, obtido, esperado)
@@ -59,11 +59,11 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 			{"Nome": "Chris", "Vitorias": 33}]`)
 		defer limparBaseDeDados()
 
-		armazenamento, err := poquer.NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
+		armazenamento, err := poquer.NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
-		obtido := armazenamento.ObterPontuacaoDeJogador("Chris")
+		obtido := armazenamento.ObtemPontuacaoDoJogador("Chris")
 		esperado := 33
 		verificaPontuaçõesIguais(t, obtido, esperado)
 	})
@@ -74,13 +74,13 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 			{"Nome": "Chris", "Vitorias": 33}]`)
 		defer limparBaseDeDados()
 
-		armazenamento, err := poquer.NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
+		armazenamento, err := poquer.NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
 		armazenamento.GravarVitoria("Chris")
 
-		obtido := armazenamento.ObterPontuacaoDeJogador("Chris")
+		obtido := armazenamento.ObtemPontuacaoDoJogador("Chris")
 		esperado := 34
 		verificaPontuaçõesIguais(t, obtido, esperado)
 	})
@@ -91,13 +91,13 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 			{"Nome": "Chris", "Vitorias": 33}]`)
 		defer limparBaseDeDados()
 
-		armazenamento, err := poquer.NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
+		armazenamento, err := poquer.NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
 		armazenamento.GravarVitoria("Pepper")
 
-		obtido := armazenamento.ObterPontuacaoDeJogador("Pepper")
+		obtido := armazenamento.ObtemPontuacaoDoJogador("Pepper")
 		esperado := 1
 		verificaPontuaçõesIguais(t, obtido, esperado)
 	})
@@ -106,7 +106,7 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, "")
 		defer limparBaseDeDados()
 
-		_, err := poquer.NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
+		_, err := poquer.NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 	})

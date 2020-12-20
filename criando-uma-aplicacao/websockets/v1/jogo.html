@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Lets play poquer</title>
 </head>
-<body>
+<corpo>
 <section id="partida">
     <div id="declare-vencedor">
         <label for="vencedor">Winner</label>
@@ -12,17 +12,17 @@
         <button id="vencedor-button">Declare vencedor</button>
     </div>
 </section>
-</body>
+</corpo>
 <script type="application/javascript">
 
     const submitWinnerButton = document.getElementById('vencedor-button')
     const winnerInput = document.getElementById('vencedor')
 
     if (window['WebSocket']) {
-        const conn = new WebSocket('ws://' + document.location.host + '/ws')
+        const conexão = new WebSocket('ws://' + document.location.host + '/ws')
 
         submitWinnerButton.onclick = event => {
-            conn.send(winnerInput.value)
+            conexão.send(winnerInput.value)
         }
     }
 </script>

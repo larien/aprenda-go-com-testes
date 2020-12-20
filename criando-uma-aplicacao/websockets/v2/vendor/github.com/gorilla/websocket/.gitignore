@@ -9,7 +9,7 @@ _test
 
 # Architecture specific extensions/prefixes
 *.[568vq]
-[568vq].out
+[568vq].saida
 
 *.cgo1.go
 *.cgo2.c

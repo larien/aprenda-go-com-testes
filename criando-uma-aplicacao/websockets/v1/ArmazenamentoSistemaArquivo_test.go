@@ -33,7 +33,7 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 			{"Nome": "Chris", "Vitorias": 33}]`)
 		defer limparBaseDeDados()
 
-		armazenamento, err := NewFileSystemPlayerStore(baseDeDados)
+		armazenamento, err := NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
@@ -57,7 +57,7 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 			{"Nome": "Chris", "Vitorias": 33}]`)
 		defer limparBaseDeDados()
 
-		armazenamento, err := NewFileSystemPlayerStore(baseDeDados)
+		armazenamento, err := NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
@@ -72,7 +72,7 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 			{"Nome": "Chris", "Vitorias": 33}]`)
 		defer limparBaseDeDados()
 
-		armazenamento, err := NewFileSystemPlayerStore(baseDeDados)
+		armazenamento, err := NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
@@ -89,7 +89,7 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 			{"Nome": "Chris", "Vitorias": 33}]`)
 		defer limparBaseDeDados()
 
-		armazenamento, err := NewFileSystemPlayerStore(baseDeDados)
+		armazenamento, err := NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
@@ -104,7 +104,7 @@ func TestArmazenamentoSistemaArquivo(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, "")
 		defer limparBaseDeDados()
 
-		_, err := NewFileSystemPlayerStore(baseDeDados)
+		_, err := NovoSistemaArquivoArmazenamentoJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 	})

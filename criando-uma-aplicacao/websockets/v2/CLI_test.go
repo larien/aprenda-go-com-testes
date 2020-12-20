@@ -24,10 +24,10 @@ type JogoEspiao struct {
 	TerminouDeSerChamadoCom string
 }
 
-func (j *JogoEspiao) Começar(numeroDeJogadores int, out io.Writer) {
+func (j *JogoEspiao) Começar(numeroDeJogadores int, saida io.Writer) {
 	j.ComecouASerChamado = true
 	j.ComecouASerChamadoCom = numeroDeJogadores
-	out.Write(j.AlertaDeBlind)
+	saida.Write(j.AlertaDeBlind)
 }
 
 func (j *JogoEspiao) Terminar(vencedor string) {
@@ -44,12 +44,12 @@ func TestCLI(t *testing.T) {
 	t.Run("começa partida com 3 jogadores e termina partida com 'Chris' como vencedor", func(t *testing.T) {
 		partida := &JogoEspiao{}
 
-		out := &bytes.Buffer{}
-		in := usuarioEnvia("3", "Chris venceu")
+		saida := &bytes.Buffer{}
+		entrada := usuarioEnvia("3", "Chris venceu")
 
-		poquer.NovaCLI(in, out, partida).JogarPoquer()
+		poquer.NovaCLI(entrada, saida, partida).JogarPoquer()
 
-		verificaMensagensEnviadasParaUsuario(t, out, poquer.PromptJogador)
+		verificaMensagensEnviadasParaUsuario(t, saida, poquer.PromptJogador)
 		verificaJogoComeçadoCom(t, partida, 3)
 		verificaTerminosChamadosCom(t, partida, "Chris")
 	})
@@ -57,9 +57,9 @@ func TestCLI(t *testing.T) {
 	t.Run("começa partida com 8 jogadores e grava 'Cleo' como vencedor", func(t *testing.T) {
 		partida := &JogoEspiao{}
 
-		in := usuarioEnvia("8", "Cleo venceu")
+		entrada := usuarioEnvia("8", "Cleo venceu")
 
-		poquer.NovaCLI(in, SaidaTosca, partida).JogarPoquer()
+		poquer.NovaCLI(entrada, SaidaTosca, partida).JogarPoquer()
 
 		verificaJogoComeçadoCom(t, partida, 8)
 		verificaTerminosChamadosCom(t, partida, "Cleo")
@@ -68,25 +68,25 @@ func TestCLI(t *testing.T) {
 	t.Run("imprime um erro quando um valor não numérico é inserido e não começa a partida", func(t *testing.T) {
 		partida := &JogoEspiao{}
 
-		out := &bytes.Buffer{}
-		in := usuarioEnvia("tortas")
+		saida := &bytes.Buffer{}
+		entrada := usuarioEnvia("tortas")
 
-		poquer.NovaCLI(in, out, partida).JogarPoquer()
+		poquer.NovaCLI(entrada, saida, partida).JogarPoquer()
 
 		verificaPartidaNaoIniciada(t, partida)
-		verificaMensagensEnviadasParaUsuario(t, out, poquer.PromptJogador, poquer.ErrMsgEntradaJogadorIncorreta)
+		verificaMensagensEnviadasParaUsuario(t, saida, poquer.PromptJogador, poquer.ErrMsgEntradaJogadorIncorreta)
 	})
 
 	t.Run("imprime um erro quando o vencedor é declarado incorretamente", func(t *testing.T) {
 		partida := &JogoEspiao{}
 
-		out := &bytes.Buffer{}
-		in := usuarioEnvia("8", "Lloyd é incrível")
+		saida := &bytes.Buffer{}
+		entrada := usuarioEnvia("8", "Lloyd é incrível")
 
-		poquer.NovaCLI(in, out, partida).JogarPoquer()
+		poquer.NovaCLI(entrada, saida, partida).JogarPoquer()
 
 		verificaPartidaNaoFinalizada(t, partida)
-		verificaMensagensEnviadasParaUsuario(t, out, poquer.PromptJogador, poquer.ErrMsgEntradaVencedorIncorreta)
+		verificaMensagensEnviadasParaUsuario(t, saida, poquer.PromptJogador, poquer.ErrMsgEntradaVencedorIncorreta)
 	})
 }
 

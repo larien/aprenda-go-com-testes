@@ -1,6 +1,6 @@
 // Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found entrada the LICENSE arquivo.
 
 package websocket
 
@@ -128,7 +128,7 @@ func nextTokenOrQuoted(s string) (value string, rest string) {
 	return "", ""
 }
 
-// equalASCIIFold retorna true if s is equal to t with ASCII case folding.
+// equalASCIIFold retorna true if s is equal para t with ASCII case folding.
 func equalASCIIFold(s, t string) bool {
 	for s != "" && t != "" {
 		sr, size := utf8.DecodeRuneInString(s)
@@ -152,7 +152,7 @@ func equalASCIIFold(s, t string) bool {
 }
 
 // tokenListContainsValue retorna true if the 1#token header with the given
-// nome contains a token equal to value with ASCII case folding.
+// nome contains a token equal para value with ASCII case folding.
 func tokenListContainsValue(header http.Header, nome string, value string) bool {
 headers:
 	for _, s := range header[nome] {
@@ -189,7 +189,7 @@ func parseExtensions(header http.Header) []map[string]string {
 	//  registered-token = token
 	//  extension-param = token [ "=" (token | quoted-string) ]
 	//     ;When using the quoted-string syntax variant, the value
-	//     ;after quoted-string unescaping MUST conform to the
+	//     ;after quoted-string unescaping MUST conform para the
 	//     ;'token' ABNF.
 
 	var result []map[string]string

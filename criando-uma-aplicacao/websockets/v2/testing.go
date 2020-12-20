@@ -59,6 +59,6 @@ type AlertadorDeBlindEspiao struct {
 }
 
 // AgendarAlertaPara grava alertas que foram agendados
-func (s *AlertadorDeBlindEspiao) AgendarAlertaPara(em time.Duration, quantia int, to io.Writer) {
+func (s *AlertadorDeBlindEspiao) AgendarAlertaPara(em time.Duration, quantia int, para io.Writer) {
 	s.Alertas = append(s.Alertas, AlertaAgendado{em, quantia})
 }

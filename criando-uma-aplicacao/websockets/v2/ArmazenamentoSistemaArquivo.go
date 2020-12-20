@@ -29,7 +29,7 @@ func NovoSistemaArquivoArmazenamentoJogador(arquivo *os.File) (*SistemaArquivoAr
 	}
 
 	return &SistemaArquivoArmazenamentoJogador{
-		baseDeDados: json.NewEncoder(&tape{arquivo}),
+		baseDeDados: json.NewEncoder(&Tape{arquivo}),
 		liga:        liga,
 	}, nil
 }

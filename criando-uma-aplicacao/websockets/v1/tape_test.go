@@ -6,17 +6,17 @@ import (
 )
 
 func TestTape_Write(t *testing.T) {
-	file, clean := criarArquivoTemporario(t, "12345")
-	defer clean()
+	arquivo, limpar := criarArquivoTemporario(t, "12345")
+	defer limpar()
 
-	tape := &tape{file}
+	tape := &tape{arquivo}
 
 	tape.Write([]byte("abc"))
 
-	file.Seek(0, 0)
-	newFileContents, _ := ioutil.ReadAll(file)
+	arquivo.Seek(0, 0)
+	novosConteudosDeArquivo, _ := ioutil.ReadAll(arquivo)
 
-	obtido := string(newFileContents)
+	obtido := string(novosConteudosDeArquivo)
 	esperado := "abc"
 
 	if obtido != esperado {
