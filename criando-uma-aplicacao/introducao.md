@@ -11,5 +11,5 @@ Até o final dessa seção você deve ter obtido um entendimento sólido de como
 * [HTTP server](http-server.md) - Vamos criar uma API que aceita requisições HTTP.
 * [Respostas em JSON e roteamentos](json.md) - Iremos evoluir nossa API para retornar objetos JSON e vamos explorar como fazer roteamentos.
 * [IO ](io.md) - Vamos salvar e ler dados de arquivos. Também vamos ordenar esses dados.
-* [Linha de comando](command-line.md) - Vamos criar uma aplicação que vai ser utilizada por linha de comando no terminal, para entendermos como podemos suportar múltiplas plataformas.
+* [Linha de comando](linha-de-comando.md) - Vamos criar uma aplicação que vai ser utilizada por linha de comando no terminal, para entendermos como podemos suportar múltiplas plataformas.
 * [Eventos](time.md) - Vamos agendar alguns eventos de processamento que irão acontecer dependendo do horário que usuário utilizou a aplicação.

@@ -15,22 +15,22 @@ de acordo com as vitórias gravadas nessa nova aplicação.
 ## Lembrando do código
 
 Nós temos uma aplicação com um arquivo `main.go` que inicia um servidor HTTP. O servidor HTTP não é nosso interesse neste
-exercício mas a abstração usada é. Ele depende de `PlayerStore`.
+exercício mas a abstração usada é. Ele depende de `ArmazenamentoJogador`.
 
 ```go
-type PlayerStore interface {
-    ObterPontuacaoDeJogador(name string) int
-    RecordWin(name string)
-    ObterLiga() League
+type ArmazenamentoJogador interface {
+    ObterPontuacaoDeJogador(nome string) int
+    GravarVitoria(nome string)
+    ObterLiga() Liga
 }
 ```
 
-No capítulo anterior, criamos um `FileSystemPlayerStore` que implementa essa mesma interface. Temos que poder reutilizar
+No capítulo anterior, criamos um `SistemaDeArquivoArmazenamentoJogador` que implementa essa mesma interface. Temos que poder reutilizar
 parte dela para a nossa nova aplicação. 
 
 ## Primeiro vamos [refatorar](https://pt.wikipedia.org/wiki/Refatora%C3%A7%C3%A3o) um pouco
 
-Nosso projeto precisa criar dois executáveis, nosso existente servidor web e o app de linha de comand. 
+Nosso projeto precisa criar dois executáveis, nosso existente servidor web e o app de linha de comando. 
 
 Antes de nos entretermos no nosso novo código, precisamos estruturar nosso projeto melhor para suportar isso.
 
@@ -50,19 +50,19 @@ Dentro do projeto existente crie uma pasta `cmd` com uma chamada `webserver` den
 
 Mova o arquivo `main.go` para dentro dessa pasta.
 
-Se você tiver o comand `tree` instalado você pode executar sua estrutura de pastas tem que parecer
+Se você tiver o comando `tree` instalado você pode executar sua estrutura de pastas tem que parecer
 
 ```text
 .
-├── FileSystemStore.go
-├── FileSystemStore_test.go
+├── ArmazenamentoSistemaArquivo.go
+├── ArmazenamentoSistemaArquivo_test.go
 ├── cmd
 │   └── webserver
 │       └── main.go
-├── league.go
-├── server.go
-├── server_integration_test.go
-├── server_test.go
+├── liga.go
+├── servidor.go
+├── servidor_integration_test.go
+├── servidor_test.go
 ├── tape.go
 └── tape_test.go
 ```
@@ -70,10 +70,10 @@ Se você tiver o comand `tree` instalado você pode executar sua estrutura de pa
 Agora temos uma separação efetiva entre nossa aplicação e o código da biblioteca mas agora temos que mudar alguns nomes
 de pacotes(package). Lembre-se que ao construir uma aplicação Go seu nome _deve_  ser `main`.
 
-Mude todos os outros códigos para ter um pacote chamado `poker`.
+Mude todos os outros códigos para ter um pacote chamado `poquer`.
 
 Finalmente, temos que importar esse pacote no `main.go` para utilizá-lo na criação de nosso servidor web. Então podemos
-usar nossa biblioteca chamando `poker.NomeDaFunção`.
+usar nossa biblioteca chamando `poquer.NomeDaFunção`.
 
 Os caminhos de diretórios vão ser diferentes no seu computador, mas deveria parecer com isso: 
 
@@ -84,27 +84,27 @@ import (
     "log"
     "net/http"
     "os"
-    "github.com/larien/learn-go-with-tests/command-line/v1"
+    "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v1"
 )
 
-const dbFileName = "game.db.json"
+const nomeArquivoBD = "jogo.db.json"
 
 func main() {
-    db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+    db, err := os.OpenFile(nomeArquivoBD, os.O_RDWR|os.O_CREATE, 0666)
 
     if err != nil {
-        log.Fatalf("falha ao abrir %s %v", dbFileName, err)
+        log.Fatalf("falha ao abrir %s %v", nomeArquivoBD, err)
     }
 
-    armazenamento, err := poker.NovoArmazenamentoSistemaDeArquivodeJogador(db)
+    armazenamento, err := poquer.NovoArmazenamentoSistemaDeArquivodeJogador(db)
 
     if err != nil {
         log.Fatalf("falha ao criar sistema de arquivos para armazenar jogadores, %v ", err)
     }
 
-    server := poker.NewPlayerServer(armazenamento)
+    servidor := poquer.NovoServidorJogador(armazenamento)
 
-    if err := http.ListenAndServe(":5000", server); err != nil {
+    if err := http.ListenAndServe(":5000", servidor); err != nil {
         log.Fatalf("nao foi possivel escutar na porta 5000 %v", err)
     }
 }
@@ -116,13 +116,13 @@ Separando nosso código em um pacote isolado e enviando para um repositório pú
 Go pode escrever código que importe esse pacote com as funcionalidades que disponibilizarmos. A primeira vez que você
 tentar e executar ele vai reclamar que o pacote não existe mas tudo que precisa ser feito é executar `go get`.
 
-[Além disso, usuários podem ver a documentação em godoc.org](https://godoc.org/github.com/larien/learn-go-with-tests/command-line/v1).
+[Além disso, usuários podem ver a documentação em godoc.org](https://godoc.org/github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v1).
 
 ### Verificações finais
 
 * Dentro do diretório raiz rode `go test` e valide que ainda está passando
 * Vá dentro de `cmd/webserver` e rode `go run main.go`
-  * Abra `http://localhost:5000/league` e veja que ainda está funcionando
+  * Abra `http://localhost:5000/liga` e veja que ainda está funcionando
 
 ### Estrutura inicial
 
@@ -135,7 +135,7 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("Vamos jogar poker")
+    fmt.Println("Vamos jogar poquer")
 }
 ```
 
@@ -143,51 +143,51 @@ O primeiro requisito que vamos discutir is como gravar uma vitória quando o usu
 
 ## Escreva o teste antes
 
-Sabemos que temos que escrever algo chamado `CLI` que vai nos permitir `Play(Jogar)` poker. Isso vai precisar ler o que
-o usuário digita e então gravar a vitória no armazenamento `PlayerStore`.  
+Sabemos que temos que escrever algo chamado `CLI` que vai nos permitir `Jogar` poquer. Isso vai precisar ler o que
+o usuário digita e então gravar a vitória no armazenamento `ArmazenamentoJogador`.  
 
-Antes de irmos muito longe, vamos apenas escrever um teste para verificar a integração com a `PlayerStore` funciona como
+Antes de irmos muito longe, vamos apenas escrever um teste para verificar a integração com a `ArmazenamentoJogador` funciona como
 gostaríamos. 
 
 Dentro de `CLI_test.go` \(no diretório raiz do projeto, não dentro de `cmd`\)
 
 ```go
 func TestCLI(t *testing.T) {
-    playerStore := &StubPlayerStore{}
-    cli := &CLI{playerStore}
-    cli.PlayPoker()
+    armazenamentoJogador := &EsbocoArmazenamentoJogador{}
+    cli := &CLI{armazenamentoJogador}
+    cli.JogarPoquer()
 
-    if len(playerStore.winCalls) !=1 {
+    if len(armazenamentoJogador.ChamadasDeVitoria) !=1 {
         t.Fatal("esperando uma chamada de vitoria mas nao recebi nenhuma")
     }
 }
 ```
 
-* Podemos usar nossa `StubPlayerStore` de outros testes
+* Podemos usar nossa `EsbocoArmazenamentoJogador` de outros testes
 * Passamos nossa dependência dentro do nosso ainda não existente tipo `CLI`
-* Iniciamos o jogo chamando um método que chamaremos de `PlayPoker`
+* Iniciamos o jogo chamando um método que chamaremos de `JogarPoquer`
 * Validamos se a vitória foi registrada
 
 ## Tente rodar o teste
 
 ```text
-# github.com/larien/learn-go-with-tests/command-line/v2
+# github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v2
 ./cli_test.go:25:10: undefined: CLI
 ```
 
 ## Escreva o mínimo código para o teste rodar e verificarmos o próximo error
 
-Neste ponto, você deveria estar confortável para criar nossa nova `CLI` struct(estrutura de dados) com os respectivos
+Neste ponto, você deveria estar confortável para criar nossa nova `CLI` struct (estrutura de dados) com os respectivos
 campos necessários para nossa dependência e adicionar um método.
 
 Você deveria acabar com um código como esse
 
 ```go
 type CLI struct {
-    playerStore PlayerStore
+    armazenamentoJogador ArmazenamentoJogador
 }
 
-func (cli *CLI) PlayPoker() {}
+func (cli *CLI) JogarPoquer() {}
 ```
 
 Lembre-se que estamos apenas tentando fazer o teste rodar para validarmos que ele falha como esperamos
@@ -201,14 +201,14 @@ FAIL
 ## Escreva código suficiente para fazer ele passar
 
 ```go
-func (cli *CLI) PlayPoker() {
-    cli.playerStore.RecordWin("Cleo")
+func (cli *CLI) JogarPoquer() {
+    cli.armazenamentoJogador.GravarVitoria("Cleo")
 }
 ```
 
 Isso deve fazer ele passar.
 
-Agora, precisamos simular leando isso from `Stdin` \(o que o usuário digita\) para que fique registrado vitórias para 
+Agora, precisamos simular lendo isso from `Stdin` \(o que o usuário digita\) para que fique registrado vitórias para 
 jogadores específicos.
 
 Vamos incrementar nosso teste para exercitar essa condição.
@@ -218,16 +218,16 @@ Vamos incrementar nosso teste para exercitar essa condição.
 ```go
 func TestCLI(t *testing.T) {
     in := strings.NewReader("Chris venceu\n")
-    playerStore := &StubPlayerStore{}
+    armazenamentoJogador := &EsbocoArmazenamentoJogador{}
 
-    cli := &CLI{playerStore, in}
-    cli.PlayPoker()
+    cli := &CLI{armazenamentoJogador, in}
+    cli.JogarPoquer()
 
-    if len(playerStore.winCalls) < 1 {
+    if len(armazenamentoJogador.ChamadasDeVitoria) < 1 {
         t.Fatal("esperando uma chamada de vitoria mas nao recebi nenhuma")
     }
 
-    obtido := playerStore.winCalls[0]
+    obtido := armazenamentoJogador.ChamadasDeVitoria[0]
     esperado := "Chris"
 
     if obtido != esperado {
@@ -245,13 +245,15 @@ Nós criamos um `io.Reader` no nosso teste usando `strings.NewReader`, preenchen
 
 `./CLI_test.go:12:32: too many values in struct initializer`
 
+Muitos valores no inicializador da estrutura.
+
 ## Escreva o mínimo código para o teste rodar e verificarmos o próximo error
 
 Precisamos adicionar nossa nova dependência dentro de `CLI`.
 
 ```go
 type CLI struct {
-    playerStore PlayerStore
+    armazenamentoJogador ArmazenamentoJogador
     in io.Reader
 }
 ```
@@ -267,8 +269,8 @@ FAIL
 Lembre-se de primeiro fazer o que for mais fácil
 
 ```go
-func (cli *CLI) PlayPoker() {
-    cli.playerStore.RecordWin("Chris")
+func (cli *CLI) JogarPoquer() {
+    cli.armazenamentoJogador.GravarVitoria("Chris")
 }
 ```
 
@@ -281,15 +283,15 @@ No `server_test` anteriormente fizemos validações para saber se uma vitória �
 essa validação para dentro de um helper e manter o código [DRY](https://pt.wikipedia.org/wiki/Don%27t_repeat_yourself).
 
 ```go
-func assertPlayerWin(t *testing.T, armazenamento *StubPlayerStore, winner string) {
+func verificaVitoriaJogador(t *testing.T, armazenamento *EsbocoArmazenamentoJogador, vencedor string) {
     t.Helper()
 
-    if len(armazenamento.winCalls) != 1 {
-        t.Fatalf("recebi %d chamadas de RecordWin esperava %d", len(armazenamento.winCalls), 1)
+    if len(armazenamento.ChamadasDeVitoria) != 1 {
+        t.Fatalf("recebi %d chamadas de GravarVitoria esperava %d", len(armazenamento.ChamadasDeVitoria), 1)
     }
 
-    if armazenamento.winCalls[0] != winner {
-        t.Errorf("nao armazenou o vencedor correto, recebi '%s' esperava '%s'", armazenamento.winCalls[0], winner)
+    if armazenamento.ChamadasDeVitoria[0] != vencedor {
+        t.Errorf("nao armazenou o vencedor correto, recebi '%s' esperava '%s'", armazenamento.ChamadasDeVitoria[0], vencedor)
     }
 }
 ```
@@ -301,12 +303,12 @@ O teste deve agora parecer com
 ```go
 func TestCLI(t *testing.T) {
     in := strings.NewReader("Chris venceu\n")
-    playerStore := &StubPlayerStore{}
+    armazenamentoJogador := &EsbocoArmazenamentoJogador{}
 
-    cli := &CLI{playerStore, in}
-    cli.PlayPoker()
+    cli := &CLI{armazenamentoJogador, in}
+    cli.JogarPoquer()
 
-    assertPlayerWin(t, playerStore, "Chris")
+    verificaVitoriaJogador(t, armazenamentoJogador, "Chris")
 }
 ```
 
@@ -319,22 +321,22 @@ func TestCLI(t *testing.T) {
 
     t.Run("recorda vencedor chris digitado pelo usuario", func(t *testing.T) {
         in := strings.NewReader("Chris venceu\n")
-        playerStore := &StubPlayerStore{}
+        armazenamentoJogador := &EsbocoArmazenamentoJogador{}
 
-        cli := &CLI{playerStore, in}
-        cli.PlayPoker()
+        cli := &CLI{armazenamentoJogador, in}
+        cli.JogarPoquer()
 
-        assertPlayerWin(t, playerStore, "Chris")
+        verificaVitoriaJogador(t, armazenamentoJogador, "Chris")
     })
 
     t.Run("recorda vencedor cleo digitado pelo usuario", func(t *testing.T) {
         in := strings.NewReader("Cleo venceu\n")
-        playerStore := &StubPlayerStore{}
+        armazenamentoJogador := &EsbocoArmazenamentoJogador{}
 
-        cli := &CLI{playerStore, in}
-        cli.PlayPoker()
+        cli := &CLI{armazenamentoJogador, in}
+        cli.JogarPoquer()
 
-        assertPlayerWin(t, playerStore, "Cleo")
+        verificaVitoriaJogador(t, armazenamentoJogador, "Cleo")
     })
 
 }
@@ -364,17 +366,17 @@ Atualize o código para
 
 ```go
 type CLI struct {
-    playerStore PlayerStore
+    armazenamentoJogador ArmazenamentoJogador
     in          io.Reader
 }
 
-func (cli *CLI) PlayPoker() {
+func (cli *CLI) JogarPoquer() {
     reader := bufio.NewScanner(cli.in)
     reader.Scan()
-    cli.playerStore.RecordWin(extractWinner(reader.Text()))
+    cli.armazenamentoJogador.GravarVitoria(extrairVencedor(reader.Text()))
 }
 
-func extractWinner(userInput string) string {
+func extrairVencedor(userInput string) string {
     return strings.Replace(userInput, " venceu", "", 1)
 }
 ```
@@ -395,43 +397,43 @@ package main
 
 import (
     "fmt"
-    "github.com/larien/learn-go-with-tests/command-line/v3"
+    "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
     "log"
     "os"
 )
 
-const dbFileName = "game.db.json"
+const nomeArquivoBD = "jogo.db.json"
 
 func main() {
-    fmt.Println("Vamos jogar poker")
+    fmt.Println("Vamos jogar poquer")
     fmt.Println("Digite {Nome} venceu para registrar uma vitoria")
 
-    db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+    db, err := os.OpenFile(nomeArquivoBD, os.O_RDWR|os.O_CREATE, 0666)
 
     if err != nil {
-        log.Fatalf("falha ao abrir %s %v", dbFileName, err)
+        log.Fatalf("falha ao abrir %s %v", nomeArquivoBD, err)
     }
 
-    armazenamento, err := poker.NovoArmazenamentoSistemaDeArquivodeJogador(db)
+    armazenamento, err := poquer.NovoArmazenamentoSistemaDeArquivodeJogador(db)
 
     if err != nil {
         log.Fatalf("falha ao criar sistema de arquivos para armazenar jogadores, %v ", err)
     }
 
-    game := poker.CLI{armazenamento, os.Stdin}
-    game.PlayPoker()
+    jogo := poquer.CLI{armazenamento, os.Stdin}
+    jogo.JogarPoquer()
 }
 ```
 
-Você deve receber um erro
+Você deve receber um erro:
 
 ```text
-command-line/v3/cmd/cli/main.go:32:25: implicit assignment of unexported field 'playerStore' in poker.CLI literal
-command-line/v3/cmd/cli/main.go:32:34: implicit assignment of unexported field 'in' in poker.CLI literal
+linha-de-comando/v3/cmd/cli/main.go:32:25: implicit assignment of unexported field 'armazenamentoJogador' in poquer.CLI literal
+linha-de-comando/v3/cmd/cli/main.go:32:34: implicit assignment of unexported field 'in' in poquer.CLI literal
 ```
 
-O que está acontecendo é que por causa da tentativa de associar os campos `playerStore` e `in` na `CLI`. Eles são campos 
-não exportados\(privados\). Nós _podemos_ fazer isso nos nossos testes porque o teste está no mesmo pacote da `CLI` \(`poker`\). 
+O que está acontecendo é que por causa da tentativa de associar os campos `armazenamentoJogador` e `in` na `CLI`. Eles são campos 
+não exportados\(privados\). Nós _podemos_ fazer isso nos nossos testes porque o teste está no mesmo pacote da `CLI` \(`poquer`\). 
 Mas nosso `main` é um pacote `main` portanto não tem acesso.
 
 Isso enfatiza a importância de _integrar seu código_. Nós definimos corretamente as dependências da `CLI` como privada 
@@ -459,21 +461,21 @@ A máxima do TDD é que se você não pode testar o seu código então provável
  código de integrar com ele. Fazendo uso de `package foo_test` vai forçar você à testar seu código como se você estivesse
  importando ele como vão fazer aqueles que importarem o seu pacote.  
 
-Antes de consertar o `main` vamos mudar o nome de pacote do nosso teste dentro de `CLI_test.go` para `poker_test`.
+Antes de consertar o `main` vamos mudar o nome de pacote do nosso teste dentro de `CLI_test.go` para `poquer_test`.
 
 Se sua IDE estiver bem configurada você vai de repente ver um monte de vermelho! Se você rodar o compilador vocês vai ver
 os seguintes errors:
 
 ```text
-./CLI_test.go:12:19: undefined: StubPlayerStore
-./CLI_test.go:17:3: undefined: assertPlayerWin
-./CLI_test.go:22:19: undefined: StubPlayerStore
-./CLI_test.go:27:3: undefined: assertPlayerWin
+./CLI_test.go:12:19: undefined: EsbocoArmazenamentoJogador
+./CLI_test.go:17:3: undefined: verificaVitoriaJogador
+./CLI_test.go:22:19: undefined: EsbocoArmazenamentoJogador
+./CLI_test.go:27:3: undefined: verificaVitoriaJogador
 ```
 
 Nós agora tropeçamenos nos problemas de desenho do pacote. Para testar nosso código nós criamos algumas funções auxíliares
  e tipos emulados sem exportá-los e portanto não estão mais disponíveis para uso no nosso `CLI_test` porque eles foram
- definidos somente nos arquivos com `_test.go` no pacote `poker`.
+ definidos somente nos arquivos com `_test.go` no pacote `poquer`.
  
 #### Queremos ter as funções auxíliares e tipos emulados disponível publicamente?
 
@@ -483,7 +485,7 @@ Está é uma discussão subjetiva. One argumento é que não queremos poluir a A
 Na apresentação ["Testes avançados em Go"](https://speakerdeck.com/mitchellh/advanced-testing-with-go?slide=53) do
  Mitchell Hashimoto, é descrito como eles advogam na HashiCorp isso para que usuários do pacote possam escrever testes
  sem ter que reinventar a roda escrevendo tipos emulados. No nosso caso, isso significa que qualquer um usando nosso
- pacote `poker` não tem que criar seus próprios `PlayStore` emulados se eles quiserem usar nosso código.  
+ pacote `poquer` não tem que criar seus próprios `ArmazenamentoJogador` emulados se eles quiserem usar nosso código.  
 
 Informalmente eu tenho usado esta técnica em outros pacotes compartilhados e tem se provado extremamente útil em termos
  de economizar tempo dos usuários quando eles integram com nossos pacotes.
@@ -491,42 +493,42 @@ Informalmente eu tenho usado esta técnica em outros pacotes compartilhados e te
 Então vamos criar um arquivo chamado `testing.go` e adicionar nossos cógidos auxiliares nele.
 
 ```go
-package poker
+package poquer
 
 import "testing"
 
-type StubPlayerStore struct {
-    scores   map[string]int
-    winCalls []string
-    league   []Player
+type EsbocoArmazenamentoJogador struct {
+    pontuacoes   map[string]int
+    chamadasDeVitoria []string
+    liga   []Jogador
 }
 
-func (s *StubPlayerStore) ObterPontuacaoDeJogador(name string) int {
-    score := s.scores[name]
-    return score
+func (s *EsbocoArmazenamentoJogador) ObterPontuacaoDeJogador(nome string) int {
+    pontuacao := s.pontuacoes[nome]
+    return pontuacao
 }
 
-func (s *StubPlayerStore) RecordWin(name string) {
-    s.winCalls = append(s.winCalls, name)
+func (s *EsbocoArmazenamentoJogador) GravarVitoria(nome string) {
+    s.chamadasDeVitoria = append(s.chamadasDeVitoria, nome)
 }
 
-func (s *StubPlayerStore) ObterLiga() League {
-    return s.league
+func (s *EsbocoArmazenamentoJogador) ObterLiga() Liga {
+    return s.liga
 }
 
-func AssertPlayerWin(t *testing.T, armazenamento *StubPlayerStore, winner string) {
+func VerificaVitoriaJogador(t *testing.T, armazenamento *EsbocoArmazenamentoJogador, vencedor string) {
     t.Helper()
 
-    if len(armazenamento.winCalls) != 1 {
-        t.Fatalf("recebi %d chamadas de RecordWin esperava %d", len(armazenamento.winCalls), 1)
+    if len(armazenamento.ChamadasDeVitoria) != 1 {
+        t.Fatalf("recebi %d chamadas de GravarVitoria esperava %d", len(armazenamento.ChamadasDeVitoria), 1)
     }
 
-    if armazenamento.winCalls[0] != winner {
-        t.Errorf("nao armazenou o vencedor correto, recebi '%s' esperava '%s'", armazenamento.winCalls[0], winner)
+    if armazenamento.ChamadasDeVitoria[0] != vencedor {
+        t.Errorf("nao armazenou o vencedor correto, recebi '%s' esperava '%s'", armazenamento.ChamadasDeVitoria[0], vencedor)
     }
 }
 
-// tarega para você - adicionar os códigos restantes
+// tarefa para você - adicionar os códigos restantes
 ```
 
 Você precisar tornar essas funções públicas \(lembre-se que exportar em Go é feito apenas colocando a primeira letra em
@@ -539,22 +541,22 @@ func TestCLI(t *testing.T) {
 
     t.Run("recorda vencedor chris digitado pelo usuario", func(t *testing.T) {
         in := strings.NewReader("Chris venceu\n")
-        playerStore := &poker.StubPlayerStore{}
+        armazenamentoJogador := &poquer.EsbocoArmazenamentoJogador{}
 
-        cli := &poker.CLI{playerStore, in}
-        cli.PlayPoker()
+        cli := &poquer.CLI{armazenamentoJogador, in}
+        cli.JogarPoquer()
 
-        poker.AssertPlayerWin(t, playerStore, "Chris")
+        poquer.VerificaVitoriaJogador(t, armazenamentoJogador, "Chris")
     })
 
     t.Run("recorda vencedor cleo digitado pelo usuario", func(t *testing.T) {
         in := strings.NewReader("Cleo venceu\n")
-        playerStore := &poker.StubPlayerStore{}
+        armazenamentoJogador := &poquer.EsbocoArmazenamentoJogador{}
 
-        cli := &poker.CLI{playerStore, in}
-        cli.PlayPoker()
+        cli := &poquer.CLI{armazenamentoJogador, in}
+        cli.JogarPoquer()
 
-        poker.AssertPlayerWin(t, playerStore, "Cleo")
+        poquer.VerificaVitoriaJogador(t, armazenamentoJogador, "Cleo")
     })
 
 }
@@ -563,10 +565,10 @@ func TestCLI(t *testing.T) {
 Você vai ver que agora temos o mesmo problema que tivemos na `main`
 
 ```text
-./CLI_test.go:15:26: implicit assignment of unexported field 'playerStore' in poker.CLI literal
-./CLI_test.go:15:39: implicit assignment of unexported field 'in' in poker.CLI literal
-./CLI_test.go:25:26: implicit assignment of unexported field 'playerStore' in poker.CLI literal
-./CLI_test.go:25:39: implicit assignment of unexported field 'in' in poker.CLI literal
+./CLI_test.go:15:26: implicit assignment of unexported field 'armazenamentoJogador' in poquer.CLI literal
+./CLI_test.go:15:39: implicit assignment of unexported field 'in' in poquer.CLI literal
+./CLI_test.go:25:26: implicit assignment of unexported field 'armazenamentoJogador' in poquer.CLI literal
+./CLI_test.go:25:39: implicit assignment of unexported field 'in' in poquer.CLI literal
 ```
 
 O jeito mais fácil de resolver isso é fazer um construtor como temos para outros tipos. Nós também vamos mudar o `CLI`
@@ -575,13 +577,13 @@ O jeito mais fácil de resolver isso é fazer um construtor como temos para outr
 
 ```go
 type CLI struct {
-    playerStore PlayerStore
+    armazenamentoJogador ArmazenamentoJogador
     in          *bufio.Scanner
 }
 
-func NewCLI(armazenamento PlayerStore, in io.Reader) *CLI {
+func NovoCLI(armazenamento ArmazenamentoJogador, in io.Reader) *CLI {
     return &CLI{
-        playerStore: armazenamento,
+        armazenamentoJogador: armazenamento,
         in:          bufio.NewScanner(in),
     }
 }
@@ -590,12 +592,12 @@ func NewCLI(armazenamento PlayerStore, in io.Reader) *CLI {
 Fazendo isso, podemos simplificar e refatorar no código do leitor
 
 ```go
-func (cli *CLI) PlayPoker() {
+func (cli *CLI) JogarPoquer() {
     userInput := cli.readLine()
-    cli.playerStore.RecordWin(extractWinner(userInput))
+    cli.armazenamentoJogador.GravarVitoria(extrairVencedor(userInput))
 }
 
-func extractWinner(userInput string) string {
+func extrairVencedor(userInput string) string {
     return strings.Replace(userInput, " venceu", "", 1)
 }
 
@@ -610,19 +612,19 @@ Mude o teste para usar o esse construtor e valtamos a ter nossos testes passando
 Por último, podemos voltar para o nosso `main.go` e usar o construtor que acabamos de criar
 
 ```go
-game := poker.NewCLI(armazenamento, os.Stdin)
+jogo := poquer.NovoCLI(armazenamento, os.Stdin)
 ```
 
 Tente executar ele, digite "Bob venceu".
 
 ### Refatoração
 
-Nós temos alguma repetição nas nossas respectivas aplicações aonde estamos abrindo um arquivo e criando um `FileSystemStore`
+Nós temos alguma repetição nas nossas respectivas aplicações aonde estamos abrindo um arquivo e criando um `ArmazenamentoSistemaArquivo`
  a partir do seu conteúdo. Isso parece uma pequena fraqueza no desenho do nosso pacote então deveríamos fazer uma função
- nele para encapsular a abertura de arquivos dado um caminho e retornar a `PlayerStore`.
+ nele para encapsular a abertura de arquivos dado um caminho e retornar a `ArmazenamentoJogador`.
 
 ```go
-func FileSystemPlayerStoreFromFile(path string) (*FileSystemPlayerStore, func(), error) {
+func ArmazenamentoSistemaDeArquivoJogadorAPartirDeArquivo(path string) (*SistemaDeArquivoArmazenamentoJogador, func(), error) {
     db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
 
     if err != nil {
@@ -651,25 +653,25 @@ Agora refatorando ambas aplicações para usar a função de criar o armazenamen
 package main
 
 import (
-    "github.com/larien/learn-go-with-tests/command-line/v3"
+    "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
     "log"
     "os"
     "fmt"
 )
 
-const dbFileName = "game.db.json"
+const nomeArquivoBD = "jogo.db.json"
 
 func main() {
-    armazenamento, close, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
+    armazenamento, close, err := poquer.ArmazenamentoSistemaDeArquivoJogadorAPartirDeArquivo(nomeArquivoBD)
 
     if err != nil {
         log.Fatal(err)
     }
     defer close()
 
-    fmt.Println("Vamos jogar poker")
+    fmt.Println("Vamos jogar poquer")
     fmt.Println("Digite {Nome} venceu para registrar uma vitoria")
-    poker.NewCLI(armazenamento, os.Stdin).PlayPoker()
+    poquer.NovoCLI(armazenamento, os.Stdin).JogarPoquer()
 }
 ```
 
@@ -679,31 +681,31 @@ func main() {
 package main
 
 import (
-    "github.com/larien/learn-go-with-tests/command-line/v3"
+    "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
     "log"
     "net/http"
 )
 
-const dbFileName = "game.db.json"
+const nomeArquivoBD = "jogo.db.json"
 
 func main() {
-    armazenamento, close, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
+    armazenamento, close, err := poquer.ArmazenamentoSistemaDeArquivoJogadorAPartirDeArquivo(nomeArquivoBD)
 
     if err != nil {
         log.Fatal(err)
     }
     defer close()
 
-    server := poker.NewPlayerServer(armazenamento)
+    servidor := poquer.NovoServidorJogador(armazenamento)
 
-    if err := http.ListenAndServe(":5000", server); err != nil {
+    if err := http.ListenAndServe(":5000", servidor); err != nil {
         log.Fatalf("nao foi possivel escutar na porta 5000 %v", err)
     }
 }
 ```
 
 Note a simetria: mesmo sendo diferente interfaces de usuário o setup é quase idêntico. Isso dá impressão de uma boa
- validação do nosso desenho. E note também que `FileSystemPlayerStoreFromFile` retorna uma função `close` (fechar), que
+ validação do nosso desenho. E note também que `ArmazenamentoSistemaDeArquivoJogadorAPartirDeArquivo` retorna uma função `close` (fechar), que
  podemos encerrar o arquivo fundamental assim que terminarmos de usar o armazenamento.
 
 ## Resumindo
@@ -728,7 +730,6 @@ Vimos como lendo do `os.Stdin` é muito fácil de usar pois ele implementa o `io
 
 ### Abstração simples leva à simples reutilização de código
 
-Quase não nos esforçamos para integrar a `PlayerStore` na nossa aplicação \(assim que fizemos alguns ajustes no pacode\)
+Quase não nos esforçamos para integrar a `ArmazenamentoJogador` na nossa aplicação \(assim que fizemos alguns ajustes no pacode\)
  e subsequente testar foi muito fácil tambem porque nós decidimos também expor a versão emulada. 
-It was almost no effort to integrate `PlayerStore` into our new application \(once we had made the package adjustments\) 
-and subsequently testing was very easy too because we decided to expose our stub version too.
+ 
