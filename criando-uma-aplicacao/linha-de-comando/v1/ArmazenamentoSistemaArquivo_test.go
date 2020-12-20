@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"io/ioutil"
@@ -18,7 +18,7 @@ func criarArquivoTemporario(t *testing.T, dadosIniciais string) (*os.File, func(
 	arquivoTemporario.Write([]byte(dadosIniciais))
 
 	removerArquivo := func() {
-		os.Remove(arquivoTemporario.Nome())
+		os.Remove(arquivoTemporario.Name())
 	}
 
 	return arquivoTemporario, removerArquivo
@@ -28,8 +28,8 @@ func TestArmazenaSistemaDeArquivo(t *testing.T) {
 
 	t.Run("liga ordenada", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, `[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}]`)
+			{"Nome": "Cleo", "ChamadasDeVitoria": 10},
+			{"Nome": "Chris", "ChamadasDeVitoria": 33}]`)
 		defer limparBaseDeDados()
 
 		armazenamento, err := NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
@@ -38,7 +38,7 @@ func TestArmazenaSistemaDeArquivo(t *testing.T) {
 
 		obtido := armazenamento.ObterLiga()
 
-		esperado := []Player{
+		esperado := []Jogador{
 			{"Chris", 33},
 			{"Cleo", 10},
 		}
@@ -52,8 +52,8 @@ func TestArmazenaSistemaDeArquivo(t *testing.T) {
 
 	t.Run("encontrar os pontos do jogador", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, `[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}]`)
+			{"Nome": "Cleo", "ChamadasDeVitoria": 10},
+			{"Nome": "Chris", "ChamadasDeVitoria": 33}]`)
 		defer limparBaseDeDados()
 
 		armazenamento, err := NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
@@ -67,15 +67,15 @@ func TestArmazenaSistemaDeArquivo(t *testing.T) {
 
 	t.Run("armazenar vitórias para jogadores existentes", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, `[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}]`)
+			{"Nome": "Cleo", "ChamadasDeVitoria": 10},
+			{"Nome": "Chris", "ChamadasDeVitoria": 33}]`)
 		defer limparBaseDeDados()
 
 		armazenamento, err := NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
-		armazenamento.RecordWin("Chris")
+		armazenamento.GravarVitoria("Chris")
 
 		obtido := armazenamento.ObterPontuacaoDeJogador("Chris")
 		esperado := 34
@@ -84,15 +84,15 @@ func TestArmazenaSistemaDeArquivo(t *testing.T) {
 
 	t.Run("armazenar vitórias para jogadores existentes", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, `[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}]`)
+			{"Nome": "Cleo", "ChamadasDeVitoria": 10},
+			{"Nome": "Chris", "ChamadasDeVitoria": 33}]`)
 		defer limparBaseDeDados()
 
 		armazenamento, err := NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
-		armazenamento.RecordWin("Pepper")
+		armazenamento.GravarVitoria("Pepper")
 
 		obtido := armazenamento.ObterPontuacaoDeJogador("Pepper")
 		esperado := 1

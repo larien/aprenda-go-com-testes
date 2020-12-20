@@ -1,16 +1,16 @@
-package poker
+package poquer
 
 import (
 	"testing"
 )
 
 func TestCLI(t *testing.T) {
-	playerStore := &StubPlayerStore{}
+	armazenamentoJogador := &EsbocoArmazenamentoJogador{}
 
-	cli := &CLI{playerStore}
-	cli.PlayPoker()
+	cli := &CLI{armazenamentoJogador}
+	cli.JogarPoquer()
 
-	if len(playerStore.winCalls) < 1 {
+	if len(armazenamentoJogador.ChamadasDeVitoria) < 1 {
 		t.Fatal("esperando uma chamada de vitoria mas nao recebi nenhuma")
 	}
 }

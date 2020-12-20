@@ -1,11 +1,11 @@
-package poker
+package poquer
 
-// CLI auxilia jogadores em um jogo de poker
+// CLI auxilia jogadores em um jogo de poquer
 type CLI struct {
-	playerStore PlayerStore
+	armazenamentoJogador ArmazenamentoJogador
 }
 
-// PlayPoker inicia o jogo
-func (cli *CLI) PlayPoker() {
-	cli.playerStore.RecordWin("Cleo")
+// JogarPoquer inicia o jogo
+func (cli *CLI) JogarPoquer() {
+	cli.armazenamentoJogador.GravarVitoria("Cleo")
 }

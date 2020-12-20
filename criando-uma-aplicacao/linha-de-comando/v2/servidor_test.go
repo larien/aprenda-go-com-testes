@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"fmt"
@@ -9,8 +9,27 @@ import (
 	"testing"
 )
 
+type EsbocoArmazenamentoJogador struct {
+	scores            map[string]int
+	ChamadasDeVitoria []string
+	liga              []Jogador
+}
+
+func (s *EsbocoArmazenamentoJogador) ObterPontuacaoDeJogador(nome string) int {
+	pontuacao := s.scores[nome]
+	return pontuacao
+}
+
+func (s *EsbocoArmazenamentoJogador) GravarVitoria(nome string) {
+	s.ChamadasDeVitoria = append(s.ChamadasDeVitoria, nome)
+}
+
+func (s *EsbocoArmazenamentoJogador) ObterLiga() Liga {
+	return s.liga
+}
+
 func TestGETPlayers(t *testing.T) {
-	armazenamento := StubPlayerStore{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
@@ -18,7 +37,7 @@ func TestGETPlayers(t *testing.T) {
 		nil,
 		nil,
 	}
-	server := NewPlayerServer(&armazenamento)
+	server := NovoServidorJogador(&armazenamento)
 
 	t.Run("retorna os pontos da Pepper", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -51,37 +70,44 @@ func TestGETPlayers(t *testing.T) {
 }
 
 func TestStoreWins(t *testing.T) {
-	armazenamento := StubPlayerStore{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{},
 		nil,
 		nil,
 	}
-	server := NewPlayerServer(&armazenamento)
+	server := NovoServidorJogador(&armazenamento)
 
-	t.Run("armazenda vitórias com POST", func(t *testing.T) {
-		player := "Pepper"
+	t.Run("armazena vitórias com POST", func(t *testing.T) {
+		jogador := "Pepper"
 
-		request := newPostWinRequest(player)
+		request := newPostWinRequest(jogador)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
 
 		assertStatus(t, response.Code, http.StatusAccepted)
-		AssertPlayerWin(t, &armazenamento, player)
+
+		if len(armazenamento.ChamadasDeVitoria) != 1 {
+			t.Fatalf("recebi %d chamadas de GravarVitoria esperava %d", len(armazenamento.ChamadasDeVitoria), 1)
+		}
+
+		if armazenamento.ChamadasDeVitoria[0] != jogador {
+			t.Errorf("não armazenou o vencedor correto recebi '%s' esperava '%s'", armazenamento.ChamadasDeVitoria[0], jogador)
+		}
 	})
 }
 
 func TestLeague(t *testing.T) {
 
 	t.Run("retorna a tabela da liga como JSON", func(t *testing.T) {
-		wantedLeague := []Player{
+		wantedLeague := []Jogador{
 			{"Cleo", 32},
 			{"Chris", 20},
 			{"Tiest", 14},
 		}
 
-		armazenamento := StubPlayerStore{nil, nil, wantedLeague}
-		server := NewPlayerServer(&armazenamento)
+		armazenamento := EsbocoArmazenamentoJogador{nil, nil, wantedLeague}
+		server := NovoServidorJogador(&armazenamento)
 
 		request := newLeagueRequest()
 		response := httptest.NewRecorder()
@@ -92,7 +118,7 @@ func TestLeague(t *testing.T) {
 
 		assertStatus(t, response.Code, http.StatusOK)
 		verificaLiga(t, obtido, wantedLeague)
-		assertContentType(t, response, jsonContentType)
+		assertContentType(t, response, tipoConteudoJSON)
 
 	})
 }
@@ -104,18 +130,18 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, espera
 	}
 }
 
-func getLeagueFromResponse(t *testing.T, body io.Reader) []Player {
+func getLeagueFromResponse(t *testing.T, body io.Reader) []Jogador {
 	t.Helper()
-	league, err := NewLeague(body)
+	liga, err := NovaLiga(body)
 
 	if err != nil {
-		t.Fatalf("Incapaz de converter a resposta do servidor '%s' em forma de Player, '%v'", body, err)
+		t.Fatalf("Incapaz de converter a resposta do servidor '%s' em forma de Jogador, '%v'", body, err)
 	}
 
-	return league
+	return liga
 }
 
-func verificaLiga(t *testing.T, obtido, esperado []Player) {
+func verificaLiga(t *testing.T, obtido, esperado []Jogador) {
 	t.Helper()
 	if !reflect.DeepEqual(obtido, esperado) {
 		t.Errorf("recebi %v esperava %v", obtido, esperado)
@@ -130,17 +156,17 @@ func assertStatus(t *testing.T, obtido, esperado int) {
 }
 
 func newLeagueRequest() *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/liga", nil)
 	return req
 }
 
-func newGetScoreRequest(name string) *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
+func newGetScoreRequest(nome string) *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
 	return req
 }
 
-func newPostWinRequest(name string) *http.Request {
-	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
+func newPostWinRequest(nome string) *http.Request {
+	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", nome), nil)
 	return req
 }
 

@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"bufio"
@@ -6,27 +6,27 @@ import (
 	"strings"
 )
 
-// CLI auxilia jogadores em um jogo de poker
+// CLI auxilia jogadores em um jogo de poquer
 type CLI struct {
-	playerStore PlayerStore
-	in          *bufio.Scanner
+	armazenamentoJogador ArmazenamentoJogador
+	in                   *bufio.Scanner
 }
 
-// NewCLI cria uma CLI para jogar poker
-func NewCLI(armazenamento PlayerStore, in io.Reader) *CLI {
+// NovoCLI cria uma CLI para jogar poquer
+func NovoCLI(armazenamento ArmazenamentoJogador, in io.Reader) *CLI {
 	return &CLI{
-		playerStore: armazenamento,
-		in:          bufio.NewScanner(in),
+		armazenamentoJogador: armazenamento,
+		in:                   bufio.NewScanner(in),
 	}
 }
 
-// PlayPoker inicia o jogo
-func (cli *CLI) PlayPoker() {
+// JogarPoquer inicia o jogo
+func (cli *CLI) JogarPoquer() {
 	userInput := cli.readLine()
-	cli.playerStore.RecordWin(extractWinner(userInput))
+	cli.armazenamentoJogador.GravarVitoria(extrairVencedor(userInput))
 }
 
-func extractWinner(userInput string) string {
+func extrairVencedor(userInput string) string {
 	return strings.Replace(userInput, " venceu", "", 1)
 }
 

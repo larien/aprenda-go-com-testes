@@ -1,59 +1,60 @@
-package poker_test
+package poquer_test
 
 import (
-	"github.com/larien/learn-go-with-tests/criando-uma-aplicacao/command-line/v3"
 	"io"
 	"strings"
 	"testing"
+
+	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
 )
 
 func TestCLI(t *testing.T) {
 
 	t.Run("recorda vencedor chris digitado pelo usuario", func(t *testing.T) {
 		in := strings.NewReader("Chris venceu\n")
-		playerStore := &poker.StubPlayerStore{}
+		armazenamentoJogador := &poquer.EsbocoArmazenamentoJogador{}
 
-		cli := poker.NewCLI(playerStore, in)
-		cli.PlayPoker()
+		cli := poquer.NovoCLI(armazenamentoJogador, in)
+		cli.JogarPoquer()
 
-		poker.AssertPlayerWin(t, playerStore, "Chris")
+		poquer.VerificaVitoriaJogador(t, armazenamentoJogador, "Chris")
 	})
 
 	t.Run("recorda vencedor cleo digitado pelo usuario", func(t *testing.T) {
 		in := strings.NewReader("Cleo venceu\n")
-		playerStore := &poker.StubPlayerStore{}
+		armazenamentoJogador := &poquer.EsbocoArmazenamentoJogador{}
 
-		cli := poker.NewCLI(playerStore, in)
-		cli.PlayPoker()
+		cli := poquer.NovoCLI(armazenamentoJogador, in)
+		cli.JogarPoquer()
 
-		poker.AssertPlayerWin(t, playerStore, "Cleo")
+		poquer.VerificaVitoriaJogador(t, armazenamentoJogador, "Cleo")
 	})
 
 	t.Run("não ler além da primeira nova linha", func(t *testing.T) {
-		in := failOnEndReader{
+		in := LeitorDeFalhaAoTerminar{
 			t,
-			strings.NewReader("Chris wins\n E ai"),
+			strings.NewReader("Chris venceu\n E ai"),
 		}
 
-		playerStore := &poker.StubPlayerStore{}
+		armazenamentoJogador := &poquer.EsbocoArmazenamentoJogador{}
 
-		cli := poker.NewCLI(playerStore, in)
-		cli.PlayPoker()
+		cli := poquer.NovoCLI(armazenamentoJogador, in)
+		cli.JogarPoquer()
 	})
 
 }
 
-type failOnEndReader struct {
-	t   *testing.T
-	rdr io.Reader
+type LeitorDeFalhaAoTerminar struct {
+	t      *testing.T
+	leitor io.Reader
 }
 
-func (m failOnEndReader) Read(p []byte) (n int, err error) {
+func (m LeitorDeFalhaAoTerminar) Read(p []byte) (n int, err error) {
 
-	n, err = m.rdr.Read(p)
+	n, err = m.leitor.Read(p)
 
 	if n == 0 || err == io.EOF {
-		m.t.Fatal("Ler o até o fim quando não precisava")
+		m.t.Fatal("Leu o até o fim quando não precisava")
 	}
 
 	return n, err

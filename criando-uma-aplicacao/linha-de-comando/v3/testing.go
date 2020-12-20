@@ -1,39 +1,39 @@
-package poker
+package poquer
 
 import "testing"
 
-// StubPlayerStore implements PlayerStore for testing purposes
-type StubPlayerStore struct {
-	Scores   map[string]int
-	WinCalls []string
-	League   []Player
+// EsbocoArmazenamentoJogador implementa ArmazenamentoJogador para propósitos de testes
+type EsbocoArmazenamentoJogador struct {
+	Pontuacoes        map[string]int
+	ChamadasDeVitoria []string
+	Liga              []Jogador
 }
 
-// ObterPontuacaoDeJogador returns a score from Scores
-func (s *StubPlayerStore) ObterPontuacaoDeJogador(name string) int {
-	score := s.Scores[name]
-	return score
+// ObterPontuacaoDeJogador retorna uma pontuacao de Pontuacoes
+func (s *EsbocoArmazenamentoJogador) ObterPontuacaoDeJogador(nome string) int {
+	pontuacao := s.Pontuacoes[nome]
+	return pontuacao
 }
 
-// RecordWin will record a win to WinCalls
-func (s *StubPlayerStore) RecordWin(name string) {
-	s.WinCalls = append(s.WinCalls, name)
+// GravarVitoria grava uma vitória para ChamadasDeVitoria
+func (s *EsbocoArmazenamentoJogador) GravarVitoria(nome string) {
+	s.ChamadasDeVitoria = append(s.ChamadasDeVitoria, nome)
 }
 
-// ObterLiga returns League
-func (s *StubPlayerStore) ObterLiga() League {
-	return s.League
+// ObterLiga retorna a Liga
+func (s *EsbocoArmazenamentoJogador) ObterLiga() Liga {
+	return s.Liga
 }
 
-// AssertPlayerWin allows you to spy on the armazenamento's calls to RecordWin
-func AssertPlayerWin(t *testing.T, armazenamento *StubPlayerStore, winner string) {
+// VerificaVitoriaJogador permite que você espione as chamadas para GravarVitoria do armazenamento
+func VerificaVitoriaJogador(t *testing.T, armazenamento *EsbocoArmazenamentoJogador, vencedor string) {
 	t.Helper()
 
-	if len(armazenamento.WinCalls) != 1 {
-		t.Fatalf("recebi %d chamadas de RecordWin esperava %d", len(armazenamento.WinCalls), 1)
+	if len(armazenamento.ChamadasDeVitoria) != 1 {
+		t.Fatalf("recebi %d chamadas de GravarVitoria, esperava %d", len(armazenamento.ChamadasDeVitoria), 1)
 	}
 
-	if armazenamento.WinCalls[0] != winner {
-		t.Errorf("não armazenou o vencedor correto recebi '%s' esperava '%s'", armazenamento.WinCalls[0], winner)
+	if armazenamento.ChamadasDeVitoria[0] != vencedor {
+		t.Errorf("não armazenou o vencedor correto recebi '%s', esperava '%s'", armazenamento.ChamadasDeVitoria[0], vencedor)
 	}
 }

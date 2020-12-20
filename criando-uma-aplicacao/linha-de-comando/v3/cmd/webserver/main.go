@@ -4,20 +4,20 @@ import (
 	"log"
 	"net/http"
 
-	poker "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/command-line/v3"
+	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
 )
 
-const dbFileName = "game.db.json"
+const nomeArquivoBD = "jogo.db.json"
 
 func main() {
-	armazenamento, close, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
+	armazenamento, close, err := poquer.ArmazenamentoSistemaDeArquivoJogadorAPartirDeArquivo(nomeArquivoBD)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer close()
 
-	server := poker.NewPlayerServer(armazenamento)
+	server := poquer.NovoServidorJogador(armazenamento)
 
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("nao foi possivel escutar na porta 5000 %v", err)

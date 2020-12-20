@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"net/http"
@@ -13,16 +13,16 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 	verificaSemErro(t, err)
 
-	server := NewPlayerServer(armazenamento)
-	player := "Pepper"
+	server := NovoServidorJogador(armazenamento)
+	jogador := "Pepper"
 
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(jogador))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(jogador))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(jogador))
 
 	t.Run("retorna os pontos", func(t *testing.T) {
 		response := httptest.NewRecorder()
-		server.ServeHTTP(response, newGetScoreRequest(player))
+		server.ServeHTTP(response, newGetScoreRequest(jogador))
 		assertStatus(t, response.Code, http.StatusOK)
 
 		assertResponseBody(t, response.Body.String(), "3")
@@ -34,7 +34,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		assertStatus(t, response.Code, http.StatusOK)
 
 		obtido := getLeagueFromResponse(t, response.Body)
-		esperado := []Player{
+		esperado := []Jogador{
 			{"Pepper", 3},
 		}
 		verificaLiga(t, obtido, esperado)

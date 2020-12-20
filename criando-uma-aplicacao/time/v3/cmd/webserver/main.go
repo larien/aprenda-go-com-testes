@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/larien/learn-go-with-tests/criando-uma-aplicacao/command-line/v3"
 	"log"
 	"net/http"
 	"os"
+
+	poker "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/time/v3"
 )
 
 const dbFileName = "game.db.json"

@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"io/ioutil"
@@ -12,13 +12,13 @@ func criarArquivoTemporario(t *testing.T, dadosIniciais string) (*os.File, func(
 	arquivoTemporario, err := ioutil.TempFile("", "db")
 
 	if err != nil {
-		t.Fatalf("could not create temp file %v", err)
+		t.Fatalf("não foi possível criar arquivo temporário: %v", err)
 	}
 
 	arquivoTemporario.Write([]byte(dadosIniciais))
 
 	removerArquivo := func() {
-		os.Remove(arquivoTemporario.Nome())
+		os.Remove(arquivoTemporario.Name())
 	}
 
 	return arquivoTemporario, removerArquivo
@@ -26,10 +26,10 @@ func criarArquivoTemporario(t *testing.T, dadosIniciais string) (*os.File, func(
 
 func TestArmazenaSistemaDeArquivo(t *testing.T) {
 
-	t.Run("league sorted", func(t *testing.T) {
+	t.Run("liga ordenada", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, `[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}]`)
+			{"Nome": "Cleo", "ChamadasDeVitoria": 10},
+			{"Nome": "Chris", "ChamadasDeVitoria": 33}]`)
 		defer limparBaseDeDados()
 
 		armazenamento, err := NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
@@ -38,22 +38,22 @@ func TestArmazenaSistemaDeArquivo(t *testing.T) {
 
 		obtido := armazenamento.ObterLiga()
 
-		esperado := []Player{
+		esperado := []Jogador{
 			{"Chris", 33},
 			{"Cleo", 10},
 		}
 
 		verificaLiga(t, obtido, esperado)
 
-		// read again
+		// ler de novo
 		obtido = armazenamento.ObterLiga()
 		verificaLiga(t, obtido, esperado)
 	})
 
-	t.Run("get player score", func(t *testing.T) {
+	t.Run("obter pontuação de jogador", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, `[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}]`)
+			{"Nome": "Cleo", "ChamadasDeVitoria": 10},
+			{"Nome": "Chris", "ChamadasDeVitoria": 33}]`)
 		defer limparBaseDeDados()
 
 		armazenamento, err := NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
@@ -65,41 +65,41 @@ func TestArmazenaSistemaDeArquivo(t *testing.T) {
 		verificaPontuacaoIgual(t, obtido, esperado)
 	})
 
-	t.Run("armazenamento wins for existing players", func(t *testing.T) {
+	t.Run("vitórias armazenadas por jogadores existentes", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, `[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}]`)
+			{"Nome": "Cleo", "ChamadasDeVitoria": 10},
+			{"Nome": "Chris", "ChamadasDeVitoria": 33}]`)
 		defer limparBaseDeDados()
 
 		armazenamento, err := NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
-		armazenamento.RecordWin("Chris")
+		armazenamento.GravarVitoria("Chris")
 
 		obtido := armazenamento.ObterPontuacaoDeJogador("Chris")
 		esperado := 34
 		verificaPontuacaoIgual(t, obtido, esperado)
 	})
 
-	t.Run("armazenamento wins for existing players", func(t *testing.T) {
+	t.Run("vitórias armazenadas por jogadores existentes", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, `[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}]`)
+			{"Nome": "Cleo", "ChamadasDeVitoria": 10},
+			{"Nome": "Chris", "ChamadasDeVitoria": 33}]`)
 		defer limparBaseDeDados()
 
 		armazenamento, err := NovoArmazenamentoSistemaDeArquivodeJogador(baseDeDados)
 
 		verificaSemErro(t, err)
 
-		armazenamento.RecordWin("Pepper")
+		armazenamento.GravarVitoria("Pepper")
 
 		obtido := armazenamento.ObterPontuacaoDeJogador("Pepper")
 		esperado := 1
 		verificaPontuacaoIgual(t, obtido, esperado)
 	})
 
-	t.Run("works with an empty file", func(t *testing.T) {
+	t.Run("funciona com um arquivo vazio", func(t *testing.T) {
 		baseDeDados, limparBaseDeDados := criarArquivoTemporario(t, "")
 		defer limparBaseDeDados()
 
@@ -119,6 +119,6 @@ func verificaPontuacaoIgual(t *testing.T, obtido, esperado int) {
 func verificaSemErro(t *testing.T, err error) {
 	t.Helper()
 	if err != nil {
-		t.Fatalf("didn't expect an error but obtido one, %v", err)
+		t.Fatalf("não esperava um erro, mas obteve um: %v", err)
 	}
 }
