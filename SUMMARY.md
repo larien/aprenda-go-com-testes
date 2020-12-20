@@ -27,7 +27,7 @@
 -   [Servidor HTTP](criando-uma-aplicacao/http-server/http-server.md)
 -   [JSON, roteamento e aninhamento](criando-uma-aplicacao/json/json.md)
 -   [IO e sorting](criando-uma-aplicacao/io/io.md)
--   [Linha de comando e estrutura de pacotes](criando-uma-aplicacao/command-line/command-line.md)
+-   [Linha de comando e estrutura de pacotes](criando-uma-aplicacao/linha-de-comando/linha-de-comando.md)
 -   [Tempo](criando-uma-aplicacao/time/time.md)
 -   [Websockets](criando-uma-aplicacao/websockets/websockets.md)
 

@@ -24,7 +24,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.pdf --late
     criando-uma-aplicacao/http-server/http-server.md \
     criando-uma-aplicacao/json/json.md \
     criando-uma-aplicacao/io/io.md \
-    criando-uma-aplicacao/command-line/command-line.md \
+    criando-uma-aplicacao/linha-de-comando/linha-de-comando.md \
     criando-uma-aplicacao/time/time.md \
     criando-uma-aplicacao/websockets/websockets.md \
     duvidas-da-comunidade/os-exec/os-exec.md \
@@ -53,7 +53,7 @@ docker run -v `pwd`:/source jagregory/pandoc -o aprenda-go-com-testes.epub --lat
     criando-uma-aplicacao/http-server/http-server.md \
     criando-uma-aplicacao/json/json.md \
     criando-uma-aplicacao/io/io.md \
-    criando-uma-aplicacao/command-line/command-line.md \
+    criando-uma-aplicacao/linha-de-comando/linha-de-comando.md \
     criando-uma-aplicacao/time/time.md \
     criando-uma-aplicacao/websockets/websockets.md \
     duvidas-da-comunidade/os-exec/os-exec.md \
