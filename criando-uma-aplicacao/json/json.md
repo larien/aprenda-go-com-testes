@@ -1,4 +1,4 @@
-# JSON, roteamento and embedding
+# JSON, roteamento e embedding
 
 [**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/criando-uma-aplicacao/json)
 
@@ -117,7 +117,7 @@ func TestLeague(t *testing.T) {
     })
 }
 ```
-Antes de nos preocuparmos sobre as pontuações atuais e o JSON, nós vamos tentar manter as mudanças pequenas com o plano de ir passo a passo rumo ao nosso objetivo. O inicio mais simples é checar se nós conseguimos consultar `/league` e obter um `OK` de retorno. 
+Antes de nos preocuparmos sobre as pontuações atuais e o JSON, nós vamos tentar manter as mudanças pequenas com o plano de ir passo a passo rumo ao nosso objetivo. O início mais simples é checar se nós conseguimos consultar `/league` e obter um `OK` de retorno. 
 
 ## Tente rodar os testes
 
@@ -145,7 +145,7 @@ No capítulo anterior, nós mencionamos que isto era uma maneira bastante ingên
 
 ## Escreva somente o código suficiente para fazê-lo passar
 
-Go têm um mecanismo de rotas nativo (built-in) chamado [`ServeMux`](https://golang.org/pkg/net/http/#ServeMux) \(request multiplexer\) que nos permite atracar um `http.Handler`s para caminhos de uma requisição em específico.
+Go têm um mecanismo de rotas nativo (built-in) chamado [`ServeMux`](https://golang.org/pkg/net/http/#ServeMux) \(request multiplexer\) que nos permite atracar um `http.Handler` para caminhos de uma requisição em específico.
 
 Vamos cometer alguns pecados e obter os testes passando da maneira mais rápida que pudermos, sabendo que nós podemos refatorar isto com segurança uma vez que nós soubermos que os testes estão passando.
 
@@ -740,17 +740,17 @@ func (i *InMemoryPlayerStore) GetLeague() []Player {
 }
 ```
 
-Tudo que nós precisamos fazer é interar através do map e converter cada chave/valor para um `Jogador`
+Tudo que nós precisamos fazer é iterar através do map e converter cada chave/valor para um `Jogador`
 
 O teste deve passar agora.
 
-## Enpacotando
+## Concluindo
 
-Nós temos continuado a seguramente iterar no nosso programa usando TDD, fazendo ele suportar novos endpoints de uma forma manutenivel com um roteador e isso pode agora retornar JSON para nossos consumidores. No próximo capítulo, nós vamos cobrir persistência de dados e ordenação de nossas ligas.
+Nós temos continuado a seguramente iterar no nosso programa usando TDD, fazendo ele suportar novos endpoints de uma forma manutenível com um roteador e isso pode agora retornar JSON para nossos consumidores. No próximo capítulo, nós vamos cobrir persistência de dados e ordenação de nossas ligas.
 
 O que nós cobrimos:
 
 * **Roteamento**. A biblioteca padrão oferece uma fácil forma de usar tipos para fazer roteamento. Ela abraça completamente a interface `http.Handler` nela, tanto que você pode atribuir rotas para `Handler`s e a rota em si também é um `Handler`. Ela não tem alguns recursos que você pode esperar, como caminhos para variáveis \(ex. `/users/{id}`\). Você pode facilmente analisar esta informação por si mesmo porém você pode querer considerar olhar para outras bibliotecas de roteamento se isso se tornar um fardo. Muitas das mais populares seguem a filosofia das bibliotecas padrões e também implementam `http.Handler`.
 
-* **Composição**. Nós tocamos um pouco nesta tecnica porém você pode [ler mais sobre isso de Effective Go](https://golang.org/doc/effective_go.html#embedding). Se há uma coisa que você deve tirar disso é que composições podem ser extremamente úteis, porém _sempre pensando na sua API pública, só exponha o que é apropriado_.
-* **JSON desserialização e serialização**. A biblioteca padrão faz isto de forma bastante trivial ao serializar e desserializar nosso dado. Isto também abre para configurações e você pode customizar como esta transformação de dados funciona se necessário.
+* **Composição**. Nós tocamos um pouco nesta técnica porém você pode [ler mais sobre isso de Effective Go](https://golang.org/doc/effective_go.html#embedding). Se há uma coisa que você deve tirar disso é que composições podem ser extremamente úteis, porém _sempre pensando na sua API pública, só exponha o que é apropriado_.
+* **Serialização e Desserialização de JSON**. A biblioteca padrão faz isto de forma bastante trivial ao serializar e desserializar nosso dado. Isto também abre para configurações e você pode customizar como esta transformação de dados funciona se necessário.
