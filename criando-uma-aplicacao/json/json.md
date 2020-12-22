@@ -175,7 +175,7 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 * Quando a requisição começa nós criamos um router e então dizemos para o caminho `x` usar o handler `y`.
 * Então para nosso novo endpoint, nós usamos `http.HandlerFunc` e uma _função anônima_ para `w.WriteHeader(http.StatusOK)` quando `/league` é requisitada para fazer nosso novo teste passar.
-* Para a rota `/players/` nós somente recortamos e colamos nosso codigo dentro de outro `http.HandlerFunc`.
+* Para a rota `/players/` nós somente recortamos e colamos nosso código dentro de outro `http.HandlerFunc`.
 * Finalmente, nós lidamos com a requisição que está vindo chamando nosso novo router `ServeHTTP` \(notou como `ServeMux` é _também_ um `http.Handler`?\)
 
 ## Refatorando
@@ -208,7 +208,7 @@ func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-É um pouco estranho \(e ineficiente\) estar configurando um router quando uma requisição chegar e então chama-lo. O que idealmente queremos fazer é uma função do tipo `NewPlayerServer` que pegará nossas dependências e ao ser chamada, irá fazer a configuração única da criação do router. Desta forma, cada requisição pode usar somente uma instância do nosso router.
+É um pouco estranho \(e ineficiente\) estar configurando um router quando uma requisição chegar e então chamá-lo. O que idealmente queremos fazer é uma função do tipo `NewPlayerServer` que pegará nossas dependências e ao ser chamada, irá fazer a configuração única da criação do router. Desta forma, cada requisição pode usar somente uma instância do nosso router.
 
 ```go
 type PlayerServer struct {
@@ -262,21 +262,20 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 }
 ```
 
-finalmente, se certifique de que você **deletou** `func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request)` por não ser mais necessária!
+Finalmente, se certifique de que você **deletou** `func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request)` por não ser mais necessária!
 
 ## Incorporando
 
 Nós mudamos a segunda propriedade de `PlayerServer` removendo a propriedade nomeada `router http.ServeMux` e substituindo por `http.Handler`; isto é chamado de _incorporar_. 
 
 
-        todo, fiquei sem saber como traduzir este trecho abaixo:
-> Go does not provide the typical, type-driven notion of subclassing, but it does have the ability to “borrow” pieces of an implementation by embedding types within a struct or interface.
+> O Go não provê a noção típica de subclasses orientada por tipo, mas tem a habilidade de "emprestar" partes de uma implementação por incorporar tipos dentro de uma struct ou interface.
 
 [Effective Go - Embedding](https://golang.org/doc/effective_go.html#embedding)
 
 O que isto quer dizer é que nosso `PlayerServer` agora tem todos os métodos que `http.Handler` têm, que é somente o `ServeHTTP`.
 
-Para "preencher" o `http.Handler` nós atribuimos ele para o `router` que nós criamos em `NewPlayerServer`. Nós podemos fazer isso porque `http.ServeMux` tem o método `ServeHTTP`.
+Para "preencher" o `http.Handler` nós atribuímos ele para o `router` que nós criamos em `NewPlayerServer`. Nós podemos fazer isso porque `http.ServeMux` tem o método `ServeHTTP`.
 
 Isto nos permite remover nosso próprio método `ServeHTTP`, pois nós já estamos expondo um via o tipo incorporado. 
 
@@ -303,7 +302,7 @@ Isto é um erro _muito_ comum de mau uso de incorporamento, que termina poluindo
 
 Agora que nós reestruturamos nossa aplicação, nós podemos facilmente adicionar novas rotas e botar para funcionar nosso endpoint `/league`. Agora precisamos fazê-lo retornar algumas informações úteis.
 
-Nós poderíamos retornar um JSON semelhante a este:
+Nós devemos retornar um JSON semelhante a este:
 
 ```javascript
 [
@@ -319,6 +318,7 @@ Nós poderíamos retornar um JSON semelhante a este:
 ```
 
 ## Escreva o teste primeiro
+
 Nós vamos começar tentando analizar a resposta dentro de algo mais significativo.
 
 ```go
@@ -377,10 +377,10 @@ err := json.NewDecoder(response.Body).Decode(&got)
 
 Para analizar o JSON dentro de nosso modelo de dados nós criamos um `Decoder` do pacote `encoding/json` e então chamamos seu método `Decode`. Para criar um `Decoder` é necessário ler de um `io.Reader`, que em nosso caso é nossa própria resposta `Body`.
 
-`Decode` pega o endereço da coisa que nós estamos tentando decodificar, e é por isso que nós declaramos uma fatia vazia de `Jogador` na linha anterior.
+`Decode` pega o endereço da coisa que nós estamos tentando decodificar, e é por isso que nós declaramos um slice vazio de `Jogador` na linha anterior.
 
 Esse processo de analisar um JSON pode falhar, então `Decode` pode retornar um `error`. Não há ponto de continuidade para o teste se isto acontecer, então nós checamos o erro e paramos o teste com `t.Fatalf`.
-Note que nós exibimos que o corpo da resposta junto com o erro, pois é importante para qualquer outra pessoa que esteja rodando os testes ver que o texto não pôde ser analisado.
+Note que nós exibimos o corpo da resposta junto do erro, pois é importante para qualquer outra pessoa que esteja rodando os testes ver que o texto não pôde ser analisado.
 
 ## Tente rodar o teste
 
@@ -438,7 +438,7 @@ Mais adiante, nós vamos querer estender nossos testes para então podermos cont
 
 Nós podemos atualizar o teste para afirmar que a tabela das ligas contem alguns jogadores que nós vamos pôr em nossa loja.
 
-Atualize `StubPlayerStore` para permitir que ele armazene uma liga, que é apenas uma fatia de `Jogador`. Nós vamos armazenar nossos dados esperados lá.
+Atualize `StubPlayerStore` para permitir que ele armazene uma liga, que é apenas um slice de `Jogador`. Nós vamos armazenar nossos dados esperados lá.
 
 ```go
 type StubPlayerStore struct {
@@ -494,7 +494,7 @@ func TestLeague(t *testing.T) {
 
 Você vai precisar atualizar os outros testes, assim como nós temos um novo campo em `StubPlayerStore`; ponha-o como nulo para os outros testes.
 
-Tente rodando os testes novamente e você deverá ter:
+Tente executar os testes novamente e você deverá ter:
 
 ```text
 === RUN   TestLeague/it_returns_the_league_table_as_JSON
@@ -502,7 +502,7 @@ Tente rodando os testes novamente e você deverá ter:
         server_test.go:124: got [{Chris 20}] want [{Cleo 32} {Chris 20} {Tiest 14}]
 ```
 
-## Escreva código suficiente para faze-lo passar
+## Escreva código suficiente para fazê-lo passar
 
 Nós sabemos que o dado está em nosso `StubPlayerStore` e nós abstraímos esses dados para uma interface `PlayerStore`. Nós precisamos atualizar isto então qualquer um passando-nos um `PlayerStore` pode prover-nos com dados para as ligas.
 
@@ -523,7 +523,7 @@ func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-Tente e rode os testes:
+Tente executar os testes:
 
 ```text
 # github.com/quii/learn-go-with-tests/json-and-io/v4
@@ -567,11 +567,11 @@ func (i *InMemoryPlayerStore) GetLeague() []Player {
 
 O que isto está realmente nos dizendo é que _depois_ nós vamos querer testar isto, porém vamos estacionar isto por hora.
 
-Tente e rode os testes, o compilador deve passar e os testes deverão estar passando!
+Tente executar os testes, o compilador deve passar e os testes deverão estar passando!
 
 ## Refatoração
 
-O código de teste não transmite suas intensões muito bem e possui vários trechos que podem ser refatorados.
+O código de teste não transmite suas intenções muito bem e possui vários trechos que podem ser refatorados.
 
 ```go
 t.Run("it returns the league table as JSON", func(t *testing.T) {
@@ -682,9 +682,7 @@ A forma mais rápida de nós termos alguma confiança é adicionar a nosso teste
 
 ## Escreva o teste primeiro
 
-Nós podemos usar `t.Run` para parar este teste um pouco e então reusar os helpers dos testes do nosso servidor - novamente mostrando a importancia de refatoração dos testes.
-
-We can use `t.Run` to break up this test a bit and we can reuse the helpers from our server tests - again showing the importance of refactoring tests.
+Nós podemos usar `t.Run` para parar este teste um pouco e então reusar os helpers dos testes do nosso servidor - novamente mostrando a importância de refatoração dos testes.
 
 ```go
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
