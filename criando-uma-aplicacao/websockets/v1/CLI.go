@@ -29,17 +29,17 @@ func NovaCLI(entrada io.Reader, saida io.Writer, partida Jogo) *CLI {
 // PromptJogador é o texto pedindo o número de jogadores para o usuário
 const PromptJogador = "Favor entrar o número de jogadores: "
 
-// ErrMsgEntradaJogadorIncorreta is the text telling the user they did bad things
-const ErrMsgEntradaJogadorIncorreta = "Bad value received for number of jogadores, please try again with a number"
+// ErrMsgEntradaJogadorIncorreta representa o texto dizendo ao usuário que ele inseriu um valor incorreto
+const ErrMsgEntradaJogadorIncorreta = "Valor inválido recebido para número de jogadores, favor tentar novamente com um número"
 
-// ErrMsgEntradaVencedorIncorreta is the text telling the user they declared the vencedor wrong
-const ErrMsgEntradaVencedorIncorreta = "invalid vencedor input, expect format of 'PlayerName venceu'"
+// ErrMsgEntradaVencedorIncorreta representa o texto dizendo ao usuário que a declaração de vencedor foi errada
+const ErrMsgEntradaVencedorIncorreta = "entrada de vencedor incorreta, espera-se formato de 'NomeDoJogador venceu'"
 
-// JogarPoquer starts the partida
+// JogarPoquer começa a partida
 func (cli *CLI) JogarPoquer() {
 	fmt.Fprint(cli.saida, PromptJogador)
 
-	numeroDeJogadores, err := strconv.Atoi(cli.readLine())
+	numeroDeJogadores, err := strconv.Atoi(cli.lerLinha())
 
 	if err != nil {
 		fmt.Fprint(cli.saida, ErrMsgEntradaJogadorIncorreta)
@@ -48,8 +48,8 @@ func (cli *CLI) JogarPoquer() {
 
 	cli.partida.Começar(numeroDeJogadores)
 
-	winnerInput := cli.readLine()
-	vencedor, err := extractWinner(winnerInput)
+	entradaVencedor := cli.lerLinha()
+	vencedor, err := extrairJogador(entradaVencedor)
 
 	if err != nil {
 		fmt.Fprint(cli.saida, ErrMsgEntradaVencedorIncorreta)
@@ -59,14 +59,14 @@ func (cli *CLI) JogarPoquer() {
 	cli.partida.Terminar(vencedor)
 }
 
-func extractWinner(userInput string) (string, error) {
+func extrairJogador(userInput string) (string, error) {
 	if !strings.Contains(userInput, " venceu") {
 		return "", errors.New(ErrMsgEntradaVencedorIncorreta)
 	}
 	return strings.Replace(userInput, " venceu", "", 1), nil
 }
 
-func (cli *CLI) readLine() string {
+func (cli *CLI) lerLinha() string {
 	cli.entrada.Scan()
 	return cli.entrada.Text()
 }

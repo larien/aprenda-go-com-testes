@@ -16,13 +16,13 @@
 <script type="application/javascript">
 
     const submitWinnerButton = document.getElementById('vencedor-button')
-    const winnerInput = document.getElementById('vencedor')
+    const entradaVencedor = document.getElementById('vencedor')
 
     if (window['WebSocket']) {
         const conexão = new WebSocket('ws://' + document.location.host + '/ws')
 
         submitWinnerButton.onclick = event => {
-            conexão.send(winnerInput.value)
+            conexão.send(entradaVencedor.value)
         }
     }
 </script>

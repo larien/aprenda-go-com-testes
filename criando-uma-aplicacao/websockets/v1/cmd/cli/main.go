@@ -12,7 +12,6 @@ const nomeArquivoBaseDeDados = "partida.db.json"
 
 func main() {
 	armazenamento, close, err := poquer.SistemaArquivoArmazenamentoJogadorDoArquivo(nomeArquivoBaseDeDados)
-
 	if err != nil {
 		log.Fatal(err)
 	}

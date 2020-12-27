@@ -84,11 +84,11 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) *ServidorJogador {
 
     p.armazenamento = armazenamento
 
-    router := http.NewServeMux()
-    router.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
-    router.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
+    roteador := http.NewServeMux()
+    roteador.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
+    roteador.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
 
-    p.Handler = router
+    p.Handler = roteador
 
     return p
 }
@@ -123,12 +123,12 @@ func TestJogo(t *testing.T) {
 
 ## Escreva código suficiente para fazer o teste passar
 
-Our servidor has a router setup so it's relatively easy para fix.
+Our servidor has a roteador setup so it's relatively easy para fix.
 
-To our router add
+To our roteador add
 
 ```go
-router.Handle("/partida", http.HandlerFunc(p.partida))
+roteador.Handle("/partida", http.HandlerFunc(p.partida))
 ```
 
 E então escreva o método `partida`
@@ -185,13 +185,13 @@ Now we need para make the endpoint return some HTML, here it is
 <script type="application/javascript">
 
     const submitWinnerButton = document.getElementById('vencedor-button')
-    const winnerInput = document.getElementById('vencedor')
+    const entradaVencedor = document.getElementById('vencedor')
 
     if (window['WebSocket']) {
         const conexão = new WebSocket('ws://' + document.location.host + '/ws')
 
         submitWinnerButton.onclick = event => {
-            conexão.send(winnerInput.value)
+            conexão.send(entradaVencedor.value)
         }
     }
 </script>
@@ -299,10 +299,10 @@ We have not changed our servidor para accept WebSocket connections on `/ws` so w
 
 ## Write enough code para make it pass
 
-Add another listing para our router
+Add another listing para our roteador
 
 ```go
-router.Handle("/ws", http.HandlerFunc(p.webSocket))
+roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 ```
 
 Then add our new `webSocket` handler
@@ -402,13 +402,13 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) (*ServidorJogador, 
     p.template = tmpl
     p.armazenamento = armazenamento
 
-    router := http.NewServeMux()
-    router.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
-    router.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
-    router.Handle("/partida", http.HandlerFunc(p.partida))
-    router.Handle("/ws", http.HandlerFunc(p.webSocket))
+    roteador := http.NewServeMux()
+    roteador.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
+    roteador.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
+    roteador.Handle("/partida", http.HandlerFunc(p.partida))
+    roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 
-    p.Handler = router
+    p.Handler = roteador
 
     return p, nil
 }
@@ -498,7 +498,7 @@ First of all update `partida.html` para update our client side code for the new 
 
     const declareWinner = document.getElementById('declare-vencedor')
     const submitWinnerButton = document.getElementById('vencedor-button')
-    const winnerInput = document.getElementById('vencedor')
+    const entradaVencedor = document.getElementById('vencedor')
 
     const blindContainer = document.getElementById('blind-value')
 
@@ -518,7 +518,7 @@ First of all update `partida.html` para update our client side code for the new 
             const conexão = new WebSocket('ws://' + document.location.host + '/ws')
 
             submitWinnerButton.onclick = event => {
-                conexão.send(winnerInput.value)
+                conexão.send(entradaVencedor.value)
                 gameEndContainer.hidden = false
                 gameContainer.hidden = true
             }

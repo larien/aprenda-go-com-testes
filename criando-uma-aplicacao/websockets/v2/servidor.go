@@ -10,20 +10,20 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// ArmazenamentoJogador stores pontuação information about jogadores
+// ArmazenamentoJogador armazena informação de pontuação sobre jogadores
 type ArmazenamentoJogador interface {
 	ObtemPontuacaoDoJogador(nome string) int
 	GravarVitoria(nome string)
 	ObterLiga() Liga
 }
 
-// Jogador stores a nome with a number of venceu
+// Jogador armazena um nome com um número de vitórias
 type Jogador struct {
 	Nome     string
 	Vitorias int
 }
 
-// ServidorJogador is a HTTP interface for jogador information
+// ServidorJogador é uma interface HTTP para informações de jogador
 type ServidorJogador struct {
 	armazenamento ArmazenamentoJogador
 	http.Handler
@@ -48,13 +48,13 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*Ser
 	p.template = tmpl
 	p.armazenamento = armazenamento
 
-	router := http.NewServeMux()
-	router.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
-	router.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
-	router.Handle("/partida", http.HandlerFunc(p.jogarJogo))
-	router.Handle("/ws", http.HandlerFunc(p.webSocket))
+	roteador := http.NewServeMux()
+	roteador.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
+	roteador.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
+	roteador.Handle("/partida", http.HandlerFunc(p.jogarJogo))
+	roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 
-	p.Handler = router
+	p.Handler = roteador
 
 	return p, nil
 }
