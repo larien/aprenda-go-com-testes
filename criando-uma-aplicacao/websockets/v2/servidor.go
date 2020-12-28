@@ -26,13 +26,13 @@ type Jogador struct {
 // ServidorJogador é uma interface HTTP para informações de jogador
 type ServidorJogador struct {
 	armazenamento ArmazenamentoJogador
-	http.Handler
+	http.Manipulador
 	template *template.Template
 	partida  Jogo
 }
 
 const tipoConteudoJSON = "application/json"
-const htmlTemplatePath = "partida.html"
+const caminhoTemplateHTML = "partida.html"
 
 // NovoServidorJogador cria um ServidorJogador com rotas configuradas
 func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*ServidorJogador, error) {
@@ -41,7 +41,7 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*Ser
 	tmpl, err := template.ParseFiles("partida.html")
 
 	if err != nil {
-		return nil, fmt.Errorf("problema ao abrir %s %v", htmlTemplatePath, err)
+		return nil, fmt.Errorf("problema ao abrir %s %v", caminhoTemplateHTML, err)
 	}
 
 	p.partida = partida
@@ -54,7 +54,7 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*Ser
 	roteador.Handle("/partida", http.HandlerFunc(p.jogarJogo))
 	roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 
-	p.Handler = roteador
+	p.Manipulador = roteador
 
 	return p, nil
 }

@@ -129,7 +129,7 @@ func TestJogo(t *testing.T) {
 
 		partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
 		servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
-		ws := mustDialWS(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
+		ws := deveConectarAoWebSocket(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
 
 		defer servidor.Close()
 		defer ws.Close()
@@ -243,7 +243,7 @@ func verificaCorpoDaResposta(t *testing.T, obtido, esperado string) {
 	}
 }
 
-func mustDialWS(t *testing.T, url string) *websocket.Conn {
+func deveConectarAoWebSocket(t *testing.T, url string) *websocket.Conn {
 	ws, _, err := websocket.DefaultDialer.Dial(url, nil)
 
 	if err != nil {

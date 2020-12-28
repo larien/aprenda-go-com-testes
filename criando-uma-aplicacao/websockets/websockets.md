@@ -74,7 +74,7 @@ Aqui está um lembrete do código no nosso servidor web:
 ```go
 type ServidorJogador struct {
     armazenamento ArmazenamentoJogador
-    http.Handler
+    http.Manipulador
 }
 
 const tipoConteudoJSON = "application/json"
@@ -88,7 +88,7 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) *ServidorJogador {
     roteador.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
     roteador.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
 
-    p.Handler = roteador
+    p.Manipulador = roteador
 
     return p
 }
@@ -123,15 +123,15 @@ func TestJogo(t *testing.T) {
 
 ## Escreva código suficiente para fazer o teste passar
 
-Our servidor has a roteador setup so it's relatively easy para fix.
+Nosso servidor tem um roteador definido, então deve ser relativamente fácil corrigir isso.
 
-To our roteador add
+Adicione o seguinte no nosso roteador:
 
 ```go
 roteador.Handle("/partida", http.HandlerFunc(p.partida))
 ```
 
-E então escreva o método `partida`
+E então escreva o método `partida`:
 
 ```go
 func (p *ServidorJogador) partida(w http.ResponseWriter, r *http.Request) {
@@ -162,13 +162,13 @@ func TestJogo(t *testing.T) {
 }
 ```
 
-You'll also notice I changed `verificaStatus` para accept `resposta` rather than `resposta.Code` as I feel it reads better.
+Você também vai notar que mudei o `verificaStatus` para aceitar `resposta` ao invés de `resposta.Code` já que parece combinar melhor.
 
-Now we need para make the endpoint return some HTML, here it is
+Agora precisamos que o endpoint retorne um pouco de HTML, e aqui está ele:
 
 ```markup
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Vamos jogar pôquer</title>
@@ -176,7 +176,7 @@ Now we need para make the endpoint return some HTML, here it is
 <corpo>
 <section id="partida">
     <div id="declare-vencedor">
-        <label for="vencedor">Winner</label>
+        <label for="vencedor">Vencedor</label>
         <input type="text" id="vencedor"/>
         <button id="vencedor-button">Declare vencedor</button>
     </div>
@@ -219,13 +219,13 @@ There are a few ways. As has been emphasised throughout the book, it is importan
 
 So in the book "Learn Go with Tests" for the first time, we're not going para write a test.
 
-Put the markup in a arquivo called `partida.html`
+Put the markup in a arquivo called `jogo.html`
 
 Next change the endpoint we just wrote para the following
 
 ```go
 func (p *ServidorJogador) partida(w http.ResponseWriter, r *http.Request) {
-    tmpl, err := template.ParseFiles("partida.html")
+    tmpl, err := template.ParseFiles("jogo.html")
 
     if err != nil {
         http.Error(w, fmt.Sprintf("problem loading template %s", err.Error()), http.StatusInternalServerError)
@@ -240,7 +240,7 @@ func (p *ServidorJogador) partida(w http.ResponseWriter, r *http.Request) {
 
 As we have not written a test, it would be prudent para manually test our web servidor just para make sure things are working as we'd hope. Go para `cmd/webserver` and run the `main.go` arquivo. Visit `http://localhost:5000/partida`.
 
-You _should_ have obtido an error about not being able para find the template. You can either change the path para be relative para your folder, or you can have a copy of the `partida.html` in the `cmd/webserver` directory. I chose para create a symlink \(`ln -s ../../partida.html partida.html`\) para the arquivo inside the root of the project so if I make changes they are reflected when running the servidor.
+You _should_ have obtido an error about not being able para find the template. You can either change the path para be relative para your folder, or you can have a copy of the `jogo.html` in the `cmd/webserver` directory. I chose para create a symlink \(`ln -s ../../jogo.html jogo.html`\) para the arquivo inside the root of the project so if I make changes they are reflected when running the servidor.
 
 If you make this change and run again you should see our UI.
 
@@ -277,35 +277,35 @@ t.Run("quando recebemos uma mensagem de um websocket que é vencedor da partida"
 })
 ```
 
-Make sure that you have an import for the `websocket` library. My IDE automatically did it for me, so should yours.
+Certifique-se que tenha importado o pacote `websocket`. Minha IDE fez isso automaticamente para mim e a sua deve fazer o mesmo.
 
-To test what happens from the browser we have para open up our own WebSocket connection and write para it.
+Para testar o que acontece do navegador, temos que abrir nossa própria conexão WebSocket e escrever nela.
 
-Our previous tests around our servidor just called methods on our servidor but now we need para have a persistent connection para our servidor. To do that we use `httptest.NewServer` which takes a `http.Handler` and will spin it up and listen for connections.
+Nossos testes anteriores do servidor apenas chamavam métodos no nosso servidor, mas agora precisamos ter uma conexão persistente nele. Para fazer isso, usamos o `httptest.NewServer`, que recebe um `http.Handler` que vai esperar conexões.
 
-Using `websocket.DefaultDialer.Dial` we try para dial in para our servidor and then we'll try and send a mensagem with our `vencedor`.
+Ao usar `websocket.DefaultDialer.Dial`, tentamos conectar no nosso servidor para então enviar uma mensagem com nosso `vencedor`.
 
-Finally we assert on the jogador armazenamento para check the vencedor was recorded.
+Por fim, verificamos o armazenamento do jogador para certificar que o vencedor foi gravado.
 
-## Try para run the test
+## Execute o teste
 
 ```text
-=== RUN   TestJogo/when_we_get_a_message_over_a_websocket_it_is_a_winner_of_a_game
-    --- FAIL: TestJogo/when_we_get_a_message_over_a_websocket_it_is_a_winner_of_a_game (0.00s)
+=== RUN   TestJogo/quando_recebemos_uma_mensagem_via_websocket_que_ha_um_vencedor_de_uma_partida
+    --- FAIL: TestJogo/quando_recebemos_uma_mensagem_via_websocket_que_ha_um_vencedor_de_uma_partida (0.00s)
         server_test.go:124: não foi possível abrir uma conexão de websocket em ws://127.0.0.1:55838/ws websocket: bad handshake
 ```
 
-We have not changed our servidor para accept WebSocket connections on `/ws` so we're not shaking hands yet.
+Não mudamos nosso servidor para aceitar conexões WebSocket em `/ws`, então ainda não estamos [apertando as mãos](https://pt.wikipedia.org/wiki/Handshake).
 
-## Write enough code para make it pass
+## Escreva código suficiente para fazer o teste passar
 
-Add another listing para our roteador
+Adicione outra linha no nosso roteador:
 
 ```go
 roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 ```
 
-Then add our new `webSocket` handler
+E adicione nosso novo manipulador `webSocket`:
 
 ```go
 func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
@@ -317,15 +317,15 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-To accept a WebSocket connection we `Upgrade` the requisicao. If you now re-run the test you should move on para the next error.
+Para aceitar uma conexão WebSocker, precisamos de um método `Upgrade` para atualizar a requisição. Agora, se você executar o teste novamente, o próximo erro deve aparecer.
 
 ```text
-=== RUN   TestJogo/when_we_get_a_message_over_a_websocket_it_is_a_winner_of_a_game
-    --- FAIL: TestJogo/when_we_get_a_message_over_a_websocket_it_is_a_winner_of_a_game (0.00s)
+=== RUN   TestJogo/quando_recebemos_uma_mensagem_via_websocket_que_ha_um_vencedor_de_uma_partida
+    --- FAIL: TestJogo/quando_recebemos_uma_mensagem_via_websocket_que_ha_um_vencedor_de_uma_partida (0.00s)
         server_test.go:132: obtido 0 chamadas paraGravarVitoria esperado 1
 ```
 
-Now that we have a connection opened, we'll esperado para listen for a mensagem and then record it as the vencedor.
+Agora que temos uma conexão aberta, vamos esperar por uma pensagem e então gravá-la como vencedor.
 
 ```go
 func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
@@ -339,30 +339,30 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-\(Yes, we're ignoring a lot of errors right now!\)
+\(Sim, estamos ignorando vários erros nesse momento!\)
 
-`conexão.ReadMessage()` blocks on waiting for a mensagem on the connection. Once we obterone we use it para `GravarVitoria`. This would finally close the WebSocket connection.
+`conexão.ReadMessage()`  bloqueia a espera por uma mensagem na conexão. Quando obtivermos uma, vamos usá-la para `GravarVitoria`. Isso finalmente fecharia a conexão WebSocket.
 
-If you try and run the test, it's still failing.
+Se tentar executar o teste, ele ainda vai falhar.
 
-The issue is timing. There is a delay between our WebSocket connection reading the mensagem and recording the win and our test finishes before it happens. You can test this by putting a short `time.Sleep` before the final assertion.
+O problema está no tempo. Há um atraso entre nossa conexão WebSocket ler a mensagem e gravar a vitória e nosso teste termina sua execução antes disso acontecer. Você pode testar isso colocando um `time.Sleep` curto antes da verificação final.
 
-Let's go with that for now but acknowledge that putting in arbitrary sleeps into tests **is very bad practice**.
+Vamos continuar com isso por enquanto, mas saiba que colocar sleeps arbitrários em testes **é uma prática muito ruim**.
 
 ```go
 time.Sleep(10 * time.Millisecond)
 VerificaVitoriaDoVencedor(t, armazenamento, vencedor)
 ```
 
-## Refactor
+## Refatore
 
-We committed many sins para make this test work both in the servidor code and the test code but remember this is the easiest way for us para work.
+Cometemos vários pecados para fazer esse teste funcionar tanto no código do servidor quanto no código do teste, mas lembre-se que essa é a forma mais fácil para fazer as coisas funcionarem.
 
-We have nasty, horrible, _working_ software backed by a test, so now we are free para make it nice and know we wont break anything accidentally.
+Temos um software horrível e cheio de gambiarras _funcionando_ apoiado por testes, então agora temos a liberdade para torná-lo elegante sabendo que não vamos quebrar nada por acidente.
 
-Let's start with the servidor code.
+Então, vamos começar com o código do servidor.
 
-We can move the `upgrader` para a private value inside our package because we don't need para redeclare it on every WebSocket connection requisicao
+Podemos mover o `upgrader` para um valor privado dentro do nosso pacote porque não precisamos redeclará-lo em toda requisição na conexão com o WebSocket.
 
 ```go
 var atualizadorDeWebsocket = websocket.Upgrader{
@@ -377,26 +377,26 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-Our call para `template.ParseFiles("partida.html")` will run on every `GET /partida` which means we'll go para the arquivo system on every requisicao even though we have no need para re-parse the template. Let's refactor our code so that we parse the template once in `NovoServidorJogador` instead. We'll have para make it so this function can now return an error in case we have problems fetching the template from disk or parsing it.
+Nossa chamada para `template.ParseFiles("jogo.html")` vai ser executada a cada `GET /partida`, o que significa que vamos usar o sistema de arquivo a cada requisição apesar de não ser necessário parsear o template novamente. Vamos refatorar o código para que possamos fazer o parse do template uma vez em `NovoServidorJogador` ao invés disso. Vamos ter que fazer isso para que nossa função possa retornar um erro caso tenhamos problema ao obter o template do disco ou fazer parse dele.
 
-Here's the relevant changes para `ServidorJogador`
+Agora vamos às mudanças relevantes do `ServidorJogador`:
 
 ```go
 type ServidorJogador struct {
     armazenamento ArmazenamentoJogador
-    http.Handler
+    http.Manipulador
     template *template.Template
 }
 
-const htmlTemplatePath = "partida.html"
+const caminhoTemplateHTML = "jogo.html"
 
 func NovoServidorJogador(armazenamento ArmazenamentoJogador) (*ServidorJogador, error) {
     p := new(ServidorJogador)
 
-    tmpl, err := template.ParseFiles("partida.html")
+    tmpl, err := template.ParseFiles("jogo.html")
 
     if err != nil {
-        return nil, fmt.Errorf("problema ao abrir %s %v", htmlTemplatePath, err)
+        return nil, fmt.Errorf("problema ao abrir %s %v", caminhoTemplateHTML, err)
     }
 
     p.template = tmpl
@@ -408,7 +408,7 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) (*ServidorJogador, 
     roteador.Handle("/partida", http.HandlerFunc(p.partida))
     roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 
-    p.Handler = roteador
+    p.Manipulador = roteador
 
     return p, nil
 }
@@ -418,9 +418,9 @@ func (p *ServidorJogador) partida(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-By changing the signature of `NovoServidorJogador` we now have compilation problems. Try and fix them yourself or refer para the source code if you struggle.
+Ao alterar a assinatura de `NovoServidorJogador`, agora temos problemas de compilação. Tente corrigir por si só ou olhe para o código fonte caso para ver a solução.
 
-For the test code I made a helper called `deveFazerServidorJogador(t *testing.T, armazenamento ArmazenamentoJogador) *ServidorJogador` so that I could hide the error noise away from the tests.
+Para o código de teste, fiz uma função auxiliar chamada `deveFazerServidorJogador(t *testing.T, armazenamento ArmazenamentoJogador) *ServidorJogador` para que eu possa esconder o erro dos testes.
 
 ```go
 func deveFazerServidorJogador(t *testing.T, armazenamento ArmazenamentoJogador) *ServidorJogador {
@@ -432,10 +432,10 @@ func deveFazerServidorJogador(t *testing.T, armazenamento ArmazenamentoJogador) 
 }
 ```
 
-Similarly I created another helper `mustDialWS` so that I could hide nasty error noise when creating the WebSocket connection.
+Da mesma forma, criei outra função auxiliar `deveConectarAoWebSocket` para que eu possa esconder um erro ao criar uma conexão de WebSocket.
 
 ```go
-func mustDialWS(t *testing.T, url string) *websocket.Conn {
+func deveConectarAoWebSocket(t *testing.T, url string) *websocket.Conn {
     ws, _, err := websocket.DefaultDialer.Dial(url, nil)
 
     if err != nil {
@@ -446,7 +446,7 @@ func mustDialWS(t *testing.T, url string) *websocket.Conn {
 }
 ```
 
-Finally in our test code we can create a helper para tidy up sending mensagens
+Finalmente, podemos criar uma função auxiliar no nosso código de teste para enviar mensagens:
 
 ```go
 func escreverMensagemNoWebsocket(t *testing.T, conexão *websocket.Conn, mensagem string) {
@@ -457,29 +457,29 @@ func escreverMensagemNoWebsocket(t *testing.T, conexão *websocket.Conn, mensage
 }
 ```
 
-Now the tests are passing try running the servidor and declare some winners in `/partida`. You should see them recorded in `/liga`. Remember that every time we obtera vencedor we _close the connection_, you will need para refresh the page para open the connection again.
+Agora que os testes estão passando, tent executar o servidor e declarar alguns vencedores em `/partida`. Devemos vê-los gravados em `/liga`. Lembre-se que sempre que tivermos um vencedor, vamos _fechar a conexão_, e você vai precisar atualizar a página para abrir a conexão novamente.
 
-We've made a trivial web form that lets users record the vencedor of a partida. Let's iterate on it para make it so the user can start a partida by providing a number of jogadores and the servidor will push mensagens para the client informing them of what the blind value is as time passes.
+Fizemos um formulário simples da web que permite que usuários gravem o vencedor de uma partida. Vamos iterar nele para fazer com que o usuário possa começar uma partida inserindo o número de jogadores e o servidor vai mostrar mensagens para o cliente informando-o qual é o valor do blind conforme o tempo passa.
 
-First of all update `partida.html` para update our client side code for the new requirements
+Primeiramente, atualize o `jogo.html` para atualizar o código do lado do cliente para os novos requerimentos:
 
 ```markup
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Lets play poquer</title>
+    <title>Vamos jogar pôquer</title>
 </head>
 <corpo>
 <section id="partida">
     <div id="partida-start">
-        <label for="jogador-count">Number of jogadores</label>
+        <label for="jogador-count">Número de jogadores</label>
         <input type="number" id="jogador-count"/>
         <button id="start-partida">Começar</button>
     </div>
 
     <div id="declare-vencedor">
-        <label for="vencedor">Winner</label>
+        <label for="vencedor">Vencedor</label>
         <input type="text" id="vencedor"/>
         <button id="vencedor-button">Declare vencedor</button>
     </div>
@@ -488,8 +488,8 @@ First of all update `partida.html` para update our client side code for the new 
 </section>
 
 <section id="partida-end">
-    <h1>Another great partida of poquer everyone!</h1>
-    <p><a href="/liga">Go check the liga table</a></p>
+    <h1>Outra ótima partida de pôquer, pessoal!!</h1>
+    <p><a href="/liga">Verifique a tabela da liga</a></p>
 </section>
 
 </corpo>
@@ -540,11 +540,11 @@ First of all update `partida.html` para update our client side code for the new 
 </html>
 ```
 
-The main changes is bringing in a section para enter the number of jogadores and a section para display the blind value. We have a little logic para show/hide the user interface depending on the stage of the partida.
+As principais alterações envolvem inserir uma seção para definir o número de jogadores e uma seção para mostrar o valor do blind. Temos um pouco de lógica para mostrar/esconder a interface do usuário dependendo da etapa da partida.
 
-Any mensagem we receive via `conexão.onmessage` we assume para be blind alerts and so we set the `blindContainer.innerText` accordingly.
+Para qualquer mensagem que recebermos via `conexão.onmessage`, presumimos ser alertas de blind e então definimos o `blindContainer.innerText` de acordo.
 
-How do we go about sending the blind alerts? In the previous chapter we introduced the idea of `Jogo` so our CLI code could call a `Jogo` and everything else would be taken care of including scheduling blind alerts. This turned out para be a good separation of concern.
+Como fazemos para enviar os alertas de blind?No capítulo anterior, mostramos a ideia de `Jogo` para que nosso código CLI possa chamar um `Jogo` e todo o restante se responsabilizaria por agendar os alertas de blind. Isso acabou até sendo uma boa separação de responsabilidades.
 
 ```go
 type Jogo interface {
@@ -553,9 +553,9 @@ type Jogo interface {
 }
 ```
 
-When the user was prompted in the CLI for number of jogadores it would `Começar` the partida which would kick off the blind alerts and when the user declared the vencedor they would `Terminar`. This is the same requirements we have now, just a different way of getting the inputs; so we should look para re-use this concept if we can.
+Quando o usuário era requisitado pela CLI pelo número de jogadores, ele precisava `Começar` a partida, o que ativaria os alertas de blind, e quando o usuario declarava o vencedor, isso iria `Terminar`. Esses sã os mesmos requerimentos que temos agora, só que a obtenção das entradas era diferente; logo, só precisamos reutilizar esse conceito aonde possível.
 
-Our "real" implementation of `Jogo` is `TexasHoldem`
+Nossa implementação "real" de `Jogo` é `TexasHoldem`:
 
 ```go
 type TexasHoldem struct {
@@ -564,7 +564,7 @@ type TexasHoldem struct {
 }
 ```
 
-By sending in a `AlertadorDeBlind` `TexasHoldem` can schedule blind alerts para be sent para _wherever_
+Ao enviar um `AlertadorDeBlind`, o `TexasHoldem` pode agendar alertas de blind para enviar para _qualquer lugar_.
 
 ```go
 type AlertadorDeBlind interface {
@@ -572,7 +572,7 @@ type AlertadorDeBlind interface {
 }
 ```
 
-And as a reminder, here is our implementation of the `AlertadorDeBlind` we use in the CLI.
+E só para lembrar, aqui está nossa implementação do `AlertadorDeBlind` que usamos na CLI.
 
 ```go
 func SaidaAlertador(duracao time.Duration, quantia int) {
@@ -582,11 +582,11 @@ func SaidaAlertador(duracao time.Duration, quantia int) {
 }
 ```
 
-This works in CLI because we _always esperado para send the alerts para `os.Stdout`_ but this wont work for our web servidor. For every requisicao we obtera new `http.ResponseWriter` which we then upgrade para `*websocket.Conn`. So we cant know when constructing our dependencies where our alerts need para go.
+Isso funciona no CLI porque estamos _sempre esperando para enviar os alertas ara `os.Stdout`_, mas isso não vai funcionar no nosso servidor web. Para cada requisição, obtemos um novo `http.ResponseWriter` que então melhoramos para uma `*websocket.Conn`. Logo, não odemos saber quando construímos nossas dependências para onde nossos alertas precisam ir.
 
-For that reason we need para change `AlertadorDeBlind.AgendarAlertaPara` so that it takes a destination for the alerts so that we can re-use it in our webserver.
+Por esse motivo, precisamos mudar o `AlertadorDeBlind.AgendarAlertaPara` para que ele receba um destino paara os alertas para que possamos reutiliza-lo no nosso servidor web.
 
-Open AlertadorDeBlind.go and add the parameter `para io.Writer`
+Abra o AlertadorDeBlind.go e adicione o parâmetro para io.Writer`:
 
 ```go
 type AlertadorDeBlind interface {
@@ -600,7 +600,7 @@ func (a AlertadorDeBlindFunc) AgendarAlertaPara(duracao time.Duration, quantia i
 }
 ```
 
-The idea of a `StdoutAlerter` doesn't fit our new model so just rename it para `Alertador`
+A ideia de um `SaidaAlertador` não encaixa bem no nosso modelo, então vamos apenas renomeá-lo para `Alertador`:
 
 ```go
 func Alertador(duracao time.Duration, quantia int, para io.Writer) {
@@ -610,11 +610,11 @@ func Alertador(duracao time.Duration, quantia int, para io.Writer) {
 }
 ```
 
-If you try and compile, it will fail in `TexasHoldem` because it is calling `AgendarAlertaPara` without a destination, para obterthings compiling again _for now_ hard-code it para `os.Stdout`.
+Se tentar compilar, haverá uma falha em `TexasHoldem` porque estamos chamando `AgendarAlertaPara` sem uma descrição. Só para deixar tudo compilando novamente, vamos escrevê-lo para `os.Stdout`.
 
-Try and run the tests and they will fail because `AlertadorDeBlindEspiao` no longer implementa `AlertadorDeBlind`, fix this by updating the signature of `AgendarAlertaPara`, run the tests and we should still be green.
+Execute os testes e eles vão falhar porque o `AlertadorDeBlindEspiao` não implementa mais o `AlertadorDeBlind`. Corrija isso atualizando a assinatura de `AgendarAlertaPara`, execute os testes e todos devem estar passando.
 
-It doesn't make any sense for `TexasHoldem` para know where para send blind alerts. Let's now update `Jogo` so that when you start a partida you declare _where_ the alerts should go.
+Não faz sentido nenhum que o `TexasHoldem` saiba para onde enviar os alertas de blind. Agora, vamos atualizar o `Jogo` para que quando você começa uma partida, declare _para onde_ os alertas devem ir.
 
 ```go
 type Jogo interface {
@@ -623,15 +623,15 @@ type Jogo interface {
 }
 ```
 
-Let the compiler tell you what you need para fix. The change isn't so bad:
+Deixe o compilador te dizer o que precisa ser corrigido. As alterações não são tão ruins:
 
-* Update `TexasHoldem` so it properly implementa `Jogo`
-* In `CLI` when we start the partida, pass in our `out` property \(`cli.partida.Começar(numeroDeJogadores, cli.out)`\)
-* In `TexasHoldem`'s test i use `partida.Começar(5, ioutil.Discard)` para fix the compilation problem and configure the alert output para be discarded
+* Atualize o `TexasHoldem` para que implemente `Jogo` corretamente
+* No `CLI`, quando começamos a partida, preciamos passar nosssa propriedade `saida` \(`cli.partida.Começar(numeroDeJogadores, cli.saida`\)
+* No teste do `TexasHodem`, precisamos usar `partida.Começar(5, ioutil.Discard)` para corrigir o problema de compilação e configurar a saída do alerta para ser descartada 
 
-If you've obtido everything right, everything should be green! Now we can try and use `Jogo` within `Server`.
+Se tiver feito tudo certo, todos os testes devem passar! Agora podemos usar `Jogo` dentro do `Servidor`.
 
-## Write the test first
+## Escreva os testes primeiro
 
 The requirements of `CLI` and `Server` are the same! It's just the delivery mechanism is different.
 
@@ -661,7 +661,7 @@ t.Run("start a partida with 3 jogadores and declare Ruth the vencedor", func(t *
     partida := &poquer.JogoEspiao{}
     vencedor := "Ruth"
     servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
-    ws := mustDialWS(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
+    ws := deveConectarAoWebSocket(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
 
     defer servidor.Close()
     defer ws.Close()
@@ -716,14 +716,14 @@ Finally!
 FAIL
 ```
 
-## Write enough code para make it pass
+## Escreva código suficiente para fazer o teste passar
 
 We need para add `Jogo` as a field para `ServidorJogador` so that it can use it when it gets requests.
 
 ```go
 type ServidorJogador struct {
     armazenamento ArmazenamentoJogador
-    http.Handler
+    http.Manipulador
     template *template.Template
     partida Jogo
 }
@@ -737,10 +737,10 @@ Next lets assign it in our constructor
 func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*ServidorJogador, error) {
     p := new(ServidorJogador)
 
-    tmpl, err := template.ParseFiles("partida.html")
+    tmpl, err := template.ParseFiles("jogo.html")
 
     if err != nil {
-        return nil, fmt.Errorf("problema ao abrir %s %v", htmlTemplatePath, err)
+        return nil, fmt.Errorf("problema ao abrir %s %v", caminhoTemplateHTML, err)
     }
 
     p.partida = partida
@@ -949,7 +949,7 @@ t.Run("start a partida with 3 jogadores, send some blind alerts down WS and decl
 
     partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
     servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
-    ws := mustDialWS(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
+    ws := deveConectarAoWebSocket(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
 
     defer servidor.Close()
     defer ws.Close()
@@ -1023,7 +1023,7 @@ t.Run("start a partida with 3 jogadores, send some blind alerts down WS and decl
 
     partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
     servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
-    ws := mustDialWS(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
+    ws := deveConectarAoWebSocket(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
 
     defer servidor.Close()
     defer ws.Close()
@@ -1050,7 +1050,7 @@ Now if you run the test...
         server_test.go:150: obtido "", esperado "Blind is 100"
 ```
 
-## Write enough code para make it pass
+## Escreva código suficiente para fazer o teste passar
 
 Finally we can now change our servidor code so it sends our WebSocket connection para the partida when it starts
 
