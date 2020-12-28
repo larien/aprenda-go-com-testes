@@ -74,7 +74,7 @@ Aqui está um lembrete do código no nosso servidor web:
 ```go
 type ServidorJogador struct {
     armazenamento ArmazenamentoJogador
-    http.Manipulador
+    http.Handler
 }
 
 const tipoConteudoJSON = "application/json"
@@ -88,7 +88,7 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) *ServidorJogador {
     roteador.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
     roteador.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
 
-    p.Manipulador = roteador
+    p.Handler = roteador
 
     return p
 }
@@ -384,7 +384,7 @@ Agora vamos às mudanças relevantes do `ServidorJogador`:
 ```go
 type ServidorJogador struct {
     armazenamento ArmazenamentoJogador
-    http.Manipulador
+    http.Handler
     template *template.Template
 }
 
@@ -408,7 +408,7 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) (*ServidorJogador, 
     roteador.Handle("/partida", http.HandlerFunc(p.partida))
     roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 
-    p.Manipulador = roteador
+    p.Handler = roteador
 
     return p, nil
 }
@@ -723,7 +723,7 @@ We need para add `Jogo` as a field para `ServidorJogador` so that it can use it 
 ```go
 type ServidorJogador struct {
     armazenamento ArmazenamentoJogador
-    http.Manipulador
+    http.Handler
     template *template.Template
     partida Jogo
 }
