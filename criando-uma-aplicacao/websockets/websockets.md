@@ -627,37 +627,37 @@ Deixe o compilador te dizer o que precisa ser corrigido. As alterações não s�
 
 * Atualize o `TexasHoldem` para que implemente `Jogo` corretamente
 * No `CLI`, quando começamos a partida, preciamos passar nosssa propriedade `saida` \(`cli.partida.Começar(numeroDeJogadores, cli.saida`\)
-* No teste do `TexasHodem`, precisamos usar `partida.Começar(5, ioutil.Discard)` para corrigir o problema de compilação e configurar a saída do alerta para ser descartada 
+* No teste do `TexasHoldem`, precisamos usar `partida.Começar(5, ioutil.Discard)` para corrigir o problema de compilação e configurar a saída do alerta para ser descartada 
 
 Se tiver feito tudo certo, todos os testes devem passar! Agora podemos usar `Jogo` dentro do `Servidor`.
 
 ## Escreva os testes primeiro
 
-The requirements of `CLI` and `Server` are the same! It's just the delivery mechanism is different.
+Os requerimentos de `CLI` e `Servidor` são os mesmos! É apenas o mecanismo de entrega que é diferente.
 
-Let's take a look at our `CLI` test for inspiration.
+Vamos dar uma olhada no nosso teste do `CLI` para inspiração.
 
 ```go
 t.Run("começa partida com 3 jogadores e termina partida com 'Chris' como vencedor", func(t *testing.T) {
     partida := &JogoEspiao{}
 
-    out := &bytes.Buffer{}
+    saida := &bytes.Buffer{}
     in := usuarioEnvia("3", "Chris venceu")
 
-    poquer.NovaCLI(in, out, partida).JogarPoquer()
+    poquer.NovaCLI(in, saida, partida).JogarPoquer()
 
-    verificaMensagensEnviadasParaUsuario(t, out, poquer.PromptJogador)
+    verificaMensagensEnviadasParaUsuario(t, saida, poquer.PromptJogador)
     verificaJogoComeçadoCom(t, partida, 3)
     verificaTerminosChamadosCom(t, partida, "Chris")
 })
 ```
 
-It looks like we should be able para test drive out a similar outcome using `JogoEspiao`
+Parece que devemos ser capazes de testar um resultado semelhante usando `JogoEspiao`.
 
-Replace the old websocket test with the following
+Substitua o antigo teste de websocket com o seguinte:
 
 ```go
-t.Run("start a partida with 3 jogadores and declare Ruth the vencedor", func(t *testing.T) {
+t.Run("começa uma partida com 3 jogadores e declara Ruth vencedora", func(t *testing.T) {
     partida := &poquer.JogoEspiao{}
     vencedor := "Ruth"
     servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
@@ -675,21 +675,21 @@ t.Run("start a partida with 3 jogadores and declare Ruth the vencedor", func(t *
 })
 ```
 
-* As discussed we create a spy `Jogo` and pass it into `deveFazerServidorJogador` \(be sure para update the helper para support this\).
-* We then send the web socket mensagens for a partida.
-* Finally we assert that the partida is started and finished with what we expect.
+* Conforme discutidos, criamos um espião de `Jogo` e passamos para o ``deveFazerServidorJogador` \(certifique-se de atualizar a função auxiliar para isso\).
+* Depois, enviamos mensagens no web socket para uma partida.
+* Por mim, verificamos que a partida começou e finalizamos com o que esperamos.
 
-## Try para run the test
+## Execute o teste
 
-You'll have a number of compilation errors around `deveFazerServidorJogador` in other tests. Introduce an unexported variable `dummyGame` and use it through all the tests that aren't compiling
+Você terá vários erros de compilação envolvendo `deveFazerServidorJogador` em outros testes. Crie uma variável não exportada `jogoTosco` e use-a em todos os testes que não estão compilando:
 
 ```go
 var (
-    dummyGame = &JogoEspiao{}
+    jogoTosco = &JogoEspiao{}
 )
 ```
 
-The final error is where we are trying para pass in `Jogo` para `NovoServidorJogador` but it doesn't support it yet
+O erro final se encontra onde estamos tentando passar em `Jogo`, pois `NovoServidorJogador` ainda não o suporta:
 
 ```text
 ./server_test.go:21:38: too many arguments in call para "github.com/larien/learn-go-with-tests/WebSockets/v2".NovoServidorJogador
@@ -697,28 +697,28 @@ The final error is where we are trying para pass in `Jogo` para `NovoServidorJog
     esperado ("github.com/larien/learn-go-with-tests/WebSockets/v2".ArmazenamentoJogador)
 ```
 
-## Write the minimal quantia of code for the test para run and check the failing test output
+## Escreva o mínimo de código possível para o teste funcionar e verifique a saída do teste falhado
 
-Just add it as an argument for now just para obterthe test running
+Basta adicionar um argumento por enquanto para fazer o teste funcionar:
 
 ```go
 func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*ServidorJogador, error) {
 ```
 
-Finally!
+Finalmente!
 
 ```text
-=== RUN   TestJogo/start_a_game_with_3_players_and_declare_Ruth_the_winner
+=== RUN   TestJogo/começa_um_jogo_com_3_jogadores_e_declara_Ruth_a_vencedora
 --- FAIL: TestJogo (0.01s)
-    --- FAIL: TestJogo/start_a_game_with_3_players_and_declare_Ruth_the_winner (0.01s)
-        server_test.go:146: wanted Começar called with 3 but obtido 0
-        server_test.go:147: expected finish called with 'Ruth' but obtido ''
+    --- FAIL: TestJogo/começa_um_jogo_com_3_jogadores_e_declara_Ruth_a_vencedora (0.01s)
+        server_test.go:146: esperava Começar chamado com 3 mas obteve 0
+        server_test.go:147: esperava Terminar chamado com 'Ruth' mas obteve ''
 FAIL
 ```
 
 ## Escreva código suficiente para fazer o teste passar
 
-We need para add `Jogo` as a field para `ServidorJogador` so that it can use it when it gets requests.
+Precisamos adicionar `Jogo` como campo para `ServidorJogador` para que possamos usá-lo quando ele obtiver requisições.
 
 ```go
 type ServidorJogador struct {
@@ -729,9 +729,9 @@ type ServidorJogador struct {
 }
 ```
 
-\(We already have a method called `partida` so rename that para `jogarJogo`\)
+\(Já temos um método chamado `partida`, então é só renomeá-lo para `jogarJogo`\)
 
-Next lets assign it in our constructor
+A seguir, vamos atribui-lo no nosso construtor:
 
 ```go
 func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*ServidorJogador, error) {
@@ -748,7 +748,7 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*Ser
     // etc
 ```
 
-Now we can use our `Jogo` within `webSocket`.
+Agora podemos usar nosso `Jogo` dentro de `webSocket`.
 
 ```go
 func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
@@ -756,18 +756,18 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
 
     _, mensagemNumeroDeJogadores, _ := conexão.ReadMessage()
     numeroDeJogadores, _ := strconv.Atoi(string(mensagemNumeroDeJogadores))
-    p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Dont discard the blinds mensagens!
+    p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Não descartar as mensagens de blind!
 
     _, vencedor, _ := conexão.ReadMessage()
     p.partida.Terminar(string(vencedor))
 }
 ```
 
-Hooray! The tests pass.
+Uhul! Os testes estão passando.
 
-We are not going para send the blind mensagens anywhere _just yet_ as we need para have a think about that. When we call `partida.Começar` we send in `ioutil.Discard` which will just discard any mensagens written para it.
+Não vamos enviar as mensagens de blind para nenhum lugar _por enquanto_ já que precisamos de um tempo para pensar nisso. Quando chamamos `partida.Começar`, enviamos os dados para `ioutil.Discard` que vai apenar descartar qualquer mensagem escrita nele.
 
-For now start the web servidor up. You'll need para update the `main.go` para pass a `Jogo` para the `ServidorJogador`
+Por enquanto, vamos iniciar o servidor. Você vai precisar atualizar a ``main.go` para passar um `Jogo` para o `ServidorJogador`:
 
 ```go
 func main() {
@@ -797,11 +797,11 @@ func main() {
 }
 ```
 
-Discounting the fact we're not getting blind alerts yet, the app does work! We've managed para re-use `Jogo` with `ServidorJogador` and it has taken care of all the details. Once we figure out how para send our blind alerts through para the web sockets rather than discarding them it _should_ all work.
+Tirando o fato de que não temos alertas de blind por enquanto, a aplicação funciona! Conseguimos reutilizar `Jogo` com `ServidorJogador` e ele toma conta dos detalhes. Quando descobrirmos como enviar mensagens de blind atraves de web sockets ao invés de descartá-las, tudo _deve_ ficar pronto.
 
-Before that though, let's tidy up some code.
+Antes disso, vamos mexer um pouco no código.
 
-## Refactor
+## Refatore
 
 The way we're using WebSockets is fairly basic and the error handling is fairly naive, so I wanted para encapsulate that in a type just para remove that messyness from the servidor code. We may wish para revisit it later but for now this'll tidy things up a bit
 
@@ -837,7 +837,7 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
 
     mensagemNumeroDeJogadores := ws.EsperarPelaMensagem()
     numeroDeJogadores, _ := strconv.Atoi(mensagemNumeroDeJogadores)
-    p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Dont discard the blinds mensagens!
+    p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Não descartar as mensagens de blind!
 
     vencedor := ws.EsperarPelaMensagem()
     p.partida.Terminar(vencedor)
@@ -853,7 +853,7 @@ Sometimes when we're not sure how para do something, it's best just para play ar
 The problematic line of code we have is
 
 ```go
-p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Dont discard the blinds mensagens!
+p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Não descartar as mensagens de blind!
 ```
 
 We need para pass in an `io.Writer` for the partida para write the blind alerts para.

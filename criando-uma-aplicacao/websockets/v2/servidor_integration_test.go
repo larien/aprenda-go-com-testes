@@ -15,7 +15,7 @@ func TestGravaVitoriasEAsRetorna(t *testing.T) {
 
 	verificaSemErro(t, err)
 
-	servidor := deveFazerServidorJogador(t, armazenamento, dummyGame)
+	servidor := deveFazerServidorJogador(t, armazenamento, jogoTosco)
 	jogador := "Pepper"
 
 	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisiçãoPostDeVitoria(jogador))

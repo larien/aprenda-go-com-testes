@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	dummyGame = &JogoEspiao{}
+	jogoTosco = &JogoEspiao{}
 	tenMS     = 10 * time.Millisecond
 )
 
@@ -34,7 +34,7 @@ func TestObterJogadores(t *testing.T) {
 			"Floyd":  10,
 		},
 	}
-	servidor := deveFazerServidorJogador(t, &armazenamento, dummyGame)
+	servidor := deveFazerServidorJogador(t, &armazenamento, jogoTosco)
 
 	t.Run("retorna pontuação de Pepper", func(t *testing.T) {
 		requisicao := novaRequisicaoObterPontuacao("Pepper")
@@ -70,7 +70,7 @@ func TestArmazenarVitórias(t *testing.T) {
 	armazenamento := poquer.EsbocoDeArmazenamentoJogador{
 		Pontuações: map[string]int{},
 	}
-	servidor := deveFazerServidorJogador(t, &armazenamento, dummyGame)
+	servidor := deveFazerServidorJogador(t, &armazenamento, jogoTosco)
 
 	t.Run("grava vitória no POST", func(t *testing.T) {
 		jogador := "Pepper"
@@ -95,7 +95,7 @@ func TestLiga(t *testing.T) {
 		}
 
 		armazenamento := poquer.EsbocoDeArmazenamentoJogador{Liga: ligaEsperada}
-		servidor := deveFazerServidorJogador(t, &armazenamento, dummyGame)
+		servidor := deveFazerServidorJogador(t, &armazenamento, jogoTosco)
 
 		requisicao := novaRequisicaoDeLiga()
 		resposta := httptest.NewRecorder()
@@ -113,7 +113,7 @@ func TestLiga(t *testing.T) {
 
 func TestJogo(t *testing.T) {
 	t.Run("GET /partida retorna 200", func(t *testing.T) {
-		servidor := deveFazerServidorJogador(t, &poquer.EsbocoDeArmazenamentoJogador{}, dummyGame)
+		servidor := deveFazerServidorJogador(t, &poquer.EsbocoDeArmazenamentoJogador{}, jogoTosco)
 
 		requisicao := novaRequisicaoJogo()
 		resposta := httptest.NewRecorder()
