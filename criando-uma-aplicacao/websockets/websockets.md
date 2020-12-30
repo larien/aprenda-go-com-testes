@@ -803,7 +803,7 @@ Antes disso, vamos mexer um pouco no código.
 
 ## Refatore
 
-The way we're using WebSockets is fairly basic and the error handling is fairly naive, so I wanted para encapsulate that in a type just para remove that messyness from the servidor code. We may wish para revisit it later but for now this'll tidy things up a bit
+A forma que estamos usando WebSocker é bem básica e a mnnipulação de erro é bem fraca, então gostaria de encapsular isso em um tipo só para remover essa bagunça do código do servidor. Precisaremos revisitar isso depois, mas por enqaunto isso vai melhorar um pouco as coisas.
 
 ```go
 type websocketServidorJogador struct {
@@ -829,7 +829,7 @@ func (w *websocketServidorJogador) EsperarPelaMensagem() string {
 }
 ```
 
-Now the servidor code is a bit simplified
+Agora o código do servidor fica um pouco mais simples:
 
 ```go
 func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
@@ -844,23 +844,23 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-Once we figure out how para not discard the blind mensagens we're done.
+Quando descobrirmos como não descartar as mensagens de blind teremos terminado essa etapa.
 
-### Let's _not_ write a test!
+### _Não_ vamos escrever um teste!
 
-Sometimes when we're not sure how para do something, it's best just para play around and try things out! Make sure your work is committed first because once we've figured out a way we should drive it through a test.
+Às vezes, quando não temos certeza de como vamos fazer algo, é melhor apenas brincar e testar coisas diferentes! Tenha certeza de que seu trabalho está salvo primeiro porque quando descobrirmos o que fazer, vamos implementá-lo junto de um teste.
 
-The problematic line of code we have is
+A linha problemática do código que temos é:
 
 ```go
 p.partida.Começar(numeroDeJogadores, ioutil.Discard) //todo: Não descartar as mensagens de blind!
 ```
 
-We need para pass in an `io.Writer` for the partida para write the blind alerts para.
+Precisamos passar um `io.Writer` para a partida para ter aonde escrever os alertas be blind.
 
-Wouldn't it be nice if we could pass in our `websocketServidorJogador` from before? It's our wrapper around our WebSocket so it _feels_ like we should be able para send that para our `Jogo` para send mensagens para.
+Não seria legal se apenas precisássemos passar o nosso `websocketServidorJogador` de antes? É o nosso wrapper em torno do nosso WebSocket, então _parece_ que devemos ser capazes de enviá-lo para que nosso `Jogo` seja capaz de enviar mensagens para ele.
 
-Give it a go:
+Vamos tentar:
 
 ```go
 func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
@@ -872,14 +872,14 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
     //etc...
 ```
 
-The compiler complains
+O compilador reclama:
 
 ```text
 ./servidor.go:71:14: cannot use ws (type *websocketServidorJogador) as type io.Writer in argument para p.partida.Começar:
     *websocketServidorJogador does not implement io.Writer (missing Write method)
 ```
 
-It seems the obvious thing para do, would be para make it so `websocketServidorJogador` _does_ implement `io.Writer`. To do so we use the underlying `*websocket.Conn` para use `WriteMessage` para send the mensagem down the websocket
+Parece que a coisa óbvia a se fazer é fazer com que o `websocketServidorJogador` _implementa_ o `io.Writer`. Para fazer isso, precisamos usar do `*websocket.Conn` para ussar a escrita de mensagem `WriteMessage` para enviar a mensagem para o websocket.
 
 ```go
 func (w *websocketServidorJogador) Write(p []byte) (n int, err error) {
@@ -893,23 +893,23 @@ func (w *websocketServidorJogador) Write(p []byte) (n int, err error) {
 }
 ```
 
-This seems too easy! Try and run the application and see if it works.
+Isso parece fácil demais! Execute a aplicação para ver se funciona.
 
-Beforehand edit `TexasHoldem` so that the blind increment time is shorter so you can see it in action
+Mas antes edite o `TexasHoldem` para que o tempo de incremento do blind seja mais curto para que você possa ver as coisas em ação:
 
 ```go
-blindIncrement := time.Duration(5+numeroDeJogadores) * time.Second // (rather than a minute)
+blindIncrement := time.Duration(5+numeroDeJogadores) * time.Second // (ao invés de um minuto)
 ```
 
-You should see it working! The blind quantia increments in the browser as if by magic.
+As coisas devem estar funcionando! A quantidade do blind é incrementada no computador como se fosse mágica.
 
-Now let's revert the code and think how para test it. In order para _implement_ it all we did was pass through para `StartGame` was `websocketServidorJogador` rather than `ioutil.Discard` so that might make you think we should perhaps spy on the call para verify it works.
+Agora vamos reverter o código e pensar como testá-lo. Para _implementar_ isso tudo o que precisamos fazer foi passar o `websocketServidorJogador` para `ComeçarJogo` no lugar do `ioutil.Discard`, então isso faz parecer que tenhamos que espionar a chamada para verificar se ela funciona.
 
-Spying is great and helps us check implementation details but we should always try and favour testing the _real_ behaviour if we can because when you decide para refactor it's often spy tests that start failing because they are usually checking implementation details that you're trying para change.
+Espionar é ótimo e nos ajuda a verificar os detalhes de implementação, mas sempre devemos favorecer o teste do comportamento _real_ se possível, porque caso seja necessário refatorar isso os testes espiões são os primeiros a começar a falhar por geralmente verificarem os detalhes de implementação que estamos tentando alterar.
 
-Our test currently opens a websocket connection para our running servidor and sends mensagens para make it do things. Equally we should be able para test the mensagens our servidor sends back over the websocket connection.
+Nosso teste atualmente abre uma conexão websocket para nosso servidor em execução e envia mensagens para fazê-lo efetuar ações. De forma semelhante, devemos ser capazes de testar as mensagens que o nosso servidor envia de volta para a conexão de websocket.
 
-## Write the test first
+## Escreva o teste primeiro
 
 We'll edit our existing test.
 
