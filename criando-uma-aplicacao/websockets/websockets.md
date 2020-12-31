@@ -898,7 +898,7 @@ Isso parece fácil demais! Execute a aplicação para ver se funciona.
 Mas antes edite o `TexasHoldem` para que o tempo de incremento do blind seja mais curto para que você possa ver as coisas em ação:
 
 ```go
-blindIncrement := time.Duration(5+numeroDeJogadores) * time.Second // (ao invés de um minuto)
+incrementoDeBlind := time.Duration(5+numeroDeJogadores) * time.Second // (ao invés de um minuto)
 ```
 
 As coisas devem estar funcionando! A quantidade do blind é incrementada no computador como se fosse mágica.
@@ -911,9 +911,9 @@ Nosso teste atualmente abre uma conexão websocket para nosso servidor em execu�
 
 ## Escreva o teste primeiro
 
-We'll edit our existing test.
+Vamos editar nosso teste existente.
 
-Currently our `JogoEspiao` does not send any data para `out` when you call `Começar`. We should change it so we can configure it para send a canned mensagem and then we can check that mensagem gets sent para the websocket. This should give us confidence that we have configured things correctly whilst still exercising the real behaviour we esperado.
+Atualmente, nosso `JogoEspiao` não envia nenhum dado para a `saida` quando você chama `Começar`. Devemos alterar isso para que possamos configurá-lo para enviar uma mensagem e então verificar se a mensagem é enviada para o websocket. Isso deve nos dar confiança que configuramos as coisas corretamente enquanto ainda exercitamos o comportamento real do que esperamos.
 
 ```go
 type JogoEspiao struct {
@@ -926,28 +926,28 @@ type JogoEspiao struct {
 }
 ```
 
-Add `AlertaDeBlind` field.
+Adicione o campo de `AlertaDeBlind`.
 
-Update `JogoEspiao` `Começar` para send the canned mensagem para `out`.
+Atualize o `Começar` do `JogoEspiao` para enviar a mensagem para a `saída`.
 
 ```go
-func (j *JogoEspiao) Começar(numeroDeJogadores int, out io.Writer) {
+func (j *JogoEspiao) Começar(numeroDeJogadores int, saida io.Writer) {
     j.ComecouASerChamado = true
     j.ComecouASerChamadoCom = numeroDeJogadores
-    out.Write(j.AlertaDeBlind)
+    saida.Write(j.AlertaDeBlind)
 }
 ```
 
-This now means when we exercise `ServidorJogador` when it tries para `Começar` the partida it should end up sending mensagens through the websocket if things are working right.
+Agora isso significa que quando usarmos o `ServidorJogador`, quando ele tentar `Começar` o jogo, deve acabar enviando mensagens pelo websocket se as coisas estiverem funcionando direito.
 
-Finally we can update the test
+Finalmente podemos atualizar o teste:
 
 ```go
-t.Run("start a partida with 3 jogadores, send some blind alerts down WS and declare Ruth the vencedor", func(t *testing.T) {
-    wantedBlindAlert := "Blind is 100"
+t.Run("começa uma artida com  3 jogadores, envia alguns alertas de blind no websocket e declara Ruth como vencedora", func(t *testing.T) {
+    alertaDeBlindEsperado := "Blind é 100"
     vencedor := "Ruth"
 
-    partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
+    partida := &JogoEspiao{AlertaDeBlind: []byte(alertaDeBlindEsperado)}
     servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
     ws := deveConectarAoWebSocket(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
 
@@ -961,24 +961,23 @@ t.Run("start a partida with 3 jogadores, send some blind alerts down WS and decl
     verificaJogoComeçadoCom(t, partida, 3)
     verificaTerminosChamadosCom(t, partida, vencedor)
 
-    _, gotBlindAlert, _ := ws.ReadMessage()
+    _, alertaDeBlindObtido, _ := ws.ReadMessage()
 
-    if string(gotBlindAlert) != wantedBlindAlert {
-        t.Errorf("obtido blind alert '%s', esperado '%s'", string(gotBlindAlert), wantedBlindAlert)
+    if string(alertaDeBlindObtido) != alertaDeBlindEsperado {
+        t.Errorf("alerta de blind obtido '%s', esperado '%s'", string(alertaDeBlindObtido), alertaDeBlindEsperado)
     }
 })
 ```
 
-* We've added a `wantedBlindAlert` and configured our `JogoEspiao` para send it para `out` if `Começar` is called.
-* We hope it gets sent in the websocket connection so we've added a call para `ws.ReadMessage()` para wait for a mensagem para be sent and then check it's the one we expected.
+* Adicionamos um `alertaDeBlindEsperado` e configuramos nosso `JogoEspiao` para enviá-lo para a `saida` se `Começar` for chamado.
+* Esperamos que ela seja enviada na conexão do websocket, então adicionamos uma chamada para `ws.ReadMessage()` para esperar por uma mensagem ser enviada e então verificamos se é aquela que esperamos.
 
-## Try para run the test
+## Execute o teste
 
-You should find the test hangs forever. This is because `ws.ReadMessage()` will block until it gets a mensagem, which it never will.
+Talvez você pense que o teste demora demais. Isso acontece porque o ``ws.ReadMessage()` vai bloqueá-lo até obter a mensagem, que nunca vai chegar.
+## Escreva o mínimo de código necessário para o teste ser executado e verifique a saída do teste falhando
 
-## Write the minimal quantia of code for the test para run and check the failing test output
-
-We should never have tests that hang so let's introduce a way of handling code that we esperado para timeout.
+Nunca devemos ter testes que demoram, então vamos apresentar uma nova forma de lidar com coigo que esperamos com um timeout.
 
 ```go
 func within(t *testing.T, d time.Duration, assert func()) {
@@ -999,14 +998,14 @@ func within(t *testing.T, d time.Duration, assert func()) {
 }
 ```
 
-What `within` does is take a function `assert` as an argument and then runs it in a go routine. If/When the function finishes it will signal it is done via the `done` channel.
+O que o `within` faz é pegar uma função `assert` como argumento e então o executa dentro de uma goroutine. Se/Quando a função termina, ela avisa que terminou através do canal `done`.
 
-While that happens we use a `select` statement which lets us wait for a channel para send a mensagem. From here it is a race between the `assert` function and `time.After` which will send a signal when the duracao has occurred.
+Enquanto isso acontece, usamos uma declaração `select` que nos permite esperar por um canal para enviar uma mensagem. A partir daí é uma corrida entre a função de `assert` e o `time.After` que vai enviar um sinal qunado a duração chega ao fim.
 
-Finally I made a helper function for our assertion just para make things a bit neater
+Por mim, fiz uma função auxiliar para a nossa verificação so para melhorar um pouco as coisas:
 
 ```go
-func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, esperado string) {
+func verificaSeWebSocketObteveMensagem(t *testing.T, ws *websocket.Conn, esperado string) {
     _, msg, _ := ws.ReadMessage()
     if string(msg) != esperado {
         t.Errorf(`obtido "%s", esperado "%s"`, string(msg), esperado)
@@ -1014,14 +1013,14 @@ func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, esperado string) {
 }
 ```
 
-Here's how the test reads now
+É assim que o teste fica agora:
 
 ```go
-t.Run("start a partida with 3 jogadores, send some blind alerts down WS and declare Ruth the vencedor", func(t *testing.T) {
-    wantedBlindAlert := "Blind is 100"
+t.Run("começa uma artida com  3 jogadores, envia alguns alertas de blind no websocket e declara Ruth como vencedora", func(t *testing.T) {
+    alertaDeBlindEsperado := "Blind é 100"
     vencedor := "Ruth"
 
-    partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
+    partida := &JogoEspiao{AlertaDeBlind: []byte(alertaDeBlindEsperado)}
     servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
     ws := deveConectarAoWebSocket(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
 
@@ -1035,24 +1034,24 @@ t.Run("start a partida with 3 jogadores, send some blind alerts down WS and decl
 
     verificaJogoComeçadoCom(t, partida, 3)
     verificaTerminosChamadosCom(t, partida, vencedor)
-    within(t, tenMS, func() { assertWebsocketGotMsg(t, ws, wantedBlindAlert) })
+    within(t, tenMS, func() { verificaSeWebSocketObteveMensagem(t, ws, alertaDeBlindEsperado) })
 })
 ```
 
-Now if you run the test...
+Agora se você rodar o teste...
 
 ```text
 === RUN   TestJogo
-=== RUN   TestJogo/start_a_game_with_3_players,_send_some_blind_alerts_down_WS_and_declare_Ruth_the_winner
+=== RUN   TestJogo/começa_um_jogo_com_3_jogadores,envia_alguns_alertas_de_blind_para_o_websocket_e_declara_Ruth_como_vencedora
 --- FAIL: TestJogo (0.02s)
-    --- FAIL: TestJogo/start_a_game_with_3_players,_send_some_blind_alerts_down_WS_and_declare_Ruth_the_winner (0.02s)
+    --- FAIL: TestJogo/começa_um_jogo_com_3_jogadores,envia_alguns_alertas_de_blind_para_o_websocket_e_declara_Ruth_como_vencedora (0.02s)
         server_test.go:143: timed out
-        server_test.go:150: obtido "", esperado "Blind is 100"
+        server_test.go:150: obtido "", esperado "Blind é 100"
 ```
 
 ## Escreva código suficiente para fazer o teste passar
 
-Finally we can now change our servidor code so it sends our WebSocket connection para the partida when it starts
+Finalmente podemos alterar o código do nosso servidor para que ele envie a mensagem para nossa conexão com o WebSocket para a partida quando ela começa:
 
 ```go
 func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
@@ -1073,9 +1072,9 @@ O código do servidor sofreu uma mudança bem pequena, então não tem muito o
 que mudar aqui, mas o código de teste ainda tem uma chamada `time.Sleep`
 porque temos que esperar até que o nosso servidor termina sua tarefa assíncronamente.
 
-We can refactor our helpers `verificaJogoComeçadoCom` and `verificaTerminosChamadosCom` so that they can retry their assertions for a short period before failing.
+Podemos refatorar nossas funções auxiliares `verificaJogoComeçadoCom` e `verificaTerminosChamadosCom` para que possam tentar as verificações novamente logo após falharem.
 
-Here's how you can do it for `verificaTerminosChamadosCom` and you can use the same approach for the other helper.
+Abaixo esta como fazer isso com o `verificaTerminosChamadosCom` e você pode usar a mesma abordagem para a outra função auxiliar.
 
 ```go
 func verificaTerminosChamadosCom(t *testing.T, partida *JogoEspiao, vencedor string) {
@@ -1091,7 +1090,7 @@ func verificaTerminosChamadosCom(t *testing.T, partida *JogoEspiao, vencedor str
 }
 ```
 
-Here is how `tentarNovamenteAte` is defined
+Aqui está como  `tentarNovamenteAte` está definida:
 
 ```go
 func tentarNovamenteAte(d time.Duration, f func() bool) bool {

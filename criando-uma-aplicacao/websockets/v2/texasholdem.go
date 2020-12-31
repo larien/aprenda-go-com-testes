@@ -21,13 +21,13 @@ func NovoTexasHoldem(alerter AlertadorDeBlind, armazenamento ArmazenamentoJogado
 
 // Começar will schedule blind alerts dependant on the number of jogadores
 func (p *TexasHoldem) Começar(numeroDeJogadores int, destinoDosAlertas io.Writer) {
-	blindIncrement := time.Duration(5+numeroDeJogadores) * time.Minute
+	incrementoDeBlind := time.Duration(5+numeroDeJogadores) * time.Minute
 
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
 	blindTime := 0 * time.Second
 	for _, blind := range blinds {
 		p.alerter.AgendarAlertaPara(blindTime, blind, destinoDosAlertas)
-		blindTime = blindTime + blindIncrement
+		blindTime = blindTime + incrementoDeBlind
 	}
 }
 

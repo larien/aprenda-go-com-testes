@@ -123,11 +123,11 @@ func TestJogo(t *testing.T) {
 		verificaStatus(t, resposta, http.StatusOK)
 	})
 
-	t.Run("start a partida with 3 jogadores, send some blind alerts down WS and declare Ruth the vencedor", func(t *testing.T) {
-		wantedBlindAlert := "Blind is 100"
+	t.Run("começa uma artida com  3 jogadores, envia alguns alertas de blind no websocket e declara Ruth como vencedora", func(t *testing.T) {
+		alertaDeBlindEsperado := "Blind é 100"
 		vencedor := "Ruth"
 
-		partida := &JogoEspiao{AlertaDeBlind: []byte(wantedBlindAlert)}
+		partida := &JogoEspiao{AlertaDeBlind: []byte(alertaDeBlindEsperado)}
 		servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
 		ws := deveConectarAoWebSocket(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
 
@@ -139,11 +139,11 @@ func TestJogo(t *testing.T) {
 
 		verificaJogoComeçadoCom(t, partida, 3)
 		verificaTerminosChamadosCom(t, partida, vencedor)
-		within(t, tenMS, func() { assertWebsocketGotMsg(t, ws, wantedBlindAlert) })
+		within(t, tenMS, func() { verificaSeWebSocketObteveMensagem(t, ws, alertaDeBlindEsperado) })
 	})
 }
 
-func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, esperado string) {
+func verificaSeWebSocketObteveMensagem(t *testing.T, ws *websocket.Conn, esperado string) {
 	_, msg, _ := ws.ReadMessage()
 	if string(msg) != esperado {
 		t.Errorf(`obtido "%s", esperado "%s"`, string(msg), esperado)
