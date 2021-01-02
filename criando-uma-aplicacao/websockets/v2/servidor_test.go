@@ -19,8 +19,8 @@ var (
 	tenMS     = 10 * time.Millisecond
 )
 
-func deveFazerServidorJogador(t *testing.T, armazenamento poquer.ArmazenamentoJogador, partida poquer.Jogo) *poquer.ServidorJogador {
-	servidor, err := poquer.NovoServidorJogador(armazenamento, partida)
+func deveFazerServidorJogador(t *testing.T, armazenamento poquer.ArmazenamentoJogador, jogo poquer.Jogo) *poquer.ServidorJogador {
+	servidor, err := poquer.NovoServidorJogador(armazenamento, jogo)
 	if err != nil {
 		t.Fatal("problema ao criar o servidor do jogador", err)
 	}
@@ -112,7 +112,7 @@ func TestLiga(t *testing.T) {
 }
 
 func TestJogo(t *testing.T) {
-	t.Run("GET /partida retorna 200", func(t *testing.T) {
+	t.Run("GET /jogo retorna 200", func(t *testing.T) {
 		servidor := deveFazerServidorJogador(t, &poquer.EsbocoDeArmazenamentoJogador{}, jogoTosco)
 
 		requisicao := novaRequisicaoJogo()
@@ -127,8 +127,8 @@ func TestJogo(t *testing.T) {
 		alertaDeBlindEsperado := "Blind é 100"
 		vencedor := "Ruth"
 
-		partida := &JogoEspiao{AlertaDeBlind: []byte(alertaDeBlindEsperado)}
-		servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, partida))
+		jogo := &JogoEspiao{AlertaDeBlind: []byte(alertaDeBlindEsperado)}
+		servidor := httptest.NewServer(deveFazerServidorJogador(t, ArmazenamentoJogadorTosco, jogo))
 		ws := deveConectarAoWebSocket(t, "ws"+strings.TrimPrefix(servidor.URL, "http")+"/ws")
 
 		defer servidor.Close()
@@ -137,8 +137,8 @@ func TestJogo(t *testing.T) {
 		escreverMensagemNoWebsocket(t, ws, "3")
 		escreverMensagemNoWebsocket(t, ws, vencedor)
 
-		verificaJogoComeçadoCom(t, partida, 3)
-		verificaTerminosChamadosCom(t, partida, vencedor)
+		verificaJogoComeçadoCom(t, jogo, 3)
+		verificaTerminosChamadosCom(t, jogo, vencedor)
 		within(t, tenMS, func() { verificaSeWebSocketObteveMensagem(t, ws, alertaDeBlindEsperado) })
 	})
 }
@@ -217,7 +217,7 @@ func verificaStatus(t *testing.T, obtido *httptest.ResponseRecorder, esperado in
 }
 
 func novaRequisicaoJogo() *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, "/partida", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/jogo", nil)
 	return req
 }
 

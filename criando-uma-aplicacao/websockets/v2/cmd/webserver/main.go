@@ -8,7 +8,7 @@ import (
 	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
 )
 
-const nomeArquivoBaseDeDados = "partida.db.json"
+const nomeArquivoBaseDeDados = "jogo.db.json"
 
 func main() {
 	db, err := os.OpenFile(nomeArquivoBaseDeDados, os.O_RDWR|os.O_CREATE, 0666)
@@ -23,9 +23,9 @@ func main() {
 		log.Fatalf("problema ao criar sistema de arquivo de armazenamento do jogador, %v ", err)
 	}
 
-	partida := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.Alertador), armazenamento)
+	jogo := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.Alertador), armazenamento)
 
-	servidor, err := poquer.NovoServidorJogador(armazenamento, partida)
+	servidor, err := poquer.NovoServidorJogador(armazenamento, jogo)
 
 	if err != nil {
 		log.Fatalf("problema ao criar o servidor do jogador %v", err)

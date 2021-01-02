@@ -5,11 +5,11 @@
     <title>Vamos jogar pôquer</title>
 </head>
 <corpo>
-<section id="partida">
-    <div id="partida-start">
+<section id="jogo">
+    <div id="jogo-start">
         <label for="jogador-count">Número de jogadores</label>
         <input type="number" id="jogador-count"/>
-        <button id="start-partida">Começar</button>
+        <button id="start-jogo">Começar</button>
     </div>
 
     <div id="declare-vencedor">
@@ -21,14 +21,14 @@
     <div id="blind-value"/>
 </section>
 
-<section id="partida-end">
-    <h1>Outra ótima partida de pôquer, pessoal!!</h1>
+<section id="jogo-end">
+    <h1>Outra ótima jogo de pôquer, pessoal!!</h1>
     <p><a href="/liga">Verifique a tabela da liga</a></p>
 </section>
 
 </corpo>
 <script type="application/javascript">
-    const startGame = document.getElementById('partida-start')
+    const startGame = document.getElementById('jogo-start')
 
     const declareWinner = document.getElementById('declare-vencedor')
     const submitWinnerButton = document.getElementById('vencedor-button')
@@ -36,13 +36,13 @@
 
     const blindContainer = document.getElementById('blind-value')
 
-    const gameContainer = document.getElementById('partida')
-    const gameEndContainer = document.getElementById('partida-end')
+    const gameContainer = document.getElementById('jogo')
+    const gameEndContainer = document.getElementById('jogo-end')
 
     declareWinner.hidden = true
     gameEndContainer.hidden = true
 
-    document.getElementById('start-partida').addEventListener('click', event => {
+    document.getElementById('start-jogo').addEventListener('click', event => {
         startGame.hidden = true
         declareWinner.hidden = false
 

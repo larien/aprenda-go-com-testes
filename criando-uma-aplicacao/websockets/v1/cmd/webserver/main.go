@@ -8,7 +8,7 @@ import (
 	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v1"
 )
 
-const nomeArquivoBaseDeDados = "partida.db.json"
+const nomeArquivoBaseDeDados = "jogo.db.json"
 
 func main() {
 	db, err := os.OpenFile(nomeArquivoBaseDeDados, os.O_RDWR|os.O_CREATE, 0666)

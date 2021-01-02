@@ -37,84 +37,84 @@ func usuarioEnvia(mensagens ...string) io.Reader {
 }
 
 func TestCLI(t *testing.T) {
-	t.Run("começa partida com 3 jogadores e termina partida com 'Chris' como vencedor", func(t *testing.T) {
-		partida := &JogoEspiao{}
+	t.Run("começa jogo com 3 jogadores e termina jogo com 'Chris' como vencedor", func(t *testing.T) {
+		jogo := &JogoEspiao{}
 		saida := &bytes.Buffer{}
 
 		entrada := usuarioEnvia("3", "Chris venceu")
-		cli := poquer.NovaCLI(entrada, saida, partida)
+		cli := poquer.NovaCLI(entrada, saida, jogo)
 
 		cli.JogarPoquer()
 
 		verificaMensagensEnviadasParaUsuario(t, saida, poquer.PromptJogador)
-		verificaJogoComeçadoCom(t, partida, 3)
-		verificaTerminosChamadosCom(t, partida, "Chris")
+		verificaJogoComeçadoCom(t, jogo, 3)
+		verificaTerminosChamadosCom(t, jogo, "Chris")
 	})
 
-	t.Run("começa partida com 8 jogadores e grava 'Cleo' como vencedor", func(t *testing.T) {
-		partida := &JogoEspiao{}
+	t.Run("começa jogo com 8 jogadores e grava 'Cleo' como vencedor", func(t *testing.T) {
+		jogo := &JogoEspiao{}
 
 		entrada := usuarioEnvia("8", "Cleo venceu")
-		cli := poquer.NovaCLI(entrada, SaidaTosca, partida)
+		cli := poquer.NovaCLI(entrada, SaidaTosca, jogo)
 
 		cli.JogarPoquer()
 
-		verificaJogoComeçadoCom(t, partida, 8)
-		verificaTerminosChamadosCom(t, partida, "Cleo")
+		verificaJogoComeçadoCom(t, jogo, 8)
+		verificaTerminosChamadosCom(t, jogo, "Cleo")
 	})
 
-	t.Run("imprime um erro quando um valor não numérico é inserido e não começa a partida", func(t *testing.T) {
-		partida := &JogoEspiao{}
+	t.Run("imprime um erro quando um valor não numérico é inserido e não começa a jogo", func(t *testing.T) {
+		jogo := &JogoEspiao{}
 
 		saida := &bytes.Buffer{}
 		entrada := usuarioEnvia("tortas")
 
-		cli := poquer.NovaCLI(entrada, saida, partida)
+		cli := poquer.NovaCLI(entrada, saida, jogo)
 		cli.JogarPoquer()
 
-		verificaPartidaNaoIniciada(t, partida)
+		verificaPartidaNaoIniciada(t, jogo)
 		verificaMensagensEnviadasParaUsuario(t, saida, poquer.PromptJogador, poquer.ErrMsgEntradaJogadorIncorreta)
 	})
 
 	t.Run("imprime um erro quando o vencedor é declarado incorretamente", func(t *testing.T) {
-		partida := &JogoEspiao{}
+		jogo := &JogoEspiao{}
 		saida := &bytes.Buffer{}
 
 		entrada := usuarioEnvia("8", "Lloyd é incrível")
-		cli := poquer.NovaCLI(entrada, saida, partida)
+		cli := poquer.NovaCLI(entrada, saida, jogo)
 
 		cli.JogarPoquer()
 
-		verificaPartidaNaoFinalizada(t, partida)
+		verificaPartidaNaoFinalizada(t, jogo)
 		verificaMensagensEnviadasParaUsuario(t, saida, poquer.PromptJogador, poquer.ErrMsgEntradaVencedorIncorreta)
 	})
 }
 
-func verificaJogoComeçadoCom(t *testing.T, partida *JogoEspiao, numeroDeJogadoresDesejados int) {
+func verificaJogoComeçadoCom(t *testing.T, jogo *JogoEspiao, numeroDeJogadoresDesejados int) {
 	t.Helper()
-	if partida.ComecouASerChamadoCom != numeroDeJogadoresDesejados {
-		t.Errorf("esperava Começar chamado com %d mas obteve %d", numeroDeJogadoresDesejados, partida.ComecouASerChamadoCom)
+	if jogo.ComecouASerChamadoCom != numeroDeJogadoresDesejados {
+		t.Errorf("esperava Começar chamado com %d mas obteve %d", numeroDeJogadoresDesejados, jogo.ComecouASerChamadoCom)
 	}
 }
 
-func verificaPartidaNaoFinalizada(t *testing.T, partida *JogoEspiao) {
+func verificaPartidaNaoFinalizada(t *testing.T, jogo *JogoEspiao) {
 	t.Helper()
-	if partida.TerminouDeSerChamado {
-		t.Errorf("partida não deveria ter finalizado")
+	if jogo.TerminouDeSerChamado {
+		t.Errorf("jogo não deveria ter finalizado")
 	}
 }
 
-func verificaPartidaNaoIniciada(t *testing.T, partida *JogoEspiao) {
+func verificaPartidaNaoIniciada(t *testing.T, jogo *JogoEspiao) {
 	t.Helper()
-	if partida.ComecouASerChamado {
-		t.Errorf("partida não deveria ter começado")
+	if jogo.ComecouASerChamado {
+		t.Errorf("jogo não deveria ter começado")
 	}
 }
 
-func verificaTerminosChamadosCom(t *testing.T, partida *JogoEspiao, vencedor string) {
+func verificaTerminosChamadosCom(t *testing.T, jogo *JogoEspiao, vencedor string) {
 	t.Helper()
-	if partida.TerminouDeSerChamadoCom != vencedor {
-		t.Errorf("esperava chamada de término com '%s' mas obteve '%s' ", vencedor, partida.TerminouDeSerChamadoCom)
+	if jogo.TerminouDeSerChamadoCom != vencedor {
+		t.Errorf("esperava chamada de término com '%s' mas obteve '%s' ", vencedor, jogo.TerminouDeSerChamadoCom)
 	}
 }
 

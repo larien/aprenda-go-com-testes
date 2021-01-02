@@ -1,6 +1,6 @@
 # Gopkg.toml example
 #
-# Refer para https://golang.github.io/dep/docs/Gopkg.toml.html
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
 # for detailed Gopkg.toml documentation.
 #
 # required = ["github.com/user/thing/cmd/thing"]

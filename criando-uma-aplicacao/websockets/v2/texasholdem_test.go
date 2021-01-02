@@ -10,11 +10,11 @@ import (
 )
 
 func TestJogo_Começar(t *testing.T) {
-	t.Run("agenda alertas em partidas que começam com 5 jogadores", func(t *testing.T) {
+	t.Run("agenda alertas em jogos que começam com 5 jogadores", func(t *testing.T) {
 		alertadorDeBlind := &poquer.AlertadorDeBlindEspiao{}
-		partida := poquer.NovoTexasHoldem(alertadorDeBlind, ArmazenamentoJogadorTosco)
+		jogo := poquer.NovoTexasHoldem(alertadorDeBlind, ArmazenamentoJogadorTosco)
 
-		partida.Começar(5, ioutil.Discard)
+		jogo.Começar(5, ioutil.Discard)
 
 		cases := []poquer.AlertaAgendado{
 			{Em: 0 * time.Second, Quantia: 100},
@@ -33,11 +33,11 @@ func TestJogo_Começar(t *testing.T) {
 		verificaCasosAgendados(cases, t, alertadorDeBlind)
 	})
 
-	t.Run("agenda alertas em partidas que começam com 7 jogadores", func(t *testing.T) {
+	t.Run("agenda alertas em jogos que começam com 7 jogadores", func(t *testing.T) {
 		alertadorDeBlind := &poquer.AlertadorDeBlindEspiao{}
-		partida := poquer.NovoTexasHoldem(alertadorDeBlind, ArmazenamentoJogadorTosco)
+		jogo := poquer.NovoTexasHoldem(alertadorDeBlind, ArmazenamentoJogadorTosco)
 
-		partida.Começar(7, ioutil.Discard)
+		jogo.Começar(7, ioutil.Discard)
 
 		cases := []poquer.AlertaAgendado{
 			{Em: 0 * time.Second, Quantia: 100},
@@ -53,10 +53,10 @@ func TestJogo_Começar(t *testing.T) {
 
 func TestJogo_Terminar(t *testing.T) {
 	armazenamento := &poquer.EsbocoDeArmazenamentoJogador{}
-	partida := poquer.NovoTexasHoldem(AlertadorDeBlindTosco, armazenamento)
+	jogo := poquer.NovoTexasHoldem(AlertadorDeBlindTosco, armazenamento)
 	vencedor := "Ruth"
 
-	partida.Terminar(vencedor)
+	jogo.Terminar(vencedor)
 	poquer.VerificaVitoriaDoVencedor(t, armazenamento, vencedor)
 }
 

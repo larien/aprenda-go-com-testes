@@ -8,7 +8,7 @@ import (
 	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v1"
 )
 
-const nomeArquivoBaseDeDados = "partida.db.json"
+const nomeArquivoBaseDeDados = "jogo.db.json"
 
 func main() {
 	armazenamento, close, err := poquer.SistemaArquivoArmazenamentoJogadorDoArquivo(nomeArquivoBaseDeDados)
@@ -17,8 +17,8 @@ func main() {
 	}
 	defer close()
 
-	partida := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.SaidaAlertador), armazenamento)
-	cli := poquer.NovaCLI(os.Stdin, os.Stdout, partida)
+	jogo := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.SaidaAlertador), armazenamento)
+	cli := poquer.NovaCLI(os.Stdin, os.Stdout, jogo)
 
 	fmt.Println("Vamos jogar pôquer")
 	fmt.Println("Digite o nome para gravar uma vitória")

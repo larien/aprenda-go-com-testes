@@ -110,7 +110,7 @@ func TestLiga(t *testing.T) {
 }
 
 func TestJogo(t *testing.T) {
-	t.Run("GET /partida retorna 200", func(t *testing.T) {
+	t.Run("GET /jogo retorna 200", func(t *testing.T) {
 		servidor := deveFazerServidorJogador(t, &EsbocoDeArmazenamentoJogador{})
 
 		requisicao := novaRequisicaoJogo()
@@ -121,7 +121,7 @@ func TestJogo(t *testing.T) {
 		verificaStatus(t, resposta, http.StatusOK)
 	})
 
-	t.Run("quando recebemos uma mensagem de um websocket que é vencedor da partida", func(t *testing.T) {
+	t.Run("quando recebemos uma mensagem de um websocket que é vencedor da jogo", func(t *testing.T) {
 		armazenamento := &EsbocoDeArmazenamentoJogador{}
 		vencedor := "Ruth"
 		servidor := httptest.NewServer(deveFazerServidorJogador(t, armazenamento))
@@ -182,7 +182,7 @@ func verificaStatus(t *testing.T, obtido *httptest.ResponseRecorder, esperado in
 }
 
 func novaRequisicaoJogo() *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, "/partida", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/jogo", nil)
 	return req
 }
 

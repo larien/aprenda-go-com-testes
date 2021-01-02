@@ -5,33 +5,33 @@ import (
 	"time"
 )
 
-// TexasHoldem manages a partida of poquer
+// TexasHoldem gerencia um jogo de pôquer
 type TexasHoldem struct {
-	alerter       AlertadorDeBlind
+	alertador     AlertadorDeBlind
 	armazenamento ArmazenamentoJogador
 }
 
-// NovoTexasHoldem retorna a new partida
-func NovoTexasHoldem(alerter AlertadorDeBlind, armazenamento ArmazenamentoJogador) *TexasHoldem {
+// NovoTexasHoldem retorna um novo jogo
+func NovoTexasHoldem(alertador AlertadorDeBlind, armazenamento ArmazenamentoJogador) *TexasHoldem {
 	return &TexasHoldem{
-		alerter:       alerter,
+		alertador:     alertador,
 		armazenamento: armazenamento,
 	}
 }
 
-// Começar will schedule blind alerts dependant on the number of jogadores
+// Começar armazena alertas de blind dependendo do número de jogadores
 func (p *TexasHoldem) Começar(numeroDeJogadores int, destinoDosAlertas io.Writer) {
 	incrementoDeBlind := time.Duration(5+numeroDeJogadores) * time.Minute
 
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
-	blindTime := 0 * time.Second
+	horarioDoBlind := 0 * time.Second
 	for _, blind := range blinds {
-		p.alerter.AgendarAlertaPara(blindTime, blind, destinoDosAlertas)
-		blindTime = blindTime + incrementoDeBlind
+		p.alertador.AgendarAlertaPara(horarioDoBlind, blind, destinoDosAlertas)
+		horarioDoBlind = horarioDoBlind + incrementoDeBlind
 	}
 }
 
-// Terminar ends the partida, recording the vencedor
+// Terminar finaliza o jogo, gravando o vencedor
 func (p *TexasHoldem) Terminar(vencedor string) {
 	p.armazenamento.GravarVitoria(vencedor)
 }

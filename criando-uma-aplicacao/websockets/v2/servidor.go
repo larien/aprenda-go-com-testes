@@ -28,14 +28,14 @@ type ServidorJogador struct {
 	armazenamento ArmazenamentoJogador
 	http.Handler
 	template *template.Template
-	partida  Jogo
+	jogo     Jogo
 }
 
 const tipoConteudoJSON = "application/json"
 const caminhoTemplateHTML = "jogo.html"
 
 // NovoServidorJogador cria um ServidorJogador com rotas configuradas
-func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*ServidorJogador, error) {
+func NovoServidorJogador(armazenamento ArmazenamentoJogador, jogo Jogo) (*ServidorJogador, error) {
 	p := new(ServidorJogador)
 
 	tmpl, err := template.ParseFiles("jogo.html")
@@ -44,14 +44,14 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador, partida Jogo) (*Ser
 		return nil, fmt.Errorf("problema ao abrir %s %v", caminhoTemplateHTML, err)
 	}
 
-	p.partida = partida
+	p.jogo = jogo
 	p.template = tmpl
 	p.armazenamento = armazenamento
 
 	roteador := http.NewServeMux()
 	roteador.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
 	roteador.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
-	roteador.Handle("/partida", http.HandlerFunc(p.jogarJogo))
+	roteador.Handle("/jogo", http.HandlerFunc(p.jogarJogo))
 	roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 
 	p.Handler = roteador
@@ -69,10 +69,10 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
 
 	mensagemNumeroDeJogadores := ws.EsperarPelaMensagem()
 	numeroDeJogadores, _ := strconv.Atoi(mensagemNumeroDeJogadores)
-	p.partida.Começar(numeroDeJogadores, ws)
+	p.jogo.Começar(numeroDeJogadores, ws)
 
 	vencedor := ws.EsperarPelaMensagem()
-	p.partida.Terminar(vencedor)
+	p.jogo.Terminar(vencedor)
 }
 
 func (p *ServidorJogador) jogarJogo(w http.ResponseWriter, r *http.Request) {

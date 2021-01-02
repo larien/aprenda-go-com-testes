@@ -9,20 +9,20 @@ import (
 	"strings"
 )
 
-// CLI ajuda jogadores em uma partida de pôquer
+// CLI ajuda jogadores em uma jogo de pôquer
 type CLI struct {
 	armazenamentoJogador ArmazenamentoJogador
 	entrada              *bufio.Scanner
 	saida                io.Writer
-	partida              Jogo
+	jogo                 Jogo
 }
 
 // NovaCLI cria uma CLI para jogar pôquer
-func NovaCLI(entrada io.Reader, saida io.Writer, partida Jogo) *CLI {
+func NovaCLI(entrada io.Reader, saida io.Writer, jogo Jogo) *CLI {
 	return &CLI{
 		entrada: bufio.NewScanner(entrada),
 		saida:   saida,
-		partida: partida,
+		jogo:    jogo,
 	}
 }
 
@@ -35,7 +35,7 @@ const ErrMsgEntradaJogadorIncorreta = "Valor inválido recebido para número de 
 // ErrMsgEntradaVencedorIncorreta representa o texto dizendo ao usuário que a declaração de vencedor foi errada
 const ErrMsgEntradaVencedorIncorreta = "entrada de vencedor incorreta, espera-se formato de 'NomeDoJogador venceu'"
 
-// JogarPoquer começa a partida
+// JogarPoquer começa a jogo
 func (cli *CLI) JogarPoquer() {
 	fmt.Fprint(cli.saida, PromptJogador)
 
@@ -46,7 +46,7 @@ func (cli *CLI) JogarPoquer() {
 		return
 	}
 
-	cli.partida.Começar(numeroDeJogadores)
+	cli.jogo.Começar(numeroDeJogadores)
 
 	entradaVencedor := cli.lerLinha()
 	vencedor, err := extrairJogador(entradaVencedor)
@@ -56,7 +56,7 @@ func (cli *CLI) JogarPoquer() {
 		return
 	}
 
-	cli.partida.Terminar(vencedor)
+	cli.jogo.Terminar(vencedor)
 }
 
 func extrairJogador(userInput string) (string, error) {

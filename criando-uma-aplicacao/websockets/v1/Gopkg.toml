@@ -1,22 +1,22 @@
 # Gopkg.toml example
 #
-# Refer para https://golang.github.io/dep/docs/Gopkg.toml.html
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
 # for detailed Gopkg.toml documentation.
 #
 # required = ["github.com/user/thing/cmd/thing"]
 # ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
 #
 # [[constraint]]
-#   nome = "github.com/user/project"
+#   name = "github.com/user/project"
 #   version = "1.0.0"
 #
 # [[constraint]]
-#   nome = "github.com/user/project2"
+#   name = "github.com/user/project2"
 #   branch = "dev"
 #   source = "github.com/myfork/project2"
 #
 # [[override]]
-#   nome = "github.com/x/y"
+#   name = "github.com/x/y"
 #   version = "2.4.0"
 #
 # [prune]
@@ -26,7 +26,7 @@
 
 
 [[constraint]]
-  nome = "github.com/gorilla/websocket"
+  name = "github.com/gorilla/websocket"
   version = "1.4.0"
 
 [prune]

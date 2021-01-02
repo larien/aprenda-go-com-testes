@@ -48,7 +48,7 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) (*ServidorJogador, 
 	roteador := http.NewServeMux()
 	roteador.Handle("/liga", http.HandlerFunc(p.manipulaLiga))
 	roteador.Handle("/jogadores/", http.HandlerFunc(p.manipulaJogadores))
-	roteador.Handle("/partida", http.HandlerFunc(p.partida))
+	roteador.Handle("/jogo", http.HandlerFunc(p.jogo))
 	roteador.Handle("/ws", http.HandlerFunc(p.webSocket))
 
 	p.Handler = roteador
@@ -67,7 +67,7 @@ func (p *ServidorJogador) webSocket(w http.ResponseWriter, r *http.Request) {
 	p.armazenamento.GravarVitoria(string(winnerMsg))
 }
 
-func (p *ServidorJogador) partida(w http.ResponseWriter, r *http.Request) {
+func (p *ServidorJogador) jogo(w http.ResponseWriter, r *http.Request) {
 	p.template.Execute(w, nil)
 }
 
