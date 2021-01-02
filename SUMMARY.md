@@ -24,7 +24,7 @@
 ## Criando uma aplicação
 
 -   [Introdução](criando-uma-aplicacao/introducao.md)
--   [Servidor HTTP](criando-uma-aplicacao/http-server/http-server.md)
+-   [Servidor HTTP](criando-uma-aplicacao/servidor-http/servidor-http.md)
 -   [JSON, roteamento e aninhamento](criando-uma-aplicacao/json/json.md)
 -   [IO e sorting](criando-uma-aplicacao/io/io.md)
 -   [Linha de comando e estrutura de pacotes](criando-uma-aplicacao/linha-de-comando/linha-de-comando.md)

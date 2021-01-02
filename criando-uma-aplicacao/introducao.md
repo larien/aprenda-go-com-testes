@@ -8,7 +8,7 @@ Aqui novos conceitos serão introduzidos para facilitar a escrita de grandes apl
 
 Até o final dessa seção você deve ter obtido um entendimento sólido de como escrever aplicações em Go com o apoio de testes.
 
-* [HTTP server](http-server.md) - Vamos criar uma API que aceita requisições HTTP.
+* [Servidor HTTP](servidor-http/servidor-http.md) - Vamos criar uma API que aceita requisições HTTP.
 * [Respostas em JSON e roteamentos](json.md) - Iremos evoluir nossa API para retornar objetos JSON e vamos explorar como fazer roteamentos.
 * [IO ](io.md) - Vamos salvar e ler dados de arquivos. Também vamos ordenar esses dados.
 * [Linha de comando](linha-de-comando.md) - Vamos criar uma aplicação que vai ser utilizada por linha de comando no terminal, para entendermos como podemos suportar múltiplas plataformas.
