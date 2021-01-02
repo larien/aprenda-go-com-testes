@@ -61,7 +61,7 @@ func TestObterJogadores(t *testing.T) {
 	})
 }
 
-func TestStoreWins(t *testing.T) {
+func TestGravarVitorias(t *testing.T) {
 	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{},
 		nil,

@@ -9,7 +9,7 @@ import (
 type ArmazenamentoJogadorEmMemoria struct{}
 
 // ObterPontuacaoJogador obtém as pontuações para um jogador
-func (i *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
+func (a *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
 	return 123
 }
 

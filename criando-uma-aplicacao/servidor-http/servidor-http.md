@@ -7,7 +7,7 @@ Você recebeu o desafio de criar um servidor web para que usuários possam acomp
 * `GET /jogadores/{nome}` deve retornar um número indicando o número total de vitórias
 * `POST /jogadores/{nome}` deve registrar uma vitória para este nome de jogador, incrementando a cada nova chamada de submissão de dados (método HTTP `POST`). 
 
-Vamos seguir com a abordagem do Desenvolvimento Orientado a Testes, criando software que funciona o mais rápido possível, e a cada ciclo fazendo pequenas melhorias até uma solução completa. Com essa abordagem, nós
+Vamos seguir com a abordagem do Desenvolvimento Orientado a Testes, criando software que funciona o mais rápido possível, e a cada ciclo fazendo pequenas melhorias até uma solução completa. Com essa abordagem, nós:
 
 * Mantemos pequeno o escopo do problema em qualquer momento
 * Não perdemos o foco por pensar em muito detalhes
@@ -37,7 +37,7 @@ Como podemos construir isso de forma incremental? Não podemos obter um jogador 
 
 E é nesse ponto que o uso de _classes com valores predefinidos_ vai nos ajudar. 
 
-(Nota do tradutor: No original, é usada a expressão _mocking_, que significa "zombar", "fazer piada" ou "enganar". Em programação, _mocking_ significa criar _algo_, como uma classe ou função, que retorna os valores esperados de forma predefinida.)
+(Nota de tradução: No original, é usada a expressão _mocking_, que significa "zombar", "fazer piada" ou "enganar". Em programação, _mocking_ significa criar _algo_, como uma classe ou função, que retorna os valores esperados de forma predefinida.)
 
 * a implementação que responde ao método HTTP `GET` precisa de uma _coisa_ `ArmazenamentoJogador` para obter pontuações de um nome de jogador. Isso deve ser uma interface, para que, ao executar os testes, seja possível criar um código simples de esboço para testar o código sem precisar, neste momento, implementar o código final que será usado para armazenar os dados.
 * para o método HTTP `POST`, podemos _inspecionar_ as chamadas feitas a `ArmazenamentoJogador` para ter certeza de que os dados são armazenados corretamente. Nossa implementação de gravação dos dados não estará vinculada à busca dos dados.
@@ -85,7 +85,7 @@ func TestObterJogadores(t *testing.T) {
 }
 ```
 
-Para testar nosso servidor, vamos precisar de uma _Requisição_ (`Request`) para enviar a requisição ao servidor, e então queremos _inspecionar_ o que o nosso Tratador escreve para o `ResponseWriter`.
+Para testar nosso servidor, vamos precisar de uma _Requisição_ (`Request`) para enviar ao servidor, e então queremos _inspecionar_ o que o nosso Tratador escreve para o `ResponseWriter`.
 
 * Nós usamos o `http.NewRequest` para criar uma requisição. O primeiro argumento é o _método_ da requisição e o segundo é o caminho da requisição. O valor `nil` para o segundo argumento corresponde ao corpo (_body_) da requisição, que não precisamos definir para este teste.
 * `net/http/httptest` já tem um _inspecionador_ criado para nós, chamado `ResponseRecorder` (_GravadorDeResposta_), então podemos usá-lo. Este possui muitos métodos úteis para inspecionar o que foi escrito como resposta.
@@ -112,7 +112,7 @@ Tente novamente
     want ()
 ```
 
-Adicione os argumentos à função
+Adicione os argumentos à função:
 
 ```go
 import "net/http"
@@ -147,7 +147,7 @@ O teste agora deve funcionar.
 Nós queremos converter o código acima em uma aplicação. Isso é importante porque
 
 * Teremos _software funcionando_; não queremos escrever testes apenas por escrever, e é bom ver código que funciona.
-* Conforme refatoramos o código, é provável mudaremos a estrutura do programa. Nós queremos garantir que isso é refletido em nossa aplicação também, como parte da abordagem incremental.
+* Conforme refatoramos o código, é provável que mudaremos a estrutura do programa. Nós queremos garantir que isso é refletido em nossa aplicação também, como parte da abordagem incremental.
 
 Crie um novo arquivo `main.go` para nossa aplicação, com o código abaixo.
 
@@ -167,7 +167,7 @@ func main() {
 }
 ```
 
-Para executar, execute o comando `go build`, que vai pegar todos os arquivos terminados em `.go` neste diretório e construir seu programa. E então você pode executar o programa rodando `./programa`.
+Para executar, execute o comando `go build -o programa`, que vai pegar todos os arquivos terminados em `.go` neste diretório e construir seu programa. E então você pode executar o programa rodando `./programa`.
 
 ### `http.HandlerFunc`
 
@@ -209,7 +209,7 @@ t.Run("retornar resultado de Pedro", func(t *testing.T) {
 })
 ```
 
-Você deve estar pensando
+Você deve estar pensando:
 
 > Certamente precisamos de algum tipo de armazenamento para controlar qual jogador recebe qual pontuação. É estranho que os valores sejam predefinidos em nossos testes.
 
@@ -277,7 +277,7 @@ func ObterPontuacaoJogador(nome string) string {
 }
 ```
 
-E podemos eliminar as repetições de parte do código dos testes montando algumas funções auxiliares("_helpers_")
+E podemos eliminar as repetições de parte do código dos testes montando algumas funções auxiliares("_helpers_"):
 
 ```go
 func TestObterJogadores(t *testing.T) {
@@ -313,13 +313,13 @@ func verificarCorpoRequisicao(t *testing.T, recebido, esperado string) {
 }
 ```
 
-Ainda assim, ainda não estamos felizes. Não parece correto que o servidor saiba as pontuações.
+Ainda assim, não estamos felizes. Não parece correto que o servidor saiba as pontuações.
 
 Mas nossa refatoração nos mostra claramente o que fazer.
 
 Nós movemos o cálculo de pontuação para fora do código principal que trata a requisição (_handler_) para uma função `ObterPontuacaoJogador`. Isso parece ser o lugar correto para isolar as responsabilidades usando interfaces.
 
-Vamos alterar, em `servidor.go`, a função que refatoramos para ser uma interface
+Vamos alterar, em `servidor.go`, a função que refatoramos para ser uma interface:
 
 ```go
 type ArmazenamentoJogador interface {
@@ -339,14 +339,14 @@ E agora, vamos implementar a interface do _tratador_ (`Handler`) adicionando um 
 
 ```go
 func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-     := r.URL.Path[len("/jogadores/"):]
+   jogador  := r.URL.Path[len("/jogadores/"):]
     fmt.Fprint(w, s.armazenamento.ObterPontuacaoJogador(jogador))
 }
 ```
 
 Outra alteração a fazer: agora usamos a `armazenamento.ObterPontuacaoJogador` para obter a pontuação, ao invés da função local definida anteriormente \(e que podemos remover\).
 
-Abaixo, a listagem completa do servidor (arquivo `servidor.go`)
+Abaixo, a listagem completa do servidor (arquivo `servidor.go`):
 
 ```go
 type ArmazenamentoJogador interface {
@@ -375,7 +375,7 @@ Precisamos mudar os nossos testes, que agora devem criar uma nova instância de 
 func TestObterJogadores(t *testing.T) {
     servidor := &ServidorJogador{}
 
-    t.Run("returns Maria's score", func(t *testing.T) {
+    t.Run("retorna a pontuação de Maria", func(t *testing.T) {
         requisicao := novaRequisicaoObterPontuacao("Maria")
         resposta := httptest.NewRecorder()
 
@@ -384,7 +384,7 @@ func TestObterJogadores(t *testing.T) {
         verificarCorpoRequisicao(t, resposta.Body.String(), "20")
     })
 
-    t.Run("returns Pedro's score", func(t *testing.T) {
+    t.Run("retorna a pontuação de Pedro", func(t *testing.T) {
         requisicao := novaRequisicaoObterPontuacao("Pedro")
         resposta := httptest.NewRecorder()
 
@@ -435,7 +435,7 @@ func (e *EsbocoArmazenamentoJogador) ObterPontuacaoJogador(nome string) int {
 }
 ```
 
-Um _mapa_ (`map`) é um jeito simples e rápido de fazer um armazenamento chave/valor para os nossos testes. Agora vamos criar um desses armazenamentos para os nosso testes e inserir em nosso `ServidorJogador`.
+Um _mapa_ (`map`) é um jeito simples e rápido de fazer um armazenamento chave/valor para os nossos testes. Agora vamos criar um desses armazenamentos para os nossos testes e inserir `ServidorJogador`.
 
 ```go
 func TestObterJogadores(t *testing.T) {
@@ -475,12 +475,12 @@ Agora que nossos testes estão passando, a última coisa que precisamos fazer pa
 
 E a razão pra isso é: não informamos um `ArmazenamentoJogador`.
 
-Precisamos fazer uma implementação de um, mas isso é difícil no momento, já que não estamos armazenando nenhum dado significativo, por isso precisará ser, por enquanto, um valor predefinido. Vamos alterar na `main.go`:
+Precisamos implementar um. No entanto, isso é difícil no momento, já que não estamos armazenando nenhum dado significativo e por isso vamos usar um valor predefinido, por enquanto. Vamos alterar na `main.go`:
 
 ```go
 type ArmazenamentoJogadorEmMemoria struct{}
 
-func (i *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
+func (a *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
     return 123
 }
 
@@ -495,17 +495,17 @@ func main() {
 
 Se você rodar novamente o `go build` e acessar a mesma URL você deve receber `"123"`. Não é fantástico, mas até armazenarmos os dados, é o melhor que podemos fazer.
 
-Temos algumas opções para decidir o que fazer agora
+Temos algumas opções para decidir o que fazer agora:
 
 * Tratar o cenário onde o jogador não existe
 * Tratar o cenário da chamado ao método HTTP `POST` em `/jogadores/{nome}`
-* Não foi particularmente interessante perceber que nossa aplicação principal iniciou mas não funcionou. Tivemos que testar manualmente para ver o problema.
+* Não foi particularmente interessante perceber que nossa aplicação principal iniciou mas não funcionou. Tivemos que testar manualmente para ver o problema
 
 Enquanto o cenário do tratamento ao método HTTP `POST` nos deixa mais perto do "caminho ideal", eu sinto que vai ser mais fácil atacar o cenário de "jogador não existente" antes, já que estamos neste assunto. Veremos os outros itens posteriormente.
 
 ## Escreva o teste primeiro
 
-Adicione o cenário de um jogador inexistente aos nossos testes
+Adicione o cenário de um jogador inexistente aos nossos testes:
 
 ```go
 t.Run("retorna 404 para jogador não encontrado", func(t *testing.T) {
@@ -534,7 +534,7 @@ t.Run("retorna 404 para jogador não encontrado", func(t *testing.T) {
 ## Escreva código necessário para que o teste funcione
 
 ```go
-func (ja *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     jogador := r.URL.Path[len("/jogadores/"):]
 
     w.WriteHeader(http.StatusNotFound)
@@ -551,7 +551,7 @@ Mas este cenário ilustra muito bem o que querem dizer. Eu fiz o mínimo \(saben
 
 Atualize os outros dois testes para validar o retorno e corrija o código.
 
-Eis os novos testes
+Eis os novos testes:
 
 ```go
 func TestObterJogadores(t *testing.T) {
@@ -732,7 +732,7 @@ Agora, queremos verificar que, quando fazemos a chamada `POST` a `/jogadores/{no
 
 ## Escreva primeiro o teste
 
-Vamos implementar isso estendendo o `EsbocoArmazenamentoJogador` com um novo método `RecordWin` e então inspecionar as chamadas.
+Vamos implementar isso estendendo o `EsbocoArmazenamentoJogador` com um novo método `GravarVitoria` e então inspecionar as chamadas.
 
 ```go
 type EsbocoArmazenamentoJogador struct {
@@ -750,7 +750,7 @@ func (e *EsbocoArmazenamentoJogador) RegistrarVitoria(nome string) {
 }
 ```
 
-Agora, para começar, estendemos o teste para verificar a quantidade de chamadas
+Agora, para começar, estendemos o teste para verificar a quantidade de chamadas:
 
 ```go
 func TestArmazenamentoVitorias(t *testing.T) {
@@ -829,21 +829,21 @@ O compilador nos informa o que está errado. Vamos alterar `ArmazenamentoJogador
 ```go
 type ArmazenamentoJogadorEmMemoria struct{}
 
-func (ja *ArmazenamentoJogadorEmMemoria) RegistrarVitoria(nome string) {}
+func (s *ArmazenamentoJogadorEmMemoria) RegistrarVitoria(nome string) {}
 ```
 
 Com essa alteração, o código volta a compilar - mas os testes ainda falham.
 
-Agora que `ArmazenamentoJogador` tem o método `RecordWin`, podemos chamar de dentro do nosso `ServidorJogador`
+Agora que `ArmazenamentoJogador` tem o método `GravarVitoria`, podemos chamar de dentro do nosso `ServidorJogador`
 
 ```go
 func (s *ServidorJogador) registrarVitoria(w http.ResponseWriter) {
-    s.armazenamento.RecordWin("Marcela")
+    s.armazenamento.GravarVitoria("Marcela")
     w.WriteHeader(http.StatusAccepted)
 }
 ```
 
-Rode os testes e deve estar funcionando sem erros! Claro, `"Marcela"` não é bem o que queremos enviar para `RegistrarVitoria`, então vamos ajustar os testes.
+Rode os testes e devem estar funcionando sem erros! Claro, `"Marcela"` não é bem o que queremos enviar para `RegistrarVitoria`, então vamos ajustar os testes.
 
 ## Escreva os testes primeiro
 
@@ -988,11 +988,11 @@ type ArmazenamentoJogadorEmMemoria struct {
 	armazenamento map[string]int
 }
 
-func (ja *ArmazenamentoJogadorEmMemoria) RegistrarVitoria(nome string) {
+func (s *ArmazenamentoJogadorEmMemoria) RegistrarVitoria(nome string) {
 	ja.armazenamento[nome]++
 }
 
-func (ja *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
+func (s *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
 	return ja.armazenamento[nome]
 }
 ```
@@ -1046,11 +1046,11 @@ Após compilar e rodar, use o `curl` para testar.
 
 * Permitem que você construa a sua aplicação de forma iterativa, um pedaço de cada vez
 * Te permite desenvolver uma funcionalidade de tratamento de requisições que precisa de um armazenamento sem precisar exatamente de uma estrutura de armazenamento
-* o Desenvolvimento Orientado a Testes nos ajudou a definir as interfaces necessárias
+* O Desenvolvimento Orientado a Testes nos ajudou a definir as interfaces necessárias
 
 ### Cometa pecados, e daí refatore \(e então registre no controle de versão\)
 
-* Você precisa tratar falhas na compilação ou nos testes como uma situação urgente, a qual precisa resolver o mais rápido possível.
+* Você precisa tratar falhas na compilação ou nos testes como uma situação urgente, a qual precisa resolver o mais rápido possível
 * Escreva apenas o código necessário para resolver o problema. _Logo depois_ refatore e faça um código melhor
-* Ao tentar fazer muitas alterações enquanto o código não está compilando ou os testes estão falhando, corremos o risco de acumular e agravar os problemas.
-* Nos manter fiéis à essa abordagem nos obriga a escrever pequenos testes, o que significa pequenas alterações, o que nos ajuda a continuar trabalhando em sistemas complexos de forma gerenciável.
+* Ao tentar fazer muitas alterações enquanto o código não está compilando ou os testes estão falhando, corremos o risco de acumular e agravar os problemas
+* Nos manter fiéis à essa abordagem nos obriga a escrever pequenos testes, o que significa pequenas alterações, o que nos ajuda a continuar trabalhando em sistemas complexos de forma gerenciável

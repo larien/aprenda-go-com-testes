@@ -9,11 +9,11 @@ import (
 type ArmazenamentoJogadorEmMemoria struct{}
 
 // RegistrarVitoria irá registrar uma vitoria
-func (i *ArmazenamentoJogadorEmMemoria) RegistrarVitoria(nome string) {
+func (a *ArmazenamentoJogadorEmMemoria) RegistrarVitoria(nome string) {
 }
 
 // ObterPontuacaoJogador obtém as pontuações para um jogador
-func (i *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
+func (a *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
 	return 123
 }
 
