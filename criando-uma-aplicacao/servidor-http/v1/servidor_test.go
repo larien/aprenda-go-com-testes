@@ -10,7 +10,7 @@ func TestObterJogadores(t *testing.T) {
 	requisicao, _ := http.NewRequest(http.MethodGet, "/", nil)
 	resposta := httptest.NewRecorder()
 
-	JogadorServidor(resposta, requisicao)
+	ServidorJogador(resposta, requisicao)
 
 	t.Run("obter pontuação de Maria", func(t *testing.T) {
 		retornado := resposta.Body.String()

@@ -7,23 +7,29 @@ import (
 	"testing"
 )
 
-type EsbocoJogadorArmazenamento struct {
-	pontuacoes map[string]int
+type EsbocoArmazenamentoJogador struct {
+	pontuacoes        map[string]int
+	registrosVitorias []string
 }
 
-func (s *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
-	pontuacao := s.pontuacoes[nome]
+func (e *EsbocoArmazenamentoJogador) ObterPontuacaoJogador(nome string) int {
+	pontuacao := e.pontuacoes[nome]
 	return pontuacao
 }
 
+func (e *EsbocoArmazenamentoJogador) RegistrarVitoria(nome string) {
+	e.registrosVitorias = append(e.registrosVitorias, nome)
+}
+
 func TestObterJogadores(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{
 			"Maria": 20,
 			"Pedro": 10,
 		},
+		nil,
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
 	t.Run("obter pontuação de Maria", func(t *testing.T) {
 		requisicao := novaRequisicaoPontuacaoGet("Maria")
@@ -55,19 +61,30 @@ func TestObterJogadores(t *testing.T) {
 	})
 }
 
-func TestArmazenamentoVitorias(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+func TestStoreWins(t *testing.T) {
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{},
+		nil,
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
-	t.Run("retorna status 'aceito' para chamadas ao método POST", func(t *testing.T) {
-		requisicao, _ := http.NewRequest(http.MethodPost, "/jogadores/Maria", nil)
+	t.Run("registra vitorias na chamada ao método HTTP POST", func(t *testing.T) {
+		jogador := "Maria"
+
+		requisicao := novaRequisicaoPontuacaoPost(jogador)
 		resposta := httptest.NewRecorder()
 
 		servidor.ServeHTTP(resposta, requisicao)
 
 		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusAccepted)
+
+		if len(armazenamento.registrosVitorias) != 1 {
+			t.Fatalf("verifiquei %d chamadas a RegistrarVitoria, esperava %d", len(armazenamento.registrosVitorias), 1)
+		}
+
+		if armazenamento.registrosVitorias[0] != jogador {
+			t.Errorf("não registrou o vencedor corretamente, recebi '%s', esperava '%s'", armazenamento.registrosVitorias[0], jogador)
+		}
 	})
 }
 
@@ -79,8 +96,13 @@ func verificarRespostaCodigoStatus(t *testing.T, recebido, esperado int) {
 }
 
 func novaRequisicaoPontuacaoGet(nome string) *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
-	return req
+	requisicao, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
+	return requisicao
+}
+
+func novaRequisicaoPontuacaoPost(nome string) *http.Request {
+	requisicao, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", nome), nil)
+	return requisicao
 }
 
 func verificarCorpoRequisicao(t *testing.T, recebido, esperado string) {

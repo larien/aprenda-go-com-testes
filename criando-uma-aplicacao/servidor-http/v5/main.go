@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	servidor := &JogadorServidor{CriarJogadorArmazenamentoNaMemoria()}
+	servidor := &ServidorJogador{NovoArmazenamentoJogadorEmMemoria()}
 
 	if err := http.ListenAndServe(":5000", servidor); err != nil {
 		log.Fatalf("não foi possível ouvir na porta 5000 %v", err)

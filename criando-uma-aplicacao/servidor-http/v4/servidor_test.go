@@ -7,29 +7,29 @@ import (
 	"testing"
 )
 
-type EsbocoJogadorArmazenamento struct {
+type EsbocoArmazenamentoJogador struct {
 	pontuacoes        map[string]int
 	registrosVitorias []string
 }
 
-func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
-	pontuacao := e.pontuacoes[nome]
+func (s *EsbocoArmazenamentoJogador) ObterPontuacaoJogador(nome string) int {
+	pontuacao := s.pontuacoes[nome]
 	return pontuacao
 }
 
-func (e *EsbocoJogadorArmazenamento) RegistrarVitoria(nome string) {
-	e.registrosVitorias = append(e.registrosVitorias, nome)
+func (s *EsbocoArmazenamentoJogador) RegistrarVitoria(nome string) {
+	s.registrosVitorias = append(s.registrosVitorias, nome)
 }
 
 func TestObterJogadores(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{
 			"Maria": 20,
 			"Pedro": 10,
 		},
 		nil,
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
 	t.Run("obter pontuação de Maria", func(t *testing.T) {
 		requisicao := novaRequisicaoPontuacaoGet("Maria")
@@ -61,17 +61,17 @@ func TestObterJogadores(t *testing.T) {
 	})
 }
 
-func TestStoreWins(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+func TestArmazenamentoVitorias(t *testing.T) {
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{},
 		nil,
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
 	t.Run("registra vitorias na chamada ao método HTTP POST", func(t *testing.T) {
-		jogador := "Maria"
+		jogador := "Pepper"
 
-		requisicao := novaRequisicaoPontuacaoPost(jogador)
+		requisicao, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", jogador), nil)
 		resposta := httptest.NewRecorder()
 
 		servidor.ServeHTTP(resposta, requisicao)
@@ -96,13 +96,8 @@ func verificarRespostaCodigoStatus(t *testing.T, recebido, esperado int) {
 }
 
 func novaRequisicaoPontuacaoGet(nome string) *http.Request {
-	requisicao, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
-	return requisicao
-}
-
-func novaRequisicaoPontuacaoPost(nome string) *http.Request {
-	requisicao, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", nome), nil)
-	return requisicao
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
+	return req
 }
 
 func verificarCorpoRequisicao(t *testing.T, recebido, esperado string) {

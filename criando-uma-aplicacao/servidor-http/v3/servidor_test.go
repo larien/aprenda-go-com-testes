@@ -7,23 +7,23 @@ import (
 	"testing"
 )
 
-type EsbocoJogadorArmazenamento struct {
+type EsbocoArmazenamentoJogador struct {
 	pontuacoes map[string]int
 }
 
-func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
-	pontuacao := e.pontuacoes[nome]
+func (s *EsbocoArmazenamentoJogador) ObterPontuacaoJogador(nome string) int {
+	pontuacao := s.pontuacoes[nome]
 	return pontuacao
 }
 
 func TestObterJogadores(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{
 			"Maria": 20,
 			"Pedro": 10,
 		},
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
 	t.Run("obter pontuação de Maria", func(t *testing.T) {
 		requisicao := novaRequisicaoPontuacaoGet("Maria")
@@ -52,6 +52,22 @@ func TestObterJogadores(t *testing.T) {
 		servidor.ServeHTTP(resposta, requisicao)
 
 		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusNotFound)
+	})
+}
+
+func TestArmazenamentoVitorias(t *testing.T) {
+	armazenamento := EsbocoArmazenamentoJogador{
+		map[string]int{},
+	}
+	servidor := &ServidorJogador{&armazenamento}
+
+	t.Run("retorna status 'aceito' para chamadas ao método POST", func(t *testing.T) {
+		requisicao, _ := http.NewRequest(http.MethodPost, "/jogadores/Maria", nil)
+		resposta := httptest.NewRecorder()
+
+		servidor.ServeHTTP(resposta, requisicao)
+
+		verificarRespostaCodigoStatus(t, resposta.Code, http.StatusAccepted)
 	})
 }
 

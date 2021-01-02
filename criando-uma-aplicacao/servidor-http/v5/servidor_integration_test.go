@@ -7,8 +7,8 @@ import (
 )
 
 func TestRegistrarVitoriasEBuscarEstasVitorias(t *testing.T) {
-	armazenamento := CriarJogadorArmazenamentoNaMemoria()
-	servidor := JogadorServidor{armazenamento}
+	armazenamento := NovoArmazenamentoJogadorEmMemoria()
+	servidor := ServidorJogador{armazenamento}
 	jogador := "Maria"
 
 	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoPontuacaoPost(jogador))

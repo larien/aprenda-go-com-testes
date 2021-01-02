@@ -39,8 +39,8 @@ E é nesse ponto que o uso de _classes com valores predefinidos_ vai nos ajudar.
 
 (Nota do tradutor: No original, é usada a expressão _mocking_, que significa "zombar", "fazer piada" ou "enganar". Em programação, _mocking_ significa criar _algo_, como uma classe ou função, que retorna os valores esperados de forma predefinida.)
 
-* a implementação que responde ao método HTTP `GET` precisa de uma _coisa_ `JogadorArmazenamento` para obter pontuações de um nome de jogador. Isso deve ser uma interface, para que, ao executar os testes, seja possível criar um código simples de esboço para testar o código sem precisar, neste momento, implementar o código final que será usado para armazenar os dados.
-* para o método HTTP `POST`, podemos _inspecionar_ as chamadas feitas a `JogadorArmazenamento` para ter certeza de que os dados são armazenados corretamente. Nossa implementação de gravação dos dados não estará vinculada à busca dos dados.
+* a implementação que responde ao método HTTP `GET` precisa de uma _coisa_ `ArmazenamentoJogador` para obter pontuações de um nome de jogador. Isso deve ser uma interface, para que, ao executar os testes, seja possível criar um código simples de esboço para testar o código sem precisar, neste momento, implementar o código final que será usado para armazenar os dados.
+* para o método HTTP `POST`, podemos _inspecionar_ as chamadas feitas a `ArmazenamentoJogador` para ter certeza de que os dados são armazenados corretamente. Nossa implementação de gravação dos dados não estará vinculada à busca dos dados.
 * para ver código rodando rapidamente vamos fazer uma implementação simples de armazenamento dos dados na memória, e depois podemos criar uma implementação que dá suporte ao mecanismo de armazenamento de preferência.
 
 ## Escrevendo o teste primeiro
@@ -65,7 +65,7 @@ type Handler interface {
 
 Esta interface define uma única função que espera dois argumentos, o primeiro que indica onde _escrevemos a resposta_ e o outro com a requisição HTTP que nos foi enviada.
 
-Vamos criar o primeiro arquivo, `servidor_test.go` e escrever um teste para a função `JogadorServidor` que recebe estes dois argumentos. A requisição enviada serve para obter a pontuação de um Nome de Jogador, que esperamos que seja `"20"`.
+Vamos criar o primeiro arquivo, `servidor_test.go` e escrever um teste para a função `ServidorJogador` que recebe estes dois argumentos. A requisição enviada serve para obter a pontuação de um Nome de Jogador, que esperamos que seja `"20"`.
 
 ```go
 func TestObterJogadores(t *testing.T) {
@@ -73,7 +73,7 @@ func TestObterJogadores(t *testing.T) {
         requisicao, _ := http.NewRequest(http.MethodGet, "/jogadores/Maria", nil)
         resposta := httptest.NewRecorder()
 
-        JogadorServidor(resposta, requisicao)
+        ServidorJogador(resposta, requisicao)
 
         recebido := resposta.Body.String()
         esperado := "20"
@@ -92,22 +92,22 @@ Para testar nosso servidor, vamos precisar de uma _Requisição_ (`Request`) par
 
 ## Tente rodar o teste
 
-`./servidor_test.go:13:2: undefined: JogadorServidor`
+`./servidor_test.go:13:2: undefined: ServidorJogador`
 
 ## Escreva a quantidade mínima de código para o que teste passe e verifique a falha indicada na responta do teste
 
 O compilador está aqui para ajudar, ouça o que ele diz.
 
-Crie o arquivo `servidor.go`, e nele a função `JogadorServidor`
+Crie o arquivo `servidor.go`, e nele a função `ServidorJogador`
 
 ```go
-func JogadorServidor() {}
+func ServidorJogador() {}
 ```
 
 Tente novamente
 
 ```text
-./servidor_test.go:13:14: too many arguments in call to JogadorServidor
+./servidor_test.go:13:14: too many arguments in call to ServidorJogador
     have (*httptest.ResponseRecorder, *http.Request)
     want ()
 ```
@@ -117,7 +117,7 @@ Adicione os argumentos à função
 ```go
 import "net/http"
 
-func JogadorServidor(w http.ResponseWriter, r *http.Request) {
+func ServidorJogador(w http.ResponseWriter, r *http.Request) {
 
 }
 ```
@@ -135,7 +135,7 @@ Agora o código compila, e o teste falha.
 Do capítulo sobre injeção de dependências, falamos sobre servidores HTTP com a função `Greet`. Aprendemos que a função `ResponseWriter` também implementa a interface `Writer` do pacote io, então podemos usar `fmt.Fprint` para enviar strings como respostas HTTP.
 
 ```go
-func JogadorServidor(w http.ResponseWriter, r *http.Request) {
+func ServidorJogador(w http.ResponseWriter, r *http.Request) {
     fmt.Fprint(w, "20")
 }
 ```
@@ -160,7 +160,7 @@ import (
 )
 
 func main() {
-    tratador := http.HandlerFunc(JogadorServidor)
+    tratador := http.HandlerFunc(ServidorJogador)
     if err := http.ListenAndServe(":5000", tratador); err != nil {
         log.Fatalf("não foi possível escutar na porta 5000 %v", err)
     }
@@ -181,7 +181,7 @@ Usar a função [HandlerFunc](https://golang.org/pkg/net/http/#HandlerFunc) nos 
 type HandlerFunc func(ResponseWriter, *Request)
 ```
 
-Então usamos essa construção para adaptar a função `JogadorServidor`, fazendo com que esteja de acordo com a interface `Handler`.
+Então usamos essa construção para adaptar a função `ServidorJogador`, fazendo com que esteja de acordo com a interface `Handler`.
 
 ### `http.ListenAndServe(":5000"...)`
 
@@ -198,7 +198,7 @@ t.Run("retornar resultado de Pedro", func(t *testing.T) {
     requisicao, _ := http.NewRequest(http.MethodGet, "/jogadores/Pedro", nil)
     resposta := httptest.NewRecorder()
 
-    JogadorServidor(resposta, requisicao)
+    ServidorJogador(resposta, requisicao)
 
     recebido := resposta.Body.String()
     esperado := "10"
@@ -230,7 +230,7 @@ Lembre-se de que estamos apenas tentando dar os menores passos possíveis; e por
 ## Escreva código suficiente para fazer passar
 
 ```go
-func JogadorServidor(w http.ResponseWriter, r *http.Request) {
+func ServidorJogador(w http.ResponseWriter, r *http.Request) {
     jogador := r.URL.Path[len("/jogadores/"):]
 
     if jogador == "Maria" {
@@ -255,10 +255,10 @@ Estamos resistindo, nesse momento, à tentação de usar alguma biblioteca de ro
 
 ## Refatorar
 
-Podemos simplificar a `JogadorServidor` separando a parte de obtenção da pontuação em uma função.
+Podemos simplificar a `ServidorJogador` separando a parte de obtenção da pontuação em uma função.
 
 ```go
-func JogadorServidor(w http.ResponseWriter, r *http.Request) {
+func ServidorJogador(w http.ResponseWriter, r *http.Request) {
     jogador := r.URL.Path[len("/jogadores/"):]
 
     fmt.Fprint(w, ObterPontuacaoJogador(jogador))
@@ -285,7 +285,7 @@ func TestObterJogadores(t *testing.T) {
         requisicao := novaRequisicaoObterPontuacao("Maria")
         resposta := httptest.NewRecorder()
 
-        JogadorServidor(resposta, requisicao)
+        ServidorJogador(resposta, requisicao)
 
         verificarCorpoRequisicao(t, resposta.Body.String(), "20")
     })
@@ -294,7 +294,7 @@ func TestObterJogadores(t *testing.T) {
         requisicao := novaRequisicaoObterPontuacao("Pedro")
         resposta := httptest.NewRecorder()
 
-        JogadorServidor(resposta, requisicao)
+        ServidorJogador(resposta, requisicao)
 
         verificarCorpoRequisicao(t, resposta.Body.String(), "10")
     })
@@ -322,25 +322,25 @@ Nós movemos o cálculo de pontuação para fora do código principal que trata 
 Vamos alterar, em `servidor.go`, a função que refatoramos para ser uma interface
 
 ```go
-type JogadorArmazenamento interface {
+type ArmazenamentoJogador interface {
     ObterPontuacaoJogador(nome string) int
 }
 ```
 
-Para que o `JogadorServidor` consiga usar o `JogadorArmazenamento`, é necessário ter uma referência a ele. Agora nos parece o momento certo para alterar nossa arquitetura, e nosso `JogadorServidor` agora se torna uma estrutura (`struct`).
+Para que o `ServidorJogador` consiga usar o `ArmazenamentoJogador`, é necessário ter uma referência a ele. Agora nos parece o momento certo para alterar nossa arquitetura, e nosso `ServidorJogador` agora se torna uma estrutura (`struct`).
 
 ```go
-type JogadorServidor struct {
-    armazenamento JogadorArmazenamento
+type ServidorJogador struct {
+    armazenamento ArmazenamentoJogador
 }
 ```
 
-E agora, vamos implementar a interface do _tratador_ (`Handler`) adicionando um método à nossa nova estrutura `JogadorServidor` e adicionado neste método o código existente.
+E agora, vamos implementar a interface do _tratador_ (`Handler`) adicionando um método à nossa nova estrutura `ServidorJogador` e adicionado neste método o código existente.
 
 ```go
-func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
      := r.URL.Path[len("/jogadores/"):]
-    fmt.Fprint(w, js.armazenamento.ObterPontuacaoJogador(jogador))
+    fmt.Fprint(w, s.armazenamento.ObterPontuacaoJogador(jogador))
 }
 ```
 
@@ -349,17 +349,17 @@ Outra alteração a fazer: agora usamos a `armazenamento.ObterPontuacaoJogador` 
 Abaixo, a listagem completa do servidor (arquivo `servidor.go`)
 
 ```go
-type JogadorArmazenamento interface {
+type ArmazenamentoJogador interface {
 	ObterPontuacaoJogador(nome string) int
 }
 
-type JogadorServidor struct {
-	armazenamento JogadorArmazenamento
+type ServidorJogador struct {
+	armazenamento ArmazenamentoJogador
 }
 
-func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	jogador := r.URL.Path[len("/jogadores/"):]
-	fmt.Fprint(w, js.armazenamento.ObterPontuacaoJogador(jogador))
+	fmt.Fprint(w, s.armazenamento.ObterPontuacaoJogador(jogador))
 }
 ```
 
@@ -367,13 +367,13 @@ func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 Fizemos muitas mudanças, e sabemos que nossos testes não irão funcionar e a compilação deixou de funcionar nesse momento; mas relaxe, e deixe o compilador fazer o trabalho.
 
-`./main.go:9:58: type JogadorServidor is not an expression`
+`./main.go:9:58: type ServidorJogador is not an expression`
 
-Precisamos mudar os nossos testes, que agora devem criar uma nova instância de `JogadorServidor` e então chamar o método `ServeHTTP`.
+Precisamos mudar os nossos testes, que agora devem criar uma nova instância de `ServidorJogador` e então chamar o método `ServeHTTP`.
 
 ```go
 func TestObterJogadores(t *testing.T) {
-    servidor := &JogadorServidor{}
+    servidor := &ServidorJogador{}
 
     t.Run("returns Maria's score", func(t *testing.T) {
         requisicao := novaRequisicaoObterPontuacao("Maria")
@@ -405,7 +405,7 @@ Agora `main.go` não vai compilar pelas mesmas razões.
 
 ```go
 func main() {
-	servidor := &JogadorServidor{}
+	servidor := &ServidorJogador{}
 
 	if err := http.ListenAndServe(":5000", servidor); err != nil {
 		log.Fatalf("não foi possível escutar na porta 5000 %v", err)
@@ -422,30 +422,30 @@ panic: runtime error: invalid memory address or nil pointer dereference [recover
         panic: runtime error: invalid memory address or nil pointer dereference
 ```
 
-Isso porque não passamos um `JogadorArmazenamento` em nossos testes. Precisamos fazer, no arquivo `servidor_test.go` um código de esboço para nos ajudar.
+Isso porque não passamos um `ArmazenamentoJogador` em nossos testes. Precisamos fazer, no arquivo `servidor_test.go` um código de esboço para nos ajudar.
 
 ```go
-type EsbocoJogadorArmazenamento struct {
+type EsbocoArmazenamentoJogador struct {
 	pontuacoes map[string]int
 }
 
-func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
+func (e *EsbocoArmazenamentoJogador) ObterPontuacaoJogador(nome string) int {
 	pontuacao := e.pontuacoes[nome]
 	return pontuacao
 }
 ```
 
-Um _mapa_ (`map`) é um jeito simples e rápido de fazer um armazenamento chave/valor para os nossos testes. Agora vamos criar um desses armazenamentos para os nosso testes e inserir em nosso `JogadorServidor`.
+Um _mapa_ (`map`) é um jeito simples e rápido de fazer um armazenamento chave/valor para os nossos testes. Agora vamos criar um desses armazenamentos para os nosso testes e inserir em nosso `ServidorJogador`.
 
 ```go
 func TestObterJogadores(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{
 			"Maria": 20,
 			"Pedro": 10,
 		},
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
 	t.Run("retorna pontuacao de Maria", func(t *testing.T) {
 		requisicao := novaRequisicaoObterPontuacao("Maria")
@@ -467,25 +467,25 @@ func TestObterJogadores(t *testing.T) {
 }
 ```
 
-Nossos testes agora passam, e parecem melhores. Agora a _intenção_ do nosso código é clara, por conta da adição do armazenamento. Estamos dizendo a quem lê o código que, por termos _este dado em um `JogadorArmazenamento`_, quando você o usar com um  `JogadorServidor` você deve obter as respostas definidas.
+Nossos testes agora passam, e parecem melhores. Agora a _intenção_ do nosso código é clara, por conta da adição do armazenamento. Estamos dizendo a quem lê o código que, por termos _este dado em um `ArmazenamentoJogador`_, quando você o usar com um  `ServidorJogador` você deve obter as respostas definidas.
 
 ### Rodar a aplicação
 
 Agora que nossos testes estão passando, a última coisa que precisamos fazer para completar a refatoração é verificar se a aplicação está funcionando. O programa deve iniciar, mas você vai receber uma mensagem horrível se tentar acessar o servidor em `http://localhost:5000/jogadores/Maria`.
 
-E a razão pra isso é: não informamos um `JogadorArmazenamento`.
+E a razão pra isso é: não informamos um `ArmazenamentoJogador`.
 
 Precisamos fazer uma implementação de um, mas isso é difícil no momento, já que não estamos armazenando nenhum dado significativo, por isso precisará ser, por enquanto, um valor predefinido. Vamos alterar na `main.go`:
 
 ```go
-type JogadorArmazenamentoNaMemoria struct{}
+type ArmazenamentoJogadorEmMemoria struct{}
 
-func (i *JogadorArmazenamentoNaMemoria) ObterPontuacaoJogador(nome string) int {
+func (i *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
     return 123
 }
 
 func main() {
-    server := &JogadorServidor{&JogadorArmazenamentoNaMemoria{}}
+    server := &ServidorJogador{&ArmazenamentoJogadorEmMemoria{}}
 
     if err := http.ListenAndServe(":5000", server); err != nil {
         log.Fatalf("não foi possível escutar na porta 5000 %v", err)
@@ -534,12 +534,12 @@ t.Run("retorna 404 para jogador não encontrado", func(t *testing.T) {
 ## Escreva código necessário para que o teste funcione
 
 ```go
-func (ja *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ja *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     jogador := r.URL.Path[len("/jogadores/"):]
 
     w.WriteHeader(http.StatusNotFound)
 
-    fmt.Fprint(w, js.armazenamento.ObterPontuacaoJogador(jogador))
+    fmt.Fprint(w, s.armazenamento.ObterPontuacaoJogador(jogador))
 }
 ```
 
@@ -555,13 +555,13 @@ Eis os novos testes
 
 ```go
 func TestObterJogadores(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{
 			"Maria": 20,
 			"Pedro": 10,
 		},
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
 	t.Run("retorna pontuacao de Maria", func(t *testing.T) {
 		requisicao := novaRequisicaoObterPontuacao("Maria")
@@ -620,13 +620,13 @@ func verificarRespostaCodigoStatus(t *testing.T, recebido, esperado int) {
 
 Estamos verificando o `status` (código de retorno HTTP) em todos os nossos testes, por isso existe a função auxiliar `verificarRespostaCodigoStatus` para ajudar com isso.
 
-Agora os primeiros dois testes falham porque o código de status recebido é 404, ao invés do esperado 200. Então vamos corrigir o `JogadorServidor` para que retorne *não encontrado* (HTTP status 404) se a pontuação for 0.
+Agora os primeiros dois testes falham porque o código de status recebido é 404, ao invés do esperado 200. Então vamos corrigir o `ServidorJogador` para que retorne *não encontrado* (HTTP status 404) se a pontuação for 0.
 
 ```go
-func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	jogador := r.URL.Path[len("/jogadores/"):]
 
-	pontuacao := js.armazenamento.ObterPontuacaoJogador(jogador)
+	pontuacao := s.armazenamento.ObterPontuacaoJogador(jogador)
 
 	if pontuacao == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -644,10 +644,10 @@ Agora que podemos obter pontuações de um armazenamento, também podemos armaze
 
 ```go
 func TestArmazenamentoVitorias(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{},
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
 	t.Run("retorna status 'aceito' para chamadas ao método POST", func(t *testing.T) {
 		requisicao, _ := http.NewRequest(http.MethodPost, "/jogadores/Maria", nil)
@@ -675,7 +675,7 @@ Inicialmente vamos verificar se obtemos o código de status HTTP correto ao faze
 Lembre-se que estamos cometendo pecados deliberadamente, então um comando `if` para identificar o método da requisição vai resolver o problema.
 
 ```go
-func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusAccepted)
@@ -684,7 +684,7 @@ func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	jogador := r.URL.Path[len("/jogadores/"):]
 
-	pontuacao := js.armazenamento.ObterPontuacaoJogador(jogador)
+	pontuacao := s.armazenamento.ObterPontuacaoJogador(jogador)
 
 	if pontuacao == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -699,20 +699,20 @@ func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 O tratador parece um pouco bagunçado agora. Vamos separar o código para ficar simples de entender e isolar as diferentes funcionalidades em novas funções.
 
 ```go
-func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodPost:
-		js.registrarVitoria(w)
+		s.registrarVitoria(w)
 	case http.MethodGet:
-		js.mostrarPontuacao(w, r)
+		s.mostrarPontuacao(w, r)
 	}
 }
 
-func (p *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) mostrarPontuacao(w http.ResponseWriter, r *http.Request) {
 	jogador := r.URL.Path[len("/jogadores/"):]
 
-	pontuacao := p.armazenamento.ObterPontuacaoJogador(jogador)
+	pontuacao := s.armazenamento.ObterPontuacaoJogador(jogador)
 
 	if pontuacao == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -721,31 +721,31 @@ func (p *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, r *http.Reques
 	fmt.Fprint(w, pontuacao)
 }
 
-func (p *JogadorServidor) registrarVitoria(w http.ResponseWriter) {
+func (s *ServidorJogador) registrarVitoria(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusAccepted)
 }
 ```
 
 Isso faz com que a responsabilidade de roteamento do `ServeHTTP` esteja mais clara; e também permite que, em nossas próximas iterações, o código para armazenamento possa estar dentro de `registrarVitoria`.
 
-Agora, queremos verificar que, quando fazemos a chamada `POST` a `/jogadores/{nome}`, nosso `JogadorArmazenamento` registra a vitória.
+Agora, queremos verificar que, quando fazemos a chamada `POST` a `/jogadores/{nome}`, nosso `ArmazenamentoJogador` registra a vitória.
 
 ## Escreva primeiro o teste
 
-Vamos implementar isso estendendo o `EsbocoJogadorArmazenamento` com um novo método `RecordWin` e então inspecionar as chamadas.
+Vamos implementar isso estendendo o `EsbocoArmazenamentoJogador` com um novo método `RecordWin` e então inspecionar as chamadas.
 
 ```go
-type EsbocoJogadorArmazenamento struct {
+type EsbocoArmazenamentoJogador struct {
 	pontuacoes        map[string]int
 	registrosVitorias []string
 }
 
-func (e *EsbocoJogadorArmazenamento) ObterPontuacaoJogador(nome string) int {
+func (e *EsbocoArmazenamentoJogador) ObterPontuacaoJogador(nome string) int {
 	pontuacao := e.pontuacoes[nome]
 	return pontuacao
 }
 
-func (e *EsbocoJogadorArmazenamento) RegistrarVitoria(nome string) {
+func (e *EsbocoArmazenamentoJogador) RegistrarVitoria(nome string) {
 	e.registrosVitorias = append(e.registrosVitorias, nome)
 }
 ```
@@ -754,11 +754,11 @@ Agora, para começar, estendemos o teste para verificar a quantidade de chamadas
 
 ```go
 func TestArmazenamentoVitorias(t *testing.T) {
-	armazenamento := EsbocoJogadorArmazenamento{
+	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{},
 		nil,
 	}
-	servidor := &JogadorServidor{&armazenamento}
+	servidor := &ServidorJogador{&armazenamento}
 
 	t.Run("registra vitorias na chamada ao método HTTP POST", func(t *testing.T) {
 		requisicao := novaRequisicaoRegistrarVitoriaPost("Maria")
@@ -783,16 +783,16 @@ func novaRequisicaoRegistrarVitoriaPost(nome string) *http.Request {
 ## Tente rodar o teste
 
 ```text
-./servidor_test.go:26:17: too few values in EsbocoJogadorArmazenamento literal
-./servidor_test.go:70:17: too few values in EsbocoJogadorArmazenamento literal
+./servidor_test.go:26:17: too few values in EsbocoArmazenamentoJogador literal
+./servidor_test.go:70:17: too few values in EsbocoArmazenamentoJogador literal
 ```
 
 ## Escreva a mínima quantidade de código para a execução do teste e verifique a falha indicada no retorno
 
-Como adicionamos um campo, precisamos atualizar o código onde criamos o `EsbocoJogadorArmazenamento`
+Como adicionamos um campo, precisamos atualizar o código onde criamos o `EsbocoArmazenamentoJogador`
 
 ```go
-armazenamento := EsbocoJogadorArmazenamento{
+armazenamento := EsbocoArmazenamentoJogador{
     map[string]int{},
     nil,
 }
@@ -808,10 +808,10 @@ armazenamento := EsbocoJogadorArmazenamento{
 
 Como estamos apenas verificando o número de chamadas, e não seus valores específicos, nossa iteração inicial é um pouco menor.
 
-Para conseguir invocar a `RegistrarVitoria`, precisamos atualizar a definição de `JogadorArmazenamento` para que o `JogadorServidor` funcione como esperado.
+Para conseguir invocar a `RegistrarVitoria`, precisamos atualizar a definição de `ArmazenamentoJogador` para que o `ServidorJogador` funcione como esperado.
 
 ```go
-type JogadorArmazenamento interface {
+type ArmazenamentoJogador interface {
     ObterPontuacaoJogador(nome string) int
     RegistrarVitoria(nome string)
 }
@@ -820,25 +820,25 @@ type JogadorArmazenamento interface {
 E, ao fazer isso, `main` não compila mais
 
 ```text
-./main.go:15:29: cannot use &JogadorArmazenamentoNaMemoria literal (type *JogadorArmazenamentoNaMemoria) as type JogadorArmazenamento in field value:
-        *JogadorArmazenamentoNaMemoria does not implement JogadorArmazenamento (missing RegistrarVitoria method)
+./main.go:15:29: cannot use &ArmazenamentoJogadorEmMemoria literal (type *ArmazenamentoJogadorEmMemoria) as type ArmazenamentoJogador in field value:
+        *ArmazenamentoJogadorEmMemoria does not implement ArmazenamentoJogador (missing RegistrarVitoria method)
 ```
 
-O compilador nos informa o que está errado. Vamos alterar `JogadorArmazenamentoNaMemoria`, adicionando esse método.
+O compilador nos informa o que está errado. Vamos alterar `ArmazenamentoJogadorEmMemoria`, adicionando esse método.
 
 ```go
-type JogadorArmazenamentoNaMemoria struct{}
+type ArmazenamentoJogadorEmMemoria struct{}
 
-func (ja *JogadorArmazenamentoNaMemoria) RegistrarVitoria(nome string) {}
+func (ja *ArmazenamentoJogadorEmMemoria) RegistrarVitoria(nome string) {}
 ```
 
 Com essa alteração, o código volta a compilar - mas os testes ainda falham.
 
-Agora que `JogadorArmazenamento` tem o método `RecordWin`, podemos chamar de dentro do nosso `JogadorServidor`
+Agora que `ArmazenamentoJogador` tem o método `RecordWin`, podemos chamar de dentro do nosso `ServidorJogador`
 
 ```go
-func (p *JogadorServidor) registrarVitoria(w http.ResponseWriter) {
-    p.armazenamento.RecordWin("Marcela")
+func (s *ServidorJogador) registrarVitoria(w http.ResponseWriter) {
+    s.armazenamento.RecordWin("Marcela")
     w.WriteHeader(http.StatusAccepted)
 }
 ```
@@ -881,9 +881,9 @@ Agora sabemos que existe um elemento no slice `registrosVitorias`, e então pode
 ## Escreva código suficiente para o teste passar
 
 ```go
-func (js *JogadorServidor) registrarVitoria(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) registrarVitoria(w http.ResponseWriter, r *http.Request) {
 	jogador := r.URL.Path[len("/jogadores/"):]
-	js.armazenamento.RegistrarVitoria(jogador)
+	s.armazenamento.RegistrarVitoria(jogador)
 	w.WriteHeader(http.StatusAccepted)
 }
 ```
@@ -895,19 +895,19 @@ Mudamos `registrarVitoria` para obter a `http.Request`, e assim conseguir extrai
 Podemos eliminar repetições no código, porque estamos obtendo o nome do jogador do mesmo jeito em dois lugares diferentes.
 
 ```go
-func (js *JogadorServidor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	jogador := r.URL.Path[len("/jogadores/"):]
 
 	switch r.Method {
 	case http.MethodPost:
-		js.registrarVitoria(w, jogador)
+		s.registrarVitoria(w, jogador)
 	case http.MethodGet:
-		js.mostrarPontuacao(w, jogador)
+		s.mostrarPontuacao(w, jogador)
 	}
 }
 
-func (js *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, jogador string) {
-	pontuacao := js.armazenamento.ObterPontuacaoJogador(jogador)
+func (s *ServidorJogador) mostrarPontuacao(w http.ResponseWriter, jogador string) {
+	pontuacao := s.armazenamento.ObterPontuacaoJogador(jogador)
 
 	if pontuacao == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -916,17 +916,17 @@ func (js *JogadorServidor) mostrarPontuacao(w http.ResponseWriter, jogador strin
 	fmt.Fprint(w, pontuacao)
 }
 
-func (js *JogadorServidor) registrarVitoria(w http.ResponseWriter, jogador string) {
-	js.armazenamento.RegistrarVitoria(jogador)
+func (s *ServidorJogador) registrarVitoria(w http.ResponseWriter, jogador string) {
+	s.armazenamento.RegistrarVitoria(jogador)
 	w.WriteHeader(http.StatusAccepted)
 }
 ```
 
-Mesmo com os testes passando, não temos código funcionando de forma ideal. Se executar a `main` e usar o programa como planejado, não vai funcionar porque ainda não nos dedicamos a implementar corretamente `JogadorArmazenamento`. Mas isso não é um problema; como focamos no tratamento da requisição, identificamos a interface necessária, ao invés de tentar definir antecipadamente.
+Mesmo com os testes passando, não temos código funcionando de forma ideal. Se executar a `main` e usar o programa como planejado, não vai funcionar porque ainda não nos dedicamos a implementar corretamente `ArmazenamentoJogador`. Mas isso não é um problema; como focamos no tratamento da requisição, identificamos a interface necessária, ao invés de tentar definir antecipadamente.
 
-_Poderíamos_ começar a escrever alguns testes para a `JogadorArmazenamentoNaMemoria`, mas ela é apenas uma solução temporária até a implementação de um modo mais robusto de registrar as pontuações \(por exemplo, em um banco de dados\).
+_Poderíamos_ começar a escrever alguns testes para a `ArmazenamentoJogadorEmMemoria`, mas ela é apenas uma solução temporária até a implementação de um modo mais robusto de registrar as pontuações \(por exemplo, em um banco de dados\).
 
-O que vamos fazer agora é escrever um _teste de integração_ entre `JogadorServidor` e `JogadorArmazenamentoNaMemoria` para terminar a funcionalidade. Isso vai permitir confiar que a aplicação está funcionando, sem ter que testar diretamente `JogadorArmazenamentoNaMemoria`. E não apenas isso, mas quando implementarmos `JogadorArmazenamento` com um banco de dados, usaremos esse mesmo teste para verificar se a implementação funciona como esperado.
+O que vamos fazer agora é escrever um _teste de integração_ entre `ServidorJogador` e `ArmazenamentoJogadorEmMemoria` para terminar a funcionalidade. Isso vai permitir confiar que a aplicação está funcionando, sem ter que testar diretamente `ArmazenamentoJogadorEmMemoria`. E não apenas isso, mas quando implementarmos `ArmazenamentoJogador` com um banco de dados, usaremos esse mesmo teste para verificar se a implementação funciona como esperado.
 
 ### Testes de integração
 
@@ -944,8 +944,8 @@ Para ser mais breve, vou te mostrar o teste de integração, já refatorado.
 
 ```go
 func TestRegistrarVitoriasEBuscarEstasVitorias(t *testing.T) {
-	armazenamento := CriarJogadorArmazenamentoNaMemoria()
-	servidor := JogadorServidor{armazenamento}
+	armazenamento := NovoArmazenamentoJogadorEmMemoria()
+	servidor := ServidorJogador{armazenamento}
 	jogador := "Maria"
 
 	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisicaoRegistrarVitoriaPost(jogador))
@@ -960,7 +960,7 @@ func TestRegistrarVitoriasEBuscarEstasVitorias(t *testing.T) {
 }
 ```
 
-* Estamos criando os dois componentes que queremos integrar: `JogadorArmazenamentoNaMemoria` e `JogadorServidor`.
+* Estamos criando os dois componentes que queremos integrar: `ArmazenamentoJogadorEmMemoria` e `ServidorJogador`.
 * Então fazemos 3 requisições para registrar 3 vitórias para `jogador`. Não nos preocupamos com os códigos de retorno no teste, porque isso não é relevante para verificar se a integração funciona como esperado.
 * Registramos a próxima resposta \(por isso guardamos o valor em `resposta`\) porque vamos obter a pontuação do `jogador`.
 
@@ -975,33 +975,33 @@ func TestRegistrarVitoriasEBuscarEstasVitorias(t *testing.T) {
 
 Abaixo, há mais código do que o esperado para se escrever sem ter os testes correspondentes.
 
-_Isso é permitido_! Ainda existem testes verificando se as coisas estão funcionando como esperado, mas não focando na parte específica em que estamos trabalhando \(`JogadorArmazenamentoNaMemoria`\).
+_Isso é permitido_! Ainda existem testes verificando se as coisas estão funcionando como esperado, mas não focando na parte específica em que estamos trabalhando \(`ArmazenamentoJogadorEmMemoria`\).
 
-Se houvesse algum problema para continuarmos, era só reverter as alterações para antes do teste que falhou e então escrever mais testes unitários específicos para `JogadorArmazenamentoNaMemoria`, que nos ajudariam a encontrar a solução.
+Se houvesse algum problema para continuarmos, era só reverter as alterações para antes do teste que falhou e então escrever mais testes unitários específicos para `ArmazenamentoJogadorEmMemoria`, que nos ajudariam a encontrar a solução.
 
 ```go
-func CriarJogadorArmazenamentoNaMemoria() *JogadorArmazenamentoNaMemoria {
-	return &JogadorArmazenamentoNaMemoria{map[string]int{}}
+func NovoArmazenamentoJogadorEmMemoria() *ArmazenamentoJogadorEmMemoria {
+	return &ArmazenamentoJogadorEmMemoria{map[string]int{}}
 }
 
-type JogadorArmazenamentoNaMemoria struct {
+type ArmazenamentoJogadorEmMemoria struct {
 	armazenamento map[string]int
 }
 
-func (ja *JogadorArmazenamentoNaMemoria) RegistrarVitoria(nome string) {
+func (ja *ArmazenamentoJogadorEmMemoria) RegistrarVitoria(nome string) {
 	ja.armazenamento[nome]++
 }
 
-func (ja *JogadorArmazenamentoNaMemoria) ObterPontuacaoJogador(nome string) int {
+func (ja *ArmazenamentoJogadorEmMemoria) ObterPontuacaoJogador(nome string) int {
 	return ja.armazenamento[nome]
 }
 ```
 
-* Para armazenar os dados, adicionamos um `map[string]int` na struct `JogadorArmazenamentoNaMemoria`
-* Para ajudar nos testes, criamos a `NewJogadorArmazenamentoNaMemoria` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`armazenamento := NewJogadorArmazenamentoNaMemoria()`\).
+* Para armazenar os dados, adicionamos um `map[string]int` na struct `ArmazenamentoJogadorEmMemoria`
+* Para ajudar nos testes, criamos a `NewArmazenamentoJogadorEmMemoria` para inicializar o armazenamento, e o código do teste de integração foi atualizado para usar esta função \(`armazenamento := NewNovoArmazenamentoJogadorEmMemoria()`\).
 * O resto do código é apenas para fazer o `map` funcionar.
 
-Nosso teste de integração passa, e agora só é preciso mudar o `main` para usar o `NewJogadorArmazenamentoNaMemoria()`
+Nosso teste de integração passa, e agora só é preciso mudar o `main` para usar o `NewNovoArmazenamentoJogadorEmMemoria()`
 
 ```go
 package main
@@ -1012,7 +1012,7 @@ import (
 )
 
 func main() {
-    servidor := &JogadorServidor{CriarJogadorArmazenamentoNaMemoria()}
+    servidor := &ServidorJogador{NovoArmazenamentoJogadorEmMemoria()}
 
     if err := http.ListenAndServe(":5000", servidor); err != nil {
         log.Fatalf("não foi possível escutar na porta 5000 %v", err)
@@ -1028,7 +1028,7 @@ Após compilar e rodar, use o `curl` para testar.
 Ótimo! Criamos um serviço de acordo com os padrões REST! Se quiser continuar, você pode escolher um armazenamento de dados com maior persistência, que não vai perder os dados quando o programa terminar.
 
 * Escolher uma tecnologia de armazenamento \(Bolt? Mongo? Postgres? Sistema de arquivos?\)
-* Fazer `PostgresJogadorArmazenamento` implementar `JogadorArmazenamento`
+* Fazer `PostgresArmazenamentoJogador` implementar `ArmazenamentoJogador`
 * Desenvolver a funcionalidade usando Desenvolvimento Orientado a Testes para ter certeza de que funciona
 * Conectar nos testes de integração, verificar se tudo funciona
 * E, finalmente, integrar dentro de `main`.
