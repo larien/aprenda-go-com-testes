@@ -1,15 +1,15 @@
 # JSON, roteamento e embedding
 
-[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/quii/learn-go-with-tests/tree/master/criando-uma-aplicacao/json)
+[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/criando-uma-aplicacao/json)
 
-[No capítulo anterior](../servidor-http/servidor-http.md) nós criamos um web server para armazenar quantos jogos nossos jogadores venceram.
+[No capítulo anterior](../servidor-http/servidor-http.md) nós criamos um servidor web para armazenar quantos jogos nossos jogadores venceram.
 
-Nossa gerente de produtos veio com um novo requisito;  criar um novo endpoint chamado `/league` que retorne uma lista contendo todos os jogadores armazenados. Ela gostaria que isto fosse retornado como um JSON. 
+Nossa gerente de produtos veio com um novo requisito;  criar um novo endpoint chamado `/liga` que retorne uma lista contendo todos os jogadores armazenados. Ela gostaria que isto fosse retornado como um JSON. 
 
 ## Este é o código que temos até agora
 
 ```go
-// server.go
+// servidor.go
 package main
 
 import (
@@ -17,60 +17,60 @@ import (
     "net/http"
 )
 
-type PlayerStore interface {
-    GetPlayerScore(name string) int
-    RecordWin(name string)
+type ArmazenamentoJogador interface {
+    ObtemPontuacaoDoJogador(nome string) int
+    GravarVitoria(nome string)
 }
 
-type PlayerServer struct {
-    store PlayerStore
+type ServidorJogador struct {
+    armazenamento ArmazenamentoJogador
 }
 
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/players/"):]
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    jogador := r.URL.Path[len("/jogadores/"):]
 
     switch r.Method {
     case http.MethodPost:
-        p.processWin(w, player)
+        s.processarVitoria(w, jogador)
     case http.MethodGet:
-        p.showScore(w, player)
+        s.mostrarPontuacao(w, jogador)
     }
 }
 
-func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
-    score := p.store.GetPlayerScore(player)
+func (s *ServidorJogador) mostrarPontuacao(w http.ResponseWriter, jogador string) {
+    pontuação := s.armazenamento.ObtemPontuacaoDoJogador(jogador)
 
-    if score == 0 {
+    if pontuação == 0 {
         w.WriteHeader(http.StatusNotFound)
     }
 
-    fmt.Fprint(w, score)
+    fmt.Fprint(w, pontuação)
 }
 
-func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
-    p.store.RecordWin(player)
+func (s *ServidorJogador) processarVitoria(w http.ResponseWriter, jogador string) {
+    s.armazenamento.GravarVitoria(jogador)
     w.WriteHeader(http.StatusAccepted)
 }
 ```
 
 ```go
-// InMemoryPlayerStore.go
+// ArmazenamentoDeJogadorNaMemoria.go
 package main
 
-func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-    return &InMemoryPlayerStore{map[string]int{}}
+func NovoArmazenamentoDeJogadorNaMemoria() *ArmazenamentoDeJogadorNaMemoria {
+    return &ArmazenamentoDeJogadorNaMemoria{map[string]int{}}
 }
 
-type InMemoryPlayerStore struct {
-    store map[string]int
+type ArmazenamentoDeJogadorNaMemoria struct {
+    armazenamento map[string]int
 }
 
-func (i *InMemoryPlayerStore) RecordWin(name string) {
-    i.store[name]++
+func (a *ArmazenamentoDeJogadorNaMemoria) GravarVitoria(nome string) {
+    a.armazenamento[nome]++
 }
 
-func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-    return i.store[name]
+func (a *ArmazenamentoDeJogadorNaMemoria) ObtemPontuacaoDoJogador(nome string) int {
+    return a.armazenamento[nome]
 }
 ```
 
@@ -84,45 +84,45 @@ import (
 )
 
 func main() {
-    server := &PlayerServer{NewInMemoryPlayerStore()}
+    servidor := &ServidorJogador{NovoArmazenamentoDeJogadorNaMemoria()}
 
-    if err := http.ListenAndServe(":5000", server); err != nil {
-        log.Fatalf("could not listen on port 5000 %v", err)
+    if err := http.ListenAndServe(":5000", servidor); err != nil {
+        log.Fatalf("não foi possível ouvir na porta 5000 %v", err)
     }
 }
 ```
 
-Você pode encontrar os testes correspondentes no link no topo do capítulo.
+Você pode encontrar os testes correspondentes no endereço no topo do capítulo.
 
-Nós vamos começar criando o endpoint para a tabela de `league`.
+Nós vamos começar criando o endpoint para a tabela de `liga`.
 
 ## Escreva os testes primeiro
 
-Ampliaremos a suite de testes existente, pois temos algumas funções de teste úteis e um `PlayerStore` falso para usar.
+Ampliaremos a suite de testes existente, pois temos algumas funções de teste úteis e um `ArmazenamentoJogador` falso para usar.
 
 ```go
 // server_test.go
 
-func TestLeague(t *testing.T) {
-    store := StubPlayerStore{}
-    server := &PlayerServer{&store}
+func TestLiga(t *testing.T) {
+    armazenamento := EsbocoArmazenamentoJogador{}
+    servidor := &ServidorJogador{&armazenamento}
 
-    t.Run("it returns 200 on /league", func(t *testing.T) {
-        request, _ := http.NewRequest(http.MethodGet, "/league", nil)
-        response := httptest.NewRecorder()
+    t.Run("retorna 200 em /liga", func(t *testing.T) {
+        requisicao, _ := http.NewRequest(http.MethodGet, "/liga", nil)
+        resposta := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+        servidor.ServeHTTP(resposta, requisicao)
 
-        assertStatus(t, response.Code, http.StatusOK)
+        verificaStatus(t, resposta.Code, http.StatusOK)
     })
 }
 ```
-Antes de nos preocuparmos sobre as pontuações atuais e o JSON, nós vamos tentar manter as mudanças pequenas com o plano de ir passo a passo rumo ao nosso objetivo. O início mais simples é checar se nós conseguimos consultar `/league` e obter um `OK` de retorno. 
+Antes de nos preocuparmos sobre as pontuações atuais e o JSON, nós vamos tentar manter as mudanças pequenas com o plano de ir passo a passo rumo ao nosso objetivo. O início mais simples é checar se nós conseguimos consultar `/liga` e obter um `OK` de retorno. 
 
 ## Tente rodar os testes
 
 ```text
-=== RUN   TestLeague/it_returns_200_on_/league
+=== RUN   TestLiga/retorna_200_em_/liga
 panic: runtime error: slice bounds out of range [recovered]
     panic: runtime error: slice bounds out of range
 
@@ -131,151 +131,151 @@ testing.tRunner.func1(0xc42010c3c0)
     /usr/local/Cellar/go/1.10/libexec/src/testing/testing.go:742 +0x29d
 panic(0x1274d60, 0x1438240)
     /usr/local/Cellar/go/1.10/libexec/src/runtime/panic.go:505 +0x229
-github.com/quii/learn-go-with-tests/json-and-io/v2.(*PlayerServer).ServeHTTP(0xc420048d30, 0x12fc1c0, 0xc420010940, 0xc420116000)
-    /Users/quii/go/src/github.com/quii/learn-go-with-tests/json-and-io/v2/server.go:20 +0xec
+github.com/larien/learn-go-with-tests/json-and-io/v2.(*ServidorJogador).ServeHTTP(0xc420048d30, 0x12fc1c0, 0xc420010940, 0xc420116000)
+    /Users/larien/go/src/github.com/larien/learn-go-with-tests/json-and-io/v2/servidor.go:20 +0xec
 ```
 
-Seu `PlayerServer` deve estar sendo abortado por um panic como acima. Vá para a linha de código que está apontando para `server.go` no stack trace.  
+Seu `ServidorJogador` deve estar sendo abortado por um panic como acima. Vá para a linha de código que está apontando para `servidor.go` no stack trace.
 
 ```go
-player := r.URL.Path[len("/players/"):]
+jogador := r.URL.Path[len("/jogadores/"):]
 ```
 
-No capítulo anterior, nós mencionamos que isto era uma maneira bastante ingênua de fazer o nosso roteamento. O que está acontecendo é que ele está tentando cortar a string do caminho da URL começando do índice após `/league` e então, isto nos dá um `slice bounds out of range`.
+No capítulo anterior, nós mencionamos que esta era uma maneira bastante ingênua de fazer o nosso roteamento. O que está acontecendo é que ele está tentando cortar a string do caminho da URL começando do índice após `/liga` e então, isto nos dá um `slice bounds out of range`.
 
 ## Escreva somente o código suficiente para fazê-lo passar
 
-Go têm um mecanismo de rotas nativo (built-in) chamado [`ServeMux`](https://golang.org/pkg/net/http/#ServeMux) \(request multiplexer\) que nos permite atracar um `http.Handler` para caminhos de uma requisição em específico.
+Go tem um mecanismo de rotas nativo (built-in) chamado [`ServeMux`](https://golang.org/pkg/net/http/#ServeMux) \(requisição multiplexadora\) que nos permite atracar um `http.Handler` para caminhos de uma requisição em específico.
 
 Vamos cometer alguns pecados e obter os testes passando da maneira mais rápida que pudermos, sabendo que nós podemos refatorar isto com segurança uma vez que nós soubermos que os testes estão passando.
 
 ```go
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-    router := http.NewServeMux()
+    roteador := http.NewServeMux()
 
-    router.Handle("/league", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    roteador.Handle("/liga", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusOK)
     }))
 
-    router.Handle("/players/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        player := r.URL.Path[len("/players/"):]
+    roteador.Handle("/jogadores/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        jogador := r.URL.Path[len("/jogadores/"):]
 
         switch r.Method {
         case http.MethodPost:
-            p.processWin(w, player)
+            s.processarVitoria(w, jogador)
         case http.MethodGet:
-            p.showScore(w, player)
+            s.mostrarPontuacao(w, jogador)
         }
     }))
 
-    router.ServeHTTP(w, r)
+    roteador.ServeHTTP(w, r)
 }
 ```
 
-* Quando a requisição começa nós criamos um router e então dizemos para o caminho `x` usar o handler `y`.
-* Então para nosso novo endpoint, nós usamos `http.HandlerFunc` e uma _função anônima_ para `w.WriteHeader(http.StatusOK)` quando `/league` é requisitada para fazer nosso novo teste passar.
-* Para a rota `/players/` nós somente recortamos e colamos nosso código dentro de outro `http.HandlerFunc`.
-* Finalmente, nós lidamos com a requisição que está vindo chamando nosso novo router `ServeHTTP` \(notou como `ServeMux` é _também_ um `http.Handler`?\)
+* Quando a requisição começa nós criamos um roteador e então dizemos para o caminho `x` usar o handler `y`.
+* Então para nosso novo endpoint, nós usamos `http.HandlerFunc` e uma _função anônima_ para `w.WriteHeader(http.StatusOK)` quando `/liga` é requisitada para fazer nosso novo teste passar.
+* Para a rota `/jogadores/` nós somente recortamos e colamos nosso código dentro de outro `http.HandlerFunc`.
+* Finalmente, nós lidamos com a requisição que está vindo chamando nosso novo roteador `ServeHTTP` \(notou como `ServeMux` é _também_ um `http.Handler`?\)
 
 ## Refatorando
 
 `ServeHTTP` parece um pouco grande, nós podemos separar as coisas um pouco refatorando nossos handlers em métodos separados.
 
 ```go
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-    router := http.NewServeMux()
-    router.Handle("/league", http.HandlerFunc(p.leagueHandler))
-    router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+    roteador := http.NewServeMux()
+    roteador.Handle("/liga", http.HandlerFunc(s.manipulaLiga))
+    roteador.Handle("/jogadores/", http.HandlerFunc(s.manipulaJogadores))
 
-    router.ServeHTTP(w, r)
+    roteador.ServeHTTP(w, r)
 }
 
-func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) manipulaLiga(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
 }
 
-func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
-    player := r.URL.Path[len("/players/"):]
+func (s *ServidorJogador) manipulaJogadores(w http.ResponseWriter, r *http.Request) {
+    jogador := r.URL.Path[len("/jogadores/"):]
 
     switch r.Method {
     case http.MethodPost:
-        p.processWin(w, player)
+        s.processarVitoria(w, jogador)
     case http.MethodGet:
-        p.showScore(w, player)
+        s.mostrarPontuacao(w, jogador)
     }
 }
 ```
 
-É um pouco estranho \(e ineficiente\) estar configurando um router quando uma requisição chegar e então chamá-lo. O que idealmente queremos fazer é uma função do tipo `NewPlayerServer` que pegará nossas dependências e ao ser chamada, irá fazer a configuração única da criação do router. Desta forma, cada requisição pode usar somente uma instância do nosso router.
+É um pouco estranho \(e ineficiente\) estar configurando um roteador quando uma requisição chegar e então chamá-lo. O que idealmente queremos fazer é uma função do tipo `NovoServidorJogador` que pegará nossas dependências e ao ser chamada, irá fazer a configuração única da criação do roteador. Desta forma, cada requisição pode usar somente uma instância do nosso roteador.
 
 ```go
-type PlayerServer struct {
-    store  PlayerStore
-    router *http.ServeMux
+type ServidorJogador struct {
+    armazenamento  ArmazenamentoJogador
+    roteador *http.ServeMux
 }
 
-func NewPlayerServer(store PlayerStore) *PlayerServer {
-    p := &PlayerServer{
-        store,
+func NovoServidorJogador(armazenamento ArmazenamentoJogador) *ServidorJogador {
+    p := &ServidorJogador{
+        armazenamento,
         http.NewServeMux(),
     }
 
-    p.router.Handle("/league", http.HandlerFunc(p.leagueHandler))
-    p.router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+    s.roteador.Handle("/liga", http.HandlerFunc(s.manipulaLiga))
+    s.roteador.Handle("/jogadores/", http.HandlerFunc(s.manipulaJogadores))
 
-    return p
+    return s
 }
 
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    p.router.ServeHTTP(w, r)
+func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    s.roteador.ServeHTTP(w, r)
 }
 ```
 
-* `PlayerServer` agora precisa armazenar um roteador.
-* Nós movemos a criação do roteador para fora de `ServeHTTP` e colocamos dentro do nosso `NewPlayerServer`, então isto só será feito uma vez, não por requisição.
-* Você vai precisar atualizar todos os testes e código de produção onde nós costumávamos fazer `PlayerServer{&store}` por `NewPlayerServer(&store)`.
+* `ServidorJogador` agora precisa armazenar um roteador.
+* Nós movemos a criação do roteador para fora de `ServeHTTP` e colocamos dentro do nosso `NovoServidorJogador`, então isto só será feito uma vez, não por requisição.
+* Você vai precisar atualizar todos os testes e código de produção onde nós costumávamos fazer `ServidorJogador{&armazenamento}` por `NovoServidorJogador(&armazenamento)`.
 
 ### Uma refatoração final
 
 Tente mudar o código para o seguinte:
 
 ```go
-type PlayerServer struct {
-    store  PlayerStore
+type ServidorJogador struct {
+    armazenamento  ArmazenamentoJogador
     http.Handler
 }
 
-func NewPlayerServer(store PlayerStore) *PlayerServer {
-    p := new(PlayerServer)
+func NovoServidorJogador(armazenamento ArmazenamentoJogador) *ServidorJogador {
+    s := new(ServidorJogador)
 
-    p.store = store
+    s.armazenamento = armazenamento
 
-    router := http.NewServeMux()
-    router.Handle("/league", http.HandlerFunc(p.leagueHandler))
-    router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+    roteador := http.NewServeMux()
+    roteador.Handle("/liga", http.HandlerFunc(s.manipulaLiga))
+    roteador.Handle("/jogadores/", http.HandlerFunc(s.manipulaJogadores))
 
-    p.Handler = router
+    s.Handler = roteador
 
-    return p
+    return s
 }
 ```
 
-Finalmente, se certifique de que você **deletou** `func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request)` por não ser mais necessária!
+Finalmente, se certifique de que você **deletou** `func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request)` por não ser mais necessária!
 
 ## Incorporando
 
-Nós mudamos a segunda propriedade de `PlayerServer` removendo a propriedade nomeada `router http.ServeMux` e substituindo por `http.Handler`; isto é chamado de _incorporar_. 
+Nós mudamos a segunda propriedade de `ServidorJogador` removendo a propriedade nomeada `roteador http.ServeMux` e substituindo por `http.Handler`; isto é chamado de _incorporar_. 
 
 
 > O Go não provê a noção típica de subclasses orientada por tipo, mas tem a habilidade de "emprestar" partes de uma implementação por incorporar tipos dentro de uma struct ou interface.
 
 [Effective Go - Embedding](https://golang.org/doc/effective_go.html#embedding)
 
-O que isto quer dizer é que nosso `PlayerServer` agora tem todos os métodos que `http.Handler` têm, que é somente o `ServeHTTP`.
+O que isto quer dizer é que nosso `ServidorJogador` agora tem todos os métodos que `http.Handler` têm, que é somente o `ServeHTTP`.
 
-Para "preencher" o `http.Handler` nós atribuímos ele para o `router` que nós criamos em `NewPlayerServer`. Nós podemos fazer isso porque `http.ServeMux` tem o método `ServeHTTP`.
+Para "preencher" o `http.Handler` nós atribuímos ele para o `roteador` que nós criamos em `NovoServidorJogador`. Nós podemos fazer isso porque `http.ServeMux` tem o método `ServeHTTP`.
 
 Isto nos permite remover nosso próprio método `ServeHTTP`, pois nós já estamos expondo um via o tipo incorporado. 
 
@@ -283,8 +283,8 @@ Incorporamento é um recurso muito interessante da linguagem. Você pode usar is
 
 ```go
 type Animal interface {
-    Eater
-    Sleeper
+    Comedor
+    Dormente
 }
 ```
 
@@ -294,25 +294,25 @@ E você pode usar isto com tipos concretos também, não somente interfaces. Com
 
 Você deve ter cuidado ao incorporar tipos porque você vai expor todos os métodos e campos públicos do tipo que você incorporou. Em nosso caso, está tudo bem porque nós haviamos incorporado apenas a _interface_ que nós queremos expôr \(`http.Handler`\).
 
-Se nós tivéssemos sido "preguiçosos" e incorporado `http.ServeMux` \(o tipo concreto\) por exemplo, também funcionaria _porém_ os usuários de `PlayerServer` seriam capazes de adicionar novas rotas ao nosso servidor porque o método `Handle(path, handler)` seria público.
+Se nós tivéssemos sido "preguiçosos" e incorporado `http.ServeMux` \(o tipo concreto\) por exemplo, também funcionaria _porém_ os usuários de `ServidorJogador` seriam capazes de adicionar novas rotas ao nosso servidor porque o método `Handle(path, handler)` seria público.
 
 **Quando incorporamos tipos, realmente devemos pensar sobre qual o impacto que isto terá em nossa API pública**
 
 Isto é um erro _muito_ comum de mau uso de incorporamento, que termina poluindo nossas APIs e expondo os métodos internos dos seus tipos incorporados.
 
-Agora que nós reestruturamos nossa aplicação, nós podemos facilmente adicionar novas rotas e botar para funcionar nosso endpoint `/league`. Agora precisamos fazê-lo retornar algumas informações úteis.
+Agora que nós reestruturamos nossa aplicação, nós podemos facilmente adicionar novas rotas e botar para funcionar nosso endpoint `/liga`. Agora precisamos fazê-lo retornar algumas informações úteis.
 
 Nós devemos retornar um JSON semelhante a este:
 
 ```javascript
 [
    {
-      "Name":"Bill",
-      "Wins":10
+      "Nome":"Bill",
+      "Vitórias":10
    },
    {
-      "Name":"Alice",
-      "Wins":15
+      "Nome":"Alice",
+      "Vitórias":15
    }
 ]
 ```
@@ -322,31 +322,31 @@ Nós devemos retornar um JSON semelhante a este:
 Nós vamos começar tentando analizar a resposta dentro de algo mais significativo.
 
 ```go
-func TestLeague(t *testing.T) {
-    store := StubPlayerStore{}
-    server := NewPlayerServer(&store)
+func TestLiga(t *testing.T) {
+    armazenamento := EsbocoArmazenamentoJogador{}
+    servidor := NovoServidorJogador(&armazenamento)
 
-    t.Run("it returns 200 on /league", func(t *testing.T) {
-        request, _ := http.NewRequest(http.MethodGet, "/league", nil)
-        response := httptest.NewRecorder()
+    t.Run("retorna 200 em /liga", func(t *testing.T) {
+        requisicao, _ := http.NewRequest(http.MethodGet, "/liga", nil)
+        resposta := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+        servidor.ServeHTTP(resposta, requisicao)
 
-        var got []Player
+        var obtido []Jogador
 
-        err := json.NewDecoder(response.Body).Decode(&got)
+        err := json.NewDecoder(resposta.Body).Decode(&obtido)
 
         if err != nil {
-            t.Fatalf ("Unable to parse response from server '%s' into slice of Player, '%v'", response.Body, err)
+            t.Fatalf ("Não foi possível fazer parse da resposta do servidor '%s' no slice de Jogador, '%v'", resposta.Body, err)
         }
 
-        assertStatus(t, response.Code, http.StatusOK)
+        verificaStatus(t, resposta.Code, http.StatusOK)
     })
 }
 ```
-### Por quê não testar o JSON como texto puro?
+### Por que não testar o JSON como texto puro?
 
-Você pode argumentar que um simples teste inicial poderia só comparar que o corpo da resposta tem um particular texto em JSON.
+Você pode argumentar que um simples teste inicial poderia só comparar que o não foi possível ouvir na porta 5000 tem um particular texto em JSON.
 
 
 Na minha experiência, testes que comparam JSONs de forma literal possuem os seguintes problemas:
@@ -371,8 +371,8 @@ type Jogador struct {
 ### Decodificação de JSON
 
 ```go
-var got []Jogador
-err := json.NewDecoder(response.Body).Decode(&got)
+var obtido []Jogador
+err := json.NewDecoder(resposta.Body).Decode(&obtido)
 ```
 
 Para analizar o JSON dentro de nosso modelo de dados nós criamos um `Decoder` do pacote `encoding/json` e então chamamos seu método `Decode`. Para criar um `Decoder` é necessário ler de um `io.Reader`, que em nosso caso é nossa própria resposta `Body`.
@@ -380,27 +380,27 @@ Para analizar o JSON dentro de nosso modelo de dados nós criamos um `Decoder` d
 `Decode` pega o endereço da coisa que nós estamos tentando decodificar, e é por isso que nós declaramos um slice vazio de `Jogador` na linha anterior.
 
 Esse processo de analisar um JSON pode falhar, então `Decode` pode retornar um `error`. Não há ponto de continuidade para o teste se isto acontecer, então nós checamos o erro e paramos o teste com `t.Fatalf`.
-Note que nós exibimos o corpo da resposta junto do erro, pois é importante para qualquer outra pessoa que esteja rodando os testes ver que o texto não pôde ser analisado.
+Note que nós exibimos o não foi possível ouvir na porta 5000 junto do erro, pois é importante para qualquer outra pessoa que esteja rodando os testes ver que o texto não pôde ser analisado.
 
 ## Tente rodar o teste
 
 ```text
-=== RUN   TestLeague/it_returns_200_on_/league
-    --- FAIL: TestLeague/it_returns_200_on_/league (0.00s)
-        server_test.go:107: Unable to parse response from server '' into slice of Jogador, 'unexpected end of JSON input'
+=== RUN   TestLiga/retorna_200_em_/liga
+    --- FAIL: TestLiga/retorna_200_em_/liga (0.00s)
+        server_test.go:107: Não foi possível fazer parse da resposta do servidor '' no slice de Jogador, 'unexpected end of JSON input'
 ```
 
 Nosso endpoint atualmente não retorna um corpo, então isso não pode ser analisado como JSON.
 
-## Escreva código suficiente para fazê-lo passar.
+## Escreva código suficiente para fazê-lo passar
 
 ```go
-func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-    leagueTable := []Player{
+func (s *ServidorJogador) manipulaLiga(w http.ResponseWriter, r *http.Request) {
+    tabelaDaLiga := []Jogador{
         {"Chris", 20},
     }
 
-    json.NewEncoder(w).Encode(leagueTable)
+    json.NewEncoder(w).Encode(tabelaDaLiga)
 
     w.WriteHeader(http.StatusOK)
 }
@@ -417,16 +417,16 @@ Ao longo deste livro, nós temos usado `io.Writer`. Isso é uma outra demonstra�
 
 ## Refatoração
 
-Seria legal introduzir uma separação de conceitos entre nosso handler e o trecho de obter o `leagueTable`. Como sabemos, nós não vamos codificar isso por agora.
+Seria legal introduzir uma separação de conceitos entre nosso handler e o trecho de obter o `tabelaDaLiga`. Como sabemos, nós não vamos codificar isso por agora.
 
 ```go
-func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-    json.NewEncoder(w).Encode(p.getLeagueTable())
+func (s *ServidorJogador) manipulaLiga(w http.ResponseWriter, r *http.Request) {
+    json.NewEncoder(w).Encode(s.obterTabelaDaLiga())
     w.WriteHeader(http.StatusOK)
 }
 
-func (p *PlayerServer) getLeagueTable() []Player{
-    return []Player{
+func (s *ServidorJogador) obterTabelaDaLiga() []Jogador{
+    return []Jogador{
         {"Chris", 20},
     }
 }
@@ -438,47 +438,47 @@ Mais adiante, nós vamos querer estender nossos testes para então podermos cont
 
 Nós podemos atualizar o teste para afirmar que a tabela das ligas contem alguns jogadores que nós vamos pôr em nossa loja.
 
-Atualize `StubPlayerStore` para permitir que ele armazene uma liga, que é apenas um slice de `Jogador`. Nós vamos armazenar nossos dados esperados lá.
+Atualize `EsbocoArmazenamentoJogador` para permitir que ele armazene uma liga, que é apenas um slice de `Jogador`. Nós vamos armazenar nossos dados esperados lá.
 
 ```go
-type StubPlayerStore struct {
-    scores   map[string]int
-    winCalls []string
-    league []Player
+type EsbocoArmazenamentoJogador struct {
+    pontuações   map[string]int
+    chamadasDeVitoria []string
+    liga []Jogador
 }
 ```
 Adiante, atualize nossos testes colocando alguns jogadores na propriedade da liga, para então afirmar que eles foram retornados do nosso servidor.
 
 ```go
-func TestLeague(t *testing.T) {
+func TestLiga(t *testing.T) {
 
-    t.Run("it returns the league table as JSON", func(t *testing.T) {
-        wantedLeague := []Player{
+    t.Run("retorna a tabela da Liga como JSON", func(t *testing.T) {
+        ligaEsperada := []Jogador{
             {"Cleo", 32},
             {"Chris", 20},
             {"Tiest", 14},
         }
 
-        store := StubPlayerStore{nil, nil, wantedLeague}
-        server := NewPlayerServer(&store)
+        armazenamento := EsbocoArmazenamentoJogador{nil, nil, ligaEsperada}
+        servidor := NovoServidorJogador(&armazenamento)
 
-        request, _ := http.NewRequest(http.MethodGet, "/league", nil)
-        response := httptest.NewRecorder()
+        requisicao, _ := http.NewRequest(http.MethodGet, "/liga", nil)
+        resposta := httptest.NewRecorder()
 
-        server.ServeHTTP(response, request)
+        servidor.ServeHTTP(resposta, requisicao)
 
-        var got []Player
+        var obtido []Jogador
 
-        err := json.NewDecoder(response.Body).Decode(&got)
+        err := json.NewDecoder(resposta.Body).Decode(&obtido)
 
         if err != nil {
-            t.Fatalf("Unable to parse response from server '%s' into slice of Player, '%v'", response.Body, err)
+            t.Fatalf("Não foi possível fazer parse da resposta do servidor '%s' no slice de Jogador, '%v'", resposta.Body, err)
         }
 
-        assertStatus(t, response.Code, http.StatusOK)
+        verificaStatus(t, resposta.Code, http.StatusOK)
 
-        if !reflect.DeepEqual(got, wantedLeague) {
-            t.Errorf("got %v want %v", got, wantedLeague)
+        if !reflect.DeepEqual(obtido, ligaEsperada) {
+            t.Errorf("obtido %v esperado %v", obtido, ligaEsperada)
         }
     })
 }
@@ -492,33 +492,33 @@ func TestLeague(t *testing.T) {
 ```
 ## Escreva o minimo de código para que o teste rode e cheque as falhas na saída dele.
 
-Você vai precisar atualizar os outros testes, assim como nós temos um novo campo em `StubPlayerStore`; ponha-o como nulo para os outros testes.
+Você vai precisar atualizar os outros testes, assim como nós temos um novo campo em `EsbocoArmazenamentoJogador`; ponha-o como nulo para os outros testes.
 
 Tente executar os testes novamente e você deverá ter:
 
 ```text
-=== RUN   TestLeague/it_returns_the_league_table_as_JSON
-    --- FAIL: TestLeague/it_returns_the_league_table_as_JSON (0.00s)
-        server_test.go:124: got [{Chris 20}] want [{Cleo 32} {Chris 20} {Tiest 14}]
+=== RUN   TestLiga/retorna_a_tabela_da_liga_como_JSON
+    --- FAIL: TestLiga/retorna_a_tabela_da_liga_como_JSON (0.00s)
+        server_test.go:124: obtido [{Chris 20}] esperado [{Cleo 32} {Chris 20} {Tiest 14}]
 ```
 
 ## Escreva código suficiente para fazê-lo passar
 
-Nós sabemos que o dado está em nosso `StubPlayerStore` e nós abstraímos esses dados para uma interface `PlayerStore`. Nós precisamos atualizar isto então qualquer um passando-nos um `PlayerStore` pode prover-nos com dados para as ligas.
+Nós sabemos que o dado está em nosso `EsbocoArmazenamentoJogador` e nós abstraímos esses dados para uma interface `ArmazenamentoJogador`. Nós precisamos atualizar isto então qualquer um passando-nos um `ArmazenamentoJogador` pode prover-nos com dados para as ligas.
 
 ```go
-type PlayerStore interface {
-    GetPlayerScore(name string) int
-    RecordWin(name string)
-    GetLeague() []Player
+type ArmazenamentoJogador interface {
+    ObtemPontuacaoDoJogador(nome string) int
+    GravarVitoria(nome string)
+    ObterLiga() []Jogador
 }
 ```
 
-Agora nós podemos atualizar o código do nosso handler para chamar isto ao invés de retornar uma lista manualmente escrita. Delete nosso método `getLeagueTable()` e então atualize `leagueHandler` para chamar `GetLeague()`.
+Agora nós podemos atualizar o código do nosso handler para chamar isto ao invés de retornar uma lista manualmente escrita. Delete nosso método `obterTabelaDaLiga()` e então atualize `manipulaLiga` para chamar `ObterLiga()`.
 
 ```go
-func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-    json.NewEncoder(w).Encode(p.store.GetLeague())
+func (s *ServidorJogador) manipulaLiga(w http.ResponseWriter, r *http.Request) {
+    json.NewEncoder(w).Encode(s.armazenamento.ObterLiga())
     w.WriteHeader(http.StatusOK)
 }
 ```
@@ -526,41 +526,41 @@ func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 Tente executar os testes:
 
 ```text
-# github.com/quii/learn-go-with-tests/json-and-io/v4
-./main.go:9:50: cannot use NewInMemoryPlayerStore() (type *InMemoryPlayerStore) as type PlayerStore in argument to NewPlayerServer:
-    *InMemoryPlayerStore does not implement PlayerStore (missing GetLeague method)
-./server_integration_test.go:11:27: cannot use store (type *InMemoryPlayerStore) as type PlayerStore in argument to NewPlayerServer:
-    *InMemoryPlayerStore does not implement PlayerStore (missing GetLeague method)
-./server_test.go:36:28: cannot use &store (type *StubPlayerStore) as type PlayerStore in argument to NewPlayerServer:
-    *StubPlayerStore does not implement PlayerStore (missing GetLeague method)
-./server_test.go:74:28: cannot use &store (type *StubPlayerStore) as type PlayerStore in argument to NewPlayerServer:
-    *StubPlayerStore does not implement PlayerStore (missing GetLeague method)
-./server_test.go:106:29: cannot use &store (type *StubPlayerStore) as type PlayerStore in argument to NewPlayerServer:
-    *StubPlayerStore does not implement PlayerStore (missing GetLeague method)
+# github.com/larien/learn-go-with-tests/json-and-io/v4
+./main.go:9:50: cannot use NovoArmazenamentoDeJogadorNaMemoria() (type *ArmazenamentoDeJogadorNaMemoria) as type ArmazenamentoJogador in argument to NovoServidorJogador:
+    *ArmazenamentoDeJogadorNaMemoria does not implement ArmazenamentoJogador (missing ObterLiga method)
+./servidor_integration_test.go:11:27: cannot use armazenamento (type *ArmazenamentoDeJogadorNaMemoria) as type ArmazenamentoJogador in argument to NovoServidorJogador:
+    *ArmazenamentoDeJogadorNaMemoria does not implement ArmazenamentoJogador (missing ObterLiga method)
+./server_test.go:36:28: cannot use &armazenamento (type *EsbocoArmazenamentoJogador) as type ArmazenamentoJogador in argument to NovoServidorJogador:
+    *EsbocoArmazenamentoJogador does not implement ArmazenamentoJogador (missing ObterLiga method)
+./server_test.go:74:28: cannot use &armazenamento (type *EsbocoArmazenamentoJogador) as type ArmazenamentoJogador in argument to NovoServidorJogador:
+    *EsbocoArmazenamentoJogador does not implement ArmazenamentoJogador (missing ObterLiga method)
+./server_test.go:106:29: cannot use &armazenamento (type *EsbocoArmazenamentoJogador) as type ArmazenamentoJogador in argument to NovoServidorJogador:
+    *EsbocoArmazenamentoJogador does not implement ArmazenamentoJogador (missing ObterLiga method)
 ```
 
-O compilador está reclamando porque `InMemoryPlayerStore` e `StubPlayerStore` não tem os novos métodos que nós adicionamos em nossa interface.
+O compilador está reclamando porque `ArmazenamentoDeJogadorNaMemoria` e `EsbocoArmazenamentoJogador` não tem os novos métodos que nós adicionamos em nossa interface.
 
-Para `StubPlayerStore` isto é bem fácil, apenas retorne o campo `league` que nós adicionamos anteriormente.
+Para `EsbocoArmazenamentoJogador` isto é bem fácil, apenas retorne o campo `liga` que nós adicionamos anteriormente.
 
 ```go
-func (s *StubPlayerStore) GetLeague() []Player {
-    return s.league
+func (s *EsbocoArmazenamentoJogador) ObterLiga() []Jogador {
+    return s.liga
 }
 ```
 Aqui está uma lembrança de como `InMemoryStore` é implementado:
 
 ```go
-type InMemoryPlayerStore struct {
-    store map[string]int
+type ArmazenamentoDeJogadorNaMemoria struct {
+    armazenamento map[string]int
 }
 ```
-Embora seja bastante simples para implementar `GetLeague` "propriamente", iterando sobre o map, lembre que nós estamos apenas tentando _escrever o mínimo de código para fazer os testes passarem_.
+Embora seja bastante simples para implementar `ObterLiga` "propriamente", iterando sobre o map, lembre que nós estamos apenas tentando _escrever o mínimo de código para fazer os testes passarem_.
 
 Então vamos apenas deixar o compilador feliz por enquanto e viver com o desconfortável sentimento de uma implementação incompleta em nosso `InMemoryStore`.
 
 ```go
-func (i *InMemoryPlayerStore) GetLeague() []Player {
+func (a *ArmazenamentoDeJogadorNaMemoria) ObterLiga() []Jogador {
     return nil
 }
 ```
@@ -574,50 +574,50 @@ Tente executar os testes, o compilador deve passar e os testes deverão estar pa
 O código de teste não transmite suas intenções muito bem e possui vários trechos que podem ser refatorados.
 
 ```go
-t.Run("it returns the league table as JSON", func(t *testing.T) {
-    wantedLeague := []Player{
+t.Run("retorna a tabela da Liga como JSON", func(t *testing.T) {
+    ligaEsperada := []Jogador{
         {"Cleo", 32},
         {"Chris", 20},
         {"Tiest", 14},
     }
 
-    store := StubPlayerStore{nil, nil, wantedLeague}
-    server := NewPlayerServer(&store)
+    armazenamento := EsbocoArmazenamentoJogador{nil, nil, ligaEsperada}
+    servidor := NovoServidorJogador(&armazenamento)
 
-    request := newLeagueRequest()
-    response := httptest.NewRecorder()
+    requisicao := novaRequisicaoDeLiga()
+    resposta := httptest.NewRecorder()
 
-    server.ServeHTTP(response, request)
+    servidor.ServeHTTP(resposta, requisicao)
 
-    got := getLeagueFromResponse(t, response.Body)
-    assertStatus(t, response.Code, http.StatusOK)
-    assertLeague(t, got, wantedLeague)
+    obtido := obterLigaDaResposta(t, resposta.Body)
+    verificaStatus(t, resposta.Code, http.StatusOK)
+    verificaLiga(t, obtido, ligaEsperada)
 })
 ```
 
 Aqui estão os novos helpers:
 
 ```go
-func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
+func obterLigaDaResposta(t *testing.T, body io.Reader) (liga []Jogador) {
     t.Helper()
-    err := json.NewDecoder(body).Decode(&league)
+    err := json.NewDecoder(body).Decode(&liga)
 
     if err != nil {
-        t.Fatalf("Unable to parse response from server '%s' into slice of Player, '%v'", body, err)
+        t.Fatalf("Não foi possível fazer parse da resposta do servidor '%s' no slice de Jogador, '%v'", body, err)
     }
 
     return
 }
 
-func assertLeague(t *testing.T, got, want []Player) {
+func verificaLiga(t *testing.T, obtido, esperado []Jogador) {
     t.Helper()
-    if !reflect.DeepEqual(got, want) {
-        t.Errorf("got %v want %v", got, want)
+    if !reflect.DeepEqual(obtido, esperado) {
+        t.Errorf("obtido %v esperado %v", obtido, esperado)
     }
 }
 
-func newLeagueRequest() *http.Request {
-    req, _ := http.NewRequest(http.MethodGet, "/league", nil)
+func novaRequisicaoDeLiga() *http.Request {
+    req, _ := http.NewRequest(http.MethodGet, "/liga", nil)
     return req
 }
 ```
@@ -629,27 +629,27 @@ Uma última coisa que nós precisamos fazer para nosso servidor funcionar é ter
 Adicione essa afirmação no teste existente
 
 ```go
-if response.Result().Header.Get("content-type") != "application/json" {
-    t.Errorf("response did not have content-type of application/json, got %v", response.Result().Header)
+if resposta.Result().Header.Get("content-type") != "application/json" {
+    t.Errorf("resposta não tinha o tipo de conteúdo de application/json, obtido %v", resposta.Result().Header)
 }
 ```
 
 ## Tente rodar o teste
 
 ```text
-=== RUN   TestLeague/it_returns_the_league_table_as_JSON
-    --- FAIL: TestLeague/it_returns_the_league_table_as_JSON (0.00s)
-        server_test.go:124: response did not have content-type of application/json, got map[Content-Type:[text/plain; charset=utf-8]]
+=== RUN   TestLiga/retorna_a_tabela_da_liga_como_JSON
+    --- FAIL: TestLiga/retorna_a_tabela_da_liga_como_JSON (0.00s)
+        server_test.go:124: resposta não tinha o tipo de conteúdo de application/json, obtido map[Content-Type:[text/plain; charset=utf-8]]
 ```
 
 ## Escreva código suficiente para fazê-lo passar
 
-Atualize `leagueHandler`
+Atualize `manipulaLiga`
 
 ```go
-func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+func (s *ServidorJogador) manipulaLiga(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("content-type", "application/json")
-    json.NewEncoder(w).Encode(p.store.GetLeague())
+    json.NewEncoder(w).Encode(s.armazenamento.ObterLiga())
 }
 ```
 
@@ -657,15 +657,15 @@ O teste deve passar.
 
 ## Refatoração
 
-Adicione um helper para `assertContentType`.
+Adicione um helper para `verificaTipoDoConteudo`.
 
 ```go
-const jsonContentType = "application/json"
+const tipoDoConteudoJSON = "application/json"
 
-func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want string) {
+func verificaTipoDoConteudo(t *testing.T, resposta *httptest.ResponseRecorder, esperado string) {
     t.Helper()
-    if response.Result().Header.Get("content-type") != want {
-        t.Errorf("response did not have content-type of %s, got %v", want, response.Result().Header)
+    if resposta.Result().Header.Get("content-type") != esperado {
+        t.Errorf("resposta não obteve content-type de %s, obtido %v", esperado, resposta.Result().Header)
     }
 }
 ```
@@ -673,45 +673,45 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want s
 Use isso no teste.
 
 ```go
-assertContentType(t, response, jsonContentType)
+verificaTipoDoConteudo(t, resposta, tipoDoConteudoJSON)
 ```
 
-Agora que nós resolvemos `PlayerServer`, por agora podemos mudar nossa atenção para `InMemoryPlayerStore` porque no momento se nós tentarmos demonstrá-lo para o gerente de produto, `/league` não vai funcionar.
+Agora que nós resolvemos `ServidorJogador`, por agora podemos mudar nossa atenção para `ArmazenamentoDeJogadorNaMemoria` porque no momento se nós tentarmos demonstrá-lo para o gerente de produto, `/liga` não vai funcionar.
 
-A forma mais rápida de nós termos alguma confiança é adicionar a nosso teste de integração, nós podemos bater no novo endpoint e checar se nós recebemos a resposta correta de `/league`.
+A forma mais rápida de nós termos alguma confiança é adicionar a nosso teste de integração, nós podemos bater no novo endpoint e checar se nós recebemos a resposta correta de `/liga`.
 
 ## Escreva o teste primeiro
 
 Nós podemos usar `t.Run` para parar este teste um pouco e então reusar os helpers dos testes do nosso servidor - novamente mostrando a importância de refatoração dos testes.
 
 ```go
-func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-    store := NewInMemoryPlayerStore()
-    server := NewPlayerServer(store)
-    player := "Pepper"
+func TestGravaVitoriasEAsRetorna(t *testing.T) {
+    armazenamento := NovoArmazenamentoDeJogadorNaMemoria()
+    servidor := NovoServidorJogador(armazenamento)
+    jogador := "Pepper"
 
-    server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-    server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-    server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+    servidor.ServeHTTP(httptest.NewRecorder(), novaRequisiçãoPostDeVitoria(jogador))
+    servidor.ServeHTTP(httptest.NewRecorder(), novaRequisiçãoPostDeVitoria(jogador))
+    servidor.ServeHTTP(httptest.NewRecorder(), novaRequisiçãoPostDeVitoria(jogador))
 
-    t.Run("get score", func(t *testing.T) {
-        response := httptest.NewRecorder()
-        server.ServeHTTP(response, newGetScoreRequest(player))
-        assertStatus(t, response.Code, http.StatusOK)
+    t.Run("obter pontuação", func(t *testing.T) {
+        resposta := httptest.NewRecorder()
+        servidor.ServeHTTP(resposta, novaRequisicaoObterPontuacao(jogador))
+        verificaStatus(t, resposta.Code, http.StatusOK)
 
-        assertResponseBody(t, response.Body.String(), "3")
+        verificaCorpoDaResposta(t, resposta.Body.String(), "3")
     })
 
-    t.Run("get league", func(t *testing.T) {
-        response := httptest.NewRecorder()
-        server.ServeHTTP(response, newLeagueRequest())
-        assertStatus(t, response.Code, http.StatusOK)
+    t.Run("obter liga", func(t *testing.T) {
+        resposta := httptest.NewRecorder()
+        servidor.ServeHTTP(resposta, novaRequisicaoDeLiga())
+        verificaStatus(t, resposta.Code, http.StatusOK)
 
-        got := getLeagueFromResponse(t, response.Body)
-        want := []Player{
+        obtido := obterLigaDaResposta(t, resposta.Body)
+        esperado := []Jogador{
             {"Pepper", 3},
         }
-        assertLeague(t, got, want)
+        verificaLiga(t, obtido, esperado)
     })
 }
 ```
@@ -719,22 +719,22 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 ## Tente rodar o teste
 
 ```text
-=== RUN   TestRecordingWinsAndRetrievingThem/get_league
-    --- FAIL: TestRecordingWinsAndRetrievingThem/get_league (0.00s)
-        server_integration_test.go:35: got [] want [{Pepper 3}]
+=== RUN   TestGravaVitoriasEAsRetorna/obter_liga
+    --- FAIL: TestGravaVitoriasEAsRetorna/obter_liga (0.00s)
+        servidor_integration_test.go:35: obtido [] esperado [{Pepper 3}]
 ```
 
 ## Escreva código suficiente para fazê-lo passar
 
-`InMemoryPlayerStore` is returning `nil` when you call `GetLeague()` so we'll need to fix that.
+`ArmazenamentoDeJogadorNaMemoria` is returning `nil` when you call `ObterLiga()` so we'll need to fix that.
 
 ```go
-func (i *InMemoryPlayerStore) GetLeague() []Player {
-    var league []Player
-    for name, wins := range i.store {
-        league = append(league, Player{name, wins})
+func (a *ArmazenamentoDeJogadorNaMemoria) ObterLiga() []Jogador {
+    var liga []Jogador
+    for nome, vitórias := range a.armazenamento {
+        liga = append(liga, Jogador{nome, vitórias})
     }
-    return league
+    return liga
 }
 ```
 
