@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"io/ioutil"
@@ -6,20 +6,20 @@ import (
 )
 
 func TestTape_Write(t *testing.T) {
-	file, clean := createTempFile(t, "12345")
-	defer clean()
+	arquivo, limpar := criarArquivoTemporario(t, "12345")
+	defer limpar()
 
-	tape := &tape{file}
+	tape := &tape{arquivo}
 
 	tape.Write([]byte("abc"))
 
-	file.Seek(0, 0)
-	newFileContents, _ := ioutil.ReadAll(file)
+	arquivo.Seek(0, 0)
+	novosConteudosDeArquivo, _ := ioutil.ReadAll(arquivo)
 
-	got := string(newFileContents)
-	want := "abc"
+	obtido := string(novosConteudosDeArquivo)
+	esperado := "abc"
 
-	if got != want {
-		t.Errorf("got '%s' want '%s'", got, want)
+	if obtido != esperado {
+		t.Errorf("obtido '%s' esperado '%s'", obtido, esperado)
 	}
 }

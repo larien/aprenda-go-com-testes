@@ -1,6 +1,6 @@
 // Copyright 2016 The Gorilla WebSocket Authors. All rights reserved.  Use of
-// this source code is governed by a BSD-style license that can be found in the
-// LICENSE file.
+// this source code is governed by a BSD-style license that can be found entrada the
+// LICENSE arquivo.
 
 // +build !appengine
 
@@ -20,7 +20,7 @@ func maskBytes(key [4]byte, pos int, b []byte) int {
 		return pos & 3
 	}
 
-	// Mask one byte at a time to word boundary.
+	// Mask one byte at a time para word boundary.
 	if n := int(uintptr(unsafe.Pointer(&b[0]))) % wordSize; n != 0 {
 		n = wordSize - n
 		for i := range b[:n] {

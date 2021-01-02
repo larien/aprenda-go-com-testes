@@ -1,34 +1,35 @@
 package main
 
 import (
-	"github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v1"
 	"log"
 	"net/http"
 	"os"
+
+	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v1"
 )
 
-const dbFileName = "game.db.json"
+const nomeArquivoBaseDeDados = "jogo.db.json"
 
 func main() {
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	db, err := os.OpenFile(nomeArquivoBaseDeDados, os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
+		log.Fatalf("problema ao abrir %s %v", nomeArquivoBaseDeDados, err)
 	}
 
-	store, err := poker.NewFileSystemPlayerStore(db)
+	armazenamento, err := poquer.NovoSistemaArquivoArmazenamentoJogador(db)
 
 	if err != nil {
-		log.Fatalf("problem creating file system player store, %v ", err)
+		log.Fatalf("problema ao criar sistema de arquivo de armazenamento do jogador, %v ", err)
 	}
 
-	server, err := poker.NewPlayerServer(store)
+	servidor, err := poquer.NovoServidorJogador(armazenamento)
 
 	if err != nil {
-		log.Fatalf("problem creating player server %v", err)
+		log.Fatalf("problema ao criar o servidor do jogador %v", err)
 	}
 
-	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("could not listen on port 5000 %v", err)
+	if err := http.ListenAndServe(":5000", servidor); err != nil {
+		log.Fatalf("não foi possível ouvir na porta 5000 %v", err)
 	}
 }

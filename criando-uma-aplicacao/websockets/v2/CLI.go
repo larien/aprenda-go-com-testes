@@ -1,4 +1,4 @@
-package poker
+package poquer
 
 import (
 	"bufio"
@@ -9,64 +9,64 @@ import (
 	"strings"
 )
 
-// CLI helps players through a game of poker
+// CLI ajuda jogadores em uma jogo de pôquer
 type CLI struct {
-	playerStore PlayerStore
-	in          *bufio.Scanner
-	out         io.Writer
-	game        Game
+	armazenamentoJogador ArmazenamentoJogador
+	entrada              *bufio.Scanner
+	saida                io.Writer
+	jogo                 Jogo
 }
 
-// NewCLI creates a CLI for playing poker
-func NewCLI(in io.Reader, out io.Writer, game Game) *CLI {
+// NovaCLI cria uma CLI para jogar pôquer
+func NovaCLI(entrada io.Reader, saida io.Writer, jogo Jogo) *CLI {
 	return &CLI{
-		in:   bufio.NewScanner(in),
-		out:  out,
-		game: game,
+		entrada: bufio.NewScanner(entrada),
+		saida:   saida,
+		jogo:    jogo,
 	}
 }
 
-// PlayerPrompt is the text asking the user for the number of players
-const PlayerPrompt = "Please enter the number of players: "
+// PromptJogador é o texto pedindo o número de jogadores para o usuário
+const PromptJogador = "Favor entrar o número de jogadores: "
 
-// BadPlayerInputErrMsg is the text telling the user they did bad things
-const BadPlayerInputErrMsg = "Bad value received for number of players, please try again with a number"
+// ErrMsgEntradaJogadorIncorreta representa o texto dizendo ao usuário que ele inseriu um valor incorreto
+const ErrMsgEntradaJogadorIncorreta = "Valor inválido recebido para número de jogadores, favor tentar novamente com um número"
 
-// BadWinnerInputMsg is the text telling the user they declared the winner wrong
-const BadWinnerInputMsg = "invalid winner input, expect format of 'PlayerName wins'"
+// ErrMsgEntradaVencedorIncorreta representa o texto dizendo ao usuário que a declaração de vencedor foi errada
+const ErrMsgEntradaVencedorIncorreta = "entrada de vencedor incorreta, espera-se formato de 'NomeDoJogador venceu'"
 
-// PlayPoker starts the game
-func (cli *CLI) PlayPoker() {
-	fmt.Fprint(cli.out, PlayerPrompt)
+// JogarPoquer começa a jogo
+func (cli *CLI) JogarPoquer() {
+	fmt.Fprint(cli.saida, PromptJogador)
 
-	numberOfPlayers, err := strconv.Atoi(cli.readLine())
+	numeroDeJogadores, err := strconv.Atoi(cli.lerLinha())
 
 	if err != nil {
-		fmt.Fprint(cli.out, BadPlayerInputErrMsg)
+		fmt.Fprint(cli.saida, ErrMsgEntradaJogadorIncorreta)
 		return
 	}
 
-	cli.game.Start(numberOfPlayers, cli.out)
+	cli.jogo.Começar(numeroDeJogadores, cli.saida)
 
-	winnerInput := cli.readLine()
-	winner, err := extractWinner(winnerInput)
+	entradaVencedor := cli.lerLinha()
+	vencedor, err := extrairJogador(entradaVencedor)
 
 	if err != nil {
-		fmt.Fprint(cli.out, BadWinnerInputMsg)
+		fmt.Fprint(cli.saida, ErrMsgEntradaVencedorIncorreta)
 		return
 	}
 
-	cli.game.Finish(winner)
+	cli.jogo.Terminar(vencedor)
 }
 
-func extractWinner(userInput string) (string, error) {
-	if !strings.Contains(userInput, " wins") {
-		return "", errors.New(BadWinnerInputMsg)
+func extrairJogador(userInput string) (string, error) {
+	if !strings.Contains(userInput, " venceu") {
+		return "", errors.New(ErrMsgEntradaVencedorIncorreta)
 	}
-	return strings.Replace(userInput, " wins", "", 1), nil
+	return strings.Replace(userInput, " venceu", "", 1), nil
 }
 
-func (cli *CLI) readLine() string {
-	cli.in.Scan()
-	return cli.in.Text()
+func (cli *CLI) lerLinha() string {
+	cli.entrada.Scan()
+	return cli.entrada.Text()
 }

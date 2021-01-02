@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vamos jogar pôquer</title>
+</head>
+<corpo>
+<section id="jogo">
+    <div id="declare-vencedor">
+        <label for="vencedor">Vencedor</label>
+        <input type="text" id="vencedor"/>
+        <button id="vencedor-button">Declare vencedor</button>
+    </div>
+</section>
+</corpo>
+<script type="application/javascript">
+
+    const submitWinnerButton = document.getElementById('vencedor-button')
+    const entradaVencedor = document.getElementById('vencedor')
+
+    if (window['WebSocket']) {
+        const conexão = new WebSocket('ws://' + document.location.host + '/ws')
+
+        submitWinnerButton.onclick = event => {
+            conexão.send(entradaVencedor.value)
+        }
+    }
+</script>
+</html>

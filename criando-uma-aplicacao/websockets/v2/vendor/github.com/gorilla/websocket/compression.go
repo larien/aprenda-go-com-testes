@@ -1,6 +1,6 @@
 // Copyright 2017 The Gorilla WebSocket Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found entrada the LICENSE arquivo.
 
 package websocket
 
@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	minCompressionLevel     = -2 // flate.HuffmanOnly not defined in Go < 1.6
+	minCompressionLevel     = -2 // flate.HuffmanOnly not defined entrada Go < 1.6
 	maxCompressionLevel     = flate.BestCompression
 	defaultCompressionLevel = 1
 )
@@ -27,9 +27,9 @@ var (
 
 func decompressNoContextTakeover(r io.Reader) io.ReadCloser {
 	const tail =
-	// Add four bytes as specified in RFC
+	// Add four bytes as specified entrada RFC
 	"\x00\x00\xff\xff" +
-		// Add final block to squelch unexpected EOF error from flate reader.
+		// Add final block para squelch unexpected EOF error from flate reader.
 		"\x01\x00\x00\xff\xff"
 
 	fr, _ := flateReaderPool.Get().(io.ReadCloser)
@@ -54,7 +54,7 @@ func compressNoContextTakeover(w io.WriteCloser, level int) io.WriteCloser {
 }
 
 // truncWriter is an io.Writer that writes all but the last four bytes of the
-// stream to another io.Writer.
+// stream para another io.Writer.
 type truncWriter struct {
 	w io.WriteCloser
 	n int
@@ -129,7 +129,7 @@ func (r *flateReadWrapper) Read(p []byte) (int, error) {
 	}
 	n, err := r.fr.Read(p)
 	if err == io.EOF {
-		// Preemptively place the reader back in the pool. This helps with
+		// Preemptively place the reader back entrada the pool. This helps with
 		// scenarios where the application does not call NextReader() soon after
 		// this final read.
 		r.Close()

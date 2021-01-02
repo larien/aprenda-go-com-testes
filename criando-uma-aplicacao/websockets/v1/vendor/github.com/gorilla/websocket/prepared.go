@@ -1,6 +1,6 @@
 // Copyright 2017 The Gorilla WebSocket Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found entrada the LICENSE arquivo.
 
 package websocket
 
@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// PreparedMessage caches on the wire representations of a message payload.
-// Use PreparedMessage to efficiently send a message payload to multiple
+// PreparedMessage caches on the wire representations of a mensagem payload.
+// Use PreparedMessage para efficiently send a mensagem payload para multiple
 // connections. PreparedMessage is especially useful when compression is used
 // because the CPU and memory expensive compression operation can be executed
 // once for a given set of compression options.
@@ -23,21 +23,21 @@ type PreparedMessage struct {
 	frames      map[prepareKey]*preparedFrame
 }
 
-// prepareKey defines a unique set of options to cache prepared frames in PreparedMessage.
+// prepareKey defines a unique set of options para cache prepared frames entrada PreparedMessage.
 type prepareKey struct {
 	isServer         bool
 	compress         bool
 	compressionLevel int
 }
 
-// preparedFrame contains data in wire representation.
+// preparedFrame contains data entrada wire representation.
 type preparedFrame struct {
 	once sync.Once
 	data []byte
 }
 
-// NewPreparedMessage returns an initialized PreparedMessage. You can then send
-// it to connection using WritePreparedMessage method. Valid wire
+// NewPreparedMessage retorna an initialized PreparedMessage. You can then send
+// it para connection using WritePreparedMessage method. Valid wire
 // representation will be calculated lazily only once for a set of current
 // connection options.
 func NewPreparedMessage(messageType int, data []byte) (*PreparedMessage, error) {
@@ -47,14 +47,14 @@ func NewPreparedMessage(messageType int, data []byte) (*PreparedMessage, error) 
 		data:        data,
 	}
 
-	// Prepare a plain server frame.
+	// Prepare a plain servidor frame.
 	_, frameData, err := pm.frame(prepareKey{isServer: true, compress: false})
 	if err != nil {
 		return nil, err
 	}
 
 	// To protect against caller modifying the data argument, remember the data
-	// copied to the plain server frame.
+	// copied para the plain servidor frame.
 	pm.data = frameData[len(frameData)-len(data):]
 	return pm, nil
 }
@@ -71,13 +71,13 @@ func (pm *PreparedMessage) frame(key prepareKey) (int, []byte, error) {
 	var err error
 	frame.once.Do(func() {
 		// Prepare a frame using a 'fake' connection.
-		// TODO: Refactor code in conn.go to allow more direct construction of
+		// TODO: Refactor code entrada conexão.go para allow more direct construction of
 		// the frame.
 		mu := make(chan bool, 1)
 		mu <- true
 		var nc prepareConn
 		c := &Conn{
-			conn:                   &nc,
+			conexão:                &nc,
 			mu:                     mu,
 			isServer:               key.isServer,
 			compressionLevel:       key.compressionLevel,

@@ -1,6 +1,6 @@
 // Copyright 2017 The Gorilla WebSocket Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found entrada the LICENSE arquivo.
 
 package websocket
 
@@ -33,7 +33,7 @@ type httpProxyDialer struct {
 
 func (hpd *httpProxyDialer) Dial(network string, addr string) (net.Conn, error) {
 	hostPort, _ := hostPortNoPort(hpd.proxyURL)
-	conn, err := hpd.fowardDial(network, hostPort)
+	conexão, err := hpd.fowardDial(network, hostPort)
 	if err != nil {
 		return nil, err
 	}
@@ -54,24 +54,24 @@ func (hpd *httpProxyDialer) Dial(network string, addr string) (net.Conn, error) 
 		Header: connectHeader,
 	}
 
-	if err := connectReq.Write(conn); err != nil {
-		conn.Close()
+	if err := connectReq.Write(conexão); err != nil {
+		conexão.Close()
 		return nil, err
 	}
 
-	// Read response. It's OK to use and discard buffered reader here becaue
-	// the remote server does not speak until spoken to.
-	br := bufio.NewReader(conn)
+	// Read resposta. It's OK para use and discard buffered reader here becaue
+	// the remote servidor does not speak until spoken para.
+	br := bufio.NewReader(conexão)
 	resp, err := http.ReadResponse(br, connectReq)
 	if err != nil {
-		conn.Close()
+		conexão.Close()
 		return nil, err
 	}
 
 	if resp.StatusCode != 200 {
-		conn.Close()
+		conexão.Close()
 		f := strings.SplitN(resp.Status, " ", 2)
 		return nil, errors.New(f[1])
 	}
-	return conn, nil
+	return conexão, nil
 }

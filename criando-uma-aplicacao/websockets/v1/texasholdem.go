@@ -1,34 +1,34 @@
-package poker
+package poquer
 
 import "time"
 
-// TexasHoldem manages a game of poker
+// TexasHoldem gerencia um jogo de pôquer
 type TexasHoldem struct {
-	alerter BlindAlerter
-	store   PlayerStore
+	alertador     AlertadorDeBlind
+	armazenamento ArmazenamentoJogador
 }
 
-// NewTexasHoldem returns a new game
-func NewTexasHoldem(alerter BlindAlerter, store PlayerStore) *TexasHoldem {
+// NovoTexasHoldem retorna um novo jogo
+func NovoTexasHoldem(alertador AlertadorDeBlind, armazenamento ArmazenamentoJogador) *TexasHoldem {
 	return &TexasHoldem{
-		alerter: alerter,
-		store:   store,
+		alertador:     alertador,
+		armazenamento: armazenamento,
 	}
 }
 
-// Start will schedule blind alerts dependant on the number of players
-func (p *TexasHoldem) Start(numberOfPlayers int) {
-	blindIncrement := time.Duration(5+numberOfPlayers) * time.Minute
+// Começar armazena alertas de blind dependendo do número de jogadores
+func (p *TexasHoldem) Começar(numeroDeJogadores int) {
+	incrementoDeBlind := time.Duration(5+numeroDeJogadores) * time.Minute
 
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
-	blindTime := 0 * time.Second
+	horarioDoBlind := 0 * time.Second
 	for _, blind := range blinds {
-		p.alerter.ScheduleAlertAt(blindTime, blind)
-		blindTime = blindTime + blindIncrement
+		p.alertador.AgendarAlertaPara(horarioDoBlind, blind)
+		horarioDoBlind = horarioDoBlind + incrementoDeBlind
 	}
 }
 
-// Finish ends the game, recording the winner
-func (p *TexasHoldem) Finish(winner string) {
-	p.store.RecordWin(winner)
+// Terminar finaliza o jogo, gravando o vencedor
+func (p *TexasHoldem) Terminar(vencedor string) {
+	p.armazenamento.GravarVitoria(vencedor)
 }

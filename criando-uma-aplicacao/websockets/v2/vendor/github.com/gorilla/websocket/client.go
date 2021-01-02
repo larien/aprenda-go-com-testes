@@ -1,6 +1,6 @@
 // Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found entrada the LICENSE arquivo.
 
 package websocket
 
@@ -19,16 +19,16 @@ import (
 	"time"
 )
 
-// ErrBadHandshake is returned when the server response to opening handshake is
+// ErrBadHandshake is returned when the servidor resposta para opening handshake is
 // invalid.
 var ErrBadHandshake = errors.New("websocket: bad handshake")
 
 var errInvalidCompression = errors.New("websocket: invalid compression negotiation")
 
 // NewClient creates a new client connection using the given net connection.
-// The URL u specifies the host and request URI. Use requestHeader to specify
+// The URL u specifies the host and requisicao URI. Use requestHeader para specify
 // the origin (Origin), subprotocols (Sec-WebSocket-Protocol) and cookies
-// (Cookie). Use the response.Header to get the selected subprotocol
+// (Cookie). Use the resposta.Header para obterthe selected subprotocol
 // (Sec-WebSocket-Protocol) and cookies (Set-Cookie).
 //
 // If the WebSocket handshake fails, ErrBadHandshake is returned along with a
@@ -36,7 +36,7 @@ var errInvalidCompression = errors.New("websocket: invalid compression negotiati
 // etc.
 //
 // Deprecated: Use Dialer instead.
-func NewClient(netConn net.Conn, u *url.URL, requestHeader http.Header, readBufSize, writeBufSize int) (c *Conn, response *http.Response, err error) {
+func NewClient(netConn net.Conn, u *url.URL, requestHeader http.Header, readBufSize, writeBufSize int) (c *Conn, resposta *http.Response, err error) {
 	d := Dialer{
 		ReadBufferSize:  readBufSize,
 		WriteBufferSize: writeBufSize,
@@ -47,7 +47,7 @@ func NewClient(netConn net.Conn, u *url.URL, requestHeader http.Header, readBufS
 	return d.Dial(u.String(), requestHeader)
 }
 
-// A Dialer contains options for connecting to WebSocket server.
+// A Dialer contains options for connecting para WebSocket servidor.
 type Dialer struct {
 	// NetDial specifies the dial function for creating TCP connections. If
 	// NetDial is nil, net.Dial is used.
@@ -57,26 +57,26 @@ type Dialer struct {
 	// NetDialContext is nil, net.DialContext is used.
 	NetDialContext func(ctx context.Context, network, addr string) (net.Conn, error)
 
-	// Proxy specifies a function to return a proxy for a given
-	// Request. If the function returns a non-nil error, the
-	// request is aborted with the provided error.
-	// If Proxy is nil or returns a nil *URL, no proxy is used.
+	// Proxy specifies a function para return a proxy for a given
+	// Request. If the function retorna a non-nil error, the
+	// requisicao is aborted with the provided error.
+	// If Proxy is nil or retorna a nil *URL, no proxy is used.
 	Proxy func(*http.Request) (*url.URL, error)
 
-	// TLSClientConfig specifies the TLS configuration to use with tls.Client.
+	// TLSClientConfig specifies the TLS configuration para use with tls.Client.
 	// If nil, the default configuration is used.
 	TLSClientConfig *tls.Config
 
-	// HandshakeTimeout specifies the duration for the handshake to complete.
+	// HandshakeTimeout specifies the duracao for the handshake para complete.
 	HandshakeTimeout time.Duration
 
 	// ReadBufferSize and WriteBufferSize specify I/O buffer sizes. If a buffer
 	// size is zero, then a useful default size is used. The I/O buffer sizes
-	// do not limit the size of the messages that can be sent or received.
+	// do not limit the size of the mensagens that can be sent or received.
 	ReadBufferSize, WriteBufferSize int
 
 	// WriteBufferPool is a pool of buffers for write operations. If the value
-	// is not set, then write buffers are allocated to the connection for the
+	// is not set, then write buffers are allocated para the connection for the
 	// lifetime of the connection.
 	//
 	// A pool is most useful when the application has a modest volume of writes
@@ -89,15 +89,15 @@ type Dialer struct {
 	// Subprotocols specifies the client's requested subprotocols.
 	Subprotocols []string
 
-	// EnableCompression specifies if the client should attempt to negotiate
-	// per message compression (RFC 7692). Setting this value to true does not
+	// EnableCompression specifies if the client should attempt para negotiate
+	// per mensagem compression (RFC 7692). Setting this value para true does not
 	// guarantee that compression will be supported. Currently only "no context
 	// takeover" modes are supported.
 	EnableCompression bool
 
 	// Jar specifies the cookie jar.
-	// If Jar is nil, cookies are not sent in requests and ignored
-	// in responses.
+	// If Jar is nil, cookies are not sent entrada requests and ignored
+	// entrada responses.
 	Jar http.CookieJar
 }
 
@@ -126,26 +126,26 @@ func hostPortNoPort(u *url.URL) (hostPort, hostNoPort string) {
 	return hostPort, hostNoPort
 }
 
-// DefaultDialer is a dialer with all fields set to the default values.
+// DefaultDialer is a dialer with all fields set para the default values.
 var DefaultDialer = &Dialer{
 	Proxy:            http.ProxyFromEnvironment,
 	HandshakeTimeout: 45 * time.Second,
 }
 
-// nilDialer is dialer to use when receiver is nil.
+// nilDialer is dialer para use when receiver is nil.
 var nilDialer = *DefaultDialer
 
-// DialContext creates a new client connection. Use requestHeader to specify the
+// DialContext creates a new client connection. Use requestHeader para specify the
 // origin (Origin), subprotocols (Sec-WebSocket-Protocol) and cookies (Cookie).
-// Use the response.Header to get the selected subprotocol
+// Use the resposta.Header para obterthe selected subprotocol
 // (Sec-WebSocket-Protocol) and cookies (Set-Cookie).
 //
-// The context will be used in the request and in the Dialer
+// The context will be used entrada the requisicao and entrada the Dialer
 //
 // If the WebSocket handshake fails, ErrBadHandshake is returned along with a
 // non-nil *http.Response so that callers can handle redirects, authentication,
-// etcetera. The response body may not contain the entire response and does not
-// need to be closed by the application.
+// etcetera. The resposta corpo may not contain the entire resposta and does not
+// need para be closed by the application.
 func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader http.Header) (*Conn, *http.Response, error) {
 	if d == nil {
 		d = &nilDialer
@@ -171,7 +171,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 	}
 
 	if u.User != nil {
-		// User name and password are not allowed in websocket URIs.
+		// User nome and password are not allowed entrada websocket URIs.
 		return nil, nil, errMalformedURL
 	}
 
@@ -186,14 +186,14 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 	}
 	req = req.WithContext(ctx)
 
-	// Set the cookies present in the cookie jar of the dialer
+	// Set the cookies present entrada the cookie jar of the dialer
 	if d.Jar != nil {
 		for _, cookie := range d.Jar.Cookies(u) {
 			req.AddCookie(cookie)
 		}
 	}
 
-	// Set the request headers using the capitalization for names and values in
+	// Set the requisicao headers using the capitalization for names and values entrada
 	// RFC examples. Although the capitalization shouldn't matter, there are
 	// servers that depend on it. The Header.Set method is not used because the
 	// method canonicalizes the header names.
@@ -250,7 +250,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		}
 	}
 
-	// If needed, wrap the dial function to set the connection deadline.
+	// If needed, wrap the dial function para set the connection deadline.
 	if deadline, ok := ctx.Deadline(); ok {
 		forwardDial := netDial
 		netDial = func(network, addr string) (net.Conn, error) {
@@ -267,7 +267,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		}
 	}
 
-	// If needed, wrap the dial function to connect through a proxy.
+	// If needed, wrap the dial function para connect through a proxy.
 	if d.Proxy != nil {
 		proxyURL, err := d.Proxy(req)
 		if err != nil {
@@ -324,19 +324,19 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		}
 	}
 
-	conn := newConn(netConn, false, d.ReadBufferSize, d.WriteBufferSize, d.WriteBufferPool, nil, nil)
+	conexão := newConn(netConn, false, d.ReadBufferSize, d.WriteBufferSize, d.WriteBufferPool, nil, nil)
 
 	if err := req.Write(netConn); err != nil {
 		return nil, nil, err
 	}
 
 	if trace != nil && trace.GotFirstResponseByte != nil {
-		if peek, err := conn.br.Peek(1); err == nil && len(peek) == 1 {
+		if peek, err := conexão.br.Peek(1); err == nil && len(peek) == 1 {
 			trace.GotFirstResponseByte()
 		}
 	}
 
-	resp, err := http.ReadResponse(conn.br, req)
+	resp, err := http.ReadResponse(conexão.br, req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -352,7 +352,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		!strings.EqualFold(resp.Header.Get("Connection"), "upgrade") ||
 		resp.Header.Get("Sec-Websocket-Accept") != computeAcceptKey(challengeKey) {
 		// Before closing the network connection on return from this
-		// function, slurp up some of the response to aid application
+		// function, slurp up some of the resposta para aid application
 		// debugging.
 		buf := make([]byte, 1024)
 		n, _ := io.ReadFull(resp.Body, buf)
@@ -369,17 +369,17 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		if !snct || !cnct {
 			return nil, resp, errInvalidCompression
 		}
-		conn.newCompressionWriter = compressNoContextTakeover
-		conn.newDecompressionReader = decompressNoContextTakeover
+		conexão.newCompressionWriter = compressNoContextTakeover
+		conexão.newDecompressionReader = decompressNoContextTakeover
 		break
 	}
 
 	resp.Body = ioutil.NopCloser(bytes.NewReader([]byte{}))
-	conn.subprotocol = resp.Header.Get("Sec-Websocket-Protocol")
+	conexão.subprotocol = resp.Header.Get("Sec-Websocket-Protocol")
 
 	netConn.SetDeadline(time.Time{})
-	netConn = nil // to avoid close in defer.
-	return conn, resp, nil
+	netConn = nil // para avoid close entrada defer.
+	return conexão, resp, nil
 }
 
 func doHandshake(tlsConn *tls.Conn, cfg *tls.Config) error {

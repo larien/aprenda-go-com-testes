@@ -5,23 +5,22 @@ import (
 	"log"
 	"os"
 
-	poker "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v1"
+	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v1"
 )
 
-const dbFileName = "game.db.json"
+const nomeArquivoBaseDeDados = "jogo.db.json"
 
 func main() {
-	store, close, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
-
+	armazenamento, close, err := poquer.SistemaArquivoArmazenamentoJogadorDoArquivo(nomeArquivoBaseDeDados)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer close()
 
-	game := poker.NewTexasHoldem(poker.BlindAlerterFunc(poker.StdOutAlerter), store)
-	cli := poker.NewCLI(os.Stdin, os.Stdout, game)
+	jogo := poquer.NovoTexasHoldem(poquer.AlertadorDeBlindFunc(poquer.SaidaAlertador), armazenamento)
+	cli := poquer.NovaCLI(os.Stdin, os.Stdout, jogo)
 
-	fmt.Println("Let's play poker")
-	fmt.Println("Type {Name} wins to record a win")
-	cli.PlayPoker()
+	fmt.Println("Vamos jogar pôquer")
+	fmt.Println("Digite o nome para gravar uma vitória")
+	cli.JogarPoquer()
 }
