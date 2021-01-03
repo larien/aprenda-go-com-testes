@@ -1,6 +1,6 @@
 # Arrays e slices
 
-[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/arrays-e-slices)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/primeiros-passos-com-go/arrays-e-slices)
 
 Arrays te permitem armazenar diversos elementos do mesmo tipo em uma variável em uma ordem específica.
 

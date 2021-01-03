@@ -4,7 +4,7 @@
 
 [Arte por Denise](https://twitter.com/deniseyu21)
 
-![Build Status](https://travis-ci.org/larien/aprenda-go-com-testes.svg?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/larien/aprenda-go-com-testes)](https://goreportcard.com/report/github.com/larien/aprenda-go-com-testes)
+![Build Status](https://travis-ci.org/larien/aprenda-go-com-testes.svg?main) [![Go Report Card](https://goreportcard.com/badge/github.com/larien/aprenda-go-com-testes)](https://goreportcard.com/report/github.com/larien/aprenda-go-com-testes)
 
 -   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB ou PDF](https://github.com/larien/aprenda-go-com-testes/releases)
 -   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)

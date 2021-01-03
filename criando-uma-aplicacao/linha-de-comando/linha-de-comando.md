@@ -1,6 +1,6 @@
 # Linha de comando e estrutura de pacotes
 
-[**Você pode encontrar os exemplos deste capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/criando-uma-aplicacao/linha-de-comando)
+[**Você pode encontrar os exemplos deste capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/criando-uma-aplicacao/linha-de-comando)
 
 Nosso gerente de produto quer [_pivotar_](https://pt.wikipedia.org/wiki/Startup#Dicion%C3%A1rio_com_os_termos_mais_usados_pelas_startups)
  e introduzir uma segunda aplicação - uma aplicação de 

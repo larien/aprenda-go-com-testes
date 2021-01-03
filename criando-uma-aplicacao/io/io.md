@@ -1,6 +1,6 @@
 # IO e Ordenação
 
-[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/criando-uma-aplicacao/io)
+[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/criando-uma-aplicacao/io)
 
 [No capitulo anterior](../json.md) continuamos interagindo com nossa aplicação pela adição de um novo endpoint `/liga`. Durante o caminho aprendemos como lidar com JSON, tipos embutidos e roteamento.
 

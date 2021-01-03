@@ -1,6 +1,6 @@
 # Mocks
 
-[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/mocks)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/primeiros-passos-com-go/mocks)
 
 Te pediram para criar um programa que conta a partir de 3, imprimindo cada número em uma linha nova (com um segundo de intervalo entre cada uma) e quando chega a zero, imprime "Vai!" e sai.
 

@@ -1,6 +1,6 @@
 # Iteração
 
-**[Você pode encontrar todo o código desse capítulo aqui](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/iteracao)**
+**[Você pode encontrar todo o código desse capítulo aqui](https://github.com/larien/aprenda-go-com-testes/tree/main/primeiros-passos-com-go/iteracao)**
 
 Para fazer coisas repetidamente em Go, você precisará do `for`. Go não possui nenhuma palavra chave do tipo `while`, `do` ou `until`. Você pode usar apenas `for`, o que é uma coisa boa!
 
