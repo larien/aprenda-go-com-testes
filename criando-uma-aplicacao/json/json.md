@@ -1,6 +1,6 @@
 # JSON, roteamento e embedding
 
-[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/criando-uma-aplicacao/json)
+[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/criando-uma-aplicacao/json)
 
 [No capítulo anterior](../servidor-http/servidor-http.md) nós criamos um servidor web para armazenar quantos jogos nossos jogadores venceram.
 

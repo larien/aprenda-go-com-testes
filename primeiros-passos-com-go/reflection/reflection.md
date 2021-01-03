@@ -1,6 +1,6 @@
 # Reflection
 
-[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/reflection)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/primeiros-passos-com-go/reflection)
 
 [Do Twitter](https://twitter.com/peterbourgon/status/1011403901419937792?s=09)
 

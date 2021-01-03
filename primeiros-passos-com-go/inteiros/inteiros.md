@@ -1,6 +1,6 @@
 # Inteiros
 
-**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/inteiros)**
+**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larien/aprenda-go-com-testes/tree/main/primeiros-passos-com-go/inteiros)**
 
 Inteiros funcionam como é de se esperar. Vamos escrever uma função de soma para testar algumas coisas. Crie um arquivo de teste chamado `adicionador_test.go` e escreva o seguinte código.
 

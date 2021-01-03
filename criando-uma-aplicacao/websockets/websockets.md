@@ -1,6 +1,6 @@
 # Websockets
 
-[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/criando-uma-aplicacao/websockets)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/criando-uma-aplicacao/websockets)
 
 ## Recapitulando o projeto
 

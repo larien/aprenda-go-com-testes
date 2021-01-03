@@ -1,6 +1,6 @@
 # Olá, mundo
 
-[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/ola-mundo)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/primeiros-passos-com-go/ola-mundo)
 
 É comum o primeiro programa em uma nova linguagem ser um _Olá, mundo_.
 
@@ -185,7 +185,7 @@ Quando você rodar os testes, eles irão passar. É comum como parte do ciclo do
 
 Nesse ponto, se você estiver usando um versionamento de código (que você deveria estar fazendo!) eu faria um `commit` do código no estado atual. Agora, temos um software funcional suportado por um teste.
 
-No entanto, eu _não faria_ um push para a master, pois planejo refatorar em breve. É legal fazer um commit nesse ponto porque você pode se perder com a refatoração. Fazendo um commit você pode sempre voltar para a última versão funcional do seu software.
+No entanto, eu _não faria_ um push para a branch principal, pois planejo refatorar em breve. É legal fazer um commit nesse ponto porque você pode se perder com a refatoração. Fazendo um commit você pode sempre voltar para a última versão funcional do seu software.
 
 Não tem muita coisa para refatorar aqui, mas podemos introduzir outro recurso da linguagem: _constantes_.
 

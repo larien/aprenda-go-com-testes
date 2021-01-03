@@ -52,7 +52,7 @@ E que comecem as traduções! :\)\)
 Após fazer sua tradução para a sua própria branch e subi-la para o GitHub:
 
 -   Vá na aba `Pull Requests` e clique em `New pull request`.
--   Redirecione a sua branch para a branch `master` do projeto `larien/aprenda-go-com-testes`, se isso já não estiver definido.
+-   Redirecione a sua branch para a branch `main` do projeto `larien/aprenda-go-com-testes`, se isso já não estiver definido.
 -   Na descrição, lembre-se de linkar a Issue referente ao tópico que você traduziu. Por exemplo, se o tópico que você selecionou é a Issue de número \#14, digite na descrição do pull request `closes #14`. Isso vai automaticamente mover o card da sua Issue para `Done`.
 -   Se for uma revisão, não é necessário linkar nenhuma issue.
 -   Clique em `Create pull request`
