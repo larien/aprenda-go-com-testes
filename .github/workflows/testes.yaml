@@ -1,12 +1,11 @@
 ---
 name: Testes e verificação de código
 on:
-  push:
   pull_request:
     branches:
       - main
 jobs:
-  test:
+  testes_e_codigo:
     runs-on: ubuntu-latest
     steps:
     - name: Instalação do Go
