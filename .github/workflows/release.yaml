@@ -4,33 +4,19 @@ on:
   push:
     branches:
       - main
-  tags:
-    - 'v*'
-
+  # tags:
+  #   - 'v*'
 jobs:
-  converter_para_ebooks:
+  publicar_ebooks:
+    name: Geração de ebooks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: docker://pandoc/latex:2.9
         with:
           args: |
-            --output=ebooks/aprenda-go-com-testes.pdf
-            --latex-engine=xelatex
-            --variable urlcolor=blue
-            --toc --toc-depth=1 $LISTA_ARQUIVOS
-      - uses: docker://pandoc/latex:2.9
-        with:
-          args: |
-            --output=ebooks/aprenda-go-com-testes.epub
-            --latex-engine=xelatex
-            --toc --toc-depth=1 $LISTA_ARQUIVOS
-  build:
-    name: Geração de ebooks como Release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Cria Release
+            README.md -o aprenda-go-com-testes.pdf
+      - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -40,23 +26,13 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Salva PDF na Release
+      - name: Upload Release Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./aprenda-go-com-testes.pdf
           asset_name: aprenda-go-com-testes.pdf
           asset_content_type: application/pdf
-      - name: Salva EPUB na Release
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./aprenda-go-com-testes.epub
-          asset_name: aprenda-go-com-testes.epub
-          asset_content_type: application/epub+zip
