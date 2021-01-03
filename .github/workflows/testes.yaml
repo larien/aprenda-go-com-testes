@@ -1,0 +1,25 @@
+on: [push, pull_request]
+name: Testes e verificação de código
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: 1.15.x
+        os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Instalação do Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Troca para o código
+      uses: actions/checkout@v2
+    - name: Testes e verificação de código
+      run: |
+        go test ./...
+        go vet ./...
+        go fmt ./...
+    - name: Executa golint
+      uses: Jerome1337/golint-action@v1.0.2
+      with:
+        golint-path: './...'
