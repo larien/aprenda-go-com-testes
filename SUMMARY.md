@@ -4,7 +4,7 @@
 -   [Aprenda Go com Testes](gb-readme.md)
 
 ## Primeiros Passos com Go
-
+Oi!
 -   [Instalação do Go](primeiros-passos-com-go/instalacao-do-go.md)
 -   [Olá, mundo](primeiros-passos-com-go/ola-mundo/ola-mundo.md)
 -   [Inteiros](primeiros-passos-com-go/inteiros/inteiros.md)
