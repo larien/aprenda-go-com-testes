@@ -1,5 +1,5 @@
+---
 name: Criação de ebooks
-
 on:
   push:
     branches:
