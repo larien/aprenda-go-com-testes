@@ -1,4 +1,4 @@
-module github.com/larien/learn-go-with-tests
+module github.com/larien/aprenda-go-com-testes
 
 require github.com/gorilla/websocket v1.4.1
 

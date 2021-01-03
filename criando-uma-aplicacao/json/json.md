@@ -1,6 +1,6 @@
 # JSON, roteamento e embedding
 
-[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/criando-uma-aplicacao/json)
+[**Você pode encontrar todo o código para este capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/criando-uma-aplicacao/json)
 
 [No capítulo anterior](../servidor-http/servidor-http.md) nós criamos um servidor web para armazenar quantos jogos nossos jogadores venceram.
 
@@ -131,8 +131,8 @@ testing.tRunner.func1(0xc42010c3c0)
     /usr/local/Cellar/go/1.10/libexec/src/testing/testing.go:742 +0x29d
 panic(0x1274d60, 0x1438240)
     /usr/local/Cellar/go/1.10/libexec/src/runtime/panic.go:505 +0x229
-github.com/larien/learn-go-with-tests/json-and-io/v2.(*ServidorJogador).ServeHTTP(0xc420048d30, 0x12fc1c0, 0xc420010940, 0xc420116000)
-    /Users/larien/go/src/github.com/larien/learn-go-with-tests/json-and-io/v2/servidor.go:20 +0xec
+github.com/larien/aprenda-go-com-testes/json-and-io/v2.(*ServidorJogador).ServeHTTP(0xc420048d30, 0x12fc1c0, 0xc420010940, 0xc420116000)
+    /Users/larien/go/src/github.com/larien/aprenda-go-com-testes/json-and-io/v2/servidor.go:20 +0xec
 ```
 
 Seu `ServidorJogador` deve estar sendo abortado por um panic como acima. Vá para a linha de código que está apontando para `servidor.go` no stack trace.
@@ -526,7 +526,7 @@ func (s *ServidorJogador) manipulaLiga(w http.ResponseWriter, r *http.Request) {
 Tente executar os testes:
 
 ```text
-# github.com/larien/learn-go-with-tests/json-and-io/v4
+# github.com/larien/aprenda-go-com-testes/json-and-io/v4
 ./main.go:9:50: cannot use NovoArmazenamentoDeJogadorNaMemoria() (type *ArmazenamentoDeJogadorNaMemoria) as type ArmazenamentoJogador in argument to NovoServidorJogador:
     *ArmazenamentoDeJogadorNaMemoria does not implement ArmazenamentoJogador (missing ObterLiga method)
 ./servidor_integration_test.go:11:27: cannot use armazenamento (type *ArmazenamentoDeJogadorNaMemoria) as type ArmazenamentoJogador in argument to NovoServidorJogador:

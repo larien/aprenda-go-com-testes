@@ -2,10 +2,11 @@ package poker_test
 
 import (
 	"bytes"
-	"github.com/larien/learn-go-with-tests/criando-uma-aplicacao/time/v3"
 	"io"
 	"strings"
 	"testing"
+
+	poker "github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/time/v3"
 )
 
 var dummyBlindAlerter = &poker.SpyBlindAlerter{}

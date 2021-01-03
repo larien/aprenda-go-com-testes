@@ -1,6 +1,6 @@
 # Como contribuir
 
-Contribuições são mais que bem vindas. Espero que esse se torne um ótimo lar para guias sobre como aprender Go escrevendo testes. Você pode submeter uma PR ou criar uma issue [aqui](https://github.com/larien/learn-go-with-tests).
+Contribuições são mais que bem vindas. Espero que esse se torne um ótimo lar para guias sobre como aprender Go escrevendo testes. Você pode submeter uma PR ou criar uma issue [aqui](https://github.com/larien/aprenda-go-com-testes).
 
 ## O que estamos buscando
 

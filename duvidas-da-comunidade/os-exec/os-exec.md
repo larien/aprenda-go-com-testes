@@ -1,6 +1,6 @@
 # OS Exec
 
-[**You can find all the code here**](https://github.com/larien/learn-go-with-tests/tree/master/duvidas-da-comunidade/os-exec)
+[**You can find all the code here**](https://github.com/larien/aprenda-go-com-testes/tree/master/duvidas-da-comunidade/os-exec)
 
 [keith6014](https://www.reddit.com/user/keith6014) asks on [reddit](https://www.reddit.com/r/golang/comments/aaz8ji/testdata_and_function_setup_help/)
 

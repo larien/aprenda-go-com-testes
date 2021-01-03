@@ -5,7 +5,7 @@ go:
   - 1.11.x
 
 before_install:
-  - go get github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v1
+  - go get github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v1
 
 install: true
 

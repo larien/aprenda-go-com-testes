@@ -1,6 +1,6 @@
 # Ponteiros e erros
 
-[**Você pode encontrar todos os códigos deste capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/ponteiros-e-erros)
+[**Você pode encontrar todos os códigos deste capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/ponteiros-e-erros)
 
 Aprendemos sobre estruturas na última seção, o que nos possibilita capturar valores com conceito relacionado.
 

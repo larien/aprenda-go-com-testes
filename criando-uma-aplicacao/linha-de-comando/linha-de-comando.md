@@ -1,6 +1,6 @@
 # Linha de comando e estrutura de pacotes
 
-[**Você pode encontrar os exemplos deste capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/criando-uma-aplicacao/linha-de-comando)
+[**Você pode encontrar os exemplos deste capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/criando-uma-aplicacao/linha-de-comando)
 
 Nosso gerente de produto quer [_pivotar_](https://pt.wikipedia.org/wiki/Startup#Dicion%C3%A1rio_com_os_termos_mais_usados_pelas_startups)
  e introduzir uma segunda aplicação - uma aplicação de 
@@ -84,7 +84,7 @@ import (
     "log"
     "net/http"
     "os"
-    "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v1"
+    "github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v1"
 )
 
 const nomeArquivoBD = "jogo.db.json"
@@ -116,7 +116,7 @@ Separando nosso código em um pacote isolado e enviando para um repositório pú
 Go pode escrever código que importe esse pacote com as funcionalidades que disponibilizarmos. A primeira vez que você
 tentar e executar ele vai reclamar que o pacote não existe mas tudo que precisa ser feito é executar `go get`.
 
-[Além disso, usuários podem ver a documentação em godoc.org](https://godoc.org/github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v1).
+[Além disso, usuários podem ver a documentação em godoc.org](https://godoc.org/github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v1).
 
 ### Verificações finais
 
@@ -171,7 +171,7 @@ func TestCLI(t *testing.T) {
 ## Tente rodar o teste
 
 ```text
-# github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v2
+# github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v2
 ./cli_test.go:25:10: undefined: CLI
 ```
 
@@ -397,7 +397,7 @@ package main
 
 import (
     "fmt"
-    "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
+    "github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v3"
     "log"
     "os"
 )
@@ -653,7 +653,7 @@ Agora refatorando ambas aplicações para usar a função de criar o armazenamen
 package main
 
 import (
-    "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
+    "github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v3"
     "log"
     "os"
     "fmt"
@@ -681,7 +681,7 @@ func main() {
 package main
 
 import (
-    "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
+    "github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v3"
     "log"
     "net/http"
 )

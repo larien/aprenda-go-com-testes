@@ -1,6 +1,6 @@
 # Websockets
 
-[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/criando-uma-aplicacao/websockets)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/criando-uma-aplicacao/websockets)
 
 ## Recapitulando o projeto
 
@@ -691,9 +691,9 @@ var (
 O erro final se encontra onde estamos tentando passar em `Jogo`, pois `NovoServidorJogador` ainda não o suporta:
 
 ```text
-./server_test.go:21:38: too many arguments in call para "github.com/larien/learn-go-with-tests/WebSockets/v2".NovoServidorJogador
-    have ("github.com/larien/learn-go-with-tests/WebSockets/v2".ArmazenamentoJogador, "github.com/larien/learn-go-with-tests/WebSockets/v2".Jogo)
-    esperado ("github.com/larien/learn-go-with-tests/WebSockets/v2".ArmazenamentoJogador)
+./server_test.go:21:38: too many arguments in call para "github.com/larien/aprenda-go-com-testes/WebSockets/v2".NovoServidorJogador
+    have ("github.com/larien/aprenda-go-com-testes/WebSockets/v2".ArmazenamentoJogador, "github.com/larien/aprenda-go-com-testes/WebSockets/v2".Jogo)
+    esperado ("github.com/larien/aprenda-go-com-testes/WebSockets/v2".ArmazenamentoJogador)
 ```
 
 ## Escreva o mínimo de código possível para o teste funcionar e verifique a saída do teste falhado

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/websockets/v2"
+	poquer "github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/websockets/v2"
 )
 
 var AlertadorDeBlindTosco = &poquer.AlertadorDeBlindEspiao{}

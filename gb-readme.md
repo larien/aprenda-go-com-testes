@@ -4,7 +4,7 @@
 
 [Arte por Denise](https://twitter.com/deniseyu21)
 
--   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB ou PDF](https://github.com/larien/learn-go-with-tests/releases)
+-   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB ou PDF](https://github.com/larien/aprenda-go-com-testes/releases)
 -   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
 -   Traduções: [Chinese](https://studygolang.gitbook.io/learn-go-with-tests)
 
@@ -97,8 +97,8 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 ## Feedback
 
 -   Crie issues/submita PRs [aqui](https://github.com/quii/learn-go-with-tests) ou [me envie um tweet em @quii](https://twitter.com/quii).
--   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
+-   Para a versão em português, submita um PR [aqui](https://github.com/larien/aprenda-go-com-testes) ou entre em contato comigo pelo [meu site](https://larien.dev).
 
-[MIT license](https://github.com/larien/learn-go-with-tests/tree/35d0dbb8c6467128a4b4637742b4c2fe563c0a88/LICENSE.md)
+[MIT license](https://github.com/larien/aprenda-go-com-testes/tree/35d0dbb8c6467128a4b4637742b4c2fe563c0a88/LICENSE.md)
 
 [Logo criado por egonelbre](https://github.com/egonelbre) Que estrela!

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v3"
+	poquer "github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v3"
 )
 
 func TestCLI(t *testing.T) {

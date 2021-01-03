@@ -1,6 +1,6 @@
 # Estruturas, métodos e interfaces
 
-[**Você pode encontrar todos os códigos desse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/estruturas-metodos-e-interfaces)
+[**Você pode encontrar todos os códigos desse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/estruturas-metodos-e-interfaces)
 
 Suponha que precisamos de algum código de geometria para calcular o perímetro de um retângulo dado uma altura e largura. Podemos escrever uma função `Perimetro(largura float64, altura float64)`, onde `float64` representa números em ponto flutuante como `123.45`.
 
