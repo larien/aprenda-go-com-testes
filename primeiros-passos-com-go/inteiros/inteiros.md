@@ -1,6 +1,6 @@
 # Inteiros
 
-**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/inteiros)**
+**[Você pode encontrar todos os códigos desse capítulo aqui](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/inteiros)**
 
 Inteiros funcionam como é de se esperar. Vamos escrever uma função de soma para testar algumas coisas. Crie um arquivo de teste chamado `adicionador_test.go` e escreva o seguinte código.
 
@@ -140,7 +140,7 @@ Para ver como isso funciona, execute `godoc -http=:6060` e navegue para `http://
 
 Aqui você vai ver uma lista de todos os pacotes em seu `$GOPATH`. Então, supondo que tenha escrito esse código em algum lugar como `$GOPATH/src/github.com/{seu_id}`, você poderá encontrar uma documentação com seus exemplos.
 
-Se você publicar seu código com exemplos em uma URL pública, poderá compartilhar a documentação em [godoc.org](https://godoc.org). Por exemplo, aqui está a API finalizada deste capítulo [https://godoc.org/github.com/larien/learn-go-with-tests/inteiros/v2](https://godoc.org/github.com/larien/learn-go-with-tests/inteiros/v2).
+Se você publicar seu código com exemplos em uma URL pública, poderá compartilhar a documentação em [godoc.org](https://godoc.org). Por exemplo, aqui está a API finalizada deste capítulo [https://godoc.org/github.com/larien/aprenda-go-com-testes/inteiros/v2](https://godoc.org/github.com/larien/aprenda-go-com-testes/inteiros/v2).
 
 ## Resumindo
 

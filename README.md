@@ -4,11 +4,10 @@
 
 [Arte por Denise](https://twitter.com/deniseyu21)
 
-![Build Status](https://travis-ci.org/larien/learn-go-with-tests.svg?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/larien/learn-go-with-tests)](https://goreportcard.com/report/github.com/quii/learn-go-with-tests)
+![Build Status](https://travis-ci.org/larien/aprenda-go-com-testes.svg?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/larien/aprenda-go-com-testes)](https://goreportcard.com/report/github.com/larien/aprenda-go-com-testes)
 
--   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB ou PDF](https://github.com/larien/learn-go-with-tests/releases)
+-   Formatos: [Gitbook](https://larien.gitbook.io/aprenda-go-com-testes), [EPUB ou PDF](https://github.com/larien/aprenda-go-com-testes/releases)
 -   Versão original: [English](https://quii.gitbook.io/learn-go-with-tests/)
--   Traduções: [中文](https://studygolang.gitbook.io/learn-go-with-tests)
 
 ## Motivação
 
@@ -127,36 +126,10 @@ Usando minha experiência de aprendizado em grupo e a minha própria, vou tentar
 -   Experiência com programação. Entendimento de conceitos como `if`, variáveis, funções etc.
 -   Se sentir confortável com o terminal
 
-## Traduzido com <3 por
-
--   Davi Marcondes Moreira
-
-[github](http://github.com/devdrops) [twitter](https://twitter.com/devdrops)
-
--   Diego Nascimento
-
-[github](https://github.com/diegonvs) [twitter](https://twitter.com/diegonvs97) [linkedin](https://www.linkedin.com/in/dnvs97/)
-
--   Edmilton Neves
-
-[site](http://edmilton.com.br/) [github](https://github.com/edmilton) [twitter](https://twitter.com/ed_neves) [linkedin](https://www.linkedin.com/in/edmilton/)
-
--   Jéssica Paz
-
-[site](https://jessicapaz.me) [github](https://github.com/jessicapaz) [twitter](https://twitter.com/jessicamorim42) [linkedin](https://www.linkedin.com/in/jessica-paz/)
-
--   Lauren Ferreira
-
-[site](https://larien.dev) [github](https://github.com/larien) [twitter](https://twitter.com/larienmf) [linkedin](https://www.linkedin.com/in/lauren-ferreira/)
-
--   Rafael Acioly
-
-[github](https://github.com/rafa-acioly) [twitter](https://twitter.com/R_acioly) [linkedin](https://www.linkedin.com/in/rafaelacioly/)
-
 ## Feedback
 
--   Para a versão em português, submita um PR [aqui](https://github.com/larien/learn-go-with-tests) ou entre em contato comigo pelo [meu site](https://larien.dev).
+-   Para a versão em português, submita um PR [aqui](https://github.com/larien/aprenda-go-com-testes) ou entre em contato comigo pelo [meu site](https://larien.dev).
 
-[MIT license](https://github.com/larien/learn-go-with-tests/tree/09aafaeebaef4443e80a6216cc46fa3d7bfdabbb/LICENSE.md)
+[MIT license](https://github.com/larien/aprenda-go-com-testes/tree/09aafaeebaef4443e80a6216cc46fa3d7bfdabbb/LICENSE.md)
 
 [Logo criado por egonelbre](https://github.com/egonelbre) Que estrela!

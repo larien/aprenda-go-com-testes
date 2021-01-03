@@ -1,6 +1,6 @@
 # Concorrência
 
-[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/concorrencia)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/concorrencia)
 
 A questão é a seguinte: um colega escreveu uma função, `VerificaWebsites`, que verifica o status de uma lista de URLs.
 
@@ -100,10 +100,10 @@ O benchmark testa `VerificaWebsites` usando um slice de 100 URLs e usa uma nova 
 Quando executamos o benchmark com `go test -bench=.` (ou, se estiver no Powershell do Windows, `go test -bench="."`):
 
 ```bash
-pkg: github.com/larien/learn-go-with-tests/concorrencia/v1
+pkg: github.com/larien/aprenda-go-com-testes/concorrencia/v1
 BenchmarkVerificaWebsites-4               1        2249228637 ns/op
 PASS
-ok      github.com/larien/learn-go-with-tests/concorrencia/v1        2.268s
+ok      github.com/larien/aprenda-go-com-testes/concorrencia/v1        2.268s
 ```
 
 `VerificaWebsites` teve uma marca de 2249228637 nanosegundos - pouco mais de dois segundos.
@@ -153,7 +153,7 @@ O corpo da função anônima acima é quase o mesmo da função no laço utiliza
         VerificaWebsites_test.go:31: esperado map[http://google.com:true http://blog.gypsydave5.com:true waat://furhurterwe.geds:false], resultado map[]
 FAIL
 exit status 1
-FAIL    github.com/larien/learn-go-with-tests/concorrencia/v2        0.010s
+FAIL    github.com/larien/aprenda-go-com-testes/concorrencia/v2        0.010s
 ```
 
 ### Uma breve visita ao universo paralelo...
@@ -198,7 +198,7 @@ Agora, quando os testes forem executados, você vai ver (ou não - leia a mensag
         VerificaWebsites_test.go:31: esperado map[http://google.com:true http://blog.gypsydave5.com:true waat://furhurterwe.geds:false], resultado map[waat://furhurterwe.geds:false]
 FAIL
 exit status 1
-FAIL    github.com/larien/learn-go-with-tests/concorrencia/v1        0.010s
+FAIL    github.com/larien/aprenda-go-com-testes/concorrencia/v1        0.010s
 ```
 
 Isso não é muito bom - por que só um resultado? Podemos arrumar isso aumentando o tempo de espera - pode tentar se preferir. Não vai funcionar. O problema aqui é que a variável `url` é reutilizada para cada iteração do laço `for` - ele recebe um valor novo de `urls` a cada vez. Mas cada uma das goroutines tem uma referência para a variável `url` - eles não têm sua própria cópia independente. Logo, _todas_ estão escrevendo o valor que `url` tem no final da iteração - o último URL. E é por isso que o resultado que obtemos é a última URL.
@@ -235,7 +235,7 @@ Agora, se você tiver sorte, vai obter:
 
 ```bash
 PASS
-ok      github.com/larien/learn-go-with-tests/concorrencia/v1        2.012s
+ok      github.com/larien/aprenda-go-com-testes/concorrencia/v1        2.012s
 ```
 
 No entanto, se não tiver sorte (isso é mais provável se estiver rodando o código com o benchmark, já que haverá mais tentativas):
@@ -248,12 +248,12 @@ runtime.throw(0x6d74f3, 0x15)
     /usr/local/go/src/runtime/panic.go:608 +0x72 fp=0xc000034718 sp=0xc0000346e8 pc=0x42d4e2
 runtime.mapassign_faststr(0x67dbe0, 0xc000082660, 0x6d33cb, 0x7, 0x0)
     /usr/local/go/src/runtime/map_faststr.go:275 +0x3bf fp=0xc000034780 sp=0xc000034718 pc=0x4139ff
-github.com/larien/learn-go-with-tests/concorrencia/v2.VerificaWebsites.func1(0x6e6580, 0xc000082660, 0x6d33cb, 0x7)
-    /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:17 +0x7f fp=0xc0000347c0 sp=0xc000034780 pc=0x64035f
+github.com/larien/aprenda-go-com-testes/concorrencia/v2.VerificaWebsites.func1(0x6e6580, 0xc000082660, 0x6d33cb, 0x7)
+    /home/larien/go/src/github.com/larien/aprenda-go-com-testes/concorrencia/v2/VerificaWebsites.go:17 +0x7f fp=0xc0000347c0 sp=0xc000034780 pc=0x64035f
 runtime.goexit()
     /usr/local/go/src/runtime/asm_amd64.s:1333 +0x1 fp=0xc0000347c8 sp=0xc0000347c0 pc=0x45c661
-created by github.com/larien/learn-go-with-tests/concorrencia/v2.VerificaWebsites
-	/home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:16 +0xa9
+created by github.com/larien/aprenda-go-com-testes/concorrencia/v2.VerificaWebsites
+	/home/larien/go/src/github.com/larien/aprenda-go-com-testes/concorrencia/v2/VerificaWebsites.go:16 +0xa9
 
         ... e mais um monte de linhas assustadoras ...
 ```
@@ -278,14 +278,14 @@ Write at 0x00c000120089 by goroutine 6:
       /usr/local/go/src/reflect/deepequal.go:118 +0x13be
   reflect.DeepEqual()
       /usr/local/go/src/reflect/deepequal.go:196 +0x2f0
-  github.com/larien/learn-go-with-tests/concorrencia/v2.TestVerificaWebsites()
-      /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites_test.go:30 +0x1ad
+  github.com/larien/aprenda-go-com-testes/concorrencia/v2.TestVerificaWebsites()
+      /home/larien/go/src/github.com/larien/aprenda-go-com-testes/concorrencia/v2/VerificaWebsites_test.go:30 +0x1ad
   testing.tRunner()
       /usr/local/go/src/testing/testing.go:827 +0x162
 
 Previous write at 0x00c000120089 by goroutine 8:
-  github.com/larien/learn-go-with-tests/concorrencia/v2.VerificaWebsites.func1()
-      /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:17 +0x97
+  github.com/larien/aprenda-go-com-testes/concorrencia/v2.VerificaWebsites.func1()
+      /home/larien/go/src/github.com/larien/aprenda-go-com-testes/concorrencia/v2/VerificaWebsites.go:17 +0x97
 
 Goroutine 6 (running) created at:
   testing.(*T).Run()
@@ -302,10 +302,10 @@ Goroutine 6 (running) created at:
       _testmain.go:44 +0x221
 
 Goroutine 8 (finished) created at:
-  github.com/larien/learn-go-with-tests/concorrencia/v2.VerificaWebsites()
-      /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:16 +0xb2
-  github.com/larien/learn-go-with-tests/concorrencia/v2.TestVerificaWebsites()
-      /home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites_test.go:28 +0x17f
+  github.com/larien/aprenda-go-com-testes/concorrencia/v2.VerificaWebsites()
+      /home/larien/go/src/github.com/larien/aprenda-go-com-testes/concorrencia/v2/VerificaWebsites.go:16 +0xb2
+  github.com/larien/aprenda-go-com-testes/concorrencia/v2.TestVerificaWebsites()
+      /home/larien/go/src/github.com/larien/aprenda-go-com-testes/concorrencia/v2/VerificaWebsites_test.go:28 +0x17f
   testing.tRunner()
       /usr/local/go/src/testing/testing.go:827 +0x162
 ==================
@@ -321,11 +321,11 @@ está escrevendo no mesmo bloco de memória que:
 
 Além disso, conseguimos ver a linha de código onde a escrita está acontecendo:
 
-`/home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:17 +0x97`
+`/home/larien/go/src/github.com/larien/aprenda-go-com-testes/concorrencia/v2/VerificaWebsites.go:17 +0x97`
 
 e a linha de código onde as goroutines 6 e 7 foram iniciadas:
 
-`/home/larien/go/src/github.com/larien/learn-go-with-tests/concorrencia/v2/VerificaWebsites.go:16 +0xb2`
+`/home/larien/go/src/github.com/larien/aprenda-go-com-testes/concorrencia/v2/VerificaWebsites.go:16 +0xb2`
 
 Tudo o que você precisa saber está impresso no seu terminal - tudo o que você tem que fazer é ser paciente o bastante para lê-lo.
 
@@ -388,10 +388,10 @@ Paralelizamos um pedaço do código que queríamos tornar mais rápida, enquanto
 Agora podemos executar o benchmark:
 
 ```bash
-pkg: github.com/larien/learn-go-with-tests/concorrencia/v3
+pkg: github.com/larien/aprenda-go-com-testes/concorrencia/v3
 BenchmarkVerificaWebsites-8             100          23406615 ns/op
 PASS
-ok      github.com/larien/learn-go-with-tests/concorrencia/v3        2.377s
+ok      github.com/larien/aprenda-go-com-testes/concorrencia/v3        2.377s
 ```
 
 23406615 nanossegundos - 0.023 segundos, cerca de 100 vezes mais rápida que a função original. Um sucesso enorme.

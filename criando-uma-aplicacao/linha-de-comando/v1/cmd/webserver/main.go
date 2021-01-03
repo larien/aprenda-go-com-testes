@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	poquer "github.com/larien/learn-go-with-tests/criando-uma-aplicacao/linha-de-comando/v1"
+	poquer "github.com/larien/aprenda-go-com-testes/criando-uma-aplicacao/linha-de-comando/v1"
 )
 
 const nomeArquivoBD = "jogo.db.json"

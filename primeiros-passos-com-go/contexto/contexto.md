@@ -1,6 +1,6 @@
 # Contexto
 
-[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/contexto)
+[**Você pode encontrar todo o código para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/contexto)
 
 Softwares geralmente iniciam processos de longa duração e de uso intensivo de recursos \(muitas vezes em goroutines\). Se a ação que causou isso é cancelada ou falha por algum motivo, você precisa parar esses processos de forma consistente dentro da sua aplicação.
 

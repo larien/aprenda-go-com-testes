@@ -1,6 +1,6 @@
 # Iteração
 
-**[Você pode encontrar todo o código desse capítulo aqui](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/iteracao)**
+**[Você pode encontrar todo o código desse capítulo aqui](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/iteracao)**
 
 Para fazer coisas repetidamente em Go, você precisará do `for`. Go não possui nenhuma palavra chave do tipo `while`, `do` ou `until`. Você pode usar apenas `for`, o que é uma coisa boa!
 
@@ -110,7 +110,7 @@ Para executar o benchmark, digite `go test -bench=.` no terminal (ou se estiver 
 ```bash
 goos: darwin
 goarch: amd64
-pkg: github.com/larien/learn-go-with-tests/primeiros-passos-com-go/iteracao/v4
+pkg: github.com/larien/aprenda-go-com-testes/primeiros-passos-com-go/iteracao/v4
 10000000           136 ns/op
 PASS
 ```

@@ -1,6 +1,6 @@
 # Maps
 
-[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/learn-go-with-tests/tree/master/primeiros-passos-com-go/maps)
+[**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/master/primeiros-passos-com-go/maps)
 
 Em [arrays e slices](../arrays-e-slices/arrays-e-slices.md), vimos como armazenar valores em ordem. Agora, vamos descobrir uma forma de armazenar itens por uma `key` (chave) e procurar por ela rapidamente.
 
