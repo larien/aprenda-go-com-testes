@@ -119,7 +119,7 @@ func Ola(nome, linguagem string) string {
       )
 }
 
-var cumprimentos = map[string]string {
+var cumprimentos = map[string]string{
   br: "Olá",
   fr: "Bonjour",
   // etc..
