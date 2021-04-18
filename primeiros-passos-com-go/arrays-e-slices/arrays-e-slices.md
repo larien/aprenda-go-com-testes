@@ -97,7 +97,7 @@ Você pode estar pensando que é bastante complicado que arrays tenham tamanho f
 
 O Go tem _slices_, em que você não define o tamanho da coleção e, graças a isso, pode ter qualquer tamanho.
 
-O próprio requerimento será somar coleções de tamanhos variados.
+O próximo requerimento será somar coleções de tamanhos variados.
 
 ## Escreva o teste primeiro
 
