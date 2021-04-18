@@ -260,7 +260,7 @@ func SomaTudo(numerosParaSomar ...[]int) (somas []int) {
 
 Pode tentar compilar, mas nossos testes não vão funcionar!
 
-`./soma_test.go:26:9: invalid operation: got != want (slice can only be compared to nil)`
+`./soma_test.go:26:9: invalid operation: resultado != esperado (slice can only be compared to nil)`
 
 `operação inválida: recebido != esperado (slice só pode ser comparado a nil`
 
