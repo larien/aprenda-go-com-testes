@@ -125,7 +125,7 @@ A escolha de editor é bem pessoal. Você pode já ter um de sua preferência qu
 Você pode instalá-lo com o comando a seguir:
 
 ```bash
-brew cask install visual-studio-code
+brew install --cask visual-studio-code
 ```
 
 Confirme que o VS Code foi instalado corretamente executando o seguinte comando:
