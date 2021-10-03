@@ -122,7 +122,7 @@ Outra funcionalidade importante do Go é sua documentação. Você pode ver a do
 
 A vasta biblioteca padrão da linguagem tem uma documentação excelente com exemplos. Deve valer a pena dar uma olhada em [http://localhost:8000/pkg/testing/](http://localhost:8000/pkg/testing/) para verificar o que está disponível para você.
 
-Se você não tiver o comando `godoc`, talvez esteja usando uma versão mais recente do Go (1.14 ou posterior), [que não inclui mais o `godoc`](https://golang.org/doc/go1.14#godoc). Você pode instalá-lo manualmente com `go get golang.org/x/tools/cmd/godoc`.
+Se você não tiver o comando `godoc`, talvez esteja usando uma versão mais recente do Go (1.14 ou posterior), [que não inclui mais o `godoc`](https://golang.org/doc/go1.14#godoc). Você pode instalá-lo manualmente com `go install golang.org/x/tools/cmd/godoc`.
 
 ### Olá, VOCÊ
 
