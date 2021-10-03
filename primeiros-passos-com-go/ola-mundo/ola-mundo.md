@@ -116,13 +116,15 @@ Estamos chamando o _método_ `Errorf` em nosso `t` que irá imprimir uma mensage
 
 Iremos explorar a diferença entre métodos e funções depois.
 
-### go doc
+### Go doc
 
 Outra funcionalidade importante do Go é sua documentação. Você pode ver a documentação na sua máquina rodando `godoc -http :8000`. Se acessar [localhost:8000/pkg](http://localhost:8000/pkg) no seu navegador, verá todos os pacotes instalados no seu sistema.
 
 A vasta biblioteca padrão da linguagem tem uma documentação excelente com exemplos. Deve valer a pena dar uma olhada em [http://localhost:8000/pkg/testing/](http://localhost:8000/pkg/testing/) para verificar o que está disponível para você.
 
 Se você não tiver o comando `godoc`, talvez esteja usando uma versão mais recente do Go (1.14 ou posterior), [que não inclui mais o `godoc`](https://golang.org/doc/go1.14#godoc). Você pode instalá-lo manualmente com `go install golang.org/x/tools/cmd/godoc`.
+
+**nota**: Se você tiver usando Go 1.17, ou superior, você deve instalar o godoc com `go install golang.org/x/tools/cmd/godoc`, pois o comando `go get` para instalar executáveis ficou [obsoleto](https://golang.org/doc/go-get-install-deprecation).
 
 ### Olá, VOCÊ
 
