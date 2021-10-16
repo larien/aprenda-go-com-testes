@@ -3,12 +3,13 @@ package main
 import "testing"
 
 func TestOla(t *testing.T) {
-	verificaMensagemCorreta := func(t *testing.T, resultado, esperado string) {
+	verificaMensagemCorreta := func(t testing.TB, resultado, esperado string) {
 		t.Helper()
 		if resultado != esperado {
-			t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+			t.Errorf("resultado %q, esperado %q", resultado, esperado)
 		}
 	}
+
 	t.Run("diz olá para uma pessoa", func(t *testing.T) {
 		resultado := Ola("Chris", "")
 		esperado := "Olá, Chris"
