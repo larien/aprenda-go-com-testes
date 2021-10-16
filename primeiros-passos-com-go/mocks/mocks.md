@@ -180,7 +180,7 @@ func Contagem(saida io.Writer) {
     for i := 3; i > 0; i-- {
         fmt.Fprintln(saida, i)
     }
-    fmt.Fprint(saida, "Go!")
+    fmt.Fprint(saida, "Vai!")
 }
 ```
 
@@ -191,7 +191,7 @@ Usamos um laço `for` fazendo contagem regressiva com `i--` e depois `fmt.Fprint
 Não há muito para refatorar além de transformar alguns valores mágicos em constantes com nomes descritivos.
 
 ```go
-const ultimaPalavra = "Go!"
+const ultimaPalavra = "Vai!"
 const inicioContagem = 3
 
 func Contagem(saida io.Writer) {
