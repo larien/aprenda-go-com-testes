@@ -28,7 +28,7 @@ O corpo das publicações começa após o `---`
 ### Dado esperado
 
 ```go
-type Publicação struct {
+type Publicacao struct {
 	Titulo, Descricao, Corpo string
 	Tags []string
 }
