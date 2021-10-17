@@ -94,3 +94,129 @@ Com essas informações, o seguinte parece uma abordagem melhor.
 var publicacoes blogpublicacoes.Publicacao
 publicacoes = blogpublicacoes.NovasPublicacoesDoSA(algumSA)
 ```
+
+## Escreva o teste primeiro
+
+Devemos manter o escopo pequeno e útil o quanto for possível. Se provarmos que podemos ler todos os arquivos em um diretório, será um bom começo. Isso nos dará confiança no software que estamos escrevendo. Podemos verificar se a contagem de `[]Publicacao` retornada é igual ao número de arquivos em nosso sistema de arquivos falsos.
+
+Crie um novo projeto para começarmos.
+
+- `mkdir blogpublicacoes`
+- `cd blogpublicacoes`
+- `go mod init github.com/{seu-nome}/blogpublicacoes`
+- `touch blogpublicacoes_test.go`
+
+```go
+package blogpublicacoes_test
+
+import (
+	"testing"
+	"testing/fstest"
+)
+
+func TestNovasPublicacoesBlog(t *testing.T) {
+	sa := fstest.MapFS{
+		"ola-mundo.md":  {Data: []byte("oi")},
+		"ola-mundo2.md": {Data: []byte("hola")},
+	}
+
+	publicacoes := blogpublicacoes.NovasPublicacoesDoSA(sa)
+
+	if len(publicacoes) != len(sa) {
+		t.Errorf("obteve %d publicacoes, esperado %d publicacoes", len(publicacoes), len(sa))
+	}
+}
+```
+
+Observe que o pacote do nosso teste é `blogpublicacoes_test`. Lembre-se, quando o TDD é bem praticado, adotamos uma abordagem _orientada para o consumidor_: não queremos testar detalhes internos porque os _consumidores_ não se importam com eles. Ao anexar `_test` ao nome de nosso pacote pretendido, nós apenas acessamos membros exportados de nosso pacote - assim como um usuário real de nosso pacote.
+
+Importamos [`testing/fstest`](https://golang.org/pkg/testing/fstest/) que nos dá acesso ao tipo [`fstest.MapFS`](https://golang.org/pkg/testing/fstest/#MapFS). Nosso falso sistema de arquivos irá passar `fstest.MapFS` para o nosso pacote.
+
+> Um MapFS é um sistema de arquivos simples na memória para uso em testes, representado como um map de nomes de caminhos (argumentos para Abrir) para informações sobre os arquivos ou diretórios que eles representam.
+
+Isso parece mais simples do que manter uma pasta de arquivos de teste. E será executado mais rápido.
+
+Por fim, codificamos o uso de nossa API do ponto de vista do consumidor e verificamos se ela cria o número correto de publicações.
+
+## Tente executar o teste
+
+```
+./blogpublicacoes_test.go:14:16: undefined: blogpublicacoes
+```
+
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
+
+O pacote não existe. Crie um novo arquivo `blogpublicacoes.go` e coloque `pacote blogpublicacoes` dentro dele. Você precisará importar esse pacote para seus testes. Para mim, as importações ficaram assim:
+
+```go
+import (
+	"testing"
+	"testing/fstest"
+
+	blogpublicacoes "github.com/larien/aprenda-go-com-testes/primeiros-passos-com-go/lendo-arquivos"
+)
+```
+
+Agora os testes não compilarão porque nosso novo pacote não possui uma função `NovasPublicacoesDoSA`, que retorna algum tipo de coleção.
+
+```
+./blogpublicacoes_test.go:16:16: undefined: blogpublicacoes.NovasPublicacoesDoSA
+```
+
+Isso nos força a fazer o esqueleto de nossa função para fazer o teste funcionar. Lembre-se de não pensar demais no código neste ponto; estamos apenas tentando fazer um teste em execução e garantir que ele falhe conforme o esperado. Se pularmos esta etapa, podemos pular suposições e escrever um teste que não é útil.
+
+```go
+package blogpublicacoes
+
+import "testing/fstest"
+
+type Publicacao struct {
+
+}
+
+func NovasPublicacoesDoSA(sistemaArquivos fstest.MapFS) []Publicacao {
+	return nil
+}
+```
+
+O teste agora deve falhar corretamente
+
+```
+--- FAIL: TestNovasPublicacoesBlog (0.00s)
+    blogpublicacoes_test.go:19: obteve 0 publicacoes, esperado 2 publicacoes
+```
+
+## Escreva código o suficiente para fazer o teste passar
+
+Nós _podemos_ slime\* para fazê-lo passar:
+
+```go
+func NovasPublicacoesDoSA(sistemaArquivos fstest.MapFS) []Publicacao {
+	return []Publicacao{{}, {}}
+}
+```
+
+Mas, como Denise Yu escreveu:
+
+> Sliming\* é útil para dar um “esqueleto” ao seu objeto. Projetar uma interface e executar a lógica são duas preocupações, e os sliming\* testes estrategicamente permitem que você se concentre em um de cada vez.
+
+Já temos nossa estrutura. Então, o que fazemos em vez disso?
+
+Como cortamos o escopo, tudo o que precisamos fazer é ler o diretório e criar uma publicação para cada arquivo que encontrarmos. Não precisamos nos preocupar em abrir arquivos e analisá-los ainda.
+
+```go
+func NovasPublicacoesDoSA(sistemaArquivos fstest.MapFS) []Publicacao {
+	dir, _ := fs.ReadDir(sistemaArquivos, ".")
+	var publicacoes []Publicacao
+	for range dir {
+		publicacoes = append(publicacoes, Publicacao{})
+	}
+	return publicacoes
+}
+```
+
+[`fs.ReadDir`](https://golang.org/pkg/io/fs/#ReadDir) lê um diretório dentro de um determinado `fs.FS` retornando [`[]DirEntry`](https://golang.org/pkg/io/fs/#DirEntry).
+
+Nossa visão idealizada do mundo já foi frustrada porque erros podem acontecer, mas lembre-se agora que nosso foco é _passar no teste_, não alterar o design, então ignoraremos o erro por enquanto.
+
+O resto do código é direto: itere sobre as entradas, crie uma `Publicacao` para cada uma e retorne `publicacoes`.
