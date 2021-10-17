@@ -33,3 +33,19 @@ type Publicação struct {
 	Tags []string
 }
 ```
+
+## Desenvolvimento iterativo orientado a testes
+
+Faremos uma abordagem iterativa em que estamos sempre dando passos simples e seguros em direção ao nosso objetivo.
+
+Isso exige que interrompamos nosso trabalho, mas devemos ter cuidado para não cair na armadilha de adotar uma abordagem ["de baixo para cima"](https://pt.wikipedia.org/wiki/Abordagem_top-down_e_bottom-up).
+
+Não devemos confiar em nossa imaginação hiperativa quando começamos a trabalhar. Poderíamos ser tentados a fazer algum tipo de abstração que só é validada quando juntamos tudo, como algum tipo de `BlogPublicacaoArquivoAnalisador`.
+
+Isso _não_ é iterativo e está perdendo os loops de feedback menor que o TDD deveria nos trazer.
+
+Kent Beck diz:
+
+> O otimismo é um risco ocupacional da programação. O feedback é o tratamento.
+
+Em vez disso, nossa abordagem deve se esforçar para estar o mais perto possível de entregar valor _real_ ao consumidor o mais rápido possível (geralmente chamado de "caminho feliz"). Depois de entregar uma pequena quantidade de valor ao consumidor de ponta a ponta, a iteração posterior do restante dos requisitos é geralmente direta.
