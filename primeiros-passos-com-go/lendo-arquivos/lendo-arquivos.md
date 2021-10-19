@@ -1,6 +1,6 @@
 # Lendo arquivos
 
-- [**Você pode encontrar todos os códigos para esse capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/primeiros-passos-com-go/lendo-arquivos)
+- [**Você pode encontrar todo o código deste capítulo aqui**](https://github.com/larien/aprenda-go-com-testes/tree/main/primeiros-passos-com-go/lendo-arquivos)
 - [Aqui está um vídeo meu trabalhando no problema e respondendo à perguntas na Twitch (conteúdo em inglês)](https://www.youtube.com/watch?v=nXts4dEJnkU)
 
 Neste capítulo, aprenderemos como ler alguns arquivos, obter alguns dados deles e fazer algo útil.
@@ -220,3 +220,81 @@ func NovasPublicacoesDoSA(sistemaArquivos fstest.MapFS) []Publicacao {
 Nossa visão idealizada do mundo já foi frustrada porque erros podem acontecer, mas lembre-se agora que nosso foco é _passar no teste_, não alterar o design, então ignoraremos o erro por enquanto.
 
 O resto do código é direto: itere sobre as entradas, crie uma `Publicacao` para cada uma e retorne `publicacoes`.
+
+## Refatoração
+
+Mesmo que nossos testes estejam passando, não podemos usar nosso novo pacote fora deste contexto, porque ele está acoplado a uma implementação concreta `fstest.MapFS`. Mas não precisa ser assim. Mude o argumento para nossa função `NovasPublicacoesDoSA` para aceitar a interface da biblioteca padrão.
+
+```go
+func NovasPublicacoesDoSA(sistemaArquivos fs.FS) []Publicacao {
+	dir, _ := fs.ReadDir(sistemaArquivos, ".")
+	var publicacoes []Publicacao
+	for range dir {
+		publicacoes = append(publicacoes, Publicacao{})
+	}
+	return publicacoes
+}
+```
+
+Execute novamente os testes: tudo deve estar funcionando.
+
+### Manipulação de erros
+
+Deixamos de lado o tratamento de erros anteriormente, quando nos concentramos em fazer o caminho feliz funcionar. Antes de continuar a iterar na funcionalidade, devemos reconhecer que podem ocorrer erros ao trabalhar com arquivos. Além de ler o diretório, podemos ter problemas ao abrir arquivos individuais. Vamos mudar nossa API (primeiro por meio de nossos testes, naturalmente) para que ela possa retornar um `erro`.
+
+```go
+func TestNovasPublicacoesBlog(t *testing.T) {
+	sa := fstest.MapFS{
+		"ola-mundo.md":  {Data: []byte("oi")},
+		"ola-mundo2.md": {Data: []byte("hola")},
+	}
+
+	publicacoes, err := blogpublicacoes.NovasPublicacoesDoSA(sa)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(publicacoes) != len(sa) {
+		t.Errorf("obteve %d publicacoes, esperado %d publicacoes", len(publicacoes), len(sa))
+	}
+}
+```
+
+Execute o teste: ele deve reclamar do número errado de valores de retorno. Consertar o código é simples.
+
+```go
+func NovasPublicacoesDoSA(sistemaArquivos fs.FS) ([]Publicacao, error) {
+	dir, err := fs.ReadDir(sistemaArquivos, ".")
+	if err != nil {
+		return nil, err
+	}
+	var publicacoes []Publicacao
+	for range dir {
+		publicacoes = append(publicacoes, Publicacao{})
+	}
+	return publicacoes, nil
+}
+```
+
+Isso fará com que o teste passe. O praticante de TDD em você pode ficar irritado por não vermos um teste com falha antes de escrever o código para propagar o erro de `fs.ReadDir`. Para fazer isso "apropriadamente", precisaríamos de um novo teste onde injetamos um test-double (dublê de teste) falho de `fs.FS` para fazer `fs.ReadDir` retornar um `erro`.
+
+```go
+type StubFalhoSA struct {
+}
+
+func (s StubFalhoSA) Abrir(nome string) (fs.File, error) {
+	return nil, errors.New("oh não, eu sempre falho")
+}
+
+// later
+_, err := blogpublicacoes.NovasPublicacoesDoSA(StubFalhoSA{})
+```
+
+**nota**: O prefixo `Stub` significa que o objeto tem um comportamento fixo e previsível.
+
+Isso deve dar a você confiança em nossa abordagem. A interface que estamos usando tem um método, o que torna trivial a criação de dublês de teste para testar diferentes cenários.
+
+Em alguns casos, testar o tratamento de erros é a coisa sensata a se fazer, mas, em nosso caso, não estamos fazendo nada _interessante_ com o erro, estamos apenas propagando-o, então não vale a pena escrever um novo teste.
+
+Logicamente, nossa próxima iteração será em torno de expandir nosso tipo `Publicacao` para que ele tenha alguns dados úteis.
