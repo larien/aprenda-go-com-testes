@@ -70,6 +70,11 @@ func TestOla(t *testing.T) {
 
 A próxima etapa é executar os testes. Digite `go test` em seu terminal. Se os testes passarem, provavelmente você está usando uma versão anterior do Go. No entanto, se você estiver usando Go 1.16 ou posterior, os testes provavelmente não serão executados. Em vez disso, você verá uma mensagem de erro como esta no terminal:
 
+```shell
+$ go test
+go: cannot find main module; see 'go help modules'
+```
+
 Qual é o problema? Em uma palavra, [módulos](https://blog.golang.org/go116-module-changes). Felizmente, o problema é fácil de resolver. Digite `go mod init ola` em seu terminal. Isso criará
 um novo arquivo com o seguinte conteúdo:
 
@@ -537,6 +542,6 @@ Até agora você deve ter alguma compreensão de:
 - Escrever a menor quantidade de código para fazer o teste passar, para que saibamos que temos um software funcionando
 - _Em seguida_, refatorar, tendo a segurança de nossos testes para garantir que tenhamos um código bem feito e fácil de trabalhar
 
-No nosso caso, passamos de `Ola()` para `Ola("nome")`, para `Ola ("nome"," Francês ")` em etapas pequenas e fáceis de entender.
+No nosso caso, passamos de `Ola()` para `Ola("nome")`, para `Ola("nome", "Francês")` em etapas pequenas e fáceis de entender.
 
 Naturalmente, isso é trivial comparado ao software do "mundo real", mas os princípios ainda permanecem. O TDD é uma habilidade que precisa de prática para se desenvolver. No entanto, você terá muito mais facilidade em escrever software sendo capaz de dividir os problemas em pedaços menores que possa testar.
