@@ -407,3 +407,115 @@ Mesmo que pareça um passo pequeno adiante, ainda exigiu que escrevêssemos uma 
 A abordagem iterativa nos deu um feedback rápido de que nossa compreensão dos requisitos está incompleta.
 
 `fs.FS` nos dá uma maneira de abrir um arquivo dentro dele, pelo nome, com seu método `Open`. A partir daí, lemos os dados do arquivo e, por enquanto, não precisamos de nenhuma análise sofisticada, apenas excluindo o texto `Título:` ao cortar a string.
+
+## Refatoração
+
+Separar o 'código que abre o arquivo' do 'código que ler o arquivo' tornará o código mais simples de entender e trabalhar.
+
+```go
+func obterPublicacao(sistemaArquivos fs.FS, a fs.DirEntry) (Publicacao, error) {
+	publicacaoArquivo, err := sistemaArquivos.Open(a.Name())
+	if err != nil {
+		return Publicacao{}, err
+	}
+
+	defer publicacaoArquivo.Close()
+
+	return novaPublicacao(publicacaoArquivo)
+}
+
+func novaPublicacao(publicacaoArquivo fs.File) (Publicacao, error) {
+	publicacaoDados, err := io.ReadAll(publicacaoArquivo)
+	if err != nil {
+		return Publicacao{}, err
+	}
+
+	publicacao := Publicacao{Titulo: string(publicacaoDados)[8:]}
+
+	return publicacao, nil
+}
+```
+
+Ao refatorar novas funções ou métodos, tome cuidado e pense sobre os argumentos. Você que está projetando aqui e está livre para pensar profundamente sobre o que é apropriado, pois os testes estão passando. Pense em acoplamento e coesão. Neste caso, você deve se perguntar:
+
+> A função `novaPublicacao` precisa ser acoplada a um `fs.File`? Estamos usando todos os métodos e dados desse tipo? O que nós _realmente_ precisamos?
+
+Em nosso caso, nós apenas o usamos como um argumento para `io.ReadAll` que precisa de um `io.Reader`. Portanto, devemos desacoplar nossa função e solicitar um `io.Reader`.
+
+```go
+func novaPublicacao(publicacaoArquivo io.Reader) (Publicacao, error) {
+	publicacaoDados, err := io.ReadAll(publicacaoArquivo)
+	if err != nil {
+		return Publicacao{}, err
+	}
+
+	publicacao := Publicacao{Titulo: string(publicacaoDados)[8:]}
+
+	return publicacao, nil
+}
+```
+
+Você pode fazer um argumento semelhante para nossa função `obterPublicacao`, que recebe um argumento `fs.DirEntry`, mas chamamos somente o método `Name()` para obter o nome do arquivo. Não precisamos de tudo isso; vamos nos separar desse tipo e passar o nome do arquivo como uma string. Aqui está o código totalmente refatorado:
+
+```go
+func NovasPublicacoesDoSA(sistemaArquivos fs.FS) ([]Publicacao, error) {
+	dir, err := fs.ReadDir(sistemaArquivos, ".")
+	if err != nil {
+		return nil, err
+	}
+
+	var publicacoes []Publicacao
+
+	for _, a := range dir {
+		publicacao, err := obterPublicacao(sistemaArquivos, a.Name())
+		if err != nil {
+			return nil, err //todo: se um arquivo falhar, devemos parar ou apenas ignorar?
+		}
+
+		publicacoes = append(publicacoes, publicacao)
+	}
+
+	return publicacoes, nil
+}
+
+func obterPublicacao(sistemaArquivos fs.FS, arquivoNome string) (Publicacao, error) {
+	publicacaoArquivo, err := sistemaArquivos.Open(arquivoNome)
+	if err != nil {
+		return Publicacao{}, err
+	}
+
+	defer publicacaoArquivo.Close()
+
+	return novaPublicacao(publicacaoArquivo)
+}
+
+func novaPublicacao(publicacaoArquivo io.Reader) (Publicacao, error) {
+	publicacaoDados, err := io.ReadAll(publicacaoArquivo)
+	if err != nil {
+		return Publicacao{}, err
+	}
+
+	publicacao := Publicacao{Titulo: string(publicacaoDados)[8:]}
+
+	return publicacao, nil
+}
+```
+
+A partir de agora, a maioria dos nossos esforços pode ser perfeitamente contida em `novaPublicacao`. As preocupações de abrir e iterar sobre os arquivos estão resolvidas e agora podemos nos concentrar em extrair os dados para nosso tipo `Publicacao`. Embora não seja tecnicamente necessário, os arquivos são uma boa maneira de agrupar logicamente coisas relacionadas, então movi o tipo `Publicacao` e` novaPublicacao` para um novo arquivo `publicacao.go`.
+
+### Ajudante de teste
+
+Devemos cuidar de nossos testes também. Faremos muitas afirmações de `Publicações`, então devemos escrever algum código para ajudar com isso
+
+```go
+func verificaPublicacao(t *testing.T, resultado blogpublicacoes.Publicacao, esperado blogpublicacoes.Publicacao) {
+	t.Helper()
+	if !reflect.DeepEqual(resultado, esperado) {
+		t.Errorf("resultado %+v, esperado %+v", resultado, esperado)
+	}
+}
+```
+
+```go
+verificaPublicacao(t, publicacoes[0], blogpublicacoes.Publicacao{Titulo: "Publicação 1"})
+```
