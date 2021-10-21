@@ -298,3 +298,112 @@ Isso deve dar a você confiança em nossa abordagem. A interface que estamos usa
 Em alguns casos, testar o tratamento de erros é a coisa sensata a se fazer, mas, em nosso caso, não estamos fazendo nada _interessante_ com o erro, estamos apenas propagando-o, então não vale a pena escrever um novo teste.
 
 Logicamente, nossa próxima iteração será em torno de expandir nosso tipo `Publicacao` para que ele tenha alguns dados úteis.
+
+## Escreva o teste primeiro
+
+Começaremos com a primeira linha do exemplo de publicação do blog proposto, o campo de título.
+
+Precisamos alterar o conteúdo dos arquivos de teste para que correspondam ao que foi especificado e, então, podemos afirmar de que foi analisado corretamente.
+
+```go
+func TestNovasPublicacoesBlog(t *testing.T) {
+	sa := fstest.MapFS{
+		"ola-mundo.md":  {Data: []byte("Titulo: Publicação 1")},
+		"ola-mundo2.md": {Data: []byte("Titulo: Publicação 2")},
+	}
+
+	publicacoes, err := blogpublicacoes.NovasPublicacoesDoSA(sa)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(publicacoes) != len(sa) {
+		t.Errorf("obteve %d publicacoes, esperado %d publicacoes", len(publicacoes), len(sa))
+	}
+
+	got := publicacoes[0]
+	want := blogpublicacoes.Publicacao{Titulo: "Publicação 1"}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("resultado %+v, esperado %+v", got, want)
+	}
+}
+```
+
+## Execute o teste
+
+```
+./blogpublicacoes_test.go:28:37: unknown field 'Titulo' in struct literal of type blogpublicacoes.Publicacao
+```
+
+Isso significa que o campo `Titulo` não existe no tipo `Publicacao`
+
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
+
+Adicione o novo campo ao nosso tipo `Publicacao` para que o teste seja executado
+
+```go
+type Publicacao struct {
+	Titulo string
+}
+```
+
+Execute novamente o teste e você deverá vê-lo falhando
+
+```
+--- FAIL: TestNovasPublicacoesBlog (0.00s)
+    blogpublicacoes_test.go:31: resultado {Titulo:}, esperado {Titulo:Publicação 1}
+```
+
+## Escreva código o suficiente para fazer o teste passar
+
+Precisamos abrir cada arquivo e extrair o título
+
+```go
+func NovasPublicacoesDoSA(sistemaArquivos fs.FS) ([]Publicacao, error) {
+	dir, err := fs.ReadDir(sistemaArquivos, ".")
+	if err != nil {
+		return nil, err
+	}
+
+	var publicacoes []Publicacao
+
+	for _, a := range dir {
+		publicacao, err := obterPublicacao(sistemaArquivos, a)
+		if err != nil {
+			return nil, err //todo: se um arquivo falhar, devemos parar ou apenas ignorar?
+		}
+
+		publicacoes = append(publicacoes, publicacao)
+	}
+
+	return publicacoes, nil
+}
+
+func obterPublicacao(sistemaArquivos fs.FS, a fs.DirEntry) (Publicacao, error) {
+	publicacaoArquivo, err := sistemaArquivos.Open(a.Name())
+	if err != nil {
+		return Publicacao{}, err
+	}
+
+	defer publicacaoArquivo.Close()
+
+	publicacaoDados, err := io.ReadAll(publicacaoArquivo)
+	if err != nil {
+		return Publicacao{}, err
+	}
+
+	publicacao := Publicacao{Titulo: string(publicacaoDados)[8:]}
+
+	return publicacao, nil
+}
+```
+
+Lembre-se de que nosso foco neste ponto não é escrever um código elegante, mas apenas chegar a um ponto em que tenhamos um programa funcionando.
+
+Mesmo que pareça um passo pequeno adiante, ainda exigiu que escrevêssemos uma boa quantidade de código e fizéssemos algumas suposições com relação ao tratamento de erros. Este seria um ponto em que você deveria conversar com seus colegas e decidir a melhor abordagem.
+
+A abordagem iterativa nos deu um feedback rápido de que nossa compreensão dos requisitos está incompleta.
+
+`fs.FS` nos dá uma maneira de abrir um arquivo dentro dele, pelo nome, com seu método `Open`. A partir daí, lemos os dados do arquivo e, por enquanto, não precisamos de nenhuma análise sofisticada, apenas excluindo o texto `Título:` ao cortar a string.
