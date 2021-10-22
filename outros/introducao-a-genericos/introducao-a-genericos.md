@@ -83,7 +83,8 @@ type checking failed for main
 prog.go2:15:16: cannot use "CJ" (untyped string constant) as int value in argument to VerificaIgual
 prog.go2:15:22: cannot use "CJ" (untyped string constant) as int value in argument to VerificaIgual
 ```
-_ Traduzindo a mensagem do log: "não pode usar "CJ" (constante de texto não digitada) como valor de int (inteiro) no argumento para VerificaIgual"_
+
+_Traduzindo a mensagem do log: "não pode usar "CJ" (constante de texto não digitada) como valor de int (inteiro) no argumento para VerificaIgual"_
 
 Se você parar para ler o erro com calma, verá que o compilador está reclamando que estamos tentando passar um `texto` para uma função que espera um valor `inteiro`.
 
@@ -191,6 +192,7 @@ Você obterá o seguinte erro:
 ```
 prog.go2:24:8: cannot compare recebido == esperado (operator == not defined for T)
 ```
+_Traduzindo a mensagem do log: "não pode comparar pagamento == esperado (operador == não definido para T)"_
 
 O que faz muito sentido, porque você não pode usar esses operadores em todos (ou `any`) tipo.
 
@@ -423,6 +425,8 @@ Você obtém um erro do compilador, mostrando a fraqueza de perder a segurança 
 prog.go2:77:16: invalid operation: operator + not defined for primeiroNum (variable of type interface{})
 ```
 
+_Traduzindo a mensagem do log: "operação inválida: operador + não definido para primeiroNum (variável do tipo interface{})"_
+
 Quando `Desempilhar` retorna uma `interface{}`, significa que o compilador não tem informações sobre o que são os dados e portanto, limita severamente o que podemos fazer. Ele não pode saber que deve ser um inteiro, então não nos permite usar o operador `+`.
 
 Para contornar isso, o chamador deve fazer uma [asserção de tipo](https://golang.org/ref/spec#Type_assertions) para cada valor.
@@ -442,10 +446,6 @@ VerificaVerdadeiro(ok) // e novamente!
 
 VerificaIgual(realmentePrimeiroNum+realmenteSegundoNum, 3)
 ```
-
-Just like you can define generic arguments to functions, you can define generic data structures.
-
-Here's our new `Stack` implementation, featuring a generic data type and the tests, showing them working how we'd like them to work, with full type-safety. ([Full code listing here](https://go2goplay.golang.org/p/xAWcaMelgQV))
 
 O desagrado que irradia deste teste seria repetido para cada usuário potencial de nossa implementação de `Pilha`, eca.
 
