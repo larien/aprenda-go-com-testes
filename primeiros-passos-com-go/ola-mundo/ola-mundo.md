@@ -4,13 +4,8 @@
 
 É comum o primeiro programa em uma nova linguagem ser um _Olá, mundo_.
 
-No [capítulo anterior](../instalacao-do-go.md#o-ambiente-go), discutimos sobre como Go pode ser pouco flexível em relação a onde colocar seus arquivos.
-
-Crie um diretório no seguinte caminho: `$GOPATH/src/github.com/{seu-lindo-nome-de-usuario}/ola`.
-
-Se estiver num ambiente baseado em _unix_ , seu nome de usuário do sistema operacional for "ariel" e tiver motivação em seguir as convenções do Go sobre `$GOPATH` (que é a maneira mais fácil de configurar) você pode executar `mkdir -p $GOPATH/src/github.com/ariel/ola`.
-
-Crie um arquivo chamado `ola.go` no diretório mencionado e escreva o código abaixo. Para executá-lo, basta digitar `go run ola.go` no console.
+- Crie uma pasta onde quiser
+- Dentro da pasta, crie um arquivo chamado `ola.go` e coloque o seguinte código dentro dele
 
 ```go
 package main
@@ -22,9 +17,11 @@ func main() {
 }
 ```
 
+Para executá-lo, `go run ola.go`
+
 ## Como isso funciona?
 
-Quando você escreve um programa em Go, há um pacote `main` definido com uma função(`func`) `main` (principal) dentro dele. Os pacotes são maneiras de agrupar códigos escritos em Go.
+Quando você escreve um programa em Go, há um pacote `main` definido com uma função(`func`) `main` (principal) dentro dele. Os pacotes são maneiras de agrupar códigos Go relacionados.
 
 A palavra reservada `func` é utilizada para que você defina uma função com um nome e um conteúdo.
 
@@ -64,33 +61,54 @@ func TestOla(t *testing.T) {
 	esperado := "Olá, mundo"
 
 	if resultado != esperado {
-		t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+		t.Errorf("resultado %q, esperado %q", resultado, esperado)
 	}
 }
 ```
 
-Antes de explicar, vamos rodar o código. Execute `go test` no seu terminal. Ele deve passar! Para verificar, tente quebrar o teste de alguma forma mudando a string `esperado`.
+## Módulos Go?
 
-Perceba que você não precisa usar várias frameworks (ou bibliotecas) de testes e complicar as coisas tentando instalá-las. Tudo o que você precisa está pronto na linguagem e a sintaxe é a mesma para o resto dos códigos que você irá escrever.
+A próxima etapa é executar os testes. Digite `go test` em seu terminal. Se os testes passarem, provavelmente você está usando uma versão anterior do Go. No entanto, se você estiver usando Go 1.16 ou posterior, os testes provavelmente não serão executados. Em vez disso, você verá uma mensagem de erro como esta no terminal:
+
+Qual é o problema? Em uma palavra, [módulos](https://blog.golang.org/go116-module-changes). Felizmente, o problema é fácil de resolver. Digite `go mod init ola` em seu terminal. Isso criará
+um novo arquivo com o seguinte conteúdo:
+
+```go
+module ola
+
+go 1.16 // a versão pode mudar dependendo da que você tem instalado na sua máquina
+```
+
+Este arquivo fornece às ferramentas `go` informações essenciais sobre o seu código. Se você planeja distribuir sua aplicação, você incluiria onde o código está disponível para download, bem como informações sobre dependências. Por enquanto, seu arquivo de módulo é mínimo e você pode deixá-lo assim. Para ler mais sobre os módulos, [você pode verificar a referência na documentação do Golang](https://golang.org/doc/modules/gomod-ref). Podemos voltar a testar e aprender o Go agora, pois os testes devem ser executados, mesmo no Go 1.16.
+
+Em capítulos futuros, você precisará executar `go mod init ALGUM_NOME` em cada nova pasta antes de executar comandos como `go test` ou `go build`.
+
+## De volta ao teste
+
+Execute `go test` em seu terminal. Deve ter passado! Apenas para verificar, tente quebrar o teste, alterando a string `esperado`.
+
+Observe como você não teve que escolher entre vários frameworks de teste e, em seguida, descobrir como instalar. Tudo o que você precisa está embutido na linguagem e a sintaxe é a mesma do resto do código que você escreverá.
 
 ### Escrevendo testes
 
 Escrever um teste é como escrever uma função, com algumas regras:
 
-* Precisa estar em um arquivo com um nome parecido com `xxx_test.go`
-* A função de teste precisa começar com a palavra `Test`
-* A função de teste recebe um único argumento, que é `t *testing.T`
+- Precisa estar em um arquivo com um nome parecido com `xxx_test.go`
+- A função de teste precisa começar com a palavra `Test`
+- A função de teste recebe um único argumento, que é `t *testing.T`
+- Para usar o tipo `*testing.T`, você precisa importar `"testing"`, como fizemos com `fmt` no outro arquivo
 
 Por enquanto é o bastante para saber que o nosso `t` do tipo `*testing.T` é a nossa porta de entrada para a ferramenta de testes e assim você poderá utilizar o `t.Fail()` quando precisar relatar um erro.
 
 Abordando alguns novos tópicos:
 
 #### `if`
+
 Instruções `if` em Go são muito parecidas com as de outras linguagens.
 
 #### Declarando variáveis
 
-Estamos declarando algumas variáveis com a sintaxe  `nomeDaVariavel := valor`, que nos permite reutilizar alguns valores nos nossos testes de maneira legível.
+Estamos declarando algumas variáveis com a sintaxe `nomeDaVariavel := valor`, que nos permite reutilizar alguns valores nos nossos testes de maneira legível.
 
 #### `t.Errorf`
 
@@ -98,11 +116,15 @@ Estamos chamando o _método_ `Errorf` em nosso `t` que irá imprimir uma mensage
 
 Iremos explorar a diferença entre métodos e funções depois.
 
-### go doc
+### Go doc
 
 Outra funcionalidade importante do Go é sua documentação. Você pode ver a documentação na sua máquina rodando `godoc -http :8000`. Se acessar [localhost:8000/pkg](http://localhost:8000/pkg) no seu navegador, verá todos os pacotes instalados no seu sistema.
 
 A vasta biblioteca padrão da linguagem tem uma documentação excelente com exemplos. Deve valer a pena dar uma olhada em [http://localhost:8000/pkg/testing/](http://localhost:8000/pkg/testing/) para verificar o que está disponível para você.
+
+Se você não tiver o comando `godoc`, talvez esteja usando uma versão mais recente do Go (1.14 ou posterior), [que não inclui mais o `godoc`](https://golang.org/doc/go1.14#godoc). Você pode instalá-lo manualmente com `go install golang.org/x/tools/cmd/godoc`.
+
+**nota**: Se você tiver usando Go 1.17, ou superior, você deve instalar o godoc com `go install golang.org/x/tools/cmd/godoc`, pois o comando `go get` para instalar executáveis ficou [obsoleto](https://golang.org/doc/go-get-install-deprecation).
 
 ### Olá, VOCÊ
 
@@ -124,7 +146,7 @@ func TestOla(t *testing.T) {
 	esperado := "Olá, Chris"
 
 	if resultado != esperado {
-		t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+		t.Errorf("resultado %q, esperado %q", resultado, esperado)
 	}
 }
 ```
@@ -155,7 +177,7 @@ func Ola(nome string) string {
 }
 ```
 
-Se tentar rodar seus testes novamente, seu arquivo `main.go` irá falhar durante a compilação porque você não está passando um argumento. Passe "mundo" como argumento para fazer o teste passar.
+Se tentar rodar seus testes novamente, seu arquivo `ola.go` irá falhar durante a compilação porque você não está passando um argumento. Passe "mundo" como argumento para fazer o teste passar.
 
 ```go
 func main() {
@@ -227,7 +249,7 @@ func TestOla(t *testing.T) {
         esperado := "Olá, Chris"
 
         if resultado != esperado {
-            t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+            t.Errorf("resultado %q, esperado %q", resultado, esperado)
         }
     })
 
@@ -236,7 +258,7 @@ func TestOla(t *testing.T) {
         esperado := "Olá, mundo"
 
         if resultado != esperado {
-            t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+            t.Errorf("resultado %q, esperado %q", resultado, esperado)
         }
     })
 }
@@ -256,10 +278,10 @@ Podemos e devemos refatorar nossos testes.
 
 ```go
 func TestOla(t *testing.T) {
-    verificaMensagemCorreta := func(t *testing.T, resultado, esperado string) {
+    verificaMensagemCorreta := func(t testing.TB, resultado, esperado string) {
         t.Helper()
         if resultado != esperado {
-            t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
+            t.Errorf("resultado %q, esperado %q", resultado, esperado)
         }
     }
 
@@ -269,7 +291,7 @@ func TestOla(t *testing.T) {
         verificaMensagemCorreta(t, resultado, esperado)
     })
 
-    t.Run("'Mundo' como padrão para 'string' vazia", func(t *testing.T) {
+    t.Run("'Mundo' como padrão para string vazia", func(t *testing.T) {
         resultado := Ola("")
         esperado := "Olá, Mundo"
         verificaMensagemCorreta(t, resultado, esperado)
@@ -279,9 +301,9 @@ func TestOla(t *testing.T) {
 
 ### O que fizemos aqui?
 
-Refatoramos nossa asserção em uma função. Isso reduz a duplicação e melhora a legibilidade de nossos testes. No Go, você pode declarar funções dentro de outras funções e atribui-las a variáveis. Você pode chamá-las, assim como as funções normais. Precisamos passar `t * testing.T` como parâmetro para que possamos dizer ao código de teste que ele falhará quando necessário.
+Refatoramos nossa asserção em uma função. Isso reduz a duplicação e melhora a legibilidade de nossos testes. No Go, você pode declarar funções dentro de outras funções e atribui-las a variáveis. Você pode chamá-las, assim como as funções normais. Precisamos passar `t *testing.T` como parâmetro para que possamos dizer ao código de teste que ele falhará quando necessário.
 
-`t.Helper ()` é necessário para dizermos ao conjunto de testes que este é um método auxiliar. Ao fazer isso, quando o teste falhar, o número da linha relatada estará em nossa chamada de função, e não dentro do nosso auxiliar de teste. Isso ajudará outros desenvolvedores a rastrear os problemas com maior facilidade. Se você ainda não entendeu, comente, faça um teste falhar e observe a saída do teste.
+`t.Helper()` é necessário para dizermos ao conjunto de testes que este é um método auxiliar. Ao fazer isso, quando o teste falhar, o número da linha relatada estará em nossa chamada de função, e não dentro do nosso auxiliar de teste. Isso ajudará outros desenvolvedores a rastrear os problemas com maior facilidade. Se você ainda não entendeu, comente, faça um teste falhar e observe a saída do teste.
 
 Agora que temos um teste bem escrito falhando, vamos corrigir o código usando um `if`.
 
@@ -306,11 +328,11 @@ Agora estamos felizes com o código. Eu adicionaria mais um commit ao anterior p
 
 Vamos repassar o ciclo novamente:
 
-* Escrever um teste
-* Compilar o código sem erros
-* Rodar o teste, ver o teste falhar e certificar que a mensagem de erro faz sentido
-* Escrever a quantidade mínima de código para o teste passar
-* Refatorar
+- Escrever um teste
+- Compilar o código sem erros
+- Rodar o teste, ver o teste falhar e certificar que a mensagem de erro faz sentido
+- Escrever a quantidade mínima de código para o teste passar
+- Refatorar
 
 Este ciclo pode parecer tedioso, mas se manter nesse ciclo de feedback é importante.
 
@@ -379,7 +401,7 @@ func Ola(nome string, idioma string) string {
         nome = "Mundo"
     }
 
-    if idioma == "Espanhol" {
+    if idioma == "espanhol" {
         return "Hola, " + nome
     }
 
@@ -411,9 +433,9 @@ func Ola(nome string, idioma string) string {
 
 ### Francês
 
-* Escreva um teste que verifique que quando passamos o idioma `"francês"`, obtemos `"Bonjour, "`
-* Veja o teste falhar, verifique se a mensagem de erro é fácil de ler
-* Faça a mínima alteração de código o suficiente para que o teste passe
+- Escreva um teste que verifique que quando passamos o idioma `"francês"`, obtemos `"Bonjour, "`
+- Veja o teste falhar, verifique se a mensagem de erro é fácil de ler
+- Faça a mínima alteração de código o suficiente para que o teste passe
 
 Você pode ter escrito algo parecido com isso:
 
@@ -488,13 +510,13 @@ func prefixodeSaudacao(idioma string) (prefixo string) {
 
 Alguns novos conceitos:
 
-* Em nossa assinatura de função, criamos um valor de retorno chamado `(prefixo string)`.
-* Isso criará uma variável chamada `prefixo` na nossa função.
-  * Lhe será atribuído o valor "zero". Isso dependendo do tipo, por exemplo, para `int` será `0` e para strings será ` "" `.
-    * Você pode retornar o que quer que esteja definido, apenas chamando `return` ao invés de `return prefixo`.
-  * Isso será exibido no `go doc` para sua função, para que possa tornar a intenção do seu código mais clara.
-* `default` será escolhido caso o valor recebido não corresponda a nenhuma das outras instruções `case` do `switch`.
-* O nome da função começa com uma letra minúscula. As funções públicas em _Go_ começam com uma letra maiúscula e as privadas, com minúsculas. Não queremos que as partes internas do nosso algoritmo sejam expostas ao mundo, portanto tornamos essa função privada.
+- Em nossa assinatura de função, criamos um valor de retorno chamado `(prefixo string)`.
+- Isso criará uma variável chamada `prefixo` na nossa função.
+  - Lhe será atribuído o valor "zero". Isso dependendo do tipo, por exemplo, para `int` será `0` e para strings será `""`.
+    - Você pode retornar o que quer que esteja definido, apenas chamando `return` ao invés de `return prefixo`.
+  - Isso será exibido no `go doc` para sua função, para que possa tornar a intenção do seu código mais clara.
+- `default` será escolhido caso o valor recebido não corresponda a nenhuma das outras instruções `case` do `switch`.
+- O nome da função começa com uma letra minúscula. As funções públicas em _Go_ começam com uma letra maiúscula e as privadas, com minúsculas. Não queremos que as partes internas do nosso algoritmo sejam expostas ao mundo, portanto tornamos essa função privada.
 
 ## Resumindo
 
@@ -504,17 +526,17 @@ Até agora você deve ter alguma compreensão de:
 
 ### Algumas das sintaxes da linguagem _Go_ para:
 
-* Escrever testes
-* Declarar funções, com argumentos e tipos de retorno
-* `if`, `const` e `switch`
-* Declarar variáveis e constantes
+- Escrever testes
+- Declarar funções, com argumentos e tipos de retorno
+- `if`, `const` e `switch`
+- Declarar variáveis e constantes
 
 ### O processo TDD e _por que_ as etapas são importantes
 
-* _Escreva um teste que falhe e veja-o falhar_, para que saibamos que escrevemos um teste _relevante_ para nossos requisitos e vimos que ele produz uma _descrição da falha fácil de entender_
-* Escrever a menor quantidade de código para fazer o teste passar, para que saibamos que temos software funcionando
-* _Em seguida_, refatorar, tendo a segurança de nossos testes para garantir que tenhamos um código bem feito e fácil de trabalhar
+- _Escreva um teste que falhe e veja-o falhar_, para que saibamos que escrevemos um teste _relevante_ para nossos requisitos e vimos que ele produz uma _descrição da falha fácil de entender_
+- Escrever a menor quantidade de código para fazer o teste passar, para que saibamos que temos um software funcionando
+- _Em seguida_, refatorar, tendo a segurança de nossos testes para garantir que tenhamos um código bem feito e fácil de trabalhar
 
 No nosso caso, passamos de `Ola()` para `Ola("nome")`, para `Ola ("nome"," Francês ")` em etapas pequenas e fáceis de entender.
 
-Naturalmente, isso é trivial comparado ao software do "mundo real", mas os princípios ainda permanecem. O TDD é uma habilidade que precisa de prática para se desenvolver. No entanto, você será muito mais facilidade em escrever software sendo capaz de dividir os problemas em pedaços menores que possa testar.
+Naturalmente, isso é trivial comparado ao software do "mundo real", mas os princípios ainda permanecem. O TDD é uma habilidade que precisa de prática para se desenvolver. No entanto, você terá muito mais facilidade em escrever software sendo capaz de dividir os problemas em pedaços menores que possa testar.
