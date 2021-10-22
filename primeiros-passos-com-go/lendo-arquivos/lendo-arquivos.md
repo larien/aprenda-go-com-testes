@@ -13,13 +13,11 @@ Fomos solicitados a criar o pacote que converte uma determinada pasta de arquivo
 
 ola-mundo.md
 
-```markdown
+```
 Titulo: Olá, mundo TDD!
 Descricao: Primeira publicação em nosso maravilhoso blog
 Tags: tdd, go
-
 ---
-
 Olá mundo!
 
 O corpo das publicações começa após o `---`
@@ -599,3 +597,136 @@ Convenientemente, `NewScanner` também necessita de um `io.Reader` para ler, ent
 Chame `Scan` para ler uma linha e extraia os dados usando `Text`.
 
 Esta função nunca poderia retornar um `erro`. Seria tentador, neste ponto, removê-lo do tipo de retorno, mas sabemos que teremos que lidar com estruturas de arquivo inválidas mais tarde, portanto, podemos também deixá-lo.
+
+## Refatoração
+
+Estamos repetindo o processo de escanear uma linha e depois ler o texto. Sabemos que faremos essa operação pelo menos mais uma vez, é uma simples refatoração para DRY ("Don't Repeat Yourself" ou "não se repita", em português), então vamos começar com isso.
+
+```go
+func novaPublicacao(publicacaoArquivo io.Reader) (Publicacao, error) {
+	escaner := bufio.NewScanner(publicacaoArquivo)
+
+	lerLinha := func() string {
+		escaner.Scan()
+		return escaner.Text()
+	}
+
+	titulo := lerLinha()[8:]
+	descricao := lerLinha()[13:]
+
+	return Publicacao{Titulo: titulo, Descricao: descricao}, nil
+}
+```
+
+Isso quase não salvou nenhuma linha de código, mas raramente é o ponto da refatoração. O que estou tentando fazer aqui é apenas separar o _o que_ do _como_ das linhas de leitura para tornar o código um pouco mais declarativo para o leitor.
+
+Embora os números mágicos de 7 e 13 façam o trabalho, eles não são muito descritivos.
+
+```go
+const (
+	tituloSeparador    = "Titulo: "
+	descricaoSeparador = "Descricao: "
+)
+
+func novaPublicacao(publicacaoArquivo io.Reader) (Publicacao, error) {
+	escaner := bufio.NewScanner(publicacaoArquivo)
+
+	lerLinha := func() string {
+		escaner.Scan()
+		return escaner.Text()
+	}
+
+	titulo := lerLinha()[len(tituloSeparador):]
+	descricao := lerLinha()[len(descricaoSeparador):]
+
+	return Publicacao{Titulo: titulo, Descricao: descricao}, nil
+}
+```
+
+Agora que estou olhando para o código com minha mente criativa de refatoração, gostaria de tentar fazer com que nossa função lerLinha se encarregasse de remover a tag. Também existe uma maneira mais legível de remover um prefixo de uma string com a função `strings.TrimPrefix`.
+
+```go
+func novaPublicacao(publicacaoCorpo io.Reader) (Publicacao, error) {
+	escaner := bufio.NewScanner(publicacaoCorpo)
+
+	lerLinha := func(tagNome string) string {
+		escaner.Scan()
+		return strings.TrimPrefix(escaner.Text(), tagNome)
+	}
+
+	return Publicacao{
+		Titulo:    lerLinha(tituloSeparador),
+		Descricao: lerLinha(descricaoSeparador),
+	}, nil
+}
+```
+
+Você pode gostar ou não dessa ideia, mas eu gosto. A questão é que, no estado de refatoração, estamos livres para brincar com os detalhes internos e você pode continuar executando seus testes para verificar se as coisas ainda se comportam corretamente. Sempre podemos voltar aos estados anteriores se não estivermos satisfeitos. A abordagem TDD nos dá essa licença para experimentar ideias com frequência, então temos mais possibilidades de escrever bons códigos.
+
+O próximo requisito é extrair as tags da publicação. Se você estiver acompanhando, recomendo tentar implementá-lo sozinho antes de continuar a leitura. Agora você deve ter um ritmo bom e se sentir confiante para extrair a próxima linha e analisar os dados.
+
+Para resumir, não vou passar pelas etapas de TDD, mas aqui está o teste com tags adicionadas.
+
+```go
+func TestNovasPublicacoesBlog(t *testing.T) {
+	const (
+		primeiroCorpo = `Titulo: Publicação 1
+Descricao: Descrição 1
+Tags: tdd, go`
+		segundoCorpo = `Titulo: Publicação 2
+Descricao: Descrição 2
+Tags: rust, borrow-checker`
+	)
+
+    // código escondido
+
+	verificaPublicacao(t, publicacoes[0], blogpublicacoes.Publicacao{
+		Titulo:    "Publicação 1",
+		Descricao: "Descrição 1",
+		Tags:      []string{"tdd", "go"},
+	})
+}
+```
+
+Você só está se enganando se apenas copiar e colar o que escrevo. Para ter certeza de que estamos todos na mesma página, aqui está o meu código, que inclui a extração das tags.
+
+```go
+const (
+	tituloSeparador    = "Titulo: "
+	descricaoSeparador = "Descricao: "
+	tagsSeparador      = "Tags: "
+)
+
+func novaPublicacao(publicacaoCorpo io.Reader) (Publicacao, error) {
+	escaner := bufio.NewScanner(publicacaoCorpo)
+
+	lerLinha := func(tagNome string) string {
+		escaner.Scan()
+		return strings.TrimPrefix(escaner.Text(), tagNome)
+	}
+
+	return Publicacao{
+		Titulo:    lerLinha(tituloSeparador),
+		Descricao: lerLinha(descricaoSeparador),
+		Tags:      strings.Split(lerLinha(tagsSeparador), ", "),
+	}, nil
+}
+```
+
+Sem surpresas aqui. Pudemos reutilizar `lerLinha` para obter a próxima linha para as tags e então dividi-las usando `strings.Split`.
+
+A última iteração em nosso caminho feliz é extrair o corpo.
+
+Aqui está um lembrete do formato de arquivo proposto.
+
+```
+Titulo: Olá, mundo TDD!
+Descricao: Primeira publicação em nosso maravilhoso blog
+Tags: tdd, go
+---
+Olá mundo!
+
+O corpo das publicações começa após o `---`
+```
+
+Já lemos as primeiras 3 linhas. Precisamos então ler mais uma linha, descartá-la e o restante do arquivo conterá o corpo da publicação.
