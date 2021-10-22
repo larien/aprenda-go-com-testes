@@ -519,3 +519,83 @@ func verificaPublicacao(t *testing.T, resultado blogpublicacoes.Publicacao, espe
 ```go
 verificaPublicacao(t, publicacoes[0], blogpublicacoes.Publicacao{Titulo: "Publicação 1"})
 ```
+
+## Escreva o teste primeiro
+
+Vamos estender nosso teste ainda mais para extrair a próxima linha do arquivo, a descrição. Fazer passar agora deve parecer confortável e familiar.
+
+```go
+func TestNovasPublicacoesBlog(t *testing.T) {
+	const (
+		primeiroCorpo = `Titulo: Publicação 1
+		Descricao: Descrição 1`
+		segundoCorpo = `Titulo: Publicação 2
+		Descricao: Descrição 2`
+	)
+
+	sa := fstest.MapFS{
+		"ola-mundo.md":  {Data: []byte(primeiroCorpo)},
+		"ola-mundo2.md": {Data: []byte(segundoCorpo)},
+	}
+
+  // código escondido
+
+	verificaPublicacao(t, publicacoes[0], blogpublicacoes.Publicacao{
+		Titulo:    "Publicação 1",
+		Descricao: "Descrição 1",
+	})
+}
+```
+
+## Execute o teste
+
+```
+./blogpublicacoes_test.go:36:3: unknown field 'Descricao' in struct literal of type blogpublicacoes.Publicacao
+```
+
+Isso significa que o campo `Descricao` não existe no tipo `Publicacao`
+
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
+
+Adicione o novo campo em `Publicacao`.
+
+```go
+type Publicacao struct {
+	Titulo    string
+	Descricao string
+}
+```
+
+Os testes agora devem ser compilados e falhar.
+
+```
+--- FAIL: TestNovasPublicacoesBlog (0.00s)
+    blogpublicacoes_test.go:34: resultado {Titulo:Publicação 1
+                        Descricao: Descrição 1 Descricao:}, esperado {Titulo:Publicação 1 Descricao:Descrição 1}
+```
+
+## Escreva código o suficiente para fazer o teste passar
+
+A biblioteca padrão possui uma biblioteca útil para ajudá-lo a digitalizar os dados, linha por linha; [`bufio.Scanner`](https://golang.org/pkg/bufio/#Scanner)
+
+> Scanner fornece uma interface conveniente para leitura de dados, como um arquivo de linhas de texto delimitadas por uma nova linha.
+
+```go
+func novaPublicacao(publicacaoArquivo io.Reader) (Publicacao, error) {
+	escaner := bufio.NewScanner(publicacaoArquivo)
+
+	escaner.Scan()
+	tituloLinha := escaner.Text()
+
+	escaner.Scan()
+	descricaoLinha := escaner.Text()
+
+	return Publicacao{Titulo: tituloLinha[8:], Descricao: descricaoLinha[13:]}, nil
+}
+```
+
+Convenientemente, `NewScanner` também necessita de um `io.Reader` para ler, então não precisamos alterar os argumentos de nossa função. (Obrigado desacoplamento!)
+
+Chame `Scan` para ler uma linha e extraia os dados usando `Text`.
+
+Esta função nunca poderia retornar um `erro`. Seria tentador, neste ponto, removê-lo do tipo de retorno, mas sabemos que teremos que lidar com estruturas de arquivo inválidas mais tarde, portanto, podemos também deixá-lo.
