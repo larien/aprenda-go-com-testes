@@ -821,3 +821,34 @@ func novaPublicacao(publicacaoCorpo io.Reader) (Publicacao, error) {
 - `escaner.Scan()` retorna um `bool` que indica se há mais dados para escanear, então podemos usar isso com um loop `for` para continuar lendo os dados até o final.
 - Após cada `Scan()`, escrevemos os dados no buffer usando `fmt.Fprintln`. Usamos a versão que adiciona uma nova linha porque o escaner remove as novas linhas de cada linha, mas precisamos mantê-las.
 - Precisamos apagar a última nova linha, para que não tenhamos um espaço em branco no final.
+
+## Refatoração
+
+Encapsular a ideia de obter o resto dos dados em uma função ajudará aos futuros leitores a entender rapidamente _o que_ está acontecendo em `novaPublicacao`, sem ter que se preocupar com especificações de implementação.
+
+```go
+func novaPublicacao(publicacaoCorpo io.Reader) (Publicacao, error) {
+	escaner := bufio.NewScanner(publicacaoCorpo)
+
+	lerLinha := func(tagNome string) string {
+		escaner.Scan()
+		return strings.TrimPrefix(escaner.Text(), tagNome)
+	}
+
+	return Publicacao{
+		Titulo:    lerLinha(tituloSeparador),
+		Descricao: lerLinha(descricaoSeparador),
+		Tags:      strings.Split(lerLinha(tagsSeparador), ", "),
+		Corpo:     lerCorpo(escaner),
+	}, nil
+}
+
+func lerCorpo(escaner *bufio.Scanner) string {
+	escaner.Scan() // ignorar uma linha
+	buf := bytes.Buffer{}
+	for escaner.Scan() {
+		fmt.Fprintln(&buf, escaner.Text())
+	}
+	return strings.TrimSuffix(buf.String(), "\n")
+}
+```
