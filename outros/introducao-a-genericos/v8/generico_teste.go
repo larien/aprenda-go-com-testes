@@ -1,0 +1,123 @@
+package main
+
+import (
+	"log"
+)
+
+type PilhaDeInteiros struct {
+	valores []int
+}
+
+func (p *PilhaDeInteiros) Empilhar(valor int) {
+	p.valores = append(p.valores, valor)
+}
+
+func (p *PilhaDeInteiros) EstaVazio() bool {
+	return len(p.valores) == 0
+}
+
+func (p *PilhaDeInteiros) Desempilhar() (int, bool) {
+	if p.EstaVazio() {
+		return 0, false
+	}
+
+	indice := len(p.valores) - 1
+	el := p.valores[indice]
+	p.valores = p.valores[:indice]
+	return el, true
+}
+
+type PilhaDeTextos struct {
+	valores []string
+}
+
+func (p *PilhaDeTextos) Empilhar(valor string) {
+	p.valores = append(p.valores, valor)
+}
+
+func (p *PilhaDeTextos) EstaVazio() bool {
+	return len(p.valores) == 0
+}
+
+func (p *PilhaDeTextos) Desempilhar() (string, bool) {
+	if p.EstaVazio() {
+		return "", false
+	}
+
+	indice := len(p.valores) - 1
+	el := p.valores[indice]
+	p.valores = p.valores[:indice]
+	return el, true
+}
+
+func main() {
+	// PILHA DE INTEIROS
+
+	minhaPilhaDeInteiros := new(PilhaDeInteiros)
+
+	// verifica se a pilha está vazia
+	VerificaVerdadeiro(minhaPilhaDeInteiros.EstaVazio())
+
+	// adiciona alguma coisa e em seguida, verifica se a pilha não está vazia
+	minhaPilhaDeInteiros.Empilhar(123)
+	VerificaFalso(minhaPilhaDeInteiros.EstaVazio())
+
+	// adiciona outra coisa e em seguida, desempilhe a pilha
+	minhaPilhaDeInteiros.Empilhar(456)
+	valor, _ := minhaPilhaDeInteiros.Desempilhar()
+	VerificaIgual(valor, 456)
+	valor, _ = minhaPilhaDeInteiros.Desempilhar()
+	VerificaIgual(valor, 123)
+	VerificaVerdadeiro(minhaPilhaDeInteiros.EstaVazio())
+
+	// PILHA DE TEXTOS
+
+	minhaPilhaDeTextos := new(PilhaDeTextos)
+
+	// verifica se a pilha está vazia
+	VerificaVerdadeiro(minhaPilhaDeTextos.EstaVazio())
+
+	// adiciona alguma coisa e em seguida, verifica se a pilha não está vazia
+	minhaPilhaDeTextos.Empilhar("um dois tres")
+	VerificaFalso(minhaPilhaDeTextos.EstaVazio())
+
+	// adiciona outra coisa e em seguida, desempilhe a pilha
+	minhaPilhaDeTextos.Empilhar("quatro cinco seis")
+	valorTexto, _ := minhaPilhaDeTextos.Desempilhar()
+	VerificaIgual(valorTexto, "quatro cinco seis")
+	valorTexto, _ = minhaPilhaDeTextos.Desempilhar()
+	VerificaIgual(valorTexto, "um dois tres")
+	VerificaVerdadeiro(minhaPilhaDeTextos.EstaVazio())
+}
+
+func VerificaVerdadeiro(algo bool) {
+    if algo {
+        log.Printf("PASSOU: Esperava-se que fosse verdade e foi\n")
+    } else {
+        log.Fatalf("FALHOU: Esperava-se que fosse verdadeiro, mas foi falso")
+    }
+}
+
+func VerificaFalso(algo bool) {
+    if !algo {
+        log.Printf("PASSOU: Esperava-se que fosse falso e foi\n")
+    } else {
+        log.Fatalf("FALHOU: Esperava-se que fosse falso mas foi verdadeiro")
+    }
+}
+
+func VerificaIgual[T comparable](recebido, esperado T) {
+    if recebido != esperado {
+        log.Fatalf("FALHOU: recebido %+v, esperado %+v", recebido, esperado)
+    } else {
+        log.Printf("PASSOU: %+v é igual  %+v\n", recebido, esperado)
+    }
+}
+
+func VerificaNaoIgual[T comparable](recebido, esperado T) {
+    if recebido == esperado {
+        log.Fatalf("FALHOU: recebido %+v, esperado %+v", recebido, esperado)
+    } else {
+        log.Printf("PASSOU: %+v não é igual  %+v\n", recebido, esperado)
+    }
+}
