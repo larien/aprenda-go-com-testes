@@ -730,3 +730,94 @@ O corpo das publicações começa após o `---`
 ```
 
 Já lemos as primeiras 3 linhas. Precisamos então ler mais uma linha, descartá-la e o restante do arquivo conterá o corpo da publicação.
+
+## Escreva o teste primeiro
+
+Altere os dados de teste para que tenham o separador e um corpo com algumas novas linhas para verificar se pegamos todo o conteúdo.
+
+```go
+	const (
+		primeiroCorpo = `Titulo: Publicação 1
+Descricao: Descrição 1
+Tags: tdd, go
+---
+Olá
+Mundo`
+		segundoCorpo = `Titulo: Publicação 2
+Descricao: Descrição 2
+Tags: rust, borrow-checker
+---
+B
+L
+M`
+	)
+```
+
+Adicione ao nosso `verificaPublicacao`
+
+```go
+	verificaPublicacao(t, publicacoes[0], blogpublicacoes.Publicacao{
+		Titulo:    "Publicação 1",
+		Descricao: "Descrição 1",
+		Tags:      []string{"tdd", "go"},
+		Corpo: `Olá
+Mundo`,
+	})
+```
+
+## Execute o teste
+
+```
+./blogpublicacoes_test.go:47:3: unknown field 'Corpo' in struct literal of type blogpublicacoes.Publicacao
+```
+
+Isso significa que o campo `Corpo` não existe no tipo `Publicacao`
+
+## Escreva o mínimo de código possível para fazer o teste rodar e verifique a saída do teste que tiver falhado
+
+Adicione `Corpo` ao `Publicacao` e o teste deve falhar.
+
+```
+--- FAIL: TestNovasPublicacoesBlog (0.00s)
+    blogpublicacoes_test.go:43: resultado {Titulo:Publicação 1 Descricao:Descrição 1 Tags:[tdd go] Corpo:}, esperado {Titulo:Publicação 1 Descricao:Descrição 1 Tags:[tdd go] Corpo:Olá
+        Mundo}
+```
+
+## Escreva código o suficiente para fazer o teste passar
+
+1. Leia a próxima linha para ignorar o separador `---`.
+2. Continue digitalizando até que não haja mais nada para digitalizar.
+
+```go
+func novaPublicacao(publicacaoCorpo io.Reader) (Publicacao, error) {
+	escaner := bufio.NewScanner(publicacaoCorpo)
+
+	lerLinha := func(tagNome string) string {
+		escaner.Scan()
+		return strings.TrimPrefix(escaner.Text(), tagNome)
+	}
+
+	titulo := lerLinha(tituloSeparador)
+	descricao := lerLinha(descricaoSeparador)
+	tags := strings.Split(lerLinha(tagsSeparador), ", ")
+
+	escaner.Scan() // ignorar uma linha
+
+	buf := bytes.Buffer{}
+	for escaner.Scan() {
+		fmt.Fprintln(&buf, escaner.Text())
+	}
+	corpo := strings.TrimSuffix(buf.String(), "\n")
+
+	return Publicacao{
+		Titulo:    titulo,
+		Descricao: descricao,
+		Tags:      tags,
+		Corpo:     corpo,
+	}, nil
+}
+```
+
+- `escaner.Scan()` retorna um `bool` que indica se há mais dados para escanear, então podemos usar isso com um loop `for` para continuar lendo os dados até o final.
+- Após cada `Scan()`, escrevemos os dados no buffer usando `fmt.Fprintln`. Usamos a versão que adiciona uma nova linha porque o escaner remove as novas linhas de cada linha, mas precisamos mantê-las.
+- Precisamos apagar a última nova linha, para que não tenhamos um espaço em branco no final.
