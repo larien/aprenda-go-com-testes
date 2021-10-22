@@ -66,6 +66,10 @@ Se tiver esse tipo de dúvida, crie uma Issue no GitHub e vou tentar achar tempo
 -   [OS exec](duvidas-da-comunidade/os-exec/os-exec.md) - Um exemplo de como podemos usar o sistema operacional para executar comandos para buscar dados e manter nossa lógica de negócio testável.
 -   [Tipos de erro](duvidas-da-comunidade/error-types/error-types.md) - Exemplo de como criar seus próprios tipos de erro para melhorar seus testes e tornar seu código mais fácil de se trabalhar.
 
+### Outra / Discussão
+
+[Introdução aos genéricos](outros/introducao-a-genericos/introducao-a-genericos.md) - Aprenda a escrever funções que usam argumentos genéricos e fazem sua própria estrutura de dados genérica.
+
 ## Contribuição
 
 -   _Esse projeto está em desenvolvimento_, tanto seu conteúdo original quanto sua tradução. Se tiver interesse em contribuir, por favor entre em contato.
