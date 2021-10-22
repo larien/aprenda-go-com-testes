@@ -852,3 +852,19 @@ func lerCorpo(escaner *bufio.Scanner) string {
 	return strings.TrimSuffix(buf.String(), "\n")
 }
 ```
+
+## Iterando ainda mais
+
+Criamos os caminhos de execução mais importantes, tomando o caminho mais curto para chegar ao nosso caminho feliz, mas claramente há um longo caminho a percorrer antes de estar pronto para produção.
+
+Criamos as principais funcionalidades, tomando o caminho mais curto para chegar ao nosso caminho feliz, mas claramente há um longo caminho a percorrer antes de estar pronto para produção.
+
+Não tratamos de:
+
+- quando o formato do arquivo não está correto
+- o arquivo não é um `.md`
+- e se a ordem dos campos de metadados for diferente? Isso deveria ser permitido? Devemos ser capazes de lidar com isso?
+
+Porém, o mais importante é que temos um software funcionando e definimos nossa interface. Os pontos acima são apenas mais iterações, mais testes para escrever e direcionar nosso comportamento. Para suportar qualquer um dos itens acima, não devemos alterar nosso _design_, apenas os detalhes de implementação.
+
+Manter o foco no objetivo significa que tomamos as decisões importantes e as validamos em relação ao comportamento desejado, em vez de nos prendermos a questões que não afetarão o design geral.
