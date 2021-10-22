@@ -868,3 +868,63 @@ Não tratamos de:
 Porém, o mais importante é que temos um software funcionando e definimos nossa interface. Os pontos acima são apenas mais iterações, mais testes para escrever e direcionar nosso comportamento. Para suportar qualquer um dos itens acima, não devemos alterar nosso _design_, apenas os detalhes de implementação.
 
 Manter o foco no objetivo significa que tomamos as decisões importantes e as validamos em relação ao comportamento desejado, em vez de nos prendermos a questões que não afetarão o design geral.
+
+## Resumo
+
+`fs.FS`, e as outras mudanças no Go 1.16 nos fornecem algumas maneiras elegantes de ler dados de sistemas de arquivos e testá-los de forma simples.
+
+Se você deseja experimentar o código "de verdade":
+
+- Crie uma pasta `cmd` dentro do projeto, adicione um arquivo `main.go`
+- Adicione o seguinte código
+
+```go
+import (
+    blogposts "github.com/quii/fstest-spike"
+    "log"
+    "os"
+)
+
+func main() {
+	publicacoes, err := blogposts.NewPostsFromFS(os.DirFS("publicacoes"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(publicacoes)
+}
+```
+
+- Adicione alguns arquivos markdown em uma pasta `publicacoes` e execute o programa!
+
+Observe a simetria entre o código de produção
+
+```go
+publicacoes, err := blogposts.NewPostsFromFS(os.DirFS("publicacoes"))
+```
+
+**nota**: O código está vindo de um repositório do autor do livro, por isso a função está em inglês
+
+E os testes
+
+```go
+publicacoes, err := blogpublicacoes.NovasPublicacoesDoSA(sa)
+```
+
+É quando o TDD de cima para baixo, orientado para o consumidor, parece estar correto.
+
+Um usuário de nosso pacote pode olhar nossos testes e rapidamente se familiarizar com o que ele deve fazer e como usá-lo. Como mantenedores, podemos estar _confiantes de que nossos testes são úteis porque eles são do ponto de vista do consumidor_. Não estamos testando detalhes de implementação ou outros detalhes incidentais, então podemos estar razoavelmente confiantes de que nossos testes nos ajudarão, ao invés de nos atrapalhar durante a refatoração.
+
+Contando com boas práticas de engenharia de software, como [**injeção de dependência**](https://larien.gitbook.io/aprenda-go-com-testes/v/main/primeiros-passos-com-go/injecao-de-dependencia), nosso código é simples de testar e reutilizar.
+
+Ao criar pacotes, mesmo que sejam apenas internos ao projeto, prefira uma abordagem de cima para baixo voltada para o consumidor. Isso o impedirá de imaginar designs excessivos e de fazer abstrações de que talvez nem precise e ajudará a garantir que os testes que você escreve sejam úteis.
+
+A abordagem iterativa manteve cada etapa pequena, e o feedback contínuo nos ajudou a descobrir requisitos pouco claros, possivelmente mais cedo do que com outras abordagens mais ad-hoc.
+
+### Escrita?
+
+É importante notar que esses novos recursos só têm operações para _leitura_ de arquivos. Se o seu trabalho precisa ser escrito, você precisará procurar em outro lugar. Lembre-se de continuar pensando sobre o que a biblioteca padrão oferece atualmente, se você estiver escrevendo dados, você provavelmente deve dar uma olhada em interfaces existentes, como `io.Writer` para manter seu código pouco acoplado e reutilizável.
+
+### Leitura adicional
+
+- Esta foi uma introdução leve para `io/fs`. [Ben Congdon fez um excelente artigo (conteúdo em inglês)](https://benjamincongdon.me/blog/2021/01/21/A-Tour-of-Go-116s-iofs-package/) que foi de muita ajuda para escrever este capítulo.
+- [Discussão sobre as interfaces do sistema de arquivos (conteúdo em inglês)](https://github.com/golang/go/issues/41190)
