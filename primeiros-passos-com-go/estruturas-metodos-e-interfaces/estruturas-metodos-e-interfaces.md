@@ -507,9 +507,9 @@ Até agora você viu uma sintaxe para criar instâncias de structs como `MinhaSt
 Vamos ver como isso funciona:
 
 ```go
-        {forma: Retangulo{largura: 12, altura: 6}, esperado: 72.0},
+        {forma: Retangulo{Largura: 12, Altura: 6}, esperado: 72.0},
         {forma: Circulo{Raio: 10}, esperado: 314.1592653589793},
-        {forma: Triangulo{Base: 12, altura: 6}, esperado: 36.0},
+        {forma: Triangulo{Base: 12, Altura: 6}, esperado: 36.0},
 ```
 
 Em [Test-Driven Development by Example](https://g.co/kgs/yCzDLF) Kent Beck refatora alguns testes para um ponto e afirma:
