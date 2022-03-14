@@ -135,13 +135,13 @@ func (c Carteira) Depositar(quantidade int) {
 }
 ```
 
-O `\n` é um caractere de escape queeadiciona uma nova linha após imprimir o endereço de memória. Conseguimos acessar o ponteiro para algo com o símbolo de endereço `&`.
+O `\n` é um caractere de escape que adiciona uma nova linha após imprimir o endereço de memória. Conseguimos acessar o ponteiro para algo com o símbolo de endereço `&`.
 
 Agora rode o teste novamente:
 
 ```text
 O endereço do saldo no Depositar é 0xc420012268
-O endereço do saldo no teste é is 0xc420012260
+O endereço do saldo no teste é 0xc420012260
 ```
 
 Podemos ver que os endereços dos dois saldos são diferentes. Então, quando mudamos o valor de um dos saldos dentro do código, estamos trabalhando em uma cópia do que veio do teste. Portanto, o saldo no teste não é alterado.
