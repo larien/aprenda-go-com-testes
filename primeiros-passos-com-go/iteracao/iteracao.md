@@ -127,6 +127,6 @@ _NOTA_ por padrão, o benchmark é executado sequencialmente.
 
 ## Resumindo
 
--   Mais praticás de TDD
+-   Mais práticas de TDD
 -   Aprendemos o `for`
 -   Aprendemos como escrever benchmarks
