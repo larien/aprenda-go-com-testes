@@ -105,7 +105,7 @@ Quando o benchmark é rodado, ele executa `b.N` vezes e mede quanto tempo leva.
 
 A quantidade de vezes que o código é executado não deve importar para você. O framework irá determinar qual valor é "bom" para que você consiga ter resultados decentes.
 
-Para executar o benchmark, digite `go test -bench=.` no terminal (ou se estiver executando do PowerShell do Windows, `go test-bench="."`)
+Para executar o benchmark, digite `go test -bench=.` no terminal (ou se estiver executando do PowerShell do Windows, `go test -bench="."`)
 
 ```bash
 goos: darwin
