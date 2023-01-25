@@ -135,7 +135,7 @@ func (c Carteira) Depositar(quantidade int) {
 }
 ```
 
-O `\n` é um caractere de escape queeadiciona uma nova linha após imprimir o endereço de memória. Conseguimos acessar o ponteiro para algo com o símbolo de endereço `&`.
+O `\n` é um caractere de escape que adiciona uma nova linha após imprimir o endereço de memória. Conseguimos acessar o ponteiro para algo com o símbolo de endereço `&`.
 
 Agora rode o teste novamente:
 
@@ -437,7 +437,7 @@ confirmaErro := func(t *testing.T, valor error, esperado string) {
 	if valor == nil {
 		t.Fatal("esperava um erro, mas nenhum ocorreu")
 	}
-    
+
  	resultado := valor.Error()
 
 	if resultado != esperado {
@@ -645,7 +645,7 @@ func confirmaErro(t *testing.T, resultado error, esperado error) {
 * Ponteiros podem ser `nil`.
 * Quando uma função retorna um ponteiro para algo, você precisa ter certeza de verificar se ele é `nil` ou isso vai gerar uma exceção em tempo de execução, já que o compilador não te consegue te ajudar nesses casos.
 * Útil para quando você quer descrever um valor que pode estar faltando.
-  
+
 ### Erros
 
 * Erros são a forma de sinalizar falhas na execução de uma função/método.

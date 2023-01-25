@@ -344,7 +344,7 @@ func SomaTudo(numerosParaSomar ...[]int) []int {
 
 Nessa implementação, nos preocupamos menos sobre capacidade. Começamos com um slice vazio `somas` e o anexamos ao resultado de `Soma` enquanto percorremos as variáveis recebidas como argumento.
 
-Nosso próprio requisito é alterar o `SomaTudo` para `SomaTodoOResto`, onde agora calcula os totais de todos os "finais" de cada slice. O final de uma coleção é todos os itens com exceção do primeiro (a "cabeça").
+Nosso próximo requisito é alterar o `SomaTudo` para `SomaTodoOResto`, onde agora calcula os totais de todos os "finais" de cada slice. O final de uma coleção é todos os itens com exceção do primeiro (a "cabeça").
 
 ## Escreva o teste primeiro
 
