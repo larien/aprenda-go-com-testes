@@ -667,8 +667,6 @@ O último tipo que queremos lidar é o `map`.
 
 Novamente, se pensar um pouco de forma abstrata, percebe-se que o `map` é bem parecido com a `struct`, mas as chaves são desconhecidas em tempo de compilação.
 
-Again if you think a little abstractly you can see that `map` is very similar to `struct`, it's just the keys are unknown at compile time.
-
 ```go
 func percorre(x interface{}, fn func(entrada string)) {
 	valor := obtemValor(x)
@@ -705,7 +703,7 @@ Como se sente agora? Parecia que essa era uma boa abstração naquele momento, m
 
 _Está tudo bem!_ Refatoração é uma jornada e às vezes vamos cometer erros. Um ponto importante do TDD é que ele nos dá a liberdade de testar esse tipo de coisa.
 
-Graças aos testes implmentados a cada etapa, essa situação não é irreversível de forma alguma. Vamos apenas voltar a como estava antes da refatoração.
+Graças aos testes implementados a cada etapa, essa situação não é irreversível de forma alguma. Vamos apenas voltar a como estava antes da refatoração.
 
 ```go
 func percorre(x interface{}, fn func(entrada string)) {
