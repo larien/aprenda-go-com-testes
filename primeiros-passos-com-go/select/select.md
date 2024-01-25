@@ -21,7 +21,7 @@ func TestCorredor(t *testing.T) {
     URLRapida := "http://www.quii.co.uk"
 
     esperado := URLRapida
-    resultado := Corredor(URLLenta, urlRapida)
+    resultado := Corredor(URLLenta, URLRapida)
 
     if resultado != esperado {
         t.Errorf("resultado '%s', esperado '%s'", resultado, esperado)
@@ -281,7 +281,7 @@ func Corredor(a, b string) (vencedor string, erro error) {
 
 Alteramos a assinatura de `Corredor` para retornar o vencedor e um `erro`. Retornamos `nil` para nossos casos de sucesso.
 
-O compilador vai reclamar sobre seu _primeiro teste_ esperar apenas um valor, então altere essa linha para `obteve, _ := Corredor(urlLenta, urlRapida)`. Sabendo disso devemos verificar se _não_ obteremos um erro em nosso caso de sucesso.
+O compilador vai reclamar sobre seu _primeiro teste_ esperar apenas um valor, então altere essa linha para `obteve, _ := Corredor(URLLenta, URLRapida)`. Sabendo disso devemos verificar se _não_ obteremos um erro em nosso caso de sucesso.
 
 Se executar isso agora, o teste irá falhar após 11 segundos.
 
